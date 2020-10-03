@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/page"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/search_box_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="36dp"
+            android:alpha="0.3"
+            android:background="?android:attr/colorBackground"
+            android:gravity="center_vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:id="@+id/search_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:tint="?android:attr/textColorPrimary"
+                app:srcCompat="@drawable/ic_baseline_search_24" />
+
+            <EditText
+                android:id="@+id/search_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="@string/search_box_label"
+                android:inputType="text"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="36sp" />
+
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:fitsSystemWindows="false"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:fitsSystemWindows="false"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/apps_section_card"
+                    android:visibility="gone"
+                    android:fitsSystemWindows="false"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="16dp">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            android:text="@string/apps_section_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/apps_grid"
+                            android:fitsSystemWindows="false"
+                            android:nestedScrollingEnabled="false"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:layout_marginBottom="8dp" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
