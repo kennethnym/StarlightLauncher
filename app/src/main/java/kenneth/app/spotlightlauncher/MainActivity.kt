@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -17,12 +18,14 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import kenneth.app.spotlightlauncher.utils.toPx
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rootView: ConstraintLayout
     private lateinit var appsGridAdapter: AppsGridAdapter
     private lateinit var searcher: Searcher
+    private var searchBoxContainerPaddingPx: Int = 0
     private var statusBarHeight: Int = 0
 
     private lateinit var searchBox: EditText
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
         searcher = Searcher(packageManager)
+        searchBoxContainerPaddingPx =
+            resources.getDimensionPixelSize(R.dimen.search_box_container_padding)
 
         attachListeners()
     }
@@ -89,8 +94,20 @@ class MainActivity : AppCompatActivity() {
             activeSearchBoxConstraints.clone(rootView)
             activeSearchBoxConstraints.clear(R.id.page, ConstraintSet.BOTTOM)
 
-            findViewById<LinearLayout>(R.id.search_box_container)
-                .alpha = 1.0f
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                rootView.systemUiVisibility =
+                    rootView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+
+            findViewById<LinearLayout>(R.id.search_box_container).apply {
+                alpha = 1.0f
+                setPadding(
+                    searchBoxContainerPaddingPx,
+                    searchBoxContainerPaddingPx + statusBarHeight,
+                    searchBoxContainerPaddingPx,
+                    searchBoxContainerPaddingPx
+                )
+            }
 
             findViewById<ConstraintLayout>(R.id.root)
                 .setBackgroundColor(
@@ -106,8 +123,21 @@ class MainActivity : AppCompatActivity() {
                 ConstraintSet.BOTTOM
             )
 
-            findViewById<LinearLayout>(R.id.search_box_container)
-                .alpha = 0.3f
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                rootView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            }
+
+            findViewById<LinearLayout>(R.id.search_box_container).apply {
+                alpha = 0.3f
+                setPadding(
+                    searchBoxContainerPaddingPx,
+                    searchBoxContainerPaddingPx,
+                    searchBoxContainerPaddingPx,
+                    searchBoxContainerPaddingPx
+                )
+            }
 
             findViewById<ConstraintLayout>(R.id.root)
                 .setBackgroundColor(
@@ -115,10 +145,10 @@ class MainActivity : AppCompatActivity() {
                 )
         }
 
-        val transition = ChangeBounds()
-
-        transition.duration = 500L
-        transition.interpolator = PathInterpolator(0.13f, 0.73f, 0.22f, 0.98f)
+        val transition = ChangeBounds().apply {
+            duration = 500L
+            interpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
+        }
 
         TransitionManager.beginDelayedTransition(rootView, transition)
 

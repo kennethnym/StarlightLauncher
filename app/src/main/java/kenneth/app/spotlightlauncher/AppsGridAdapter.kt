@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -14,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class AppsGridAdapter(private val packageManager: PackageManager) :
     RecyclerView.Adapter<AppsGridAdapter.GridItem>() {
-    lateinit var appList: List<PackageInfo>
+    lateinit var appList: List<ApplicationInfo>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridItem {
         val gridItem = LayoutInflater.from(parent.context)
@@ -26,7 +27,7 @@ class AppsGridAdapter(private val packageManager: PackageManager) :
     override fun onBindViewHolder(holder: GridItem, position: Int) {
         val app = appList[position]
         val appIconDrawable = packageManager.getApplicationIcon(app.packageName)
-        val appDescription = app.applicationInfo.loadDescription(packageManager)
+        val appDescription = app.loadDescription(packageManager)
 
         holder.layout.apply {
             findViewById<ImageView>(R.id.app_icon).apply {
@@ -35,7 +36,7 @@ class AppsGridAdapter(private val packageManager: PackageManager) :
             }
 
             findViewById<TextView>(R.id.app_label).text =
-                app.applicationInfo.loadLabel(packageManager)
+                app.loadLabel(packageManager)
         }
     }
 

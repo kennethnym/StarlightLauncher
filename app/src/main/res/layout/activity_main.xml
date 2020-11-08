@@ -19,11 +19,11 @@
             android:id="@+id/search_box_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="36dp"
             android:alpha="0.3"
             android:background="?android:attr/colorBackground"
+            android:elevation="36dp"
             android:gravity="center_vertical"
-            android:padding="24dp">
+            android:padding="@dimen/search_box_container_padding">
 
             <ImageView
                 android:id="@+id/search_icon"
