@@ -86,6 +86,15 @@
                             android:layout_marginHorizontal="8dp"
                             android:layout_marginBottom="8dp" />
 
+                        <TextView
+                            android:id="@+id/apps_section_no_result"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/apps_section_no_result"
+                            android:textAppearance="?attr/textAppearanceBody2"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_marginBottom="16dp" />
+
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>

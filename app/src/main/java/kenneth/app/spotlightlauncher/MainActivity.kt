@@ -11,6 +11,7 @@ import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.graphics.ColorUtils
@@ -171,17 +172,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displaySearchResult(result: Searcher.Result) {
-        if (!::appsGridAdapter.isInitialized) {
-            appsGridAdapter = AppsGridAdapter(packageManager)
-        }
-
-        appsGridAdapter.appList = result.apps
-
-        findViewById<RecyclerView>(R.id.apps_grid).apply {
-            layoutManager = GridLayoutManager(context, 5)
-            adapter = appsGridAdapter
-        }
-
         findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
+
+        if (result.apps.isEmpty()) {
+            findViewById<RecyclerView>(R.id.apps_grid).visibility = View.GONE
+            findViewById<TextView>(R.id.apps_section_no_result).visibility = View.VISIBLE
+        } else {
+            findViewById<RecyclerView>(R.id.apps_grid).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.apps_section_no_result).visibility = View.GONE
+
+            if (!::appsGridAdapter.isInitialized) {
+                appsGridAdapter = AppsGridAdapter(packageManager)
+            }
+
+            appsGridAdapter.appList = result.apps
+
+            findViewById<RecyclerView>(R.id.apps_grid).apply {
+                layoutManager = GridLayoutManager(context, 5)
+                adapter = appsGridAdapter
+            }
+        }
     }
 }

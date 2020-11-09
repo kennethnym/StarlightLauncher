@@ -3,4 +3,5 @@
     <string name="search_box_label">Spotlight</string>
     <string name="search_result_section_apps">Apps</string>
     <string name="apps_section_title">Apps</string>
+    <string name="apps_section_no_result">No relevant apps found.</string>
 </resources>
