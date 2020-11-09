@@ -20,10 +20,16 @@ class Searcher(private val packageManager: PackageManager) {
     private lateinit var appList: List<ResolveInfo>
     private lateinit var resultCallback: (Result) -> Unit
 
+    /**
+     * Adds a listener that is called when search result is available.
+     */
     fun setSearchResultListener(callback: (Result) -> Unit) {
         resultCallback = callback
     }
 
+    /**
+     * Requests to search after a set delay (currently set to 1 second)
+     */
     fun requestSearch(keyword: String) {
         if (::searchTimer.isInitialized) cancelPendingSearch()
 
@@ -32,8 +38,14 @@ class Searcher(private val packageManager: PackageManager) {
         }
     }
 
+    /**
+     * Cancels any pending search requests
+     */
     fun cancelPendingSearch() = searchTimer.cancel()
 
+    /**
+     * Reloads the list of apps.
+     */
     fun refreshAppList() {
         appList = packageManager.queryIntentActivities(mainIntent, 0).filter { notSystemApps(it) }
     }
@@ -66,6 +78,10 @@ class Searcher(private val packageManager: PackageManager) {
             val result1 = searchRegex.findAll(appName1).toList()
             val result2 = searchRegex.findAll(appName2).toList()
 
+            // first, find the longest match in all matches
+            // if the query has a longer match of the name of the first app than the second app
+            // the first app should come first
+
             val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
                 when {
                     i == 0 -> len + 1
@@ -85,6 +101,11 @@ class Searcher(private val packageManager: PackageManager) {
             if (result1LongestMatch != result2LongestMatch) {
                 return@Comparator result2LongestMatch - result1LongestMatch
             }
+
+            // if the longest matches have the same length
+            // then find which match comes first
+            // for example, if the query is "g", appName1 is "google", and appName2 is "settings"
+            // app1 should come first because the "g" in google comes first
 
             val result1FirstMatchIndex = result1[0].range.first
             val result2FirstMatchIndex = result2[0].range.first
