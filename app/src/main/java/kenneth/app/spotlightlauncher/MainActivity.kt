@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.apps_section_no_result).visibility = View.GONE
 
             if (!::appsGridAdapter.isInitialized) {
-                appsGridAdapter = AppsGridAdapter(packageManager)
+                appsGridAdapter = AppsGridAdapter(this, packageManager)
             }
 
             appsGridAdapter.appList = result.apps
