@@ -60,8 +60,8 @@ class MainActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionID, _ ->
                 if (actionID == EditorInfo.IME_ACTION_DONE) {
                     searchBox.clearFocus()
-                    false
-                } else false
+                }
+                false
             }
 
             addTextChangedListener { text -> handleSearchQuery(text) }
