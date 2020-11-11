@@ -16,13 +16,23 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 
 class AppsGridAdapter(
-    private val activity: MainActivity,
-    private val packageManager: PackageManager
-) :
-    RecyclerView.Adapter<AppsGridAdapter.GridItem>() {
+    activity: MainActivity,
+) : SectionResultAdapter<List<ResolveInfo>, AppsGridAdapter.GridItem>(activity) {
+    companion object {
+        fun initializeWith(activity: MainActivity) =
+            AppsGridAdapter(activity).also {
+                activity.findViewById<RecyclerView>(R.id.apps_grid).apply {
+                    layoutManager = GridLayoutManager(context, 5)
+                    adapter = it
+                }
+            }
+    }
+
     lateinit var appList: List<ResolveInfo>
 
     private fun onAppGridItemClicked(holder: GridItem) {
@@ -60,12 +70,12 @@ class AppsGridAdapter(
 
     override fun onBindViewHolder(holder: GridItem, position: Int) {
         val app = appList[position]
-        val appName = app.loadLabel(packageManager)
+        val appName = app.loadLabel(activity.packageManager)
 
-        holder.layout.apply {
+        with(holder.layout) {
             findViewById<ImageView>(R.id.app_icon).apply {
                 contentDescription = "App icon for $appName"
-                setImageDrawable(app.loadIcon(packageManager))
+                setImageDrawable(app.loadIcon(activity.packageManager))
             }
 
             findViewById<TextView>(R.id.app_label).text = appName
@@ -73,6 +83,25 @@ class AppsGridAdapter(
     }
 
     override fun getItemCount() = appList.size
+
+    override fun displayResult(result: List<ResolveInfo>) {
+        activity.findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
+
+        if (result.isEmpty()) {
+            with(activity) {
+                findViewById<RecyclerView>(R.id.apps_grid).visibility = View.GONE
+                findViewById<TextView>(R.id.apps_section_no_result).visibility = View.VISIBLE
+            }
+        } else {
+            with(activity) {
+                findViewById<RecyclerView>(R.id.apps_grid).visibility = View.VISIBLE
+                findViewById<TextView>(R.id.apps_section_no_result).visibility = View.GONE
+            }
+
+            appList = result
+            notifyDataSetChanged()
+        }
+    }
 
     class GridItem(val layout: ConstraintLayout) : RecyclerView.ViewHolder(layout)
 }

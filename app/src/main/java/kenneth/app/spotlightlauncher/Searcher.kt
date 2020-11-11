@@ -1,16 +1,27 @@
 package kenneth.app.spotlightlauncher
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import java.io.File
 import java.util.*
 import kotlin.Comparator
 import kotlin.concurrent.schedule
 
 private const val SEARCH_DELAY: Long = 1000
 
-class Searcher(private val packageManager: PackageManager) {
+typealias ResultCallback = (Searcher.Result, SearchType) -> Unit
+
+/**
+ * Different types that Searcher will search for
+ */
+enum class SearchType {
+    ALL, APPS, FILES
+}
+
+class Searcher(private val packageManager: PackageManager, private val context: Context) {
     private val locale = Locale.getDefault()
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
@@ -18,23 +29,37 @@ class Searcher(private val packageManager: PackageManager) {
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
-    private lateinit var resultCallback: (Result) -> Unit
+    private lateinit var resultCallback: ResultCallback
 
     /**
      * Adds a listener that is called when search result is available.
      */
-    fun setSearchResultListener(callback: (Result) -> Unit) {
+    fun setSearchResultListener(callback: ResultCallback) {
         resultCallback = callback
     }
 
     /**
-     * Requests to search after a set delay (currently set to 1 second)
+     * Requests to search for all types after a set delay (currently set to 1 second)
      */
     fun requestSearch(keyword: String) {
         if (::searchTimer.isInitialized) cancelPendingSearch()
 
         searchTimer = Timer().schedule(SEARCH_DELAY) {
-            resultCallback(performSearch(keyword.toLowerCase(locale)))
+            resultCallback(performSearch(keyword.toLowerCase(locale)), SearchType.ALL)
+        }
+    }
+
+    fun requestSpecificSearch(type: SearchType, keyword: String): Result {
+        val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
+
+        return when (type) {
+            SearchType.FILES -> Result(
+                files = searchFiles(searchRegex),
+            )
+            SearchType.APPS -> Result(
+                apps = searchApps(searchRegex),
+            )
+            else -> Result()
         }
     }
 
@@ -57,62 +82,104 @@ class Searcher(private val packageManager: PackageManager) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         return Result(
-            apps = appList
-                .filter { app ->
-                    app.loadLabel(packageManager).contains(searchRegex)
-                }
-                .sortedWith(appRanker(keyword))
+            apps = searchApps(searchRegex),
+            files = searchFiles(searchRegex)
         )
+    }
+
+    private fun searchApps(searchRegex: Regex) = appList
+        .filter { it.loadLabel(packageManager).contains(searchRegex) }
+        .sortedWith(appRanker(searchRegex))
+
+    private fun searchFiles(searchRegex: Regex): List<File>? {
+        if (packageManager.checkPermission(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                context.packageName
+            ) != PackageManager.PERMISSION_GRANTED
+        ) return null
+
+        val rootPath = context.getExternalFilesDir(null).toString()
+        val root = File(rootPath)
+        val files = getFilesRecursive(root)
+
+        return files
+            .filter { it.name.contains(searchRegex) }
+            .sortedWith { file1, file2 ->
+                compareStringsWithRegex(
+                    file1.name,
+                    file2.name,
+                    searchRegex
+                )
+            }
+    }
+
+    private fun getFilesRecursive(root: File): List<File> {
+        val files = mutableListOf<File>()
+
+        root.listFiles()?.forEach { file ->
+            if (file.isDirectory) {
+                files.addAll(getFilesRecursive(file))
+            } else {
+                files.add(file)
+            }
+        }
+
+        return files
     }
 
     /**
      * appRanker ranks apps in the list based on the search query.
      */
-    private fun appRanker(searchQuery: String): Comparator<ResolveInfo> {
-        val searchRegex = Regex("[$searchQuery]", RegexOption.IGNORE_CASE)
-
+    private fun appRanker(searchRegex: Regex): Comparator<ResolveInfo> {
         return Comparator { app1, app2 ->
             val appName1 = app1.loadLabel(packageManager)
             val appName2 = app2.loadLabel(packageManager)
 
-            val result1 = searchRegex.findAll(appName1).toList()
-            val result2 = searchRegex.findAll(appName2).toList()
-
-            // first, find the longest match in all matches
-            // if the query has a longer match of the name of the first app than the second app
-            // the first app should come first
-
-            val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
-                when {
-                    i == 0 -> len + 1
-                    result.range.first - result1[i - 1].range.first > 1 -> 1
-                    else -> len + 1
-                }
-            }
-
-            val result2LongestMatch = result2.foldIndexed(0) { i, len, result ->
-                when {
-                    i == 0 -> len + 1
-                    result.range.first - result2[i - 1].range.first > 1 -> 1
-                    else -> len + 1
-                }
-            }
-
-            if (result1LongestMatch != result2LongestMatch) {
-                return@Comparator result2LongestMatch - result1LongestMatch
-            }
-
-            // if the longest matches have the same length
-            // then find which match comes first
-            // for example, if the query is "g", appName1 is "google", and appName2 is "settings"
-            // app1 should come first because the "g" in google comes first
-
-            val result1FirstMatchIndex = result1[0].range.first
-            val result2FirstMatchIndex = result2[0].range.first
-
-            return@Comparator result1FirstMatchIndex - result2FirstMatchIndex
+            compareStringsWithRegex(appName1.toString(), appName2.toString(), searchRegex)
         }
     }
 
-    data class Result(val apps: List<ResolveInfo>)
+    data class Result(
+        val apps: List<ResolveInfo> = emptyList(),
+        val files: List<File>? = null,
+    )
+}
+
+private fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int {
+    val result1 = regex.findAll(string1).toList()
+    val result2 = regex.findAll(string2).toList()
+
+    // first, find the longest match in all matches
+    // if the query has a longer match of the name of the first app than the second app
+    // the first app should come first
+
+    val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
+        when {
+            i == 0 -> len + 1
+            result.range.first - result1[i - 1].range.first > 1 -> 1
+            else -> len + 1
+        }
+    }
+
+    val result2LongestMatch = result2.foldIndexed(0) { i, len, result ->
+        when {
+            i == 0 -> len + 1
+            result.range.first - result2[i - 1].range.first > 1 -> 1
+            else -> len + 1
+        }
+    }
+
+    if (result1LongestMatch != result2LongestMatch) {
+        return result2LongestMatch - result1LongestMatch
+    }
+
+    // if the longest matches have the same length
+    // then find which match comes first
+    // for example, if the query is "g", string1 is "google", and string2 is "settings"
+    // app1 should come first because the "g" in google comes first
+
+    val result1FirstMatchIndex = result1[0].range.first
+    val result2FirstMatchIndex = result2[0].range.first
+
+    return result1FirstMatchIndex - result2FirstMatchIndex
 }

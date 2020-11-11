@@ -2,6 +2,15 @@
     <string name="app_name">SpotlightLauncher</string>
     <string name="search_box_label">Spotlight</string>
     <string name="search_result_section_apps">Apps</string>
+
+    <string name="grant_permission">Grant permission</string>
+
     <string name="apps_section_title">Apps</string>
     <string name="apps_section_no_result">No relevant apps found.</string>
+
+    <string name="files_section_title">Files</string>
+    <string name="files_section_grant_permission">
+        Grant permission to access your files so that Spotlight can show them here.
+    </string>
+    <string name="files_section_no_result">No relevant files found.</string>
 </resources>

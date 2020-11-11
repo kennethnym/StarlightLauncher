@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="search_box_container_padding">24dp</dimen>
+
+    <dimen name="material_list_item_height">72dp</dimen>
+    <dimen name="material_list_item_padding_horizontal">16dp</dimen>
+    <dimen name="material_list_item_avatar_dimen">40dp</dimen>
+    <dimen name="material_list_item_avatar_padding_right">16dp</dimen>
 </resources>

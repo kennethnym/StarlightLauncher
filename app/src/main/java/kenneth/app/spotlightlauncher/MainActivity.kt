@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher
 
+import android.Manifest
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,25 +10,33 @@ import android.transition.TransitionManager
 import android.view.View
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.graphics.ColorUtils
 import androidx.core.widget.addTextChangedListener
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import kenneth.app.spotlightlauncher.utils.toPx
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rootView: ConstraintLayout
-    private lateinit var appsGridAdapter: AppsGridAdapter
     private lateinit var searcher: Searcher
+    private lateinit var resultAdapter: ResultAdapter
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
     private var searchBoxContainerPaddingPx: Int = 0
     private var statusBarHeight: Int = 0
+
+    /**
+     * Right before requesting a permission, it is stored in this variable, so that when
+     * the request result comes back, we know what permission is being requested, and we
+     * can hide the corresponding button.
+     */
+    private var requestedPermission: String = ""
 
     private lateinit var searchBox: EditText
 
@@ -37,46 +46,70 @@ class MainActivity : AppCompatActivity() {
 
         // enable edge-to-edge app experience
 
-        rootView = findViewById(R.id.root)
+        rootView = findViewById<ConstraintLayout>(R.id.root).apply {
+            systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
 
-        rootView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        resultAdapter = ResultAdapter(this)
 
-        searcher = Searcher(packageManager)
+        searcher = Searcher(packageManager, applicationContext)
         searchBoxContainerPaddingPx =
             resources.getDimensionPixelSize(R.dimen.search_box_container_padding)
+
+        requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+                ::handlePermissionResult
+            )
 
         attachListeners()
     }
 
     private fun attachListeners() {
-        searchBox = findViewById(R.id.search_box)
-
-        searchBox.apply {
-            setOnFocusChangeListener { _, hasFocus ->
+        searchBox = findViewById<EditText>(R.id.search_box).also {
+            it.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) searcher.refreshAppList()
                 onSearchBoxFocusChanged(hasFocus)
             }
 
-            setOnEditorActionListener { _, actionID, _ ->
+            it.setOnEditorActionListener { _, actionID, _ ->
                 if (actionID == EditorInfo.IME_ACTION_DONE) {
-                    searchBox.clearFocus()
+                    it.clearFocus()
                 }
                 false
             }
 
-            addTextChangedListener { text -> handleSearchQuery(text) }
+            it.addTextChangedListener { text -> handleSearchQuery(text) }
         }
+
+        findViewById<Button>(R.id.grant_file_permission_button)
+            .setOnClickListener { askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE) }
 
         rootView.setOnApplyWindowInsetsListener { _, insets ->
             statusBarHeight = insets.systemWindowInsetTop
             insets
         }
 
-        searcher.setSearchResultListener {
+        searcher.setSearchResultListener { result, type ->
             runOnUiThread {
-                displaySearchResult(it)
+                resultAdapter.displayResult(result, type)
             }
+        }
+    }
+
+    private fun askForPermission(permission: String) {
+        requestedPermission = permission
+        requestPermissionLauncher.launch(permission)
+    }
+
+    private fun handlePermissionResult(isGranted: Boolean) {
+        if (!isGranted) return
+
+        val query = findViewById<EditText>(R.id.search_box).text.toString()
+
+        when (requestedPermission) {
+            Manifest.permission.READ_EXTERNAL_STORAGE -> searcher.requestSpecificSearch(SearchType.FILES, query)
         }
     }
 
@@ -168,29 +201,6 @@ class MainActivity : AppCompatActivity() {
                 .visibility = View.GONE
         } else {
             searcher.requestSearch(query.toString())
-        }
-    }
-
-    private fun displaySearchResult(result: Searcher.Result) {
-        findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
-
-        if (result.apps.isEmpty()) {
-            findViewById<RecyclerView>(R.id.apps_grid).visibility = View.GONE
-            findViewById<TextView>(R.id.apps_section_no_result).visibility = View.VISIBLE
-        } else {
-            findViewById<RecyclerView>(R.id.apps_grid).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.apps_section_no_result).visibility = View.GONE
-
-            if (!::appsGridAdapter.isInitialized) {
-                appsGridAdapter = AppsGridAdapter(this, packageManager)
-            }
-
-            appsGridAdapter.appList = result.apps
-
-            findViewById<RecyclerView>(R.id.apps_grid).apply {
-                layoutManager = GridLayoutManager(context, 5)
-                adapter = appsGridAdapter
-            }
         }
     }
 }

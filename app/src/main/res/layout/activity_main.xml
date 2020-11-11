@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -46,29 +46,29 @@
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
-            android:fitsSystemWindows="false"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false">
 
             <LinearLayout
-                android:fitsSystemWindows="false"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="false"
+                android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/apps_section_card"
-                    android:visibility="gone"
-                    android:fitsSystemWindows="false"
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
-                    android:layout_marginVertical="16dp">
+                    android:layout_marginVertical="16dp"
+                    android:fitsSystemWindows="false"
+                    android:visibility="gone">
 
                     <LinearLayout
-                        android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -79,21 +79,74 @@
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/apps_grid"
-                            android:fitsSystemWindows="false"
-                            android:nestedScrollingEnabled="false"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="8dp"
-                            android:layout_marginBottom="8dp" />
+                            android:layout_marginBottom="8dp"
+                            android:fitsSystemWindows="false"
+                            android:nestedScrollingEnabled="false" />
 
                         <TextView
                             android:id="@+id/apps_section_no_result"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/apps_section_no_result"
-                            android:textAppearance="?attr/textAppearanceBody2"
                             android:layout_marginHorizontal="16dp"
-                            android:layout_marginBottom="16dp" />
+                            android:layout_marginBottom="16dp"
+                            android:text="@string/apps_section_no_result"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/files_section_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="16dp"
+                    android:fitsSystemWindows="false"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            android:text="@string/files_section_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/files_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:fitsSystemWindows="false"
+                            android:nestedScrollingEnabled="false" />
+
+                        <TextView
+                            android:id="@+id/files_section_result_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/apps_section_no_result"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+                        <Button
+                            android:id="@+id/grant_file_permission_button"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/grant_permission"
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -104,6 +157,5 @@
         </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
