@@ -3,7 +3,7 @@
     <string name="search_box_label">Spotlight</string>
     <string name="search_result_section_apps">Apps</string>
 
-    <string name="grant_permission">Grant permission</string>
+    <string name="open_settings">Open settings</string>
 
     <string name="apps_section_title">Apps</string>
     <string name="apps_section_no_result">No relevant apps found.</string>
@@ -13,4 +13,25 @@
         Grant permission to access your files so that Spotlight can show them here.
     </string>
     <string name="files_section_no_result">No relevant files found.</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="search_header">Search behavior</string>
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- File search preferences -->
+    <string name="file_search_title">Files</string>
+    <string name="file_search_summary">Adjust how Spotlight searches your files</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

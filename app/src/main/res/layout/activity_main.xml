@@ -140,12 +140,12 @@
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                         <Button
-                            android:id="@+id/grant_file_permission_button"
+                            android:id="@+id/open_settings_button"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@string/grant_permission"
+                            android:text="@string/open_settings"
                             android:visibility="gone" />
 
                     </LinearLayout>

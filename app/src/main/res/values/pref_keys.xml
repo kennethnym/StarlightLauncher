@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_search_pref_key">file_search</string>
+    <string name="file_search_enabled">file_search_enabled</string>
+</resources>

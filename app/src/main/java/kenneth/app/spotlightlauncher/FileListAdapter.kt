@@ -51,6 +51,7 @@ class FileListAdapter(activity: MainActivity) :
     override fun displayResult(result: List<File>?) {
         with(activity) {
             findViewById<MaterialCardView>(R.id.files_section_card).visibility = View.VISIBLE
+            findViewById<Button>(R.id.open_settings_button).visibility = View.VISIBLE
 
             when {
                 result == null -> {
@@ -60,8 +61,6 @@ class FileListAdapter(activity: MainActivity) :
                         text = getString(R.string.files_section_grant_permission)
                         setPadding(0, 0, 0, 0)
                     }
-                    findViewById<Button>(R.id.grant_file_permission_button).visibility =
-                        View.VISIBLE
                 }
                 result.isEmpty() -> {
                     findViewById<RecyclerView>(R.id.files_list).visibility = View.GONE
@@ -70,13 +69,10 @@ class FileListAdapter(activity: MainActivity) :
                         text = getString(R.string.files_section_no_result)
                         setPadding(0, 0, 0, 8.toPx(activity.resources))
                     }
-                    findViewById<Button>(R.id.grant_file_permission_button).visibility =
-                        View.GONE
                 }
                 else -> {
                     findViewById<RecyclerView>(R.id.files_list).visibility = View.VISIBLE
                     findViewById<TextView>(R.id.files_section_result_status).visibility = View.GONE
-                    findViewById<Button>(R.id.grant_file_permission_button).visibility = View.GONE
 
                     fileList = result
 

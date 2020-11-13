@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -83,8 +84,8 @@ class MainActivity : AppCompatActivity() {
             it.addTextChangedListener { text -> handleSearchQuery(text) }
         }
 
-        findViewById<Button>(R.id.grant_file_permission_button)
-            .setOnClickListener { askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE) }
+        findViewById<Button>(R.id.open_settings_button)
+            .setOnClickListener { openSettings() }
 
         rootView.setOnApplyWindowInsetsListener { _, insets ->
             statusBarHeight = insets.systemWindowInsetTop
@@ -98,6 +99,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openSettings() {
+        val settingsIntent = Intent(this, SettingsActivity::class.java)
+        startActivity(settingsIntent)
+    }
+
     private fun askForPermission(permission: String) {
         requestedPermission = permission
         requestPermissionLauncher.launch(permission)
@@ -109,7 +115,10 @@ class MainActivity : AppCompatActivity() {
         val query = findViewById<EditText>(R.id.search_box).text.toString()
 
         when (requestedPermission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE -> searcher.requestSpecificSearch(SearchType.FILES, query)
+            Manifest.permission.READ_EXTERNAL_STORAGE -> searcher.requestSpecificSearch(
+                SearchType.FILES,
+                query
+            )
         }
     }
 
