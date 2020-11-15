@@ -21,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.graphics.ColorUtils
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.card.MaterialCardView
+import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -63,6 +64,9 @@ class MainActivity : AppCompatActivity() {
                 ActivityResultContracts.RequestPermission(),
                 ::handlePermissionResult
             )
+
+        findViewById<Button>(R.id.temp_settings_button)
+            .setOnClickListener { openSettings() }
 
         attachListeners()
     }
@@ -207,6 +211,8 @@ class MainActivity : AppCompatActivity() {
             searcher.cancelPendingSearch()
 
             findViewById<MaterialCardView>(R.id.apps_section_card)
+                .visibility = View.GONE
+            findViewById<MaterialCardView>(R.id.files_section_card)
                 .visibility = View.GONE
         } else {
             searcher.requestSearch(query.toString())

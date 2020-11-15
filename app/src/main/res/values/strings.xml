@@ -9,11 +9,15 @@
     <string name="apps_section_no_result">No relevant apps found.</string>
 
     <string name="files_section_title">Files</string>
-    <string name="files_section_grant_permission">
-        Grant permission to access your files so that Spotlight can show them here.
+    <string name="files_section_include_path_instruction">
+        Open settings and add paths that you want Spotlight to search in.
     </string>
     <string name="files_section_no_result">No relevant files found.</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Download folder -->
+    <string name="download_folder">Download</string>
 
     <!-- Preference Titles -->
     <string name="search_header">Search behavior</string>
@@ -23,6 +27,13 @@
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
     <string name="file_search_summary">Adjust how Spotlight searches your files</string>
+    <string name="file_include_paths_category_header">Include paths</string>
+    <string name="file_include_paths_summary">
+        Add paths that you want Spotlight to search in. Spotlight will only search for files
+        in those paths.
+        To remove a path, simply tap on it.
+    </string>
+    <string name="file_add_path_title">Add path…</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>

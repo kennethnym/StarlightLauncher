@@ -5,6 +5,10 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import androidx.preference.PreferenceManager
+import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import java.io.File
 import java.util.*
 import kotlin.Comparator
@@ -26,6 +30,7 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
+    private val filePreferenceManager = FilePreferenceManager.getInstance(context)
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
@@ -91,32 +96,33 @@ class Searcher(private val packageManager: PackageManager, private val context: 
         .filter { it.loadLabel(packageManager).contains(searchRegex) }
         .sortedWith(appRanker(searchRegex))
 
-    private fun searchFiles(searchRegex: Regex): List<File>? {
-        if (packageManager.checkPermission(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                context.packageName
-            ) != PackageManager.PERMISSION_GRANTED
-        ) return null
+    private fun searchFiles(searchRegex: Regex): List<DocumentFile>? {
+        val paths = filePreferenceManager.includedPaths
 
-        val rootPath = context.getExternalFilesDir(null).toString()
-        val root = File(rootPath)
-        val files = getFilesRecursive(root)
+        if (paths.size == 0) {
+            return null
+        }
 
-        return files
-            .filter { it.name.contains(searchRegex) }
+        return paths
+            .fold(listOf<DocumentFile>()) { allFiles, path ->
+                if (path == "") return@fold allFiles
+                val doc = DocumentFile.fromTreeUri(context, Uri.parse(path))
+                if (doc != null) allFiles + getFilesRecursive(doc) else allFiles
+            }
+            .filter { it.name?.contains(searchRegex) ?: false }
             .sortedWith { file1, file2 ->
                 compareStringsWithRegex(
-                    file1.name,
-                    file2.name,
+                    file1.name!!,
+                    file2.name!!,
                     searchRegex
                 )
             }
     }
 
-    private fun getFilesRecursive(root: File): List<File> {
-        val files = mutableListOf<File>()
+    private fun getFilesRecursive(root: DocumentFile): List<DocumentFile> {
+        val files = mutableListOf<DocumentFile>()
 
-        root.listFiles()?.forEach { file ->
+        root.listFiles().forEach { file ->
             if (file.isDirectory) {
                 files.addAll(getFilesRecursive(file))
             } else {
@@ -141,7 +147,7 @@ class Searcher(private val packageManager: PackageManager, private val context: 
 
     data class Result(
         val apps: List<ResolveInfo> = emptyList(),
-        val files: List<File>? = null,
+        val files: List<DocumentFile>? = null,
     )
 }
 

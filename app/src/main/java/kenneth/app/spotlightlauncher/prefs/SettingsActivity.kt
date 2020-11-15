@@ -1,15 +1,12 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.prefs
 
 import android.os.Bundle
-import android.view.View
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
+import kenneth.app.spotlightlauncher.R
 
 class SettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -18,6 +15,8 @@ class SettingsActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setContentView(R.layout.settings_activity)
+
         toolbar = findViewById<MaterialToolbar>(R.id.settings_toolbar).also {
             it.setOnApplyWindowInsetsListener { view, insets ->
                 view.updatePadding(top = insets.systemWindowInsetTop)
@@ -25,7 +24,6 @@ class SettingsActivity : AppCompatActivity(),
             }
         }
 
-        setContentView(R.layout.settings_activity)
         setSupportActionBar(toolbar)
 
         if (savedInstanceState == null) {

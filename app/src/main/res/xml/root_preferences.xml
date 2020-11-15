@@ -2,7 +2,7 @@
     <PreferenceCategory app:title="@string/search_header">
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.FileSearchSettingsFragment"
+            app:fragment="kenneth.app.spotlightlauncher.prefs.files.FileSettingsFragment"
             app:key="@string/file_search_pref_key"
             app:summary="@string/file_search_summary"
             app:title="@string/file_search_title" />

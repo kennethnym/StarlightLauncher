@@ -14,7 +14,7 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="Settings" />
+            app:title="@string/title_activity_settings" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
