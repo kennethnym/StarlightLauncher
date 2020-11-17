@@ -1,24 +1,19 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.icu.text.Transliterator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import kenneth.app.spotlightlauncher.MainActivity
+import kenneth.app.spotlightlauncher.R
 
 class AppsGridAdapter(
     activity: MainActivity,

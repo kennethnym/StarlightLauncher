@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.searching
 
 import android.content.Context
 import android.content.Intent
@@ -7,9 +7,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import androidx.preference.PreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
-import java.io.File
 import java.util.*
 import kotlin.Comparator
 import kotlin.concurrent.schedule
@@ -22,7 +20,7 @@ typealias ResultCallback = (Searcher.Result, SearchType) -> Unit
  * Different types that Searcher will search for
  */
 enum class SearchType {
-    ALL, APPS, FILES
+    ALL, APPS, FILES,
 }
 
 class Searcher(private val packageManager: PackageManager, private val context: Context) {
@@ -31,6 +29,7 @@ class Searcher(private val packageManager: PackageManager, private val context: 
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
     private val filePreferenceManager = FilePreferenceManager.getInstance(context)
+    private val smartSearcher = SmartSearcher()
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
@@ -59,12 +58,14 @@ class Searcher(private val packageManager: PackageManager, private val context: 
 
         return when (type) {
             SearchType.FILES -> Result(
+                query = keyword,
                 files = searchFiles(searchRegex),
             )
             SearchType.APPS -> Result(
+                query = keyword,
                 apps = searchApps(searchRegex),
             )
-            else -> Result()
+            else -> Result(query = keyword)
         }
     }
 
@@ -87,8 +88,10 @@ class Searcher(private val packageManager: PackageManager, private val context: 
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         return Result(
+            query = keyword,
             apps = searchApps(searchRegex),
-            files = searchFiles(searchRegex)
+            files = searchFiles(searchRegex),
+            suggested = smartSearcher.search(keyword),
         )
     }
 
@@ -146,8 +149,13 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     }
 
     data class Result(
+        val query: String,
         val apps: List<ResolveInfo> = emptyList(),
         val files: List<DocumentFile>? = null,
+        val suggested: SmartSearcher.SuggestedResult = SmartSearcher.SuggestedResult(
+            query,
+            type = SuggestedResultType.NONE,
+        )
     )
 }
 

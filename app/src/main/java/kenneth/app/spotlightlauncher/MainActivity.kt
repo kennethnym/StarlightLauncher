@@ -22,6 +22,9 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
+import kenneth.app.spotlightlauncher.searching.SearchType
+import kenneth.app.spotlightlauncher.searching.Searcher
+import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -209,13 +212,18 @@ class MainActivity : AppCompatActivity() {
     private fun handleSearchQuery(query: Editable?) {
         if (query == null || query.isBlank()) {
             searcher.cancelPendingSearch()
-
-            findViewById<MaterialCardView>(R.id.apps_section_card)
-                .visibility = View.GONE
-            findViewById<MaterialCardView>(R.id.files_section_card)
-                .visibility = View.GONE
+            hideAllCards()
         } else {
             searcher.requestSearch(query.toString())
         }
+    }
+
+    private fun hideAllCards() {
+        findViewById<MaterialCardView>(R.id.apps_section_card)
+            .visibility = View.GONE
+        findViewById<MaterialCardView>(R.id.files_section_card)
+            .visibility = View.GONE
+        findViewById<MaterialCardView>(R.id.suggested_section_card)
+            .visibility = View.GONE
     }
 }

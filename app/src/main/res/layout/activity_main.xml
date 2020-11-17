@@ -63,11 +63,38 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/suggested_section_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
+                    android:fitsSystemWindows="false"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/suggested_section_card_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/section_card_padding">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:text="@string/suggested_section_title"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/apps_section_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
                     android:fitsSystemWindows="false"
                     android:visibility="gone">
 
@@ -110,8 +137,8 @@
                     android:id="@+id/files_section_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
                     android:fitsSystemWindows="false"
                     android:visibility="gone">
 

@@ -1,11 +1,8 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.searching.display_adapters
 
-import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
+import kenneth.app.spotlightlauncher.MainActivity
+import kenneth.app.spotlightlauncher.searching.SearchType
+import kenneth.app.spotlightlauncher.searching.Searcher
 
 /**
  * ResultAdapter is used to adapt search results into views. It combines numerous RecyclerView
@@ -14,12 +11,14 @@ import com.google.android.material.card.MaterialCardView
 class ResultAdapter(activity: MainActivity) {
     private val appsGridAdapter = AppsGridAdapter.initializeWith(activity)
     private val fileListAdapter = FileListAdapter.initializeWith(activity)
+    private val suggestedResultAdapter = SuggestedResultAdapter(activity)
 
     fun displayResult(result: Searcher.Result, type: SearchType) {
         when (type) {
             SearchType.ALL -> {
                 appsGridAdapter.displayResult(result.apps)
                 fileListAdapter.displayResult(result.files)
+                suggestedResultAdapter.displayResult(result.suggested)
             }
             SearchType.FILES -> {
                 fileListAdapter.displayResult(result.files)

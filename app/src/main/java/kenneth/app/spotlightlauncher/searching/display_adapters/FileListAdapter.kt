@@ -1,7 +1,6 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -20,6 +19,8 @@ import androidx.loader.content.CursorLoader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import kenneth.app.spotlightlauncher.MainActivity
+import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.toPx
 
 private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")

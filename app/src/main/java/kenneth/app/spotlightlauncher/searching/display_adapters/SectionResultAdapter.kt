@@ -1,6 +1,7 @@
-package kenneth.app.spotlightlauncher
+package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import androidx.recyclerview.widget.RecyclerView
+import kenneth.app.spotlightlauncher.MainActivity
 
 /**
  * An interface that adapters of each search result section have to implement

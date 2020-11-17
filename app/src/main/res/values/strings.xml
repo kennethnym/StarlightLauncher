@@ -14,6 +14,8 @@
     </string>
     <string name="files_section_no_result">No relevant files found.</string>
 
+    <string name="suggested_section_title">Suggested</string>
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Download folder -->
