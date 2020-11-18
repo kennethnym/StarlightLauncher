@@ -1,7 +1,9 @@
 package kenneth.app.spotlightlauncher
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.text.Editable
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.View
+import android.view.WindowInsetsController
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -25,6 +28,7 @@ import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
+import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +37,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resultAdapter: ResultAdapter
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
+    private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
+    private var isSearchScreenActive = false
+    private var isDarkModeActive = false
     private var searchBoxContainerPaddingPx: Int = 0
     private var statusBarHeight: Int = 0
 
@@ -51,9 +58,13 @@ class MainActivity : AppCompatActivity() {
 
         // enable edge-to-edge app experience
 
-        rootView = findViewById<ConstraintLayout>(R.id.root).apply {
-            systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        rootView = findViewById(R.id.root)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            rootView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        } else {
+            window.setDecorFitsSystemWindows(false)
         }
 
         resultAdapter = ResultAdapter(this)
@@ -68,13 +79,39 @@ class MainActivity : AppCompatActivity() {
                 ::handlePermissionResult
             )
 
-        findViewById<Button>(R.id.temp_settings_button)
-            .setOnClickListener { openSettings() }
+        isDarkModeActive =
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) resources.configuration.isNightModeActive
+            else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         attachListeners()
     }
 
+    override fun onBackPressed() {
+        if (searchBox.text.toString() == "") {
+            toggleSearchBoxAnimation(isActive = false)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        isDarkModeActive =
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) newConfig.isNightModeActive
+            else newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        if (isSearchScreenActive) {
+            if (isDarkModeActive) {
+                disableLightStatusBar()
+            } else {
+                enableLightStatusBar()
+            }
+        }
+    }
+
     private fun attachListeners() {
+        findViewById<Button>(R.id.temp_settings_button)
+            .setOnClickListener { openSettings() }
+
         searchBox = findViewById<EditText>(R.id.search_box).also {
             it.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) searcher.refreshAppList()
@@ -94,9 +131,17 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.open_settings_button)
             .setOnClickListener { openSettings() }
 
-        rootView.setOnApplyWindowInsetsListener { _, insets ->
-            statusBarHeight = insets.systemWindowInsetTop
-            insets
+        with(rootView) {
+            setOnApplyWindowInsetsListener { _, insets ->
+                statusBarHeight = insets.systemWindowInsetTop
+                insets
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            keyboardAnimationCallback = KeyboardAnimationCallback(rootView).also {
+                rootView.setWindowInsetsAnimationCallback(it)
+            }
         }
 
         searcher.setSearchResultListener { result, type ->
@@ -109,11 +154,6 @@ class MainActivity : AppCompatActivity() {
     private fun openSettings() {
         val settingsIntent = Intent(this, SettingsActivity::class.java)
         startActivity(settingsIntent)
-    }
-
-    private fun askForPermission(permission: String) {
-        requestedPermission = permission
-        requestPermissionLauncher.launch(permission)
     }
 
     private fun handlePermissionResult(isGranted: Boolean) {
@@ -139,14 +179,15 @@ class MainActivity : AppCompatActivity() {
         val inactiveSearchBoxConstraints = ConstraintSet()
         val activeSearchBoxConstraints = ConstraintSet()
 
+        isSearchScreenActive = isActive
+
         if (isActive) {
             inactiveSearchBoxConstraints.clone(rootView)
             activeSearchBoxConstraints.clone(rootView)
             activeSearchBoxConstraints.clear(R.id.page, ConstraintSet.BOTTOM)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                rootView.systemUiVisibility =
-                    rootView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            if (!isDarkModeActive) {
+                enableLightStatusBar()
             }
 
             findViewById<LinearLayout>(R.id.search_box_container).apply {
@@ -173,11 +214,7 @@ class MainActivity : AppCompatActivity() {
                 ConstraintSet.BOTTOM
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                rootView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            }
+            disableLightStatusBar()
 
             findViewById<LinearLayout>(R.id.search_box_container).apply {
                 alpha = 0.3f
@@ -207,6 +244,36 @@ class MainActivity : AppCompatActivity() {
             else inactiveSearchBoxConstraints
 
         constraints.applyTo(root)
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun enableLightStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window
+                .insetsController
+                ?.setSystemBarsAppearance(
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                )
+        } else if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q) && !isDarkModeActive) {
+            rootView.systemUiVisibility =
+                rootView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+    }
+
+    private fun disableLightStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window
+                .insetsController
+                ?.setSystemBarsAppearance(
+                    0,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                )
+        } else if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q) && !isDarkModeActive) {
+            rootView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 
     private fun handleSearchQuery(query: Editable?) {
