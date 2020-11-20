@@ -3,7 +3,7 @@ package kenneth.app.spotlightlauncher.searching
 import com.github.keelar.exprk.Expressions
 
 enum class SuggestedResultType {
-    NONE, MATH
+    NONE, MATH, WIFI
 }
 
 class SmartSearcher {
@@ -19,9 +19,13 @@ class SmartSearcher {
                 result = result,
             )
         } catch (e: Exception) {
+            val showWifiControl = keyword.contains("wifi", ignoreCase = true)
+
             SuggestedResult(
                 query = keyword,
-                type = SuggestedResultType.NONE
+                type =
+                if (showWifiControl) SuggestedResultType.WIFI
+                else SuggestedResultType.NONE
             )
         }
     }

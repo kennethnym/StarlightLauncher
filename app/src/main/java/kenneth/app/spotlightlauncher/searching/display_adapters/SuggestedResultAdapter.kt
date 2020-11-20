@@ -11,42 +11,46 @@ import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
 
 class SuggestedResultAdapter(private val activity: MainActivity) {
+    private lateinit var contentParent: LinearLayout
+
+    private val wifiController = WifiController(activity)
+
     fun displayResult(result: SmartSearcher.SuggestedResult) {
         val card = activity.findViewById<MaterialCardView>(R.id.suggested_section_card)
 
         if (result.type != SuggestedResultType.NONE) {
-            card.apply {
-                visibility = View.VISIBLE
-            }
+            card.visibility = View.VISIBLE
 
-            val contentParent =
-                activity.findViewById<LinearLayout>(R.id.suggested_section_card_layout)
+            contentParent = activity.findViewById<LinearLayout>(R.id.suggested_content)
+                .also { it.removeAllViews() }
 
             when (result.type) {
-                SuggestedResultType.MATH -> {
-                    val equationText = activity.findViewById<TextView>(R.id.equation_text)
-                    val inflated = equationText != null
-                    val resultStr = "= ${result.result}"
-
-                    if (!inflated) {
-                        LayoutInflater.from(activity)
-                            .inflate(R.layout.math_result_layout, contentParent)
-                            .also {
-                                it.findViewById<TextView>(R.id.equation_text).text = result.query
-                                it.findViewById<TextView>(R.id.equation_result_text).text =
-                                    resultStr
-                            }
-                    } else {
-                        equationText.text = result.query
-                        activity.findViewById<TextView>(R.id.equation_result_text).text =
-                            resultStr
-                    }
-                }
-                else -> {
-                }
+                SuggestedResultType.MATH -> displayMathResult(result)
+                SuggestedResultType.WIFI -> wifiController.displayWifiControl()
             }
         } else {
             card?.visibility = View.GONE
         }
     }
+
+    private fun displayMathResult(result: SmartSearcher.SuggestedResult) {
+        val equationText = activity.findViewById<TextView>(R.id.equation_text)
+        val inflated = equationText != null
+        val resultStr = "= ${result.result}"
+
+        if (!inflated) {
+            LayoutInflater.from(activity)
+                .inflate(R.layout.math_result_layout, contentParent)
+                .also {
+                    it.findViewById<TextView>(R.id.equation_text).text = result.query
+                    it.findViewById<TextView>(R.id.equation_result_text).text =
+                        resultStr
+                }
+        } else {
+            equationText.text = result.query
+            activity.findViewById<TextView>(R.id.equation_result_text).text =
+                resultStr
+        }
+    }
 }
+

@@ -16,6 +16,20 @@
 
     <string name="suggested_section_title">Suggested</string>
 
+    <string name="grant_permission_label">Grant Permission</string>
+
+    <!-- Wifi controls -->
+    <string name="wifi_connected_to_label">WiFi connected to</string>
+    <string name="wifi_no_network_label">No network</string>
+    <string name="wifi_coarse_location_perm_required_label">Coarse location required</string>
+    <string name="wifi_coarse_location_perm_required_description">
+        Coarse location is required by Android to access the names of Wifi networks.
+        The location is not used for any other purposes.
+    </string>
+    <string name="unknown_wifi_network_label">Unknown</string>
+    <string name="wifi_not_connected">Not connected</string>
+    <string name="open_wifi_settings_label">Open Wifi Settings</string>
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Download folder -->
