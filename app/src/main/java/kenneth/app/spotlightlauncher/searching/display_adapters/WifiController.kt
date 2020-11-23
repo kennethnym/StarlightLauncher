@@ -115,7 +115,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
 
             if (activity.findViewById<LinearLayout>(R.id.require_location_perm_notification) == null) {
                 val notification = LayoutInflater.from(activity)
-                    .inflate(R.layout.require_location_perm, null)
+                    .inflate(R.layout.require_location_perm, contentLayout, false)
                     .also {
                         it.findViewById<Button>(R.id.grant_location_permission_button)
                             ?.setOnClickListener { askForLocationPermission() }
@@ -123,13 +123,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
                             ?.setOnClickListener { openWifiSettings() }
                     }
 
-                contentLayout.addView(notification, 1)
-                (notification.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                    0,
-                    0,
-                    0,
-                    16.toPx(activity.resources)
-                )
+                contentLayout.addView(notification, 0)
             }
         }
     }

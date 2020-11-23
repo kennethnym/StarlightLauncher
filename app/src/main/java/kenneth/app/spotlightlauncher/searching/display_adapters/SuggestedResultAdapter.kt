@@ -9,8 +9,6 @@ import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
-import okhttp3.OkHttpClient
-import okhttp3.Request
 
 class SuggestedResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.SuggestedResult>(activity) {
