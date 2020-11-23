@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="search_box_container_padding">24dp</dimen>
+    <dimen name="search_box_container_padding">16dp</dimen>
 
     <dimen name="section_card_padding">16dp</dimen>
     <dimen name="section_card_margin_horizontal">8dp</dimen>
-    <dimen name="section_card_margin_vertical">16dp</dimen>
+    <dimen name="section_card_margin_vertical">8dp</dimen>
 
     <dimen name="material_list_item_height">72dp</dimen>
     <dimen name="material_list_item_padding_horizontal">16dp</dimen>
-    <dimen name="material_list_item_avatar_dimen">56dp</dimen>
+    <dimen name="material_list_item_smaller_avatar_dimen">40dp</dimen>
+    <dimen name="material_list_item_bigger_avatar_dimen">56dp</dimen>
     <dimen name="material_list_item_avatar_padding_right">16dp</dimen>
     <dimen name="file_list_item_padding_horizontal">8dp</dimen>
 </resources>

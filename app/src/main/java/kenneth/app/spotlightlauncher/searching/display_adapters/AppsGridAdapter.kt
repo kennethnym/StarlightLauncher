@@ -7,52 +7,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 
-class AppsGridAdapter(
-    activity: MainActivity,
-) : SectionResultAdapter<List<ResolveInfo>, AppsGridAdapter.GridItem>(activity) {
-    companion object {
-        fun initializeWith(activity: MainActivity) =
-            AppsGridAdapter(activity).also {
-                activity.findViewById<RecyclerView>(R.id.apps_grid).apply {
-                    layoutManager = GridLayoutManager(context, 5)
-                    adapter = it
-                }
-            }
-    }
-
+object AppsGridAdapter : SectionRecyclerViewAdapter<List<ResolveInfo>, AppsGridAdapter.GridItem>() {
     lateinit var appList: List<ResolveInfo>
 
-    private fun onAppGridItemClicked(holder: GridItem) {
-        // launch the clicked app
-        val position = holder.adapterPosition
-
-        if (position != RecyclerView.NO_POSITION) {
-            val app = appList[position]
-            val appActivity = app.activityInfo
-            val componentName =
-                ComponentName(appActivity.applicationInfo.packageName, appActivity.name)
-
-            val intent = Intent(Intent.ACTION_MAIN).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                component = componentName
-                addCategory(Intent.CATEGORY_LAUNCHER)
+    override fun getInstance(activity: MainActivity): AppsGridAdapter {
+        this.activity = activity.also {
+            it.findViewById<RecyclerView>(R.id.apps_grid).apply {
+                layoutManager = GridLayoutManager(it, 5)
+                adapter = this@AppsGridAdapter
             }
-
-            activity.startActivity(intent)
         }
+
+        return this
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridItem {
         val gridItem = LayoutInflater.from(parent.context)
-            .inflate(R.layout.apps_grid_item, parent, false) as ConstraintLayout
+            .inflate(R.layout.apps_grid_item, parent, false) as LinearLayout
 
         val holder = GridItem(gridItem)
 
@@ -79,6 +58,26 @@ class AppsGridAdapter(
 
     override fun getItemCount() = appList.size
 
+    private fun onAppGridItemClicked(holder: GridItem) {
+        // launch the clicked app
+        val position = holder.adapterPosition
+
+        if (position != RecyclerView.NO_POSITION) {
+            val app = appList[position]
+            val appActivity = app.activityInfo
+            val componentName =
+                ComponentName(appActivity.applicationInfo.packageName, appActivity.name)
+
+            val intent = Intent(Intent.ACTION_MAIN).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                component = componentName
+                addCategory(Intent.CATEGORY_LAUNCHER)
+            }
+
+            activity.startActivity(intent)
+        }
+    }
+
     override fun displayResult(result: List<ResolveInfo>) {
         activity.findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
 
@@ -98,5 +97,5 @@ class AppsGridAdapter(
         }
     }
 
-    class GridItem(val layout: ConstraintLayout) : RecyclerView.ViewHolder(layout)
+    class GridItem(val layout: LinearLayout) : RecyclerView.ViewHolder(layout)
 }

@@ -9,13 +9,16 @@ import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
-class SuggestedResultAdapter(private val activity: MainActivity) {
+class SuggestedResultAdapter(activity: MainActivity) :
+    SectionResultAdapter<SmartSearcher.SuggestedResult>(activity) {
     private lateinit var contentParent: LinearLayout
 
     private val wifiController = WifiController(activity)
 
-    fun displayResult(result: SmartSearcher.SuggestedResult) {
+    override fun displayResult(result: SmartSearcher.SuggestedResult) {
         val card = activity.findViewById<MaterialCardView>(R.id.suggested_section_card)
 
         if (result.type != SuggestedResultType.NONE) {
@@ -27,6 +30,7 @@ class SuggestedResultAdapter(private val activity: MainActivity) {
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)
                 SuggestedResultType.WIFI -> wifiController.displayWifiControl()
+                else -> {}
             }
         } else {
             card?.visibility = View.GONE

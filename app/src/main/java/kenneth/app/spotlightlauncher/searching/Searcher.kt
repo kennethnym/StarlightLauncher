@@ -8,6 +8,10 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.Comparator
 import kotlin.concurrent.schedule
@@ -30,6 +34,7 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     }
     private val filePreferenceManager = FilePreferenceManager.getInstance(context)
     private val smartSearcher = SmartSearcher()
+    private val webRequestCoroutine = CoroutineScope(Dispatchers.IO)
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
@@ -42,6 +47,10 @@ class Searcher(private val packageManager: PackageManager, private val context: 
         resultCallback = callback
     }
 
+    fun setWebResultListener(callback: WebResultCallback) {
+        smartSearcher.setWebResultListener(callback)
+    }
+
     /**
      * Requests to search for all types after a set delay (currently set to 1 second)
      */
@@ -49,7 +58,12 @@ class Searcher(private val packageManager: PackageManager, private val context: 
         if (::searchTimer.isInitialized) cancelPendingSearch()
 
         searchTimer = Timer().schedule(SEARCH_DELAY) {
-            resultCallback(performSearch(keyword.toLowerCase(locale)), SearchType.ALL)
+            webRequestCoroutine.launch {
+                smartSearcher.performWebSearch(keyword)
+            }
+            webRequestCoroutine.launch {
+                resultCallback(performSearch(keyword.toLowerCase(locale)), SearchType.ALL)
+            }
         }
     }
 
@@ -72,7 +86,10 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     /**
      * Cancels any pending search requests
      */
-    fun cancelPendingSearch() = searchTimer.cancel()
+    fun cancelPendingSearch() {
+        smartSearcher.cancelWebSearch()
+        searchTimer.cancel()
+    }
 
     /**
      * Reloads the list of apps.
@@ -84,13 +101,17 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     private fun notSystemApps(appInfo: ResolveInfo): Boolean =
         (appInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
 
-    private fun performSearch(keyword: String): Result {
+    private suspend fun performSearch(keyword: String): Result {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         return Result(
             query = keyword,
-            apps = searchApps(searchRegex),
-            files = searchFiles(searchRegex),
+            apps = withContext(Dispatchers.IO) {
+                searchApps(searchRegex)
+            },
+            files = withContext(Dispatchers.IO) {
+                searchFiles(searchRegex)
+            },
             suggested = smartSearcher.search(keyword),
         )
     }

@@ -13,7 +13,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.documentfile.provider.DocumentFile
 import androidx.loader.content.CursorLoader
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,22 +24,24 @@ import kenneth.app.spotlightlauncher.utils.toPx
 
 private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")
 
-class FileListAdapter(activity: MainActivity) :
-    SectionResultAdapter<List<DocumentFile>?, FileListAdapter.ListItem>(activity) {
-    companion object {
-        fun initializeWith(activity: MainActivity) = FileListAdapter(activity).also {
-            activity.findViewById<RecyclerView>(R.id.files_list).apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = it
+object FileListAdapter :
+    SectionRecyclerViewAdapter<List<DocumentFile>?, FileListAdapter.ListItem>() {
+    override fun getInstance(activity: MainActivity): FileListAdapter {
+        this.activity = activity.also {
+            it.findViewById<RecyclerView>(R.id.files_list).apply {
+                layoutManager = LinearLayoutManager(it)
+                adapter = this@FileListAdapter
             }
         }
+
+        return this
     }
 
     lateinit var fileList: List<DocumentFile>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
         val listItemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.files_list_item, parent, false) as ConstraintLayout
+            .inflate(R.layout.files_list_item, parent, false) as LinearLayout
 
         val holder = ListItem(listItemView)
 
@@ -62,7 +63,7 @@ class FileListAdapter(activity: MainActivity) :
             if (mimeType != null && imageOrVideoMimeType.matches(mimeType)) {
                 val bitmap = getUriPreview(
                     file.uri,
-                    size = resources.getDimensionPixelSize(R.dimen.material_list_item_avatar_dimen)
+                    size = resources.getDimensionPixelSize(R.dimen.material_list_item_bigger_avatar_dimen)
                 )
 
                 findViewById<ImageView>(R.id.files_list_item_preview).setImageBitmap(bitmap)
@@ -150,5 +151,5 @@ class FileListAdapter(activity: MainActivity) :
         activity.startActivity(intent)
     }
 
-    class ListItem(val layout: ConstraintLayout) : RecyclerView.ViewHolder(layout)
+    class ListItem(val layout: LinearLayout) : RecyclerView.ViewHolder(layout)
 }

@@ -18,6 +18,7 @@
 
     <string name="grant_permission_label">Grant Permission</string>
 
+
     <!-- Wifi controls -->
     <string name="wifi_connected_to_label">WiFi connected to</string>
     <string name="wifi_no_network_label">No network</string>
@@ -29,6 +30,14 @@
     <string name="unknown_wifi_network_label">Unknown</string>
     <string name="wifi_not_connected">Not connected</string>
     <string name="open_wifi_settings_label">Open Wifi Settings</string>
+
+    <!-- Web result -->
+    <string name="web_result_label">Web Result</string>
+    <string name="open_in_browser_label">Open in Browser</string>
+    <string name="related_topics_label">Related topics</string>
+    <string name="hide_topics_label">Hide topics</string>
+    <string name="web_result_no_description_label">No description</string>
+    <string name="related_topic_preview_description">Image preview for %1$s.</string>
 
     <string name="title_activity_settings">Settings</string>
 
@@ -61,4 +70,5 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="powered_by_ddg_label">Powered by DuckDuckGo</string>
 </resources>
