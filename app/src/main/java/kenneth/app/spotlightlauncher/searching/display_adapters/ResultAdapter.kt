@@ -12,22 +12,22 @@ import kenneth.app.spotlightlauncher.searching.SmartSearcher
 class ResultAdapter(private val activity: MainActivity) {
     private lateinit var webResultAdapter: WebResultAdapter
 
-    private val appsGridAdapter = AppsGridAdapter.getInstance(activity)
-    private val fileListAdapter = FileListAdapter.getInstance(activity)
+    private val appsGridAdapter = AppsGridDataAdapter.getInstance(activity)
+    private val fileListAdapter = FileListDataAdapter.getInstance(activity)
     private val suggestedResultAdapter = SuggestedResultAdapter(activity)
 
     fun displayResult(result: Searcher.Result, type: SearchType) {
         when (type) {
             SearchType.ALL -> {
-                appsGridAdapter.displayResult(result.apps)
-                fileListAdapter.displayResult(result.files)
+                appsGridAdapter.displayData(result.apps)
+                fileListAdapter.displayData(result.files)
                 suggestedResultAdapter.displayResult(result.suggested)
             }
             SearchType.FILES -> {
-                fileListAdapter.displayResult(result.files)
+                fileListAdapter.displayData(result.files)
             }
             SearchType.APPS -> {
-                appsGridAdapter.displayResult(result.apps)
+                appsGridAdapter.displayData(result.apps)
             }
         }
     }

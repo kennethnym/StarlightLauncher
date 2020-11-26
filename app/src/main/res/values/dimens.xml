@@ -8,6 +8,8 @@
 
     <dimen name="material_list_item_height">72dp</dimen>
     <dimen name="material_list_item_padding_horizontal">16dp</dimen>
+    <dimen name="material_list_item_icon_dimen">24dp</dimen>
+    <dimen name="material_list_item_icon_margin_end">32dp</dimen>
     <dimen name="material_list_item_smaller_avatar_dimen">40dp</dimen>
     <dimen name="material_list_item_bigger_avatar_dimen">56dp</dimen>
     <dimen name="material_list_item_avatar_padding_right">16dp</dimen>

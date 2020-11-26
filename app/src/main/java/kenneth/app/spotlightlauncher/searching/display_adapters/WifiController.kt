@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,7 +12,6 @@ import android.os.Build
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Switch
@@ -22,7 +20,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
-import kenneth.app.spotlightlauncher.utils.toPx
 
 class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
     private val requestPermissionLauncher: ActivityResultLauncher<String>
@@ -71,16 +68,14 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
         }
     }
 
-    @SuppressLint("InflateParams")
-    fun displayWifiControl() {
+    fun displayWifiControl(parentView: LinearLayout) {
         var wifiLabel = activity.findViewById<TextView>(R.id.wifi_network_name_label)
-        val contentLayout = activity.findViewById<LinearLayout>(R.id.suggested_content)
 
         if (wifiLabel == null) {
             LayoutInflater.from(activity)
                 .inflate(
                     R.layout.wifi_control,
-                    contentLayout,
+                    parentView,
                 )
 
             wifiLabel = activity.findViewById(R.id.wifi_network_name_label)
@@ -115,7 +110,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
 
             if (activity.findViewById<LinearLayout>(R.id.require_location_perm_notification) == null) {
                 val notification = LayoutInflater.from(activity)
-                    .inflate(R.layout.require_location_perm, contentLayout, false)
+                    .inflate(R.layout.require_location_perm, parentView, false)
                     .also {
                         it.findViewById<Button>(R.id.grant_location_permission_button)
                             ?.setOnClickListener { askForLocationPermission() }
@@ -123,7 +118,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
                             ?.setOnClickListener { openWifiSettings() }
                     }
 
-                contentLayout.addView(notification, 0)
+                parentView.addView(notification, 0)
             }
         }
     }

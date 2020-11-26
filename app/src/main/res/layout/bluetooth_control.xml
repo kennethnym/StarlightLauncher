@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bluetooth_control_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/toggle_bluetooth_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/section_card_padding"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/bluetooth_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bluetooth_label"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/toggle_bluetooth_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="@dimen/section_card_padding" />
+
+    <LinearLayout
+        android:id="@+id/nearby_bluetooth_device_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/section_card_padding"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:layout_marginBottom="8dp"
+            android:text="@string/bluetooth_nearby_devices_label"
+            android:textAppearance="?attr/textAppearanceOverline" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/nearby_bluetooth_device_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/section_card_padding"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/no_nearby_bluetooth_devices_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:text="@string/bluetooth_no_nearby_devices_label"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</LinearLayout>

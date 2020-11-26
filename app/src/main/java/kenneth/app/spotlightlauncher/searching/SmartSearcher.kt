@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 
 enum class SuggestedResultType {
-    NONE, MATH, WIFI
+    NONE, MATH, WIFI, BLUETOOTH
 }
 
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
@@ -33,14 +33,22 @@ class SmartSearcher {
                 result = result,
             )
         } catch (e: Exception) {
-            val showWifiControl = keyword.contains("wifi", ignoreCase = true)
-
-            SuggestedResult(
-                query = keyword,
-                type =
-                if (showWifiControl) SuggestedResultType.WIFI
-                else SuggestedResultType.NONE
-            )
+            when {
+                keyword.contains("wifi", ignoreCase = true) ->
+                    SuggestedResult(
+                        query = keyword,
+                        type = SuggestedResultType.WIFI
+                    )
+                keyword.contains("bluetooth", ignoreCase = true) ->
+                    SuggestedResult(
+                        query = keyword,
+                        type = SuggestedResultType.BLUETOOTH,
+                    )
+                else -> SuggestedResult(
+                    query = keyword,
+                    type = SuggestedResultType.NONE,
+                )
+            }
         }
     }
 
@@ -83,8 +91,7 @@ class SmartSearcher {
         }
     }
 
-    private fun parseAsMathExpression(expression: String): Float? =
-        expressions.eval(expression).toFloat()
+    private fun parseAsMathExpression(expression: String) = expressions.eval(expression).toFloat()
 
     data class SuggestedResult(
         val query: String,

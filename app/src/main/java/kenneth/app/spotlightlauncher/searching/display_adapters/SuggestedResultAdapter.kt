@@ -15,20 +15,25 @@ class SuggestedResultAdapter(activity: MainActivity) :
     private lateinit var contentParent: LinearLayout
 
     private val wifiController = WifiController(activity)
+    private val bluetoothController = BluetoothController(activity)
 
     override fun displayResult(result: SmartSearcher.SuggestedResult) {
         val card = activity.findViewById<MaterialCardView>(R.id.suggested_section_card)
 
+        contentParent = activity.findViewById<LinearLayout>(R.id.suggested_content)
+            .also { it.removeAllViews() }
+
         if (result.type != SuggestedResultType.NONE) {
             card.visibility = View.VISIBLE
 
-            contentParent = activity.findViewById<LinearLayout>(R.id.suggested_content)
-                .also { it.removeAllViews() }
-
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)
-                SuggestedResultType.WIFI -> wifiController.displayWifiControl()
-                else -> {}
+                SuggestedResultType.WIFI -> wifiController.displayWifiControl(contentParent)
+                SuggestedResultType.BLUETOOTH -> bluetoothController.displayBluetoothControl(
+                    contentParent
+                )
+                else -> {
+                }
             }
         } else {
             card?.visibility = View.GONE

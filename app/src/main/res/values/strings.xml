@@ -31,6 +31,12 @@
     <string name="wifi_not_connected">Not connected</string>
     <string name="open_wifi_settings_label">Open Wifi Settings</string>
 
+    <!-- Bluetooth controls -->
+    <string name="bluetooth_label">Bluetooth</string>
+    <string name="bluetooth_nearby_devices_label">Nearby devices</string>
+    <string name="bluetooth_device_type_icon_description">%1$s icon</string>
+    <string name="bluetooth_no_nearby_devices_label">No nearby devices</string>
+
     <!-- Web result -->
     <string name="web_result_label">Web Result</string>
     <string name="open_in_browser_label">Open in Browser</string>

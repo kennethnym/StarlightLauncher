@@ -21,7 +21,7 @@ import kenneth.app.spotlightlauncher.searching.SmartSearcher
 
 class WebResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.WebResult>(activity) {
-    private lateinit var topicListAdapter: RelatedTopicListAdapter
+    private lateinit var topicListAdapter: RelatedTopicListDataAdapter
     private lateinit var webResult: SmartSearcher.WebResult
     private lateinit var relatedTopicsButton: Button
 
@@ -91,7 +91,7 @@ class WebResultAdapter(activity: MainActivity) :
                 findViewById<Button>(R.id.open_in_browser_button)
                     .setOnClickListener { openInBrowser() }
 
-                relatedTopicsButton = findViewById<Button>(R.id.related_topics_button)
+                relatedTopicsButton = findViewById(R.id.related_topics_button)
 
                 if (webResult.relatedTopics.isNotEmpty()) {
                     relatedTopicsButton.apply {
@@ -101,7 +101,7 @@ class WebResultAdapter(activity: MainActivity) :
 
                     if (showRelatedTopics) {
                         if (activity.findViewById<RecyclerView>(R.id.related_topics_list) != null) {
-                            topicListAdapter.displayResult(webResult.relatedTopics)
+                            topicListAdapter.displayData(webResult.relatedTopics)
                         } else {
                             showRelatedTopics = false
                             toggleRelatedTopics()
@@ -142,8 +142,8 @@ class WebResultAdapter(activity: MainActivity) :
                 )
 
             relatedTopicsButton.text = activity.getString(R.string.hide_topics_label)
-            topicListAdapter = RelatedTopicListAdapter.getInstance(activity).also {
-                it.displayResult(webResult.relatedTopics)
+            topicListAdapter = RelatedTopicListDataAdapter.getInstance(activity).also {
+                it.displayData(webResult.relatedTopics)
             }
         } else {
             relatedTopicsButton.text = activity.getString(R.string.related_topics_label)
@@ -152,53 +152,35 @@ class WebResultAdapter(activity: MainActivity) :
     }
 }
 
-object RelatedTopicListAdapter :
-    SectionRecyclerViewAdapter<List<SmartSearcher.WebResult.Topic>, RelatedTopicListAdapter.ListItem>() {
-    lateinit var relatedTopics: List<SmartSearcher.WebResult.Topic>
-
-    override fun getInstance(activity: MainActivity): RelatedTopicListAdapter {
+private object RelatedTopicListDataAdapter :
+    RecyclerViewDataAdapter<SmartSearcher.WebResult.Topic, RelatedTopicListViewHolder>() {
+    override fun getInstance(activity: MainActivity): RelatedTopicListDataAdapter {
         this.activity = activity.also {
             it.findViewById<RecyclerView>(R.id.related_topics_list).apply {
                 layoutManager = LinearLayoutManager(activity)
-                adapter = this@RelatedTopicListAdapter
+                adapter = this@RelatedTopicListDataAdapter
             }
         }
 
         return this
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelatedTopicListViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.web_result_related_topic_item, parent, false)
                 as LinearLayout
 
-        return ListItem(listItemView)
+        return RelatedTopicListViewHolder(listItemView, activity)
     }
 
-    override fun onBindViewHolder(holder: ListItem, position: Int) {
-        val topic = relatedTopics[position]
+    override fun displayData(data: List<SmartSearcher.WebResult.Topic>?) {
+        val topics = data
 
-        with(holder.layout) {
-            val preview = findViewById<ImageView>(R.id.related_topic_preview)
-
-            Glide
-                .with(holder.itemView)
-                .load(topic.previewUrl)
-                .into(preview)
-
-            preview.contentDescription =
-                context.getString(R.string.related_topic_preview_description, topic.title)
-
-            findViewById<TextView>(R.id.related_topic_title).text = topic.title
+        if (topics != null) {
+            this.data = topics
+            notifyDataSetChanged()
         }
     }
-
-    override fun displayResult(result: List<SmartSearcher.WebResult.Topic>) {
-        relatedTopics = result
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount() = relatedTopics.size
 
     fun hideList() {
         val webResultCardLayout =
@@ -208,6 +190,30 @@ object RelatedTopicListAdapter :
             webResultCardLayout?.removeViewAt(webResultCardLayout.childCount - 1)
         }
     }
+}
 
-    class ListItem(val layout: LinearLayout) : RecyclerView.ViewHolder(layout)
+private class RelatedTopicListViewHolder(view: LinearLayout, activity: MainActivity) :
+    RecyclerViewDataAdapter.ViewHolder<SmartSearcher.WebResult.Topic>(view, activity) {
+    override fun bindWith(data: SmartSearcher.WebResult.Topic) {
+        val topic = data
+
+        with(view) {
+            val preview =
+                findViewById<ImageView>(R.id.related_topic_preview)
+
+            Glide
+                .with(this)
+                .load(topic.previewUrl)
+                .into(preview)
+
+            preview.contentDescription =
+                context.getString(
+                    R.string.related_topic_preview_description,
+                    topic.title
+                )
+
+            findViewById<TextView>(R.id.related_topic_title).text =
+                topic.title
+        }
+    }
 }
