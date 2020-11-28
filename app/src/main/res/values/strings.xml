@@ -18,6 +18,8 @@
 
     <string name="grant_permission_label">Grant Permission</string>
 
+    <!-- Apps section -->
+    <string name="app_icon_description">App icon for %1$s</string>
 
     <!-- Wifi controls -->
     <string name="wifi_connected_to_label">WiFi connected to</string>

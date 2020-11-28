@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.Comparator
 import kotlin.concurrent.schedule
 
-private const val SEARCH_DELAY: Long = 1000
+private const val SEARCH_DELAY: Long = 500
 
 typealias ResultCallback = (Searcher.Result, SearchType) -> Unit
 

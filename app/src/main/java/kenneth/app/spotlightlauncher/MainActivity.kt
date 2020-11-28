@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (searchBox.text.toString() == "") {
             toggleSearchBoxAnimation(isActive = false)
+            searchBox.clearFocus()
         } else {
             super.onBackPressed()
         }

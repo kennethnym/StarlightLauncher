@@ -42,8 +42,6 @@ object FileListDataAdapter :
         return this
     }
 
-    lateinit var fileList: List<DocumentFile>
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.files_list_item, parent, false) as LinearLayout
@@ -52,12 +50,16 @@ object FileListDataAdapter :
     }
 
     override fun displayData(data: List<DocumentFile>?) {
+        val fileList = data
+
         with(activity) {
             findViewById<MaterialCardView>(R.id.files_section_card).visibility = View.VISIBLE
 
+            val fileListRecyclerView = findViewById<RecyclerView>(R.id.files_list)
+
             when {
                 data == null -> {
-                    findViewById<RecyclerView>(R.id.files_list).visibility = View.GONE
+                    fileListRecyclerView.visibility = View.GONE
                     findViewById<Button>(R.id.open_settings_button).visibility = View.VISIBLE
                     findViewById<TextView>(R.id.files_section_result_status).apply {
                         visibility = View.VISIBLE
@@ -66,7 +68,7 @@ object FileListDataAdapter :
                     }
                 }
                 data.isEmpty() -> {
-                    findViewById<RecyclerView>(R.id.files_list).visibility = View.GONE
+                    fileListRecyclerView.visibility = View.GONE
                     findViewById<TextView>(R.id.files_section_result_status).apply {
                         visibility = View.VISIBLE
                         text = getString(R.string.files_section_no_result)
@@ -74,10 +76,10 @@ object FileListDataAdapter :
                     }
                 }
                 else -> {
-                    findViewById<RecyclerView>(R.id.files_list).visibility = View.VISIBLE
+                    fileListRecyclerView.visibility = View.VISIBLE
                     findViewById<TextView>(R.id.files_section_result_status).visibility = View.GONE
 
-                    fileList = data
+                    this@FileListDataAdapter.data = fileList!!
 
                     notifyDataSetChanged()
                 }

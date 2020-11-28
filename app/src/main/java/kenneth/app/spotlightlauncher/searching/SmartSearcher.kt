@@ -15,6 +15,9 @@ enum class SuggestedResultType {
 
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
 
+/**
+ * SmartSearcher produces suggested results to the user.
+ */
 class SmartSearcher {
     private val expressions = Expressions()
     private val http = OkHttpClient()
@@ -25,6 +28,8 @@ class SmartSearcher {
 
     fun search(keyword: String): SuggestedResult {
         return try {
+            // first, try to parse the query as a math expression.
+
             val result = parseAsMathExpression(keyword)
 
             SuggestedResult(
@@ -33,12 +38,16 @@ class SmartSearcher {
                 result = result,
             )
         } catch (e: Exception) {
+            // the query is not a valid math expression
+
             when {
+                // wifi command
                 keyword.contains("wifi", ignoreCase = true) ->
                     SuggestedResult(
                         query = keyword,
                         type = SuggestedResultType.WIFI
                     )
+                // bluetooth command
                 keyword.contains("bluetooth", ignoreCase = true) ->
                     SuggestedResult(
                         query = keyword,
@@ -56,10 +65,16 @@ class SmartSearcher {
         webResultListener = listener
     }
 
+    /**
+     * Cancels any ongoing call to duckduckgo api
+     */
     fun cancelWebSearch() {
         activeApiCall?.cancel()
     }
 
+    /**
+     * Searches DuckDuckGo for definitions of the query.
+     */
     suspend fun performWebSearch(keyword: String) {
         try {
             activeApiCall = duckduckgoApi.newCall(keyword)

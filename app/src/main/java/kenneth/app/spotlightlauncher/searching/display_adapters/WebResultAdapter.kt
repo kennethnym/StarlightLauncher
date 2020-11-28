@@ -19,6 +19,9 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.getDuckDuckGoRedirectUrlFromQuery
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 
+/**
+ * An adapter that displays web result to the user.
+ */
 class WebResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.WebResult>(activity) {
     private lateinit var topicListAdapter: RelatedTopicListDataAdapter

@@ -27,14 +27,15 @@
 
             <EditText
                 android:id="@+id/search_box"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/search_box_container_padding"
                 android:background="@null"
                 android:hint="@string/search_box_label"
                 android:inputType="text"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="36sp" />
+                android:textSize="36sp"
+                tools:ignore="Autofill" />
 
         </LinearLayout>
 
@@ -65,132 +66,11 @@
                 android:fitsSystemWindows="false"
                 android:orientation="vertical">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/suggested_section_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
-                    android:fitsSystemWindows="false"
-                    android:visibility="gone">
+                <include layout="@layout/suggested_result_card" />
 
-                    <LinearLayout
-                        android:id="@+id/suggested_section_card_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                <include layout="@layout/apps_section_card" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/section_card_padding"
-                            android:text="@string/suggested_section_title"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <LinearLayout
-                            android:id="@+id/suggested_content"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/apps_section_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
-                    android:fitsSystemWindows="false"
-                    android:visibility="gone">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/section_card_padding"
-                            android:text="@string/apps_section_title"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/apps_grid"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:fitsSystemWindows="false"
-                            android:nestedScrollingEnabled="false" />
-
-                        <TextView
-                            android:id="@+id/apps_section_no_result"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:text="@string/apps_section_no_result"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/files_section_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-                    android:layout_marginVertical="@dimen/section_card_margin_vertical"
-                    android:fitsSystemWindows="false"
-                    android:visibility="gone">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/section_card_padding"
-                            android:text="@string/files_section_title"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/files_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:fitsSystemWindows="false"
-                            android:nestedScrollingEnabled="false" />
-
-                        <TextView
-                            android:id="@+id/files_section_result_status"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="16dp"
-                            android:layout_marginBottom="8dp"
-                            android:text="@string/apps_section_no_result"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                        <Button
-                            android:id="@+id/open_settings_button"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/open_settings"
-                            android:visibility="gone" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
+                <include layout="@layout/files_section_card" />
 
                 <Space
                     android:layout_width="0dp"

@@ -20,8 +20,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kotlinx.android.synthetic.main.wifi_control.*
 
 class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
+    private lateinit var parentView: LinearLayout
+    private lateinit var wifiLabel: TextView
+    private lateinit var wifiSwitch: Switch
+
     private val requestPermissionLauncher: ActivityResultLauncher<String>
     private val wifiManager =
         activity.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -50,46 +55,42 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (context != null && intent != null) {
+        if (context != null && intent != null && ::wifiLabel.isInitialized && ::wifiSwitch.isInitialized) {
             when (intent.action) {
                 WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
-                    activity.findViewById<TextView>(R.id.wifi_network_name_label)
-                        ?.text = wifiManager.connectionInfo.ssid
+                    wifiLabel.text = wifiManager.connectionInfo.ssid
                 }
                 WifiManager.WIFI_STATE_CHANGED_ACTION -> {
-                    with(activity) {
-                        findViewById<Switch>(R.id.wifi_switch)
-                            ?.isChecked = wifiManager.isWifiEnabled
-                        findViewById<TextView>(R.id.wifi_network_name_label)
-                            ?.text = ssid
-                    }
+                    wifiSwitch.isChecked = wifiManager.isWifiEnabled
+                    wifiLabel.text = ssid
                 }
             }
         }
     }
 
     fun displayWifiControl(parentView: LinearLayout) {
-        var wifiLabel = activity.findViewById<TextView>(R.id.wifi_network_name_label)
+        this.parentView = parentView
 
-        if (wifiLabel == null) {
-            LayoutInflater.from(activity)
+        wifiLabel = activity.findViewById(R.id.wifi_network_name_label)
+            ?: LayoutInflater.from(activity)
                 .inflate(
                     R.layout.wifi_control,
                     parentView,
-                )
+                ).findViewById(R.id.wifi_network_name_label)
 
-            wifiLabel = activity.findViewById(R.id.wifi_network_name_label)
-        }
+        wifiSwitch = activity.findViewById<Switch>(R.id.wifi_switch)
 
         val hasCoarseLocationPermission =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) activity.applicationContext.checkSelfPermission(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED else true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                activity.applicationContext.checkSelfPermission(
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            else true
 
         val isWifiEnabled = wifiManager.isWifiEnabled
 
         with(activity) {
-            findViewById<Switch>(R.id.wifi_switch).apply {
+            wifiSwitch.apply {
                 isChecked = isWifiEnabled
                 setOnClickListener(::toggleWifi)
             }
@@ -100,9 +101,6 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
 
         if (hasCoarseLocationPermission) {
             wifiLabel.text = ssid
-
-            activity.findViewById<Switch>(R.id.wifi_switch)
-                .setOnClickListener(::toggleWifi)
         } else {
             wifiLabel.text =
                 if (isWifiEnabled) activity.getString(R.string.unknown_wifi_network_label)
@@ -114,8 +112,6 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
                     .also {
                         it.findViewById<Button>(R.id.grant_location_permission_button)
                             ?.setOnClickListener { askForLocationPermission() }
-                        it.findViewById<Button>(R.id.open_wifi_settings_button)
-                            ?.setOnClickListener { openWifiSettings() }
                     }
 
                 parentView.addView(notification, 0)
@@ -129,15 +125,10 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
 
     private fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
-            with(activity) {
-                findViewById<LinearLayout>(R.id.suggested_section_card_layout)
-                    .removeView(
-                        activity.findViewById(R.id.require_location_perm_notification)
-                    )
-
-                findViewById<TextView>(R.id.wifi_network_name_label)
-                    .text = ssid
-            }
+            parentView.removeView(
+                activity.findViewById(R.id.require_location_perm_notification)
+            )
+            wifiLabel.text = ssid
         }
     }
 

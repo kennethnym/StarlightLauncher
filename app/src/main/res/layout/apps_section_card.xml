@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/apps_section_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+    android:layout_marginVertical="@dimen/section_card_margin_vertical"
+    android:fitsSystemWindows="false"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/section_card_padding"
+            android:text="@string/apps_section_title"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/apps_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="8dp"
+            android:fitsSystemWindows="false"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/apps_section_no_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/apps_section_no_result"
+            android:textAppearance="?attr/textAppearanceBody2" />
+
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -15,7 +15,11 @@ import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 
-object AppsGridDataAdapter : RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>() {
+/**
+ * An adapter that displays apps in a grid.
+ */
+object AppsGridDataAdapter :
+    RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>() {
     override fun getInstance(activity: MainActivity): AppsGridDataAdapter {
         this.activity = activity.also {
             it.findViewById<RecyclerView>(R.id.apps_grid).apply {
@@ -67,7 +71,7 @@ object AppsGridDataAdapter : RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAd
 
             with(view) {
                 findViewById<ImageView>(R.id.app_icon).apply {
-                    contentDescription = "App icon for $appName"
+                    contentDescription = activity.getString(R.string.app_icon_description, appName)
                     setImageDrawable(appIcon)
                 }
 
