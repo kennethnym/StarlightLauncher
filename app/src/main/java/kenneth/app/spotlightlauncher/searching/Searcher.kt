@@ -7,12 +7,21 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import com.github.keelar.exprk.Expressions
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Inject
 import kotlin.Comparator
 import kotlin.concurrent.schedule
 
@@ -27,13 +36,23 @@ enum class SearchType {
     ALL, APPS, FILES,
 }
 
-class Searcher(private val packageManager: PackageManager, private val context: Context) {
-    private val locale = Locale.getDefault()
+@Module
+@InstallIn(ActivityComponent::class)
+object SearcherModule {
+    @Provides
+    fun provideSmartSearcher(expressionParser: Expressions, duckduckgoApiClient: DuckDuckGoApi) =
+        SmartSearcher(expressionParser, duckduckgoApiClient)
+}
+
+class Searcher @Inject constructor(
+    @ActivityContext private val context: Context,
+    private val smartSearcher: SmartSearcher,
+    private val filePreferenceManager: FilePreferenceManager,
+    private val locale: Locale
+) {
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
-    private val filePreferenceManager = FilePreferenceManager.getInstance(context)
-    private val smartSearcher = SmartSearcher()
     private val webRequestCoroutine = CoroutineScope(Dispatchers.IO)
 
     private lateinit var searchTimer: TimerTask
@@ -95,7 +114,8 @@ class Searcher(private val packageManager: PackageManager, private val context: 
      * Reloads the list of apps.
      */
     fun refreshAppList() {
-        appList = packageManager.queryIntentActivities(mainIntent, 0).filter { notSystemApps(it) }
+        appList =
+            context.packageManager.queryIntentActivities(mainIntent, 0).filter { notSystemApps(it) }
     }
 
     private fun notSystemApps(appInfo: ResolveInfo): Boolean =
@@ -117,7 +137,7 @@ class Searcher(private val packageManager: PackageManager, private val context: 
     }
 
     private fun searchApps(searchRegex: Regex) = appList
-        .filter { it.loadLabel(packageManager).contains(searchRegex) }
+        .filter { it.loadLabel(context.packageManager).contains(searchRegex) }
         .sortedWith(appRanker(searchRegex))
 
     private fun searchFiles(searchRegex: Regex): List<DocumentFile>? {
@@ -162,8 +182,8 @@ class Searcher(private val packageManager: PackageManager, private val context: 
      */
     private fun appRanker(searchRegex: Regex): Comparator<ResolveInfo> {
         return Comparator { app1, app2 ->
-            val appName1 = app1.loadLabel(packageManager)
-            val appName2 = app2.loadLabel(packageManager)
+            val appName1 = app1.loadLabel(context.packageManager)
+            val appName2 = app2.loadLabel(context.packageManager)
 
             compareStringsWithRegex(appName1.toString(), appName2.toString(), searchRegex)
         }

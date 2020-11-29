@@ -20,7 +20,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
-import kotlinx.android.synthetic.main.wifi_control.*
 
 class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
     private lateinit var parentView: LinearLayout

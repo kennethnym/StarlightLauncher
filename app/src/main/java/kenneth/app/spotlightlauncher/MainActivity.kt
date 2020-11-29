@@ -26,17 +26,23 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.card.MaterialCardView
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
 import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
-import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var searcher: Searcher
+
+    @Inject
+    lateinit var resultAdapter: ResultAdapter
+
     private lateinit var rootView: ConstraintLayout
-    private lateinit var searcher: Searcher
-    private lateinit var resultAdapter: ResultAdapter
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
     private lateinit var sectionCardList: LinearLayout
@@ -65,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         rootView = findViewById(R.id.root)
         sectionCardList = findViewById(R.id.section_card_list)
         searchProgressBar = findViewById(R.id.search_progress_bar)
+        searchBox = findViewById(R.id.search_box)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             rootView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -73,9 +80,6 @@ class MainActivity : AppCompatActivity() {
             window.setDecorFitsSystemWindows(false)
         }
 
-        resultAdapter = ResultAdapter(this)
-
-        searcher = Searcher(packageManager, applicationContext)
         searchBoxContainerPaddingPx =
             resources.getDimensionPixelSize(R.dimen.search_box_container_padding)
 
@@ -116,27 +120,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachListeners() {
+        // temporary shortcut to access settings
+        // TODO: remove this temporary button
         findViewById<Button>(R.id.temp_settings_button)
             .setOnClickListener { openSettings() }
 
-        searchBox = findViewById<EditText>(R.id.search_box).also {
-            it.setOnFocusChangeListener { _, hasFocus ->
+        findViewById<Button>(R.id.open_settings_button)
+            .setOnClickListener { openSettings() }
+
+        with(searchBox) {
+            setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) searcher.refreshAppList()
                 onSearchBoxFocusChanged(hasFocus)
             }
 
-            it.setOnEditorActionListener { _, actionID, _ ->
+            setOnEditorActionListener { _, actionID, _ ->
                 if (actionID == EditorInfo.IME_ACTION_DONE) {
-                    it.clearFocus()
+                    clearFocus()
                 }
                 false
             }
 
-            it.addTextChangedListener { text -> handleSearchQuery(text) }
+            addTextChangedListener { text -> handleSearchQuery(text) }
         }
-
-        findViewById<Button>(R.id.open_settings_button)
-            .setOnClickListener { openSettings() }
 
         with(rootView) {
             setOnApplyWindowInsetsListener { _, insets ->
@@ -251,7 +257,7 @@ class MainActivity : AppCompatActivity() {
             if (isActive) activeSearchBoxConstraints
             else inactiveSearchBoxConstraints
 
-        constraints.applyTo(root)
+        constraints.applyTo(rootView)
     }
 
     @SuppressLint("InlinedApi")

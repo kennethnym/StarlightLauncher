@@ -1,21 +1,50 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.content.Context
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
+import javax.inject.Inject
+
+/**
+ * A module that provides all adapters needed to display search results.
+ */
+@Module
+@InstallIn(ActivityComponent::class)
+object AdaptersModule {
+    @Provides
+    fun provideAppsGridAdapter(@ActivityContext context: Context) =
+        AppsGridDataAdapter.getInstance(context as MainActivity)
+
+    @Provides
+    fun provideFileListAdapter(@ActivityContext context: Context) =
+        FileListDataAdapter.getInstance(context as MainActivity)
+
+    @Provides
+    fun provideSuggestedResultAdapter(@ActivityContext context: Context) =
+        SuggestedResultAdapter(context as MainActivity)
+
+    @Provides
+    fun provideWebResultAdapter(@ActivityContext context: Context) =
+        WebResultAdapter(context as MainActivity)
+}
 
 /**
  * ResultAdapter is used to adapt search results into views. It combines numerous RecyclerView
  * adapters into one class.
  */
-class ResultAdapter(private val activity: MainActivity) {
-    private lateinit var webResultAdapter: WebResultAdapter
-
-    private val appsGridAdapter = AppsGridDataAdapter.getInstance(activity)
-    private val fileListAdapter = FileListDataAdapter.getInstance(activity)
-    private val suggestedResultAdapter = SuggestedResultAdapter(activity)
-
+class ResultAdapter @Inject constructor(
+    private val webResultAdapter: WebResultAdapter,
+    private val appsGridAdapter: AppsGridDataAdapter,
+    private val fileListAdapter: FileListDataAdapter,
+    private val suggestedResultAdapter: SuggestedResultAdapter
+) {
     fun displayResult(result: Searcher.Result, type: SearchType) {
         when (type) {
             SearchType.ALL -> {
@@ -33,10 +62,6 @@ class ResultAdapter(private val activity: MainActivity) {
     }
 
     fun displayWebResult(result: SmartSearcher.WebResult) {
-        if (!::webResultAdapter.isInitialized) {
-            webResultAdapter = WebResultAdapter(activity)
-        }
-
         webResultAdapter.displayResult(result)
     }
 }

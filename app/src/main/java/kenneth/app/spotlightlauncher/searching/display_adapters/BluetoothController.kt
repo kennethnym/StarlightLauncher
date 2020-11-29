@@ -218,15 +218,13 @@ class BluetoothController(private val activity: MainActivity) : BroadcastReceive
 
 private object NearbyBluetoothDeviceListAdapter :
     RecyclerViewDataAdapter<BluetoothDevice, NearbyBluetoothDeviceListAdapter.ViewHolder>() {
-    override fun getInstance(activity: MainActivity): NearbyBluetoothDeviceListAdapter {
-        this.activity = activity.also {
-            it.findViewById<RecyclerView>(R.id.nearby_bluetooth_device_list).apply {
-                layoutManager = LinearLayoutManager(it)
-                adapter = this@NearbyBluetoothDeviceListAdapter
-            }
-        }
-        return this
-    }
+    override val layoutManager: RecyclerView.LayoutManager
+        get() = LinearLayoutManager(activity)
+
+    override val recyclerView: RecyclerView
+        get() = activity.findViewById(R.id.nearby_bluetooth_device_list)
+
+    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)

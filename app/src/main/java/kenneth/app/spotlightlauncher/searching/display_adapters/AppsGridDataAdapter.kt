@@ -20,16 +20,13 @@ import kenneth.app.spotlightlauncher.R
  */
 object AppsGridDataAdapter :
     RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>() {
-    override fun getInstance(activity: MainActivity): AppsGridDataAdapter {
-        this.activity = activity.also {
-            it.findViewById<RecyclerView>(R.id.apps_grid).apply {
-                layoutManager = GridLayoutManager(it, 5)
-                adapter = this@AppsGridDataAdapter
-            }
-        }
+    override val layoutManager: GridLayoutManager
+        get() = GridLayoutManager(activity, 5)
 
-        return this
-    }
+    override val recyclerView: RecyclerView
+        get() = activity.findViewById(R.id.apps_grid)
+
+    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val gridItem = LayoutInflater.from(parent.context)
@@ -39,7 +36,11 @@ object AppsGridDataAdapter :
     }
 
     override fun displayData(data: List<ResolveInfo>?) {
-        activity.findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
+        super.displayData(data)
+
+        with(activity) {
+            findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
+        }
 
         if (data?.isEmpty() != false) {
             with(activity) {

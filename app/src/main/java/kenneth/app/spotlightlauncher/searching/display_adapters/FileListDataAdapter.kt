@@ -30,17 +30,13 @@ private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")
 
 object FileListDataAdapter :
     RecyclerViewDataAdapter<DocumentFile, FileListDataAdapter.ViewHolder>() {
-    override fun getInstance(activity: MainActivity): FileListDataAdapter {
-        this.activity = activity.also {
-            it.findViewById<RecyclerView>(R.id.files_list)
-                .apply {
-                    layoutManager = LinearLayoutManager(it)
-                    adapter = this@FileListDataAdapter
-                }
-        }
+    override val layoutManager: RecyclerView.LayoutManager
+        get() = LinearLayoutManager(activity)
 
-        return this
-    }
+    override val recyclerView: RecyclerView
+        get() = activity.findViewById(R.id.files_list)
+
+    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
@@ -50,6 +46,8 @@ object FileListDataAdapter :
     }
 
     override fun displayData(data: List<DocumentFile>?) {
+        super.displayData(data)
+
         val fileList = data
 
         with(activity) {

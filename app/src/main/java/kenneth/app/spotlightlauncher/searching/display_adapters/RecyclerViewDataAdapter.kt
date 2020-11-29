@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.spotlightlauncher.MainActivity
 
@@ -17,6 +18,21 @@ import kenneth.app.spotlightlauncher.MainActivity
 abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolder<T>> :
     RecyclerView.Adapter<VH>() {
     /**
+     * The LayoutManager that RecyclerView should use.
+     */
+    abstract val layoutManager: RecyclerView.LayoutManager
+
+    /**
+     * The RecyclerView that this adapter should bind to.
+     */
+    protected abstract val recyclerView: RecyclerView
+
+    /**
+     * Determines if the adapter is bind to a recyclerview already.
+     */
+    private var isAdapterBind = false
+
+    /**
      * The data to be displayed by this adapter. Exposed to allow access to the data this adapter
      * is holding.
      */
@@ -28,15 +44,35 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
     protected lateinit var activity: MainActivity
 
     /**
-     * Gets an instance of this adapter, and also binds this adapter to a particular
-     * RecyclerView.
+     * Gets an instance of this adapter
      */
     abstract fun getInstance(activity: MainActivity): RecyclerViewDataAdapter<T, VH>
 
     /**
      * Displays the given data in the RecyclerView this adapter is bound to.
+     * Automatically binds this adapter to
      */
-    abstract fun displayData(data: List<T>?)
+    @CallSuper
+    open fun displayData(data: List<T>?) {
+        bindAdapterToRecyclerView()
+    }
+
+    fun bindAdapterToRecyclerView() {
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = this
+        isAdapterBind = true
+    }
+
+    /**
+     * Unbinds an adapter from the recycler view. Must be called before removing the recycler view.
+     */
+    fun unbindAdapterFromRecyclerView() {
+        recyclerView.apply {
+            layoutManager = null
+            adapter = null
+        }
+        isAdapterBind = false
+    }
 
     /**
      * This is responsible for holding views for this adapter. View logic of individual

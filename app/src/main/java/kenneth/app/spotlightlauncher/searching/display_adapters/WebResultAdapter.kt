@@ -24,9 +24,10 @@ import kenneth.app.spotlightlauncher.searching.SmartSearcher
  */
 class WebResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.WebResult>(activity) {
-    private lateinit var topicListAdapter: RelatedTopicListDataAdapter
     private lateinit var webResult: SmartSearcher.WebResult
     private lateinit var relatedTopicsButton: Button
+
+    private val topicListAdapter = RelatedTopicListDataAdapter.getInstance(activity)
 
     private var webResultCard: MaterialCardView? = null
     private var showRelatedTopics = false
@@ -145,9 +146,7 @@ class WebResultAdapter(activity: MainActivity) :
                 )
 
             relatedTopicsButton.text = activity.getString(R.string.hide_topics_label)
-            topicListAdapter = RelatedTopicListDataAdapter.getInstance(activity).also {
-                it.displayData(webResult.relatedTopics)
-            }
+            topicListAdapter.displayData(webResult.relatedTopics)
         } else {
             relatedTopicsButton.text = activity.getString(R.string.related_topics_label)
             topicListAdapter.hideList()
@@ -157,16 +156,13 @@ class WebResultAdapter(activity: MainActivity) :
 
 private object RelatedTopicListDataAdapter :
     RecyclerViewDataAdapter<SmartSearcher.WebResult.Topic, RelatedTopicListViewHolder>() {
-    override fun getInstance(activity: MainActivity): RelatedTopicListDataAdapter {
-        this.activity = activity.also {
-            it.findViewById<RecyclerView>(R.id.related_topics_list).apply {
-                layoutManager = LinearLayoutManager(activity)
-                adapter = this@RelatedTopicListDataAdapter
-            }
-        }
+    override val layoutManager: RecyclerView.LayoutManager
+        get() = LinearLayoutManager(activity)
 
-        return this
-    }
+    override val recyclerView: RecyclerView
+        get() = activity.findViewById(R.id.related_topics_list)
+
+    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelatedTopicListViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
@@ -177,6 +173,8 @@ private object RelatedTopicListDataAdapter :
     }
 
     override fun displayData(data: List<SmartSearcher.WebResult.Topic>?) {
+        super.displayData(data)
+
         val topics = data
 
         if (topics != null) {
@@ -188,6 +186,8 @@ private object RelatedTopicListDataAdapter :
     fun hideList() {
         val webResultCardLayout =
             activity.findViewById<LinearLayout>(R.id.web_result_section_card_layout)
+
+        unbindAdapterFromRecyclerView()
 
         for (i in 0..2) {
             webResultCardLayout?.removeViewAt(webResultCardLayout.childCount - 1)

@@ -6,6 +6,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.StringReader
+import javax.inject.Inject
 
 val apiUrlString = "https://api.duckduckgo.com/"
 val apiUrl = HttpUrl.parse(apiUrlString)!!
@@ -20,7 +21,9 @@ fun getDuckDuckGoRedirectUrlFromQuery(query: String): Uri = Uri.parse(
         .toString()
 )
 
-class DuckDuckGoApi(private val httpClient: OkHttpClient) {
+class DuckDuckGoApi @Inject constructor(
+    private val httpClient: OkHttpClient,
+) {
     fun newCall(query: String): Call {
         val url = apiUrl.newBuilder()
             .addQueryParameter("q", query)

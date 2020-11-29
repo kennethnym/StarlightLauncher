@@ -1,13 +1,15 @@
 package kenneth.app.spotlightlauncher.searching
 
-import android.util.Log
-import com.beust.klaxon.Json
 import com.github.keelar.exprk.Expressions
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import javax.inject.Inject
 
 enum class SuggestedResultType {
     NONE, MATH, WIFI, BLUETOOTH
@@ -15,14 +17,23 @@ enum class SuggestedResultType {
 
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
 
+@Module
+@InstallIn(ActivityComponent::class)
+object SmartSearcherModule {
+    @Provides
+    fun provideExpressionParser() = Expressions()
+
+    @Provides
+    fun provideDuckDuckGoApiClient(httpClient: OkHttpClient) = DuckDuckGoApi(httpClient)
+}
+
 /**
  * SmartSearcher produces suggested results to the user.
  */
-class SmartSearcher {
-    private val expressions = Expressions()
-    private val http = OkHttpClient()
-    private val duckduckgoApi = DuckDuckGoApi(http)
-
+class SmartSearcher @Inject constructor(
+    private val expressions: Expressions,
+    private val duckduckgoApi: DuckDuckGoApi
+) {
     private var activeApiCall: DuckDuckGoApi.Call? = null
     private var webResultListener: WebResultCallback? = null
 
