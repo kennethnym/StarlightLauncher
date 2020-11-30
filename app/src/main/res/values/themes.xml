@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LightLauncherTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+        <item name="backgroundColor">#80FFFFFF</item>
+        <item name="colorOnBackground">#80000000</item>
+        <item name="cardCornerRadius">10dp</item>
+
+        <item name="blurAmount">20</item>
+    </style>
+
+</resources>

@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowInsetsController
 import android.view.animation.PathInterpolator
@@ -22,11 +23,12 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
+import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderScriptBlur
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
@@ -47,6 +49,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
     private lateinit var sectionCardList: LinearLayout
     private lateinit var searchProgressBar: ProgressBar
+    private lateinit var searchBox: EditText
+
+    private lateinit var searchBoxBlurBackground: BlurView
 
     private var isSearchScreenActive = false
     private var isDarkModeActive = false
@@ -60,18 +65,18 @@ class MainActivity : AppCompatActivity() {
      */
     private var requestedPermission: String = ""
 
-    private lateinit var searchBox: EditText
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // enable edge-to-edge app experience
 
         rootView = findViewById(R.id.root)
         sectionCardList = findViewById(R.id.section_card_list)
         searchProgressBar = findViewById(R.id.search_progress_bar)
         searchBox = findViewById(R.id.search_box)
+        searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
+
+        // enable edge-to-edge app experience
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             rootView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -92,6 +97,19 @@ class MainActivity : AppCompatActivity() {
         isDarkModeActive =
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) resources.configuration.isNightModeActive
             else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        // blur view
+
+        val blurAmount = TypedValue()
+
+        theme.resolveAttribute(R.attr.blurAmount, blurAmount, true)
+
+        findViewById<BlurView>(R.id.search_box_blur_background)
+            .setupWith(findViewById(R.id.search_box_container))
+            .setFrameClearDrawable(window.decorView.background)
+            .setBlurAlgorithm(RenderScriptBlur(this))
+            .setBlurRadius(blurAmount.data.toFloat())
+            .setBlurAutoUpdate(true)
 
         attachListeners()
     }
@@ -122,8 +140,8 @@ class MainActivity : AppCompatActivity() {
     private fun attachListeners() {
         // temporary shortcut to access settings
         // TODO: remove this temporary button
-        findViewById<Button>(R.id.temp_settings_button)
-            .setOnClickListener { openSettings() }
+//        findViewById<Button>(R.id.temp_settings_button)
+//            .setOnClickListener { openSettings() }
 
         findViewById<Button>(R.id.open_settings_button)
             .setOnClickListener { openSettings() }
@@ -213,16 +231,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             findViewById<LinearLayout>(R.id.search_box_container).apply {
-                alpha = 1.0f
                 updatePadding(
                     top = searchBoxContainerPaddingPx + statusBarHeight,
                 )
             }
-
-            findViewById<ConstraintLayout>(R.id.root)
-                .setBackgroundColor(
-                    ColorUtils.setAlphaComponent(android.R.attr.colorBackground, 128)
-                )
         } else {
             inactiveSearchBoxConstraints.clone(rootView)
             activeSearchBoxConstraints.clone(rootView)
@@ -236,14 +248,8 @@ class MainActivity : AppCompatActivity() {
             disableLightStatusBar()
 
             findViewById<LinearLayout>(R.id.search_box_container).apply {
-                alpha = 0.3f
                 updatePadding(top = 0)
             }
-
-            findViewById<ConstraintLayout>(R.id.root)
-                .setBackgroundColor(
-                    ColorUtils.setAlphaComponent(android.R.attr.colorBackground, 0)
-                )
         }
 
         val transition = ChangeBounds().apply {

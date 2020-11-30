@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DarkLauncherTheme" parent="LightLauncherTheme">
+        <item name="backgroundColor">#000000</item>
+        <item name="colorOnBackground">#FFFFFF</item>
+    </style>
+
+</resources>

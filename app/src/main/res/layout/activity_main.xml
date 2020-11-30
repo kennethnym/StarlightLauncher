@@ -15,29 +15,36 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/search_box_container"
+        <eightbitlab.com.blurview.BlurView
+            android:id="@+id/search_box_blur_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:alpha="0.3"
-            android:background="?android:attr/colorBackground"
-            android:elevation="36dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            app:blurOverlayColor="?backgroundColor">
 
-            <EditText
-                android:id="@+id/search_box"
+            <LinearLayout
+                android:id="@+id/search_box_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/search_box_container_padding"
-                android:background="@null"
-                android:hint="@string/search_box_label"
-                android:inputType="text"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="36sp"
-                tools:ignore="Autofill" />
+                android:gravity="center_vertical"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/search_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/search_box_container_padding"
+                    android:background="@null"
+                    android:hint="@string/search_box_label"
+                    android:inputType="text"
+                    android:textAlignment="center"
+                    android:textColor="?colorOnBackground"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:ignore="Autofill" />
+
+            </LinearLayout>
+
+        </eightbitlab.com.blurview.BlurView>
 
         <ProgressBar
             android:id="@+id/search_progress_bar"
@@ -46,12 +53,6 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="gone" />
-
-        <Button
-            android:id="@+id/temp_settings_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="settings" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/result_scroll_view"
