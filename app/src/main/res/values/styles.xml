@@ -24,4 +24,18 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="SearchResultSectionHeader" parent="TextAppearance.AppCompat">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">?colorOnBackground</item>
+    </style>
+
+    <style name="TextButton">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textColor">?colorOnBackground</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

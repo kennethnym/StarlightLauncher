@@ -8,7 +8,9 @@ import android.view.WindowInsetsAnimation
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
+import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 
 fun Int.toPx(resources: Resources): Int {
@@ -17,18 +19,19 @@ fun Int.toPx(resources: Resources): Int {
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-class KeyboardAnimationCallback(private val rootView: View) :
+class KeyboardAnimationCallback(activity: MainActivity) :
     WindowInsetsAnimation.Callback(DISPATCH_MODE_STOP) {
     private var shouldAnimateKeyboard = false
-    private var paddingBottom = rootView.paddingBottom
+    private val pageScrollView = activity.findViewById<NestedScrollView>(R.id.page_scroll_view)
+    private var paddingBottom = pageScrollView.paddingBottom
 
     init {
-        rootView.findViewById<TextView>(R.id.search_box)
+        activity.findViewById<TextView>(R.id.search_box)
             .addTextChangedListener { text ->
                 shouldAnimateKeyboard = text?.isNotEmpty() ?: false
-                rootView.updatePadding(
+                pageScrollView.updatePadding(
                     bottom =
-                    if (shouldAnimateKeyboard) rootView.rootWindowInsets
+                    if (shouldAnimateKeyboard) pageScrollView.rootWindowInsets
                         .getInsets(WindowInsets.Type.ime())
                         .bottom
                     else 0
@@ -41,7 +44,7 @@ class KeyboardAnimationCallback(private val rootView: View) :
         animations: MutableList<WindowInsetsAnimation>
     ): WindowInsets {
         if (shouldAnimateKeyboard) {
-            rootView.updatePadding(bottom = paddingBottom + insets.getInsets(WindowInsets.Type.ime()).bottom)
+            pageScrollView.updatePadding(bottom = paddingBottom + insets.getInsets(WindowInsets.Type.ime()).bottom)
         }
         return insets
     }

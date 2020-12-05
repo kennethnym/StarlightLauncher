@@ -1,39 +1,43 @@
 package kenneth.app.spotlightlauncher
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.WallpaperManager
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
-import android.transition.ChangeBounds
-import android.transition.TransitionManager
-import android.util.TypedValue
 import android.view.View
+import android.view.ViewTreeObserver
+import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
-import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
-import eightbitlab.com.blurview.BlurView
-import eightbitlab.com.blurview.RenderScriptBlur
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
+import kenneth.app.spotlightlauncher.utils.BlurHandler
 import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
+import kenneth.app.spotlightlauncher.utils.calculateBitmapBrightness
+import kenneth.app.spotlightlauncher.utils.viewToBitmap
+import kenneth.app.spotlightlauncher.views.BlurView
+import kenneth.app.spotlightlauncher.views.DateTimeView
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,14 +48,26 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var resultAdapter: ResultAdapter
 
+    @Inject
+    lateinit var blurHandler: BlurHandler
+
+    @Inject
+    lateinit var wallpaperManager: WallpaperManager
+
+    @Inject
+    lateinit var appState: AppState
+
     private lateinit var rootView: ConstraintLayout
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
     private lateinit var sectionCardList: LinearLayout
-    private lateinit var searchProgressBar: ProgressBar
     private lateinit var searchBox: EditText
-
+    private lateinit var searchBoxContainer: LinearLayout
     private lateinit var searchBoxBlurBackground: BlurView
+    private lateinit var wallpaperImage: ImageView
+    private lateinit var dateTimeView: DateTimeView
+
+    private lateinit var searchBoxAnimationInterpolator: PathInterpolator
 
     private var isSearchScreenActive = false
     private var isDarkModeActive = false
@@ -67,14 +83,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        updateLauncherTheme()
+        setTheme(appState.themeStyleId)
         setContentView(R.layout.activity_main)
 
+        appState.apply {
+            screenWidth = resources.displayMetrics.widthPixels
+            screenHeight = resources.displayMetrics.heightPixels
+        }
 
         rootView = findViewById(R.id.root)
         sectionCardList = findViewById(R.id.section_card_list)
-        searchProgressBar = findViewById(R.id.search_progress_bar)
         searchBox = findViewById(R.id.search_box)
+        searchBoxContainer = findViewById(R.id.search_box_container)
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
+        wallpaperImage = findViewById(R.id.wallpaper_image)
+        dateTimeView = findViewById<DateTimeView>(R.id.date_time_view)
 
         // enable edge-to-edge app experience
 
@@ -98,20 +123,8 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) resources.configuration.isNightModeActive
             else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        // blur view
-
-        val blurAmount = TypedValue()
-
-        theme.resolveAttribute(R.attr.blurAmount, blurAmount, true)
-
-        findViewById<BlurView>(R.id.search_box_blur_background)
-            .setupWith(findViewById(R.id.search_box_container))
-            .setFrameClearDrawable(window.decorView.background)
-            .setBlurAlgorithm(RenderScriptBlur(this))
-            .setBlurRadius(blurAmount.data.toFloat())
-            .setBlurAutoUpdate(true)
-
         attachListeners()
+        askForReadExternalStoragePermission()
     }
 
     override fun onBackPressed() {
@@ -137,12 +150,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun attachListeners() {
-        // temporary shortcut to access settings
-        // TODO: remove this temporary button
-//        findViewById<Button>(R.id.temp_settings_button)
-//            .setOnClickListener { openSettings() }
+    override fun onStop() {
+        cleanup()
+        super.onStop()
+    }
 
+    override fun onPause() {
+        cleanup()
+        super.onPause()
+    }
+
+    private fun cleanup() {
+        resultAdapter.cleanup()
+    }
+
+    /**
+     * a temporary function to ask for READ_EXTERNAL_STORAGE permission
+     */
+    private fun askForReadExternalStoragePermission() {
+        // TODO: a temporary function to ask for READ_EXTERNAL_STORAGE permission
+        // TODO: in prod this should be done during setup
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestedPermission = Manifest.permission.READ_EXTERNAL_STORAGE
+            requestPermissionLauncher.launch(requestedPermission)
+        }
+    }
+
+    private fun attachListeners() {
         findViewById<Button>(R.id.open_settings_button)
             .setOnClickListener { openSettings() }
 
@@ -164,13 +201,19 @@ class MainActivity : AppCompatActivity() {
 
         with(rootView) {
             setOnApplyWindowInsetsListener { _, insets ->
-                statusBarHeight = insets.systemWindowInsetTop
+                statusBarHeight =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        insets
+                            .getInsets(WindowInsets.Type.systemBars())
+                            .top
+                    else
+                        insets.systemWindowInsetTop
                 insets
             }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            keyboardAnimationCallback = KeyboardAnimationCallback(rootView).also {
+            keyboardAnimationCallback = KeyboardAnimationCallback(this).also {
                 rootView.setWindowInsetsAnimationCallback(it)
             }
         }
@@ -184,16 +227,60 @@ class MainActivity : AppCompatActivity() {
 
             setWebResultListener { result ->
                 runOnUiThread {
-                    searchProgressBar.visibility = View.GONE
                     resultAdapter.displayWebResult(result)
                 }
             }
         }
+
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    updateWallpaper()
+                    startBlurs()
+                }
+            }
+        )
     }
 
     private fun openSettings() {
         val settingsIntent = Intent(this, SettingsActivity::class.java)
         startActivity(settingsIntent)
+    }
+
+    /**
+     * Update the current launcher theme based on the brightness of the current wallpaper.
+     * If the current wallpaper is bright, LightLauncherTheme is used.
+     * Otherwise, DarkLauncherTheme is used.
+     */
+    private fun updateLauncherTheme() {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val wallpaperBitmap = wallpaperManager.fastDrawable.toBitmap()
+            val wallpaperBrightness = calculateBitmapBrightness(wallpaperBitmap)
+
+            appState.theme =
+                if (wallpaperBrightness >= 128) AppState.Theme.LIGHT
+                else AppState.Theme.DARK
+
+            if (appState.isInitialStart) {
+                appState.isInitialStart = false
+            } else {
+                // restart activity after changing theme
+                restartActivity()
+            }
+        }
+    }
+
+    /**
+     * Restarts the current activity.
+     * Credit to [this gist](https://gist.github.com/alphamu/f2469c28e17b24114fe5)
+     */
+    private fun restartActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     private fun handlePermissionResult(isGranted: Boolean) {
@@ -211,59 +298,44 @@ class MainActivity : AppCompatActivity() {
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
         if (searchBox.text.isBlank()) {
-            toggleSearchBoxAnimation(hasFocus)
+            toggleSearchBoxAnimation(isActive = hasFocus)
         }
     }
 
     private fun toggleSearchBoxAnimation(isActive: Boolean) {
-        val inactiveSearchBoxConstraints = ConstraintSet()
-        val activeSearchBoxConstraints = ConstraintSet()
+        if (!::searchBoxAnimationInterpolator.isInitialized) {
+            searchBoxAnimationInterpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
+        }
 
-        isSearchScreenActive = isActive
+        val searchBoxAnimation = ObjectAnimator.ofFloat(
+            dateTimeView,
+            "layoutWeight",
+            if (isActive) 0f else 1f,
+        ).apply {
+            interpolator = searchBoxAnimationInterpolator
+            duration = 500
+        }
 
-        if (isActive) {
-            inactiveSearchBoxConstraints.clone(rootView)
-            activeSearchBoxConstraints.clone(rootView)
-            activeSearchBoxConstraints.clear(R.id.page, ConstraintSet.BOTTOM)
+        val searchBoxPaddingAnimation = ValueAnimator.ofInt(
+            if (isActive) 0 else statusBarHeight,
+            if (isActive) statusBarHeight else 0,
+        ).apply {
+            interpolator = searchBoxAnimationInterpolator
+            duration = 500
 
-            if (!isDarkModeActive) {
-                enableLightStatusBar()
-            }
-
-            findViewById<LinearLayout>(R.id.search_box_container).apply {
-                updatePadding(
-                    top = searchBoxContainerPaddingPx + statusBarHeight,
+            addUpdateListener { updatedAnimation ->
+                searchBoxContainer.updatePadding(
+                    top = updatedAnimation.animatedValue as Int
                 )
             }
-        } else {
-            inactiveSearchBoxConstraints.clone(rootView)
-            activeSearchBoxConstraints.clone(rootView)
-            inactiveSearchBoxConstraints.connect(
-                R.id.page,
-                ConstraintSet.BOTTOM,
-                R.id.root,
-                ConstraintSet.BOTTOM
-            )
-
-            disableLightStatusBar()
-
-            findViewById<LinearLayout>(R.id.search_box_container).apply {
-                updatePadding(top = 0)
-            }
         }
 
-        val transition = ChangeBounds().apply {
-            duration = 500L
-            interpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
+        AnimatorSet().apply {
+            play(searchBoxAnimation)
+                .with(searchBoxPaddingAnimation)
+
+            start()
         }
-
-        TransitionManager.beginDelayedTransition(rootView, transition)
-
-        val constraints =
-            if (isActive) activeSearchBoxConstraints
-            else inactiveSearchBoxConstraints
-
-        constraints.applyTo(rootView)
     }
 
     @SuppressLint("InlinedApi")
@@ -298,23 +370,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSearchQuery(query: Editable?) {
         if (query == null || query.isBlank()) {
-            searchProgressBar.visibility = View.GONE
             searcher.cancelPendingSearch()
-            hideAllCards()
+            resultAdapter.hideResult()
         } else {
-            searchProgressBar.visibility = View.VISIBLE
             searcher.requestSearch(query.toString())
         }
     }
 
-    private fun hideAllCards() {
-        findViewById<MaterialCardView>(R.id.apps_section_card)
-            .visibility = View.GONE
-        findViewById<MaterialCardView>(R.id.files_section_card)
-            .visibility = View.GONE
-        findViewById<MaterialCardView>(R.id.suggested_section_card)
-            .visibility = View.GONE
+    /**
+     * Gets the current wallpaper and renders it to wallpaperImage
+     */
+    private fun updateWallpaper() {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val wallpaper = wallpaperManager.fastDrawable
+            wallpaperImage.setImageDrawable(wallpaper)
+            blurHandler.changeWallpaper(viewToBitmap(wallpaperImage))
+        }
+    }
 
-        sectionCardList.removeView(findViewById(R.id.web_result_section_card))
+    private fun startBlurs() {
+        searchBoxBlurBackground.startBlur()
     }
 }

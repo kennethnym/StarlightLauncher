@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/files_section_card"
+<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:blur="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/files_section_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
     android:layout_marginVertical="@dimen/section_card_margin_vertical"
-    android:fitsSystemWindows="false"
-    android:visibility="gone">
+    blur:blurAmount="?blurAmount">
 
     <LinearLayout
+        android:id="@+id/files_section_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/card_background"
+        android:fitsSystemWindows="false"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/section_card_padding"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/section_card_padding"
             android:text="@string/files_section_title"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:textAppearance="@style/SearchResultSectionHeader" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/files_list"
@@ -30,16 +39,19 @@
 
         <TextView
             android:id="@+id/files_section_result_status"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="8dp"
             android:text="@string/apps_section_no_result"
-            android:textAppearance="?attr/textAppearanceBody2" />
+            android:textAlignment="center"
+            android:textColor="?colorOnBackground" />
 
-        <Button
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
+
+        <kenneth.app.spotlightlauncher.views.TextButton
             android:id="@+id/open_settings_button"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -48,4 +60,4 @@
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</kenneth.app.spotlightlauncher.views.BlurView>

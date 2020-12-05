@@ -1,81 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/web_result_section_card"
+<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/web_result_section_card_blur_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
     android:layout_marginVertical="@dimen/section_card_margin_vertical">
 
     <LinearLayout
-        android:id="@+id/web_result_section_card_layout"
+        android:id="@+id/web_result_section_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/card_background"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingTop="@dimen/section_card_padding">
+        android:padding="@dimen/section_card_padding"
+        android:visibility="gone">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/web_result_label"
-                android:textAppearance="?attr/textAppearanceOverline" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.5"
-                android:text="@string/powered_by_ddg_label"
-                android:textAppearance="?attr/textAppearanceOverline" />
-
-        </LinearLayout>
+            android:alpha="0.4"
+            android:text="@string/web_result_label"
+            android:textColor="?colorOnBackground"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/web_result_title"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:textAppearance="?attr/textAppearanceHeadline5" />
+            android:textColor="?colorOnBackground"
+            android:textSize="24sp" />
 
         <Space
             android:layout_width="0dp"
-            android:layout_height="8dp" />
+            android:layout_height="16dp" />
 
         <TextView
             android:id="@+id/web_result_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:alpha="0.8"
             android:ellipsize="end"
             android:maxLines="5"
-            android:textAppearance="?attr/textAppearanceBody1" />
+            android:textAlignment="center"
+            android:textColor="?colorOnBackground"
+            android:textSize="16sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <Button
+            <kenneth.app.spotlightlauncher.views.TextButton
                 android:id="@+id/open_in_browser_button"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginEnd="24dp"
                 android:text="@string/open_in_browser_label" />
 
-            <Button
+            <kenneth.app.spotlightlauncher.views.TextButton
                 android:id="@+id/related_topics_button"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/related_topics_label" />
@@ -84,4 +76,4 @@
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</kenneth.app.spotlightlauncher.views.BlurView>

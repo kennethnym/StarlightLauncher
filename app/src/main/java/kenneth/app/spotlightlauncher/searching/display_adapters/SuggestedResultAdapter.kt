@@ -9,34 +9,59 @@ import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
+import kenneth.app.spotlightlauncher.views.BlurView
 
 class SuggestedResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.SuggestedResult>(activity) {
-    private lateinit var contentParent: LinearLayout
+    /**
+     * The entire card view that displays suggested result
+     */
+    private lateinit var cardContainer: LinearLayout
+
+    private lateinit var cardBlurView: BlurView
+
+    /**
+     * The view that contains the suggested result content
+     */
+    private lateinit var suggestedContentContainer: LinearLayout
 
     private val wifiController = WifiController(activity)
     private val bluetoothController = BluetoothController(activity)
 
     override fun displayResult(result: SmartSearcher.SuggestedResult) {
-        val card = activity.findViewById<MaterialCardView>(R.id.suggested_section_card)
+        with(activity) {
+            cardContainer = findViewById(R.id.suggested_section_card)
 
-        contentParent = activity.findViewById<LinearLayout>(R.id.suggested_content)
-            .also { it.removeAllViews() }
+            cardBlurView = findViewById<BlurView>(R.id.suggested_section_card_blur_background)
+                .also { it.startBlur() }
+
+            suggestedContentContainer = findViewById<LinearLayout>(R.id.suggested_content)
+                .also { it.removeAllViews() }
+        }
 
         if (result.type != SuggestedResultType.NONE) {
-            card.visibility = View.VISIBLE
+            cardContainer.visibility = View.VISIBLE
 
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)
-                SuggestedResultType.WIFI -> wifiController.displayWifiControl(contentParent)
+                SuggestedResultType.WIFI -> wifiController.displayWifiControl(
+                    suggestedContentContainer
+                )
                 SuggestedResultType.BLUETOOTH -> bluetoothController.displayBluetoothControl(
-                    contentParent
+                    suggestedContentContainer
                 )
                 else -> {
                 }
             }
         } else {
-            card?.visibility = View.GONE
+            hideSuggestedResult()
+        }
+    }
+
+    fun hideSuggestedResult() {
+        if (::cardContainer.isInitialized && ::cardBlurView.isInitialized) {
+            cardBlurView.pauseBlur()
+            cardContainer.visibility = View.GONE
         }
     }
 
@@ -47,7 +72,7 @@ class SuggestedResultAdapter(activity: MainActivity) :
 
         if (!inflated) {
             LayoutInflater.from(activity)
-                .inflate(R.layout.math_result_layout, contentParent)
+                .inflate(R.layout.math_result_layout, suggestedContentContainer)
                 .also {
                     it.findViewById<TextView>(R.id.equation_text).text = result.query
                     it.findViewById<TextView>(R.id.equation_result_text).text =

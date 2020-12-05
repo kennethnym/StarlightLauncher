@@ -13,23 +13,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.getDuckDuckGoRedirectUrlFromQuery
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
+import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
+import kenneth.app.spotlightlauncher.views.BlurView
 
 /**
  * An adapter that displays web result to the user.
  */
 class WebResultAdapter(activity: MainActivity) :
     SectionResultAdapter<SmartSearcher.WebResult>(activity) {
+    private lateinit var webResultCard: LinearLayout
+    private lateinit var cardBlurBackground: BlurView
+
     private lateinit var webResult: SmartSearcher.WebResult
     private lateinit var relatedTopicsButton: Button
 
     private val topicListAdapter = RelatedTopicListDataAdapter.getInstance(activity)
 
-    private var webResultCard: MaterialCardView? = null
     private var showRelatedTopics = false
 
     private val layoutTransitionListener = object : LayoutTransition.TransitionListener {
@@ -62,21 +65,17 @@ class WebResultAdapter(activity: MainActivity) :
         webResult = result
         val cardList = activity.findViewById<LinearLayout>(R.id.section_card_list)
 
-        webResultCard = cardList.findViewById(R.id.web_result_section_card)
-
-        if (webResult.title.isNotBlank()) {
-            if (webResultCard == null) {
-                webResultCard = LayoutInflater.from(activity)
-                    .inflate(R.layout.web_result_card, cardList, false).also {
-                        cardList.addView(it, cardList.childCount - 1)
-                        it.findViewById<LinearLayout>(R.id.web_result_section_card_layout)
-                            .layoutTransition = LayoutTransition().also { transition ->
-                            transition.addTransitionListener(layoutTransitionListener)
-                        }
-                    } as MaterialCardView
+        webResultCard =
+            cardList.findViewById<LinearLayout>(R.id.web_result_section_card).apply {
+                visibility = View.VISIBLE
             }
 
-            with(webResultCard!!) {
+        cardBlurBackground =
+            cardList.findViewById<BlurView>(R.id.web_result_section_card_blur_background)
+                .also { it.startBlur() }
+
+        if (webResult.title.isNotBlank()) {
+            with(webResultCard) {
                 findViewById<TextView>(R.id.web_result_title).text = webResult.title
 
                 findViewById<TextView>(R.id.web_result_content).apply {
@@ -118,9 +117,15 @@ class WebResultAdapter(activity: MainActivity) :
                 }
             }
         } else {
-            cardList.removeView(webResultCard)
+            hideWebResult()
             showRelatedTopics = false
-            webResultCard = null
+        }
+    }
+
+    fun hideWebResult() {
+        if (::webResultCard.isInitialized && ::cardBlurBackground.isInitialized) {
+            cardBlurBackground.pauseBlur()
+            webResultCard.visibility = View.GONE
         }
     }
 
@@ -136,13 +141,11 @@ class WebResultAdapter(activity: MainActivity) :
     private fun toggleRelatedTopics() {
         showRelatedTopics = !showRelatedTopics
 
-        val cardLayout = activity.findViewById<LinearLayout>(R.id.web_result_section_card_layout)
-
         if (showRelatedTopics) {
             LayoutInflater.from(activity)
                 .inflate(
                     R.layout.web_result_related_topics_section,
-                    cardLayout,
+                    webResultCard,
                 )
 
             relatedTopicsButton.text = activity.getString(R.string.hide_topics_label)
@@ -185,7 +188,7 @@ private object RelatedTopicListDataAdapter :
 
     fun hideList() {
         val webResultCardLayout =
-            activity.findViewById<LinearLayout>(R.id.web_result_section_card_layout)
+            activity.findViewById<LinearLayout>(R.id.web_result_section_card)
 
         unbindAdapterFromRecyclerView()
 

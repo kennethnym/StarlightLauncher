@@ -1,12 +1,16 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.content.Context
+import android.view.View
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.ListUpdateCallback
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.MainActivity
+import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
@@ -40,12 +44,27 @@ object AdaptersModule {
  * adapters into one class.
  */
 class ResultAdapter @Inject constructor(
+    @ActivityContext private val context: Context,
     private val webResultAdapter: WebResultAdapter,
     private val appsGridAdapter: AppsGridDataAdapter,
     private val fileListAdapter: FileListDataAdapter,
     private val suggestedResultAdapter: SuggestedResultAdapter
 ) {
+    private lateinit var widgetListContainer: LinearLayout
+    private lateinit var sectionCardList: LinearLayout
+
+    private val activity = context as MainActivity
+
     fun displayResult(result: Searcher.Result, type: SearchType) {
+        with(activity) {
+            widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
+                visibility = View.GONE
+            }
+            sectionCardList = findViewById<LinearLayout>(R.id.section_card_list).apply {
+                visibility = View.VISIBLE
+            }
+        }
+
         when (type) {
             SearchType.ALL -> {
                 appsGridAdapter.displayData(result.apps)
@@ -61,7 +80,30 @@ class ResultAdapter @Inject constructor(
         }
     }
 
+    fun hideResult() {
+        appsGridAdapter.hideAppsGrid()
+        fileListAdapter.hideFileList()
+        webResultAdapter.hideWebResult()
+        suggestedResultAdapter.hideSuggestedResult()
+
+        with(activity) {
+            widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
+                visibility = View.VISIBLE
+            }
+            sectionCardList = findViewById<LinearLayout>(R.id.section_card_list).apply {
+                visibility = View.GONE
+            }
+        }
+    }
+
     fun displayWebResult(result: SmartSearcher.WebResult) {
         webResultAdapter.displayResult(result)
+    }
+
+    /**
+     * Perform cleanup work on adapters
+     */
+    fun cleanup() {
+
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="search_box_container_padding">24dp</dimen>
+    <dimen name="search_box_text_size">24sp</dimen>
 
     <dimen name="section_card_padding">16dp</dimen>
     <dimen name="section_card_margin_horizontal">8dp</dimen>

@@ -17,10 +17,12 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.loader.content.CursorLoader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.toPx
+import kenneth.app.spotlightlauncher.views.BlurView
+import kenneth.app.spotlightlauncher.views.TextButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +32,13 @@ private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")
 
 object FileListDataAdapter :
     RecyclerViewDataAdapter<DocumentFile, FileListDataAdapter.ViewHolder>() {
+    /**
+     * The card view that is containing this RecyclerView
+     */
+    private lateinit var cardContainer: LinearLayout
+
+    private lateinit var cardBlurBackground: BlurView
+
     override val layoutManager: RecyclerView.LayoutManager
         get() = LinearLayoutManager(activity)
 
@@ -51,14 +60,19 @@ object FileListDataAdapter :
         val fileList = data
 
         with(activity) {
-            findViewById<MaterialCardView>(R.id.files_section_card).visibility = View.VISIBLE
+            cardContainer = findViewById<LinearLayout>(R.id.files_section_card).apply {
+                visibility = View.VISIBLE
+            }
+
+            cardBlurBackground = findViewById<BlurView>(R.id.files_section_card_blur_background)
+                .also { it.startBlur() }
 
             val fileListRecyclerView = findViewById<RecyclerView>(R.id.files_list)
 
             when {
                 data == null -> {
                     fileListRecyclerView.visibility = View.GONE
-                    findViewById<Button>(R.id.open_settings_button).visibility = View.VISIBLE
+                    findViewById<TextButton>(R.id.open_settings_button).visibility = View.VISIBLE
                     findViewById<TextView>(R.id.files_section_result_status).apply {
                         visibility = View.VISIBLE
                         text = getString(R.string.files_section_include_path_instruction)
@@ -82,6 +96,13 @@ object FileListDataAdapter :
                     notifyDataSetChanged()
                 }
             }
+        }
+    }
+
+    fun hideFileList() {
+        if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
+            cardBlurBackground.pauseBlur()
+            cardContainer.visibility = View.GONE
         }
     }
 

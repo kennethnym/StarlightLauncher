@@ -1,6 +1,8 @@
 <resources>
+    <string name="wallpaper_image_description">The wallpaper of your phone.</string>
+
     <string name="app_name">Hub Launcher</string>
-    <string name="search_box_label">Search anywhere...</string>
+    <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
     <string name="open_settings">Open settings</string>
@@ -42,7 +44,7 @@
     <!-- Web result -->
     <string name="web_result_label">Web Result</string>
     <string name="open_in_browser_label">Open in Browser</string>
-    <string name="related_topics_label">Related topics</string>
+    <string name="related_topics_label">Related</string>
     <string name="hide_topics_label">Hide topics</string>
     <string name="web_result_no_description_label">No description</string>
     <string name="related_topic_preview_description">Image preview for %1$s.</string>

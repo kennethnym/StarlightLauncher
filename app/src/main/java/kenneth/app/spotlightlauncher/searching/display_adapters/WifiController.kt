@@ -40,12 +40,12 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
                 activity.getString(R.string.wifi_not_connected)
 
     init {
-        val intentFilter = IntentFilter().also {
-            it.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
-            it.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
+        val intentReceiverFilter = IntentFilter().apply {
+            addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+            addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         }
 
-        activity.registerReceiver(this, intentFilter)
+        activity.registerReceiver(this, intentReceiverFilter)
 
         requestPermissionLauncher = activity.registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
@@ -116,6 +116,13 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
                 parentView.addView(notification, 0)
             }
         }
+    }
+
+    /**
+     * Unregister intent receiver registered by WifiController
+     */
+    fun unregisterIntentReceiver() {
+        activity.unregisterReceiver(this)
     }
 
     private fun askForLocationPermission() {

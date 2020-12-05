@@ -11,15 +11,23 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
+import kenneth.app.spotlightlauncher.views.BlurView
 
 /**
  * An adapter that displays apps in a grid.
  */
 object AppsGridDataAdapter :
     RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>() {
+    /**
+     * The card container that is containing this RecyclerView
+     */
+    private lateinit var cardContainer: LinearLayout
+
+    private lateinit var cardBlurBackground: BlurView
+
     override val layoutManager: GridLayoutManager
         get() = GridLayoutManager(activity, 5)
 
@@ -39,7 +47,11 @@ object AppsGridDataAdapter :
         super.displayData(data)
 
         with(activity) {
-            findViewById<MaterialCardView>(R.id.apps_section_card).visibility = View.VISIBLE
+            cardContainer = findViewById<LinearLayout>(R.id.apps_section_card).apply {
+                visibility = View.VISIBLE
+            }
+            cardBlurBackground = findViewById<BlurView>(R.id.apps_section_card_blur_background)
+                .also { it.startBlur() }
         }
 
         if (data?.isEmpty() != false) {
@@ -55,6 +67,13 @@ object AppsGridDataAdapter :
 
             this.data = data
             notifyDataSetChanged()
+        }
+    }
+
+    fun hideAppsGrid() {
+        if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
+            cardBlurBackground.pauseBlur()
+            cardContainer.visibility = View.GONE
         }
     }
 

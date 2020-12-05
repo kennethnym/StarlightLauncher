@@ -13,6 +13,9 @@ android {
         versionCode 1
         versionName "1.0"
 
+        renderscriptTargetApi 30
+        renderscriptSupportModeEnabled true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -45,7 +48,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'com.github.Keelar:ExprK:master'
-    implementation 'com.eightbitlab:blurview:1.6.5'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
     implementation 'com.beust:klaxon:5.0.1'

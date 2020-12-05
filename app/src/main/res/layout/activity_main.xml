@@ -7,65 +7,79 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/page"
+    <ImageView
+        android:id="@+id/wallpaper_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/wallpaper_image_description"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <eightbitlab.com.blurview.BlurView
-            android:id="@+id/search_box_blur_background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:blurOverlayColor="?backgroundColor">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/page_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="false">
 
-            <LinearLayout
-                android:id="@+id/search_box_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
-
-                <EditText
-                    android:id="@+id/search_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/search_box_container_padding"
-                    android:background="@null"
-                    android:hint="@string/search_box_label"
-                    android:inputType="text"
-                    android:textAlignment="center"
-                    android:textColor="?colorOnBackground"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:ignore="Autofill" />
-
-            </LinearLayout>
-
-        </eightbitlab.com.blurview.BlurView>
-
-        <ProgressBar
-            android:id="@+id/search_progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone" />
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/result_scroll_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="false">
+            android:orientation="vertical">
+
+            <kenneth.app.spotlightlauncher.views.DateTimeView
+                android:id="@+id/date_time_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <kenneth.app.spotlightlauncher.views.BlurView
+                android:id="@+id/search_box_blur_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/search_box_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?backgroundColor"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/search_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/search_box_container_padding"
+                        android:background="@null"
+                        android:hint="@string/search_box_label"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textColor="?colorOnBackground"
+                        android:textColorHint="?hintTextColor"
+                        android:textSize="@dimen/search_box_text_size"
+                        android:textStyle="bold"
+                        tools:ignore="Autofill" />
+
+                </LinearLayout>
+
+            </kenneth.app.spotlightlauncher.views.BlurView>
+
+            <LinearLayout
+                android:id="@+id/widget_list_container"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical" />
 
             <LinearLayout
                 android:id="@+id/section_card_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="false"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <include layout="@layout/suggested_result_card" />
 
@@ -73,14 +87,17 @@
 
                 <include layout="@layout/files_section_card" />
 
+                <include layout="@layout/web_result_card" />
+
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="48dp" />
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

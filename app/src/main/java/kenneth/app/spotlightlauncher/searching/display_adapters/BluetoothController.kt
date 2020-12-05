@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 
 /**
  * An extension method on BluetoothDevice,
@@ -143,6 +144,14 @@ class BluetoothController(private val activity: MainActivity) : BroadcastReceive
         }
 
         displayBluetoothState(bluetoothAdapter.isEnabled)
+    }
+
+    /**
+     * Unregister intent receiver registered by BluetoothController
+     * (ACTION_STATE_CHANGED and ACTION_FOUND)
+     */
+    fun unregisterIntentReceiver() {
+        activity.unregisterReceiver(this)
     }
 
     private fun toggleBluetooth() {

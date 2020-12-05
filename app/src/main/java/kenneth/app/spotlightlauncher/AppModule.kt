@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher
 
 import android.content.Context
+import android.view.Choreographer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,9 +12,6 @@ import okhttp3.OkHttpClient
 import java.util.*
 import javax.inject.Singleton
 
-/**
- * AppState holds the current state of the application like theme.
- */
 @Module
 @InstallIn(ApplicationComponent::class)
 object AppModule {
@@ -28,4 +26,10 @@ object AppModule {
 
     @Provides
     fun provideLocale() = Locale.getDefault()
+
+    @Provides
+    fun provideCalendar() = Calendar.getInstance()
+
+    @Provides
+    fun provideChoreographer() = Choreographer.getInstance()
 }

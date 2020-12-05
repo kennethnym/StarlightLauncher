@@ -14,19 +14,15 @@
         android:id="@+id/files_list_item_preview"
         android:layout_width="@dimen/material_list_item_bigger_avatar_dimen"
         android:layout_height="@dimen/material_list_item_bigger_avatar_dimen"
-        android:layout_marginEnd="@dimen/material_list_item_avatar_padding_right" />
+        android:layout_marginEnd="@dimen/material_list_item_avatar_padding_right"
+        android:background="@drawable/rounded_background"
+        android:outlineProvider="background" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/files_list_item_file_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/files_list_item_file_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceSubtitle1" />
-
-    </LinearLayout>
+        android:textColor="?colorOnBackground"
+        android:textSize="16sp" />
 
 </LinearLayout>
