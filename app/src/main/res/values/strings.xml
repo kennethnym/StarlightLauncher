@@ -22,6 +22,11 @@
 
     <!-- Apps section -->
     <string name="app_icon_description">App icon for %1$s</string>
+    
+    <!-- App option menu -->
+    <string name="pin_app_label">Pin this app</string>
+    <string name="unpin_app_label">Unpin this app</string>
+    <string name="uninstall_label">Uninstall</string>
 
     <!-- Wifi controls -->
     <string name="wifi_connected_to_label">WiFi connected to</string>

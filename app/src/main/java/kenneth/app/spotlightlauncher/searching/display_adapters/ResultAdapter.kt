@@ -3,7 +3,7 @@ package kenneth.app.spotlightlauncher.searching.display_adapters
 import android.content.Context
 import android.view.View
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.ListUpdateCallback
+import androidx.core.view.isVisible
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -86,13 +86,8 @@ class ResultAdapter @Inject constructor(
         webResultAdapter.hideWebResult()
         suggestedResultAdapter.hideSuggestedResult()
 
-        with(activity) {
-            widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
-                visibility = View.VISIBLE
-            }
-            sectionCardList = findViewById<LinearLayout>(R.id.section_card_list).apply {
-                visibility = View.GONE
-            }
+        sectionCardList = activity.findViewById<LinearLayout>(R.id.section_card_list).apply {
+            isVisible = false
         }
     }
 

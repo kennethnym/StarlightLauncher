@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ResolveInfo
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
+import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
 
 /**
@@ -34,7 +36,7 @@ object AppsGridDataAdapter :
     override val recyclerView: RecyclerView
         get() = activity.findViewById(R.id.apps_grid)
 
-    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
+    override fun getInstance(activity: Activity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val gridItem = LayoutInflater.from(parent.context)
@@ -77,8 +79,9 @@ object AppsGridDataAdapter :
         }
     }
 
-    class ViewHolder(view: View, activity: MainActivity) :
+    class ViewHolder(view: View, activity: Activity) :
         RecyclerViewDataAdapter.ViewHolder<ResolveInfo>(view, activity) {
+        private lateinit var appOptionMenu: AppOptionMenu
         private lateinit var appInfo: ResolveInfo
 
         override fun bindWith(data: ResolveInfo) {
@@ -89,6 +92,8 @@ object AppsGridDataAdapter :
             val appName = appInfo.loadLabel(activity.packageManager)
             val appIcon = appInfo.loadIcon(activity.packageManager)
 
+            appOptionMenu = activity.findViewById(R.id.app_option_menu)
+
             with(view) {
                 findViewById<ImageView>(R.id.app_icon).apply {
                     contentDescription = activity.getString(R.string.app_icon_description, appName)
@@ -98,6 +103,11 @@ object AppsGridDataAdapter :
                 findViewById<TextView>(R.id.app_label).text = appName
 
                 setOnClickListener { openApp() }
+
+                setOnLongClickListener {
+                    openAppOptionMenu()
+                    true
+                }
             }
         }
 
@@ -116,6 +126,13 @@ object AppsGridDataAdapter :
             }
 
             activity.startActivity(intent)
+        }
+
+        /**
+         * Open option menu for the app
+         */
+        private fun openAppOptionMenu() {
+            appOptionMenu.show(withApp = appInfo)
         }
     }
 }

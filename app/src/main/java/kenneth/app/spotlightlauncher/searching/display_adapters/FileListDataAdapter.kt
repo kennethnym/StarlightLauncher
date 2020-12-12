@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -9,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
-import kenneth.app.spotlightlauncher.utils.toPx
+import kenneth.app.spotlightlauncher.utils.dp
 import kenneth.app.spotlightlauncher.views.BlurView
 import kenneth.app.spotlightlauncher.views.TextButton
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +45,7 @@ object FileListDataAdapter :
     override val recyclerView: RecyclerView
         get() = activity.findViewById(R.id.files_list)
 
-    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
+    override fun getInstance(activity: Activity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
@@ -84,7 +84,7 @@ object FileListDataAdapter :
                     findViewById<TextView>(R.id.files_section_result_status).apply {
                         visibility = View.VISIBLE
                         text = getString(R.string.files_section_no_result)
-                        setPadding(0, 0, 0, 8.toPx(activity.resources))
+                        setPadding(0, 0, 0, 8.dp)
                     }
                 }
                 else -> {
@@ -106,7 +106,7 @@ object FileListDataAdapter :
         }
     }
 
-    class ViewHolder(view: LinearLayout, activity: MainActivity) :
+    class ViewHolder(view: LinearLayout, activity: Activity) :
         RecyclerViewDataAdapter.ViewHolder<DocumentFile>(view, activity) {
         private val imagePreviewCoroutine = CoroutineScope(Dispatchers.IO)
 

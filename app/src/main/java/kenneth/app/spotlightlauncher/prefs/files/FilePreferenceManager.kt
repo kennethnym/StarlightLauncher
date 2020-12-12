@@ -21,7 +21,7 @@ object FilePreferenceManager {
     lateinit var includedPaths: MutableList<String>
         private set
 
-    private val pathListSeparator = ";"
+    private const val PATH_LIST_SEPARATOR = ";"
 
     fun getInstance(context: Context) = this.apply {
         this.context = context
@@ -36,7 +36,7 @@ object FilePreferenceManager {
 
         if (!::includedPaths.isInitialized) {
             includedPaths = sharedPreferences.getString(includedPathsPrefKey, null)
-                ?.split(pathListSeparator)?.toMutableList() ?: mutableListOf()
+                ?.split(PATH_LIST_SEPARATOR)?.toMutableList() ?: mutableListOf()
         }
     }
 
@@ -103,7 +103,7 @@ object FilePreferenceManager {
     private fun saveNewIncludedPaths() {
         sharedPreferences
             .edit()
-            .putString(includedPathsPrefKey, includedPaths.joinToString(pathListSeparator))
+            .putString(includedPathsPrefKey, includedPaths.joinToString(PATH_LIST_SEPARATOR))
             .apply()
     }
 }

@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.utils
 
+import android.app.Activity
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
@@ -41,12 +42,12 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
     /**
      * The MainActivity that the RecyclerView is in.
      */
-    protected lateinit var activity: MainActivity
+    protected lateinit var activity: Activity
 
     /**
      * Gets an instance of this adapter
      */
-    abstract fun getInstance(activity: MainActivity): RecyclerViewDataAdapter<T, VH>
+    abstract fun getInstance(activity: Activity): RecyclerViewDataAdapter<T, VH>
 
     /**
      * Displays the given data in the RecyclerView this adapter is bound to.
@@ -58,9 +59,11 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
     }
 
     private fun bindAdapterToRecyclerView() {
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = this
-        isAdapterBind = true
+        if (!isAdapterBind) {
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = this
+            isAdapterBind = true
+        }
     }
 
     /**
@@ -80,7 +83,7 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
      */
     abstract class ViewHolder<T>(
         protected val view: View,
-        protected val activity: MainActivity
+        protected val activity: Activity
     ) : RecyclerView.ViewHolder(view) {
         /**
          * Binds this ViewHolder with the given data, and also displays the data.

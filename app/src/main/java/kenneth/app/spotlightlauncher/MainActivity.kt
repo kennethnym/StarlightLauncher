@@ -7,7 +7,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -25,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +36,7 @@ import kenneth.app.spotlightlauncher.utils.BlurHandler
 import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
 import kenneth.app.spotlightlauncher.utils.calculateBitmapBrightness
 import kenneth.app.spotlightlauncher.utils.viewToBitmap
+import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
 import kenneth.app.spotlightlauncher.views.DateTimeView
 import javax.inject.Inject
@@ -60,19 +61,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rootView: ConstraintLayout
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
+    private lateinit var widgetListContainer: LinearLayout
     private lateinit var sectionCardList: LinearLayout
     private lateinit var searchBox: EditText
     private lateinit var searchBoxContainer: LinearLayout
     private lateinit var searchBoxBlurBackground: BlurView
     private lateinit var wallpaperImage: ImageView
     private lateinit var dateTimeView: DateTimeView
+    private lateinit var appOptionMenu: AppOptionMenu
 
     private lateinit var searchBoxAnimationInterpolator: PathInterpolator
 
     private var isSearchScreenActive = false
     private var isDarkModeActive = false
-    private var searchBoxContainerPaddingPx: Int = 0
-    private var statusBarHeight: Int = 0
+    private var searchBoxContainerPaddingPx = 0
+    private var statusBarHeight = 0
 
     /**
      * Right before requesting a permission, it is stored in this variable, so that when
@@ -94,12 +97,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         rootView = findViewById(R.id.root)
+        appOptionMenu = findViewById(R.id.app_option_menu)
+        widgetListContainer = findViewById(R.id.widget_list_container)
         sectionCardList = findViewById(R.id.section_card_list)
         searchBox = findViewById(R.id.search_box)
         searchBoxContainer = findViewById(R.id.search_box_container)
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
         wallpaperImage = findViewById(R.id.wallpaper_image)
-        dateTimeView = findViewById<DateTimeView>(R.id.date_time_view)
+        dateTimeView = findViewById(R.id.date_time_view)
 
         // enable edge-to-edge app experience
 
@@ -128,11 +133,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (searchBox.text.toString() == "") {
-            toggleSearchBoxAnimation(isActive = false)
-            searchBox.clearFocus()
-        } else {
-            super.onBackPressed()
+        when {
+            appOptionMenu.isVisible -> {
+                appOptionMenu.hide()
+            }
+            searchBox.text.toString() == "" -> {
+                toggleSearchBoxAnimation(isActive = false)
+                searchBox.clearFocus()
+            }
+            else -> {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -148,6 +159,11 @@ class MainActivity : AppCompatActivity() {
                 enableLightStatusBar()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateWallpaper()
     }
 
     override fun onStop() {
@@ -201,13 +217,13 @@ class MainActivity : AppCompatActivity() {
 
         with(rootView) {
             setOnApplyWindowInsetsListener { _, insets ->
-                statusBarHeight =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                        insets
-                            .getInsets(WindowInsets.Type.systemBars())
-                            .top
-                    else
-                        insets.systemWindowInsetTop
+                statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val systemBarsInset = insets.getInsets(WindowInsets.Type.systemBars())
+                    systemBarsInset.top
+                } else {
+                    insets.systemWindowInsetTop
+                }
+
                 insets
             }
         }
@@ -372,6 +388,7 @@ class MainActivity : AppCompatActivity() {
         if (query == null || query.isBlank()) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
+            widgetListContainer.isVisible = true
         } else {
             searcher.requestSearch(query.toString())
         }
@@ -387,7 +404,10 @@ class MainActivity : AppCompatActivity() {
         ) {
             val wallpaper = wallpaperManager.fastDrawable
             wallpaperImage.setImageDrawable(wallpaper)
-            blurHandler.changeWallpaper(viewToBitmap(wallpaperImage))
+
+            if (wallpaperImage.width > 0 && wallpaperImage.height > 0) {
+                blurHandler.changeWallpaper(viewToBitmap(wallpaperImage))
+            }
         }
     }
 

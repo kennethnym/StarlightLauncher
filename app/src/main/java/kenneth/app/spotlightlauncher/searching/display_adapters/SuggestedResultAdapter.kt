@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
@@ -40,7 +41,7 @@ class SuggestedResultAdapter(activity: MainActivity) :
         }
 
         if (result.type != SuggestedResultType.NONE) {
-            cardContainer.visibility = View.VISIBLE
+            cardContainer.isVisible = true
 
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)

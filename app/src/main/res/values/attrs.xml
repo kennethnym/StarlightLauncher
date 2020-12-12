@@ -7,4 +7,9 @@
     <declare-styleable name="BlurView">
         <attr name="blurAmount" />
     </declare-styleable>
+
+    <declare-styleable name="AppOptionMenuItem">
+        <attr name="icon" format="reference" />
+        <attr name="label" format="string" />
+    </declare-styleable>
 </resources>

@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.utils
 import android.content.res.Resources
 import android.os.Build
 import android.view.View
+import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
 import android.widget.TextView
@@ -13,10 +14,15 @@ import androidx.core.widget.addTextChangedListener
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 
-fun Int.toPx(resources: Resources): Int {
-    val density = resources.displayMetrics.density
-    return (this * density).toInt()
-}
+val Int.dp: Int
+    get() = this * Resources.getSystem().displayMetrics.density.toInt()
+
+val WindowInsets.navBarHeight: Int
+    get() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+            getInsets(WindowInsets.Type.systemBars()).bottom
+        else
+            systemWindowInsetBottom
 
 @RequiresApi(Build.VERSION_CODES.R)
 class KeyboardAnimationCallback(activity: MainActivity) :

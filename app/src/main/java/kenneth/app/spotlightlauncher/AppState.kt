@@ -1,6 +1,5 @@
 package kenneth.app.spotlightlauncher
 
-import android.util.DisplayMetrics
 import javax.inject.Inject
 import javax.inject.Singleton
 

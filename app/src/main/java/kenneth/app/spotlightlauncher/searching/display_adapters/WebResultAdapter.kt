@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.animation.LayoutTransition
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.view.LayoutInflater
@@ -165,7 +166,7 @@ private object RelatedTopicListDataAdapter :
     override val recyclerView: RecyclerView
         get() = activity.findViewById(R.id.related_topics_list)
 
-    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
+    override fun getInstance(activity: Activity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelatedTopicListViewHolder {
         val listItemView = LayoutInflater.from(parent.context)
@@ -198,7 +199,7 @@ private object RelatedTopicListDataAdapter :
     }
 }
 
-private class RelatedTopicListViewHolder(view: LinearLayout, activity: MainActivity) :
+private class RelatedTopicListViewHolder(view: LinearLayout, activity: Activity) :
     RecyclerViewDataAdapter.ViewHolder<SmartSearcher.WebResult.Topic>(view, activity) {
     override fun bindWith(data: SmartSearcher.WebResult.Topic) {
         val topic = data

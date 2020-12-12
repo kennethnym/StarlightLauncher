@@ -66,12 +66,23 @@
 
             </kenneth.app.spotlightlauncher.views.BlurView>
 
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
+
             <LinearLayout
                 android:id="@+id/widget_list_container"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical" />
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <kenneth.app.spotlightlauncher.views.PinnedAppsCard
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/section_card_list"
@@ -99,5 +110,11 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <kenneth.app.spotlightlauncher.views.AppOptionMenu
+        android:id="@+id/app_option_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="@+id/wallpaper_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

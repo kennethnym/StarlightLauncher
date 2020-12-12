@@ -3,7 +3,6 @@ package kenneth.app.spotlightlauncher.searching
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
@@ -13,7 +12,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -42,10 +40,14 @@ object SearcherModule {
     @Provides
     fun provideSmartSearcher(expressionParser: Expressions, duckduckgoApiClient: DuckDuckGoApi) =
         SmartSearcher(expressionParser, duckduckgoApiClient)
+
+    @Provides
+    fun provideAppSearcher(@ActivityContext context: Context) = AppSearcher(context)
 }
 
 class Searcher @Inject constructor(
     @ActivityContext private val context: Context,
+    private val appSearcher: AppSearcher,
     private val smartSearcher: SmartSearcher,
     private val filePreferenceManager: FilePreferenceManager,
     private val locale: Locale
@@ -96,7 +98,7 @@ class Searcher @Inject constructor(
             )
             SearchType.APPS -> Result(
                 query = keyword,
-                apps = searchApps(searchRegex),
+                apps = appSearcher.searchApps(searchRegex),
             )
             else -> Result(query = keyword)
         }
@@ -126,19 +128,15 @@ class Searcher @Inject constructor(
 
         return Result(
             query = keyword,
-            apps = withContext(Dispatchers.IO) {
-                searchApps(searchRegex)
+            apps = withContext(Dispatchers.Main) {
+                appSearcher.searchApps(searchRegex)
             },
-            files = withContext(Dispatchers.IO) {
+            files = withContext(Dispatchers.Main) {
                 searchFiles(searchRegex)
             },
             suggested = smartSearcher.search(keyword),
         )
     }
-
-    private fun searchApps(searchRegex: Regex) = appList
-        .filter { it.loadLabel(context.packageManager).contains(searchRegex) }
-        .sortedWith(appRanker(searchRegex))
 
     private fun searchFiles(searchRegex: Regex): List<DocumentFile>? {
         val paths = filePreferenceManager.includedPaths
@@ -154,13 +152,13 @@ class Searcher @Inject constructor(
                 if (doc != null) allFiles + getFilesRecursive(doc) else allFiles
             }
             .filter { it.name?.contains(searchRegex) ?: false }
-            .sortedWith { file1, file2 ->
+            .sortedWith(Comparator { file1, file2 ->
                 compareStringsWithRegex(
                     file1.name!!,
                     file2.name!!,
                     searchRegex
                 )
-            }
+            })
     }
 
     private fun getFilesRecursive(root: DocumentFile): List<DocumentFile> {
@@ -177,18 +175,6 @@ class Searcher @Inject constructor(
         return files
     }
 
-    /**
-     * appRanker ranks apps in the list based on the search query.
-     */
-    private fun appRanker(searchRegex: Regex): Comparator<ResolveInfo> {
-        return Comparator { app1, app2 ->
-            val appName1 = app1.loadLabel(context.packageManager)
-            val appName2 = app2.loadLabel(context.packageManager)
-
-            compareStringsWithRegex(appName1.toString(), appName2.toString(), searchRegex)
-        }
-    }
-
     data class Result(
         val query: String,
         val apps: List<ResolveInfo> = emptyList(),
@@ -198,43 +184,4 @@ class Searcher @Inject constructor(
             type = SuggestedResultType.NONE,
         )
     )
-}
-
-private fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int {
-    val result1 = regex.findAll(string1).toList()
-    val result2 = regex.findAll(string2).toList()
-
-    // first, find the longest match in all matches
-    // if the query has a longer match of the name of the first app than the second app
-    // the first app should come first
-
-    val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
-        when {
-            i == 0 -> len + 1
-            result.range.first - result1[i - 1].range.first > 1 -> 1
-            else -> len + 1
-        }
-    }
-
-    val result2LongestMatch = result2.foldIndexed(0) { i, len, result ->
-        when {
-            i == 0 -> len + 1
-            result.range.first - result2[i - 1].range.first > 1 -> 1
-            else -> len + 1
-        }
-    }
-
-    if (result1LongestMatch != result2LongestMatch) {
-        return result2LongestMatch - result1LongestMatch
-    }
-
-    // if the longest matches have the same length
-    // then find which match comes first
-    // for example, if the query is "g", string1 is "google", and string2 is "settings"
-    // app1 should come first because the "g" in google comes first
-
-    val result1FirstMatchIndex = result1[0].range.first
-    val result2FirstMatchIndex = result2[0].range.first
-
-    return result1FirstMatchIndex - result2FirstMatchIndex
 }

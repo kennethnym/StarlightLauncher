@@ -106,9 +106,6 @@ class BlurHandler @Inject constructor(
                 else
                     scaledHeight
 
-            Log.i("", "${dest.width} ${dest.height}")
-            Log.i("", "$bitmapX $bitmapY $bgWidth $bgHeight")
-
             val bitmap = Bitmap.createBitmap(
                 it,
                 bitmapX,

@@ -2,11 +2,13 @@ package kenneth.app.spotlightlauncher
 
 import android.content.Context
 import android.view.Choreographer
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import okhttp3.OkHttpClient
 import java.util.*
@@ -23,6 +25,11 @@ object AppModule {
     @Singleton
     fun provideFilePreferenceManager(@ApplicationContext context: Context) =
         FilePreferenceManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun providePinnedAppsPreferenceManager(@ApplicationContext context: Context) =
+        PinnedAppsPreferenceManager.getInstance(context)
 
     @Provides
     fun provideLocale() = Locale.getDefault()

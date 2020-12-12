@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
@@ -233,7 +234,7 @@ private object NearbyBluetoothDeviceListAdapter :
     override val recyclerView: RecyclerView
         get() = activity.findViewById(R.id.nearby_bluetooth_device_list)
 
-    override fun getInstance(activity: MainActivity) = this.apply { this.activity = activity }
+    override fun getInstance(activity: Activity) = this.apply { this.activity = activity }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -280,7 +281,7 @@ private object NearbyBluetoothDeviceListAdapter :
             .visibility = View.GONE
     }
 
-    private class ViewHolder(view: LinearLayout, activity: MainActivity) :
+    private class ViewHolder(view: LinearLayout, activity: Activity) :
         RecyclerViewDataAdapter.ViewHolder<BluetoothDevice>(view, activity) {
         private lateinit var bluetoothDevice: BluetoothDevice
 

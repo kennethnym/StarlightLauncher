@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:item="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/app_option_menu_app_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="4dp" />
+
+        <TextView
+            android:id="@+id/app_option_menu_app_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?colorOnBackground" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="16dp" />
+
+    <view
+        android:id="@+id/pin_app_item"
+        class="kenneth.app.spotlightlauncher.views.AppOptionMenu$Item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        item:icon="@drawable/ic_favorite"
+        item:label="@string/pin_app_label" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="24dp" />
+
+    <view
+        android:id="@+id/uninstall_item"
+        class="kenneth.app.spotlightlauncher.views.AppOptionMenu$Item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        item:icon="@drawable/ic_trash_alt"
+        item:label="@string/uninstall_label" />
+
+</merge>
