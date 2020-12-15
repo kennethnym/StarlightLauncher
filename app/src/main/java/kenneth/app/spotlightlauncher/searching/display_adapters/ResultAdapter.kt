@@ -58,10 +58,10 @@ class ResultAdapter @Inject constructor(
     fun displayResult(result: Searcher.Result, type: SearchType) {
         with(activity) {
             widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
-                visibility = View.GONE
+                isVisible = false
             }
             sectionCardList = findViewById<LinearLayout>(R.id.section_card_list).apply {
-                visibility = View.VISIBLE
+                isVisible = true
             }
         }
 

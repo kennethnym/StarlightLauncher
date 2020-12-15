@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.view.animation.AnimationSet
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.*
@@ -24,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
@@ -323,6 +325,8 @@ class MainActivity : AppCompatActivity() {
             searchBoxAnimationInterpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
         }
 
+        toggleWidgetsVisibility(isVisible = !isActive)
+
         val searchBoxAnimation = ObjectAnimator.ofFloat(
             dateTimeView,
             "layoutWeight",
@@ -352,6 +356,49 @@ class MainActivity : AppCompatActivity() {
 
             start()
         }
+    }
+
+    private fun toggleWidgetsVisibility(isVisible: Boolean) {
+        val cardAnimatorSet = AnimatorSet()
+        val scale = if (isVisible) 1f else 0.8f
+        val alpha = if (isVisible) 1f else 0f
+
+        for ((i, widgetCard) in widgetListContainer.children.withIndex()) {
+            val scaleXAnimation = ObjectAnimator.ofFloat(
+                widgetCard,
+                "scaleX",
+                scale,
+            ).apply {
+                interpolator = searchBoxAnimationInterpolator
+                duration = 500
+            }
+
+            val scaleYAnimation = ObjectAnimator.ofFloat(
+                widgetCard,
+                "scaleY",
+                scale,
+            ).apply {
+                interpolator = searchBoxAnimationInterpolator
+                duration = 500
+            }
+
+            val fadeAnimation = ObjectAnimator.ofFloat(
+                widgetCard,
+                "alpha",
+                alpha,
+            )
+
+            AnimatorSet().apply {
+                play(scaleXAnimation)
+                    .with(scaleYAnimation)
+                    .with(fadeAnimation)
+                    .after(i * 500L)
+            }.also {
+                cardAnimatorSet.play(it)
+            }
+        }
+
+        cardAnimatorSet.start()
     }
 
     @SuppressLint("InlinedApi")
@@ -388,7 +435,6 @@ class MainActivity : AppCompatActivity() {
         if (query == null || query.isBlank()) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
-            widgetListContainer.isVisible = true
         } else {
             searcher.requestSearch(query.toString())
         }
