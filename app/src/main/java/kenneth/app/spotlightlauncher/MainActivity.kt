@@ -13,6 +13,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
@@ -140,7 +141,6 @@ class MainActivity : AppCompatActivity() {
                 appOptionMenu.hide()
             }
             searchBox.text.toString() == "" -> {
-                toggleSearchBoxAnimation(isActive = false)
                 searchBox.clearFocus()
             }
             else -> {
@@ -315,17 +315,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
-        if (searchBox.text.isBlank()) {
-            toggleSearchBoxAnimation(isActive = hasFocus)
-        }
+        toggleSearchBoxAnimation(isActive = hasFocus)
     }
 
     private fun toggleSearchBoxAnimation(isActive: Boolean) {
         if (!::searchBoxAnimationInterpolator.isInitialized) {
             searchBoxAnimationInterpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
         }
-
-        toggleWidgetsVisibility(isVisible = !isActive)
 
         val searchBoxAnimation = ObjectAnimator.ofFloat(
             dateTimeView,
@@ -349,6 +345,8 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+
+        toggleWidgetsVisibility(isVisible = !isActive)
 
         AnimatorSet().apply {
             play(searchBoxAnimation)
@@ -435,6 +433,8 @@ class MainActivity : AppCompatActivity() {
         if (query == null || query.isBlank()) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
+
+            widgetListContainer.isVisible = true
         } else {
             searcher.requestSearch(query.toString())
         }

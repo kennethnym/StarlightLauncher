@@ -86,9 +86,7 @@ class ResultAdapter @Inject constructor(
         webResultAdapter.hideWebResult()
         suggestedResultAdapter.hideSuggestedResult()
 
-        sectionCardList = activity.findViewById<LinearLayout>(R.id.section_card_list).apply {
-            isVisible = false
-        }
+        sectionCardList.isVisible = false
     }
 
     fun displayWebResult(result: SmartSearcher.WebResult) {
