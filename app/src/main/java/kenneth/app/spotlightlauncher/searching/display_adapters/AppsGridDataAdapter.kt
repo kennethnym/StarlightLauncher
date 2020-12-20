@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.AppOptionMenu

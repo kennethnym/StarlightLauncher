@@ -6,5 +6,11 @@
     <string name="file_search_add_path">file_search_add_path</string>
     <string name="file_search_included_paths">file_search_included_paths</string>
 
+    <string name="media_control_pref_key">media_control</string>
+
+    <string name="media_control_notification_listener_permission">
+        media_control_notification_listener_permission
+    </string>
+
     <string name="pinned_apps">pinned_apps</string>
 </resources>

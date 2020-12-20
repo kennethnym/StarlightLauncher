@@ -13,6 +13,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.views.LauncherScrollView
 
 val Int.dp: Int
     get() = this * Resources.getSystem().displayMetrics.density.toInt()
@@ -28,7 +29,7 @@ val WindowInsets.navBarHeight: Int
 class KeyboardAnimationCallback(activity: MainActivity) :
     WindowInsetsAnimation.Callback(DISPATCH_MODE_STOP) {
     private var shouldAnimateKeyboard = false
-    private val pageScrollView = activity.findViewById<NestedScrollView>(R.id.page_scroll_view)
+    private val pageScrollView = activity.findViewById<LauncherScrollView>(R.id.page_scroll_view)
     private var paddingBottom = pageScrollView.paddingBottom
 
     init {

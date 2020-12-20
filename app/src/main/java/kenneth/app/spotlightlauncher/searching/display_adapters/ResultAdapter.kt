@@ -86,7 +86,9 @@ class ResultAdapter @Inject constructor(
         webResultAdapter.hideWebResult()
         suggestedResultAdapter.hideSuggestedResult()
 
-        sectionCardList.isVisible = false
+        if (::sectionCardList.isInitialized) {
+            sectionCardList.isVisible = false
+        }
     }
 
     fun displayWebResult(result: SmartSearcher.WebResult) {

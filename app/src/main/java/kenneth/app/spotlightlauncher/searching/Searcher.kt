@@ -109,7 +109,9 @@ class Searcher @Inject constructor(
      */
     fun cancelPendingSearch() {
         smartSearcher.cancelWebSearch()
-        searchTimer.cancel()
+        if (::searchTimer.isInitialized) {
+            searchTimer.cancel()
+        }
     }
 
     /**
@@ -152,13 +154,13 @@ class Searcher @Inject constructor(
                 if (doc != null) allFiles + getFilesRecursive(doc) else allFiles
             }
             .filter { it.name?.contains(searchRegex) ?: false }
-            .sortedWith(Comparator { file1, file2 ->
+            .sortedWith { file1, file2 ->
                 compareStringsWithRegex(
                     file1.name!!,
                     file2.name!!,
                     searchRegex
                 )
-            })
+            }
     }
 
     private fun getFilesRecursive(root: DocumentFile): List<DocumentFile> {

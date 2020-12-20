@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:key="@string/media_control_notification_listener_permission"
+        app:summary="@string/media_control_notification_listener_perm_summary"
+        app:title="@string/media_control_notification_listener_perm_title" />
+
+</PreferenceScreen>

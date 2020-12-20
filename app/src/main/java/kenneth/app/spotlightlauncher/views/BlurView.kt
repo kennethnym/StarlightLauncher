@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BlurView @JvmOverloads constructor(
+open class BlurView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,

@@ -39,15 +39,6 @@ class DateTimeView(context: Context, attrs: AttributeSet) : LinearLayout(context
         }
     }
 
-    var layoutWeight: Float
-        get() = (layoutParams as LayoutParams).weight
-        set(newWeight) {
-            val newLayoutParams = (layoutParams as LayoutParams).apply {
-                weight = newWeight
-            }
-            layoutParams = newLayoutParams
-        }
-
     private val timeFormat = SimpleDateFormat("K:mm", locale)
     private val dateFormat = SimpleDateFormat("MMM d", locale)
 

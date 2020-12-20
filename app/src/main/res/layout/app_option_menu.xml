@@ -33,7 +33,7 @@
 
     <view
         android:id="@+id/pin_app_item"
-        class="kenneth.app.spotlightlauncher.views.AppOptionMenu$Item"
+        class="kenneth.app.spotlightlauncher.views.BottomOptionMenu$Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         item:icon="@drawable/ic_favorite"
@@ -45,7 +45,7 @@
 
     <view
         android:id="@+id/uninstall_item"
-        class="kenneth.app.spotlightlauncher.views.AppOptionMenu$Item"
+        class="kenneth.app.spotlightlauncher.views.BottomOptionMenu$Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         item:icon="@drawable/ic_trash_alt"

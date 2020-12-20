@@ -18,23 +18,39 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.core.widget.NestedScrollView
+    <kenneth.app.spotlightlauncher.views.LauncherScrollView
         android:id="@+id/page_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:fitsSystemWindows="false">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <kenneth.app.spotlightlauncher.views.DateTimeView
-                android:id="@+id/date_time_view"
+            <kenneth.app.spotlightlauncher.views.DateTimeViewContainer
+                android:id="@+id/date_time_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:gravity="center|bottom"
+                android:orientation="vertical">
+
+                <kenneth.app.spotlightlauncher.views.DateTimeView
+                    android:id="@+id/date_time_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <kenneth.app.spotlightlauncher.views.MediaControlCard
+                    android:id="@+id/media_control_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="invisible" />
+
+            </kenneth.app.spotlightlauncher.views.DateTimeViewContainer>
 
             <kenneth.app.spotlightlauncher.views.BlurView
                 android:id="@+id/search_box_blur_background"
@@ -110,13 +126,19 @@
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </kenneth.app.spotlightlauncher.views.LauncherScrollView>
 
     <kenneth.app.spotlightlauncher.views.AppOptionMenu
         android:id="@+id/app_option_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
-        app:layout_constraintBottom_toBottomOf="@+id/wallpaper_image" />
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <kenneth.app.spotlightlauncher.views.LauncherOptionMenu
+        android:id="@+id/launcher_option_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

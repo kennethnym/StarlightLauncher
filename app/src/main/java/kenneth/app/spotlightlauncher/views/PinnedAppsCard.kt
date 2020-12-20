@@ -19,6 +19,7 @@ import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.searching.AppSearcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.AppsGridDataAdapter
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
+import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,16 +29,6 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) : LinearLayout(conte
 
     @Inject
     lateinit var appSearcher: AppSearcher
-
-    private val activity: Activity?
-        get() {
-            var ctx = context
-            while (ctx is ContextWrapper) {
-                if (ctx is Activity) return ctx
-                ctx = (context as ContextWrapper).baseContext
-            }
-            return null
-        }
 
     private val pinnedApps: List<ResolveInfo>
         get() = appSearcher.apps

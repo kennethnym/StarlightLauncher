@@ -9,6 +9,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/widgets_header">
+
+        <Preference
+            app:fragment="kenneth.app.spotlightlauncher.prefs.MediaControlSettingsFragment"
+            app:key="@string/media_control_pref_key"
+            app:summary="@string/media_control_summary"
+            app:title="@string/media_control_title" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/messages_header">
 
         <EditTextPreference

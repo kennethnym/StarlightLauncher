@@ -5,6 +5,15 @@
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
+    <!-- Media control -->
+    <string name="album_art_description">Album art of the currently playing music</string>
+    <string name="no_album_title_label">No title</string>
+    <string name="no_artist_label">Unknown artist</string>
+    <string name="skip_backward_button_description">Skip backward</string>
+    <string name="play_button_description">Play media</string>
+    <string name="pause_button_description">Pause media</string>
+    <string name="skip_forward_button_description">Skip forward</string>
+
     <string name="open_settings">Open settings</string>
 
     <string name="apps_section_title">Apps</string>
@@ -22,11 +31,14 @@
 
     <!-- Apps section -->
     <string name="app_icon_description">App icon for %1$s</string>
-    
+
     <!-- App option menu -->
     <string name="pin_app_label">Pin this app</string>
     <string name="unpin_app_label">Unpin this app</string>
     <string name="uninstall_label">Uninstall</string>
+
+    <!-- Launcher option menu -->
+    <string name="launcher_settings_label">Launcher settings</string>
 
     <!-- Wifi controls -->
     <string name="wifi_connected_to_label">WiFi connected to</string>
@@ -61,6 +73,7 @@
 
     <!-- Preference Titles -->
     <string name="search_header">Search behavior</string>
+    <string name="widgets_header">Widgets</string>
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
@@ -74,6 +87,17 @@
         To remove a path, simply tap on it.
     </string>
     <string name="file_add_path_title">Add path…</string>
+
+    <!-- Media control preferences -->
+    <string name="media_control_title">Media control</string>
+    <string name="media_control_summary">Adjust behavior of media control widget</string>
+    <string name="media_control_notification_listener_perm_title">
+        Grant notification access
+    </string>
+    <string name="media_control_notification_listener_perm_summary">
+        Notification access is required for the media control widget to work.
+        The app does NOT and will NEVER monitor and collect device notifications.
+    </string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>

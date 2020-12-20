@@ -13,12 +13,10 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.view.animation.AnimationSet
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.*
@@ -39,9 +37,7 @@ import kenneth.app.spotlightlauncher.utils.BlurHandler
 import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
 import kenneth.app.spotlightlauncher.utils.calculateBitmapBrightness
 import kenneth.app.spotlightlauncher.utils.viewToBitmap
-import kenneth.app.spotlightlauncher.views.AppOptionMenu
-import kenneth.app.spotlightlauncher.views.BlurView
-import kenneth.app.spotlightlauncher.views.DateTimeView
+import kenneth.app.spotlightlauncher.views.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -70,8 +66,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchBoxContainer: LinearLayout
     private lateinit var searchBoxBlurBackground: BlurView
     private lateinit var wallpaperImage: ImageView
-    private lateinit var dateTimeView: DateTimeView
+    private lateinit var dateTimeViewContainer: DateTimeViewContainer
     private lateinit var appOptionMenu: AppOptionMenu
+    private lateinit var mediaControlCard: MediaControlCard
 
     private lateinit var searchBoxAnimationInterpolator: PathInterpolator
 
@@ -107,7 +104,8 @@ class MainActivity : AppCompatActivity() {
         searchBoxContainer = findViewById(R.id.search_box_container)
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
         wallpaperImage = findViewById(R.id.wallpaper_image)
-        dateTimeView = findViewById(R.id.date_time_view)
+        dateTimeViewContainer = findViewById(R.id.date_time_view_container)
+        mediaControlCard = findViewById(R.id.media_control_card)
 
         // enable edge-to-edge app experience
 
@@ -166,6 +164,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateWallpaper()
+        mediaControlCard.checkNotificationListenerAndUpdate()
     }
 
     override fun onStop() {
@@ -324,7 +323,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val searchBoxAnimation = ObjectAnimator.ofFloat(
-            dateTimeView,
+            dateTimeViewContainer,
             "layoutWeight",
             if (isActive) 0f else 1f,
         ).apply {

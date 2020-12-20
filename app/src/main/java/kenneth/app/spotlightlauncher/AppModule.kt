@@ -1,12 +1,15 @@
 package kenneth.app.spotlightlauncher
 
 import android.content.Context
+import android.media.AudioManager
+import android.media.session.MediaSessionManager
 import android.view.Choreographer
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
@@ -39,4 +42,8 @@ object AppModule {
 
     @Provides
     fun provideChoreographer() = Choreographer.getInstance()
+
+    @Provides
+    fun provideMediaSessionManager(@ActivityContext context: Context) =
+        context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
 }
