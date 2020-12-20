@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
 import android.view.Choreographer
+import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,7 @@ import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import okhttp3.OkHttpClient
 import java.util.*
+import java.util.prefs.Preferences
 import javax.inject.Singleton
 
 @Module
@@ -23,6 +25,16 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient() = OkHttpClient()
+
+    @Provides
+    @Singleton
+    fun provideSharedPreference(@ApplicationContext context: Context) =
+        PreferenceManager.getDefaultSharedPreferences(context)
+
+    @Provides
+    @Singleton
+    fun provideMediaSessionManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
 
     @Provides
     @Singleton
@@ -42,8 +54,4 @@ object AppModule {
 
     @Provides
     fun provideChoreographer() = Choreographer.getInstance()
-
-    @Provides
-    fun provideMediaSessionManager(@ActivityContext context: Context) =
-        context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
 }

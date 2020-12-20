@@ -6,8 +6,10 @@ import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private lateinit var toolbar: MaterialToolbar
@@ -52,6 +54,7 @@ class SettingsActivity : AppCompatActivity(),
 
         toolbar.title = when (pref.key) {
             getString(R.string.file_search_pref_key) -> getString(R.string.file_search_title)
+            getString(R.string.media_control_pref_key) -> getString(R.string.media_control_title)
             else -> ""
         }
 

@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher.views
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -11,18 +12,27 @@ import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.preference.Preference
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import javax.inject.Inject
 
 /**
  * Displays a media control card on the home screen when media is playing.
  * Requires notification listener access in order to function properly.
  */
-class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context, attrs) {
-    private val mediaSessionManager =
-        context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+@AndroidEntryPoint
+class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    @Inject
+    lateinit var mediaSessionManager: MediaSessionManager
 
     /**
      * The ComponentName of the notification listener stub
@@ -41,6 +51,15 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
     private val skipBackwardButton: IconButton
     private val skipForwardButton: IconButton
     private val playPauseButton: IconButton
+    private val blurBackground: BlurView
+
+    /**
+     * Gets from SharedPreferences whether media control is enabled by the user
+     */
+    private val isMediaControlEnabled: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.media_control_enabled), true
+        )
 
     /**
      * Listens to changes to the current active media session.
@@ -61,6 +80,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
     }
 
     init {
+        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+
         inflate(context, R.layout.media_control_card, this)
 
         mediaTitle = findViewById(R.id.media_title)
@@ -69,9 +90,14 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
         skipBackwardButton = findViewById(R.id.skip_backward_button)
         skipForwardButton = findViewById(R.id.skip_forward_button)
         playPauseButton = findViewById(R.id.play_pause_button)
+        blurBackground = findViewById(R.id.media_control_blur_background)
 
-        checkNotificationListenerAndUpdate()
-        attachListeners()
+        if (isMediaControlEnabled) {
+            checkNotificationListenerAndUpdate()
+            attachListeners()
+        } else {
+            visibility = View.INVISIBLE
+        }
     }
 
     /**
@@ -83,7 +109,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
      * notification listener for this app when the app is in background.
      */
     fun checkNotificationListenerAndUpdate() {
-        if (isNotificationListenerEnabled()) {
+        if (isMediaControlEnabled && isNotificationListenerEnabled()) {
             val activeMediaSessions = mediaSessionManager.getActiveSessions(
                 notificationListenerStubComponent
             )
@@ -102,15 +128,21 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
 
     private fun attachListeners() {
         playPauseButton.setOnClickListener { togglePlayPause() }
+        skipBackwardButton.setOnClickListener { skipBackward() }
+        skipForwardButton.setOnClickListener { skipForward() }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferenceChanged)
+    }
 
-        skipBackwardButton.setOnClickListener {
-            playPauseButton.disabled = true
-            activeMediaSession?.transportControls?.skipToPrevious()
-        }
+    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if (key == context.getString(R.string.media_control_enabled)) {
+            val isMediaControlEnabled = sharedPreferences.getBoolean(key, false)
 
-        skipForwardButton.setOnClickListener {
-            playPauseButton.disabled = true
-            activeMediaSession?.transportControls?.skipToNext()
+            if (isMediaControlEnabled) {
+                checkNotificationListenerAndUpdate()
+                attachListeners()
+            } else {
+                hideControl()
+            }
         }
     }
 
@@ -141,6 +173,16 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
         )
     }
 
+    private fun skipForward() {
+        playPauseButton.disabled = true
+        activeMediaSession?.transportControls?.skipToNext()
+    }
+
+    private fun skipBackward() {
+        playPauseButton.disabled = true
+        activeMediaSession?.transportControls?.skipToPrevious()
+    }
+
     /**
      * Hide media control. Can be one of the following reasons:
      * - there is no media currently playing
@@ -150,7 +192,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
         visibility = View.INVISIBLE
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
-        pauseBlur()
+        blurBackground.pauseBlur()
     }
 
     /**
@@ -199,7 +241,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : BlurView(context
             it.playbackState?.let(::showPlaybackState)
         }
 
-        startBlur()
+        blurBackground.startBlur()
     }
 
     /**

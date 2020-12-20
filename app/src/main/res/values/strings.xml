@@ -91,6 +91,10 @@
     <!-- Media control preferences -->
     <string name="media_control_title">Media control</string>
     <string name="media_control_summary">Adjust behavior of media control widget</string>
+    <string name="enable_media_control">Enable media control widget</string>
+    <string name="enable_media_control_description">
+        Show a media control widget on the home screen when there is media currently playing.
+    </string>
     <string name="media_control_notification_listener_perm_title">
         Grant notification access
     </string>

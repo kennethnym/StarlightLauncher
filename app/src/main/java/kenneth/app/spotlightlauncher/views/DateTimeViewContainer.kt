@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.views
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple LinearLayout wrapper that
