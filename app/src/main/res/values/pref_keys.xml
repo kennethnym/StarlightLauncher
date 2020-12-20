@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="appearance_pref_key">appearance</string>
+    <string name="appearance_show_app_labels">appearance_show_app_labels</string>
+
     <string name="file_search_pref_key">file_search</string>
     <string name="file_search_enabled">file_search_enabled</string>
     <string name="file_include_paths_category">file_search_paths_category</string>

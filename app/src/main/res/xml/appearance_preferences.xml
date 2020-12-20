@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="@string/appearance_show_app_labels"
+        app:summary="@string/appearance_show_app_labels_summary"
+        app:title="@string/appearance_show_app_labels_title" />
+
+</PreferenceScreen>

@@ -55,6 +55,7 @@ class SettingsActivity : AppCompatActivity(),
         toolbar.title = when (pref.key) {
             getString(R.string.file_search_pref_key) -> getString(R.string.file_search_title)
             getString(R.string.media_control_pref_key) -> getString(R.string.media_control_title)
+            getString(R.string.appearance_pref_key) -> getString(R.string.appearance_title)
             else -> ""
         }
 

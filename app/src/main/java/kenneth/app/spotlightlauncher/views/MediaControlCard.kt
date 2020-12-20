@@ -12,14 +12,18 @@ import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.preference.Preference
+import androidx.core.view.setMargins
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 /**
@@ -27,7 +31,8 @@ import javax.inject.Inject
  * Requires notification listener access in order to function properly.
  */
 @AndroidEntryPoint
-class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class MediaControlCard(context: Context, attrs: AttributeSet) :
+    LinearLayout(context, attrs), LifecycleObserver {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -80,8 +85,6 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
     }
 
     init {
-        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-
         inflate(context, R.layout.media_control_card, this)
 
         mediaTitle = findViewById(R.id.media_title)
@@ -96,8 +99,10 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
             checkNotificationListenerAndUpdate()
             attachListeners()
         } else {
-            visibility = View.INVISIBLE
+            isInvisible = true
         }
+
+        activity?.lifecycle?.addObserver(this)
     }
 
     /**
@@ -108,7 +113,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
      * Call this method when the app resumes, because user may have revoked
      * notification listener for this app when the app is in background.
      */
-    fun checkNotificationListenerAndUpdate() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun checkNotificationListenerAndUpdate() {
         if (isMediaControlEnabled && isNotificationListenerEnabled()) {
             val activeMediaSessions = mediaSessionManager.getActiveSessions(
                 notificationListenerStubComponent
@@ -189,7 +195,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
      * - notification listener is revoked manually by the user
      */
     private fun hideControl() {
-        visibility = View.INVISIBLE
+        isInvisible = true
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
         blurBackground.pauseBlur()
@@ -200,8 +206,6 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
      * Also reflects the changes in the UI.
      */
     private fun updateActiveMediaSession(newSession: MediaController?) {
-        Log.i("", "update")
-
         activeMediaSession = newSession
 
         if (activeMediaSession != null) {
@@ -234,7 +238,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) : LinearLayout(con
      * Shows media control and info for the currently playing media.
      */
     private fun showMediaControl() {
-        visibility = View.VISIBLE
+        isInvisible = false
 
         activeMediaSession?.let {
             it.metadata?.let(::showMediaMetadata)

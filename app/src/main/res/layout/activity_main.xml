@@ -45,7 +45,7 @@
                     android:id="@+id/media_control_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+                    android:layout_marginHorizontal="@dimen/widget_margin_horizontal"
                     android:layout_marginTop="40dp"
                     android:layout_marginBottom="16dp"
                     android:visibility="invisible" />
@@ -83,10 +83,6 @@
                 </LinearLayout>
 
             </kenneth.app.spotlightlauncher.views.BlurView>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="8dp" />
 
             <LinearLayout
                 android:id="@+id/widget_list_container"

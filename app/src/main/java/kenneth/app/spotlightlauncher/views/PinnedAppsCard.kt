@@ -2,7 +2,6 @@ package kenneth.app.spotlightlauncher.views
 
 import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.pm.ResolveInfo
 import android.util.AttributeSet
 import android.util.Log
@@ -11,6 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +25,8 @@ import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PinnedAppsCard(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class PinnedAppsCard(context: Context, attrs: AttributeSet) :
+    LinearLayout(context, attrs), LifecycleObserver {
     @Inject
     lateinit var pinnedAppsPreferenceManager: PinnedAppsPreferenceManager
 
@@ -56,6 +59,13 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) : LinearLayout(conte
         }
 
         findViewById<BlurView>(R.id.pinned_apps_card_blur_background).startBlur()
+
+        activity?.lifecycle?.addObserver(this)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun reloadLabels() {
+        pinnedAppsRecyclerViewAdapter.notifyDataSetChanged()
     }
 
     private fun onPinnedAppsChanged() {

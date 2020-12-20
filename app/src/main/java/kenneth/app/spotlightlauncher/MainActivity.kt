@@ -164,7 +164,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateWallpaper()
-        mediaControlCard.checkNotificationListenerAndUpdate()
     }
 
     override fun onStop() {

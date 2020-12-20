@@ -77,6 +77,12 @@
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
+    <!-- Appearance preferences -->
+    <string name="appearance_title">Appearance</string>
+    <string name="appearance_summary">Adjust how Hub Launcher looks.</string>
+    <string name="appearance_show_app_labels_title">Show app labels</string>
+    <string name="appearance_show_app_labels_summary">Show app labels under app icons.</string>
+
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
     <string name="file_search_summary">Adjust how Spotlight searches your files</string>

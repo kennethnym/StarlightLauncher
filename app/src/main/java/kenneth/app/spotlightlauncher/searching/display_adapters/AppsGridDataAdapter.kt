@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.searching.display_adapters
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ResolveInfo
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +11,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
+import javax.inject.Inject
 
 /**
  * An adapter that displays apps in a grid.
@@ -83,6 +88,11 @@ object AppsGridDataAdapter :
         private lateinit var appOptionMenu: AppOptionMenu
         private lateinit var appInfo: ResolveInfo
 
+        private val appearancePreferenceManager = AppearancePreferenceManager.getInstance(activity)
+            .also {
+                it.registerOnSharedPreferenceChangeListener(::onSharedPreferenceChanged)
+            }
+
         override fun bindWith(data: ResolveInfo) {
             val appInfo = data
 
@@ -99,7 +109,7 @@ object AppsGridDataAdapter :
                     setImageDrawable(appIcon)
                 }
 
-                findViewById<TextView>(R.id.app_label).text = appName
+                setAppLabelVisibility()
 
                 setOnClickListener { openApp() }
 
@@ -107,6 +117,15 @@ object AppsGridDataAdapter :
                     openAppOptionMenu()
                     true
                 }
+            }
+        }
+
+        private fun onSharedPreferenceChanged(
+            @Suppress("UNUSED_PARAMETER") sharedPreferences: SharedPreferences,
+            key: String
+        ) {
+            if (key == appearancePreferenceManager.showAppLabelsPrefKey) {
+                setAppLabelVisibility()
             }
         }
 
@@ -132,6 +151,22 @@ object AppsGridDataAdapter :
          */
         private fun openAppOptionMenu() {
             appOptionMenu.show(withApp = appInfo)
+        }
+
+        /**
+         * Determines the visibility of app label based on whether it is enabled in shared pref
+         */
+        private fun setAppLabelVisibility() {
+            val appName = appInfo.loadLabel(activity.packageManager)
+
+            with(view.findViewById<TextView>(R.id.app_label)) {
+                if (appearancePreferenceManager.showAppLabels) {
+                    isVisible = true
+                    text = appName
+                } else {
+                    isVisible = false
+                }
+            }
         }
     }
 }
