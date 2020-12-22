@@ -1,13 +1,12 @@
 package kenneth.app.spotlightlauncher.views
 
 import android.content.Context
+import android.graphics.Matrix
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Choreographer
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
@@ -36,6 +35,8 @@ open class BlurView @JvmOverloads constructor(
 
     private val blurImageViewId: Int = generateViewId()
 
+    private val blurImageTranslationMatrix = Matrix()
+
     /**
      * Determines if blur should be continuously updated
      */
@@ -63,6 +64,8 @@ open class BlurView @JvmOverloads constructor(
                 scaleType = ImageView.ScaleType.FIT_XY
                 id = blurImageViewId
                 clipToOutline = true
+                scaleType = ImageView.ScaleType.MATRIX
+                imageMatrix = blurImageTranslationMatrix
                 setBackgroundResource(R.drawable.rounded_background)
             }.also { addView(it, 0) }
         )

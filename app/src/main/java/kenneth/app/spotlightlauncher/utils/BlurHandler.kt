@@ -89,13 +89,13 @@ class BlurHandler @Inject constructor(
 
             val viewCoordinates = IntArray(2)
             dest.getLocationOnScreen(viewCoordinates)
-
             val (viewX, viewY) = viewCoordinates
 
             val bitmapX = it.width * max(viewX, 0) / appState.screenWidth
             val bitmapY =
                 it.height * max(min(viewY, appState.screenHeight), 0) / appState.screenHeight
 
+            if (bitmapY >= it.height || bitmapX > it.width) return
             if (bitmapY >= it.height || bitmapX > it.width) return
 
             val bgWidth = min(it.width * dest.width / appState.screenWidth, appState.screenWidth)
@@ -114,6 +114,16 @@ class BlurHandler @Inject constructor(
                     bgWidth,
                     bgHeight,
                 )
+                val bgAspectRatio = bgWidth.toFloat() / bgHeight
+                val destWidthFloat = dest.width.toFloat()
+
+                dest.imageMatrix = Matrix().apply {
+                    setTranslate(0f, if (viewY < 0) -viewY.toFloat() else 0f)
+                    preScale(
+                        destWidthFloat / bgWidth,
+                        destWidthFloat / bgAspectRatio / bgHeight,
+                    )
+                }
 
                 dest.setImageBitmap(bitmap)
             }
