@@ -6,13 +6,15 @@ import android.util.AttributeSet
 import android.view.Choreographer
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.BlurHandler
 import java.lang.ref.WeakReference
 import javax.inject.Inject
+
+private const val BLUR_FPS = 120L
+private const val FRAME_DELAY = 1000 / BLUR_FPS
 
 @AndroidEntryPoint
 open class BlurView @JvmOverloads constructor(
@@ -73,7 +75,7 @@ open class BlurView @JvmOverloads constructor(
 
     fun startBlur() {
         shouldUpdateBlur = true
-        choreographer.postFrameCallbackDelayed(::frameCallback, 1000 / 60)
+        choreographer.postFrameCallbackDelayed(::frameCallback, FRAME_DELAY)
     }
 
     fun pauseBlur() {
@@ -88,7 +90,7 @@ open class BlurView @JvmOverloads constructor(
 
             blurImageView.get()?.let {
                 blurHandler.blurView(it, blurAmount)
-                choreographer.postFrameCallbackDelayed(::frameCallback, 1000 / 60)
+                choreographer.postFrameCallbackDelayed(::frameCallback, FRAME_DELAY)
             }
         }
     }
