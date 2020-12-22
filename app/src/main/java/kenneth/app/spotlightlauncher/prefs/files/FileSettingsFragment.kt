@@ -43,6 +43,7 @@ class FileSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.file_search_preferences, rootKey)
+        changeToolbarTitle()
     }
 
     override fun onDestroy() {
@@ -51,6 +52,11 @@ class FileSettingsFragment : PreferenceFragmentCompat() {
             ?.title = getString(R.string.title_activity_settings)
 
         super.onDestroy()
+    }
+
+    private fun changeToolbarTitle() {
+        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
+            getString(R.string.file_search_title)
     }
 
     private fun openFilePicker(): Boolean {

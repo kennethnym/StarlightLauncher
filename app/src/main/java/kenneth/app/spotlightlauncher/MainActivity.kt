@@ -30,6 +30,7 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
+import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var appearancePreferenceManager: AppearancePreferenceManager
 
     private lateinit var rootView: ConstraintLayout
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -95,6 +99,8 @@ class MainActivity : AppCompatActivity() {
             screenWidth = resources.displayMetrics.widthPixels
             screenHeight = resources.displayMetrics.heightPixels
         }
+
+        appearancePreferenceManager.iconPack?.load()
 
         rootView = findViewById(R.id.root)
         appOptionMenu = findViewById(R.id.app_option_menu)

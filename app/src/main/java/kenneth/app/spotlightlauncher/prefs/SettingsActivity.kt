@@ -1,6 +1,9 @@
 package kenneth.app.spotlightlauncher.prefs
 
+import android.os.Build
+import android.os.Build.VERSION.SDK
 import android.os.Bundle
+import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updatePadding
 import androidx.preference.Preference
@@ -21,7 +24,13 @@ class SettingsActivity : AppCompatActivity(),
 
         toolbar = findViewById<MaterialToolbar>(R.id.settings_toolbar).also {
             it.setOnApplyWindowInsetsListener { view, insets ->
-                view.updatePadding(top = insets.systemWindowInsetTop)
+                view.updatePadding(
+                    top =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        insets.getInsets(WindowInsets.Type.systemBars())
+                            .top
+                    else insets.systemWindowInsetTop
+                )
                 insets
             }
         }
@@ -52,13 +61,6 @@ class SettingsActivity : AppCompatActivity(),
             setTargetFragment(caller, 0)
         }
 
-        toolbar.title = when (pref.key) {
-            getString(R.string.file_search_pref_key) -> getString(R.string.file_search_title)
-            getString(R.string.media_control_pref_key) -> getString(R.string.media_control_title)
-            getString(R.string.appearance_pref_key) -> getString(R.string.appearance_title)
-            else -> ""
-        }
-
         // Replace the existing Fragment with the new Fragment
         supportFragmentManager.beginTransaction()
             .replace(R.id.settings_content, fragment)
@@ -72,6 +74,16 @@ class SettingsActivity : AppCompatActivity(),
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        }
+
+        override fun onResume() {
+            super.onResume()
+            changeToolbarTitle()
+        }
+
+        private fun changeToolbarTitle() {
+            activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
+                getString(R.string.title_activity_settings)
         }
     }
 }

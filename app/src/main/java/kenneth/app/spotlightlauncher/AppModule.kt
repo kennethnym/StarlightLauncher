@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kenneth.app.spotlightlauncher.prefs.appearance.IconPackManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import okhttp3.OkHttpClient
 import java.util.*
@@ -41,6 +42,11 @@ object AppModule {
     @Singleton
     fun provideAppearancePreferenceManager(@ApplicationContext context: Context) =
         AppearancePreferenceManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideIconPackManager(@ApplicationContext context: Context) =
+        IconPackManager.getInstance(context)
 
     @Provides
     @Singleton

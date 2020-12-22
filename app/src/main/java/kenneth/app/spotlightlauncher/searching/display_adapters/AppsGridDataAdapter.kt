@@ -11,16 +11,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
-import javax.inject.Inject
 
 /**
  * An adapter that displays apps in a grid.
@@ -106,7 +105,14 @@ object AppsGridDataAdapter :
             with(view) {
                 findViewById<ImageView>(R.id.app_icon).apply {
                     contentDescription = activity.getString(R.string.app_icon_description, appName)
-                    setImageDrawable(appIcon)
+                    appearancePreferenceManager.iconPack?.let {
+                        setImageBitmap(
+                            it.getIconOf(
+                                appInfo.activityInfo.packageName,
+                                default = appIcon
+                            )
+                        )
+                    } ?: setImageDrawable(appIcon)
                 }
 
                 setAppLabelVisibility()

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="@string/appearance_pref_screen">
 
     <SwitchPreferenceCompat
         app:key="@string/appearance_show_app_labels"
         app:summary="@string/appearance_show_app_labels_summary"
         app:title="@string/appearance_show_app_labels_title" />
+
+    <Preference
+        app:fragment="kenneth.app.spotlightlauncher.prefs.appearance.IconPackSettingsFragment"
+        app:key="@string/appearance_icon_pack"
+        app:summary="@string/appearance_change_icon_pack_summary"
+        app:title="@string/appearance_change_icon_pack_title" />
 
 </PreferenceScreen>

@@ -10,6 +10,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import javax.inject.Inject
@@ -38,6 +39,13 @@ class MediaControlSettingsFragment : PreferenceFragmentCompat() {
                 openNotificationListenerSettings()
                 true
             }
+
+        changeToolbarTitle()
+    }
+
+    private fun changeToolbarTitle() {
+        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
+            getString(R.string.media_control_title)
     }
 
     private fun openNotificationListenerSettings() {

@@ -79,9 +79,22 @@
 
     <!-- Appearance preferences -->
     <string name="appearance_title">Appearance</string>
+    <string name="appearance_icon_pack_title">Icon packs</string>
     <string name="appearance_summary">Adjust how Hub Launcher looks.</string>
     <string name="appearance_show_app_labels_title">Show app labels</string>
     <string name="appearance_show_app_labels_summary">Show app labels under app icons.</string>
+    <string name="appearance_change_icon_pack_title">Change icon pack</string>
+    <string name="appearance_change_icon_pack_summary">
+        Select an icon pack you want the launcher to use
+    </string>
+    <string name="appearance_current_icon_pack">Current icon pack</string>
+    <string name="appearance_no_current_icon_pack">No current icon pack.</string>
+    <string name="appearance_installed_icon_pack">Installed icon pack</string>
+    <string name="appearance_no_supported_icon_packs">No supported icon packs found.</string>
+    <string name="appearance_applying_icon_pack">Applying selected icon pack…</string>
+    <string name="appearance_revert_icon_pack_title">Revert to system icons</string>
+    <string name="appearance_revert_icon_pack_summary">Use default app icons instead.</string>
+    <string name="appearance_icon_pack_already_using_default">Default icons are already in use.</string>
 
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
