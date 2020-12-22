@@ -34,8 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:fitsSystemWindows="false"
-            android:nestedScrollingEnabled="false" />
+            android:fitsSystemWindows="false" />
 
         <TextView
             android:id="@+id/files_section_result_status"

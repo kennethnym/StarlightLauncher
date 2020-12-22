@@ -29,8 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_marginBottom="8dp"
-            android:fitsSystemWindows="false"
-            android:nestedScrollingEnabled="false" />
+            android:fitsSystemWindows="false" />
 
         <TextView
             android:id="@+id/apps_section_no_result"

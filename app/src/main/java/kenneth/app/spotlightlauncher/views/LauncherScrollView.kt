@@ -11,7 +11,7 @@ import kenneth.app.spotlightlauncher.utils.activity
 import kotlin.math.max
 import kotlin.math.min
 
-private const val SCROLL_DIRECTION_DOWN = -1
+private const val SCROLL_DIRECTION_DOWN = 1
 
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
