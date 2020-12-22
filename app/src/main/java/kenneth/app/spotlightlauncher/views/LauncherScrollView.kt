@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -55,52 +56,44 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
 
-    /**
-     * Determines if touch event should be intercepted.
-     * In any of the following cases, it will be intercepted:
-     *   - when the scroll view has reached the bottom. we want to bring the launcher option menu
-     *     when the user keeps swiping up.
-     */
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        return when (ev?.actionMasked) {
-            MotionEvent.ACTION_UP -> isDragging
-            MotionEvent.ACTION_MOVE -> !canScrollVertically(SCROLL_DIRECTION_DOWN)
-            else -> false
-        }
-    }
-
-    override fun performClick(): Boolean {
-        return super.performClick()
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         when (ev?.actionMasked) {
             null -> {
-            }
-            MotionEvent.ACTION_BUTTON_PRESS -> {
-                if (launcherOptionMenu?.isActive == true) {
-                    launcherOptionMenu?.hide()
-                }
-                isDragging = false
-                performClick()
             }
             MotionEvent.ACTION_UP -> {
                 launcherOptionMenu?.let {
                     isDragging = false
 
                     val gestureDuration = System.currentTimeMillis() - initialGestureDownTimestamp
-                    val gestureVelocity = (ev.y - initialY) / gestureDuration
+                    val deltaY = ev.y - initialY
+                    val gestureVelocity = deltaY / gestureDuration
 
-                    if (gestureVelocity > 5) {
-                        it.hide()
-                    } else if (gestureVelocity < -5) {
-                        it.show()
-                    } else {
-                        if (it.isActive) {
-                            // launcherOptionMenu is currently active
-                            it.show()
-                        } else {
+                    when {
+                        deltaY >= -1 && deltaY <= 1 -> {
+                            // user attempted to click the shade of the menu
+                            // hide the menu
+
+                            if (it.isActive) {
+                                it.hide()
+                            }
+                        }
+                        gestureVelocity > 2 -> {
                             it.hide()
+                        }
+                        gestureVelocity < -2 -> {
+                            it.show()
+                        }
+                        else -> {
+                            // gesture too slow
+                            // revert menu back to its position
+
+                            if (it.isActive) {
+                                // launcherOptionMenu is currently active
+                                it.show()
+                            } else {
+                                it.hide()
+                            }
                         }
                     }
                 }

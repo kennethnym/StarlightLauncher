@@ -19,6 +19,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +61,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
+    @Inject
+    lateinit var inputMethodManager: InputMethodManager
 
     private lateinit var rootView: ConstraintLayout
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -219,6 +223,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             addTextChangedListener { text -> handleSearchQuery(text) }
+        }
+
+        searchBoxContainer.setOnClickListener {
+            searchBox.requestFocus()
+            inputMethodManager.toggleSoftInput(
+                InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY,
+            )
         }
 
         with(rootView) {

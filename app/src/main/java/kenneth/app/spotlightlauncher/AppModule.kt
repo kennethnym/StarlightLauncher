@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
 import android.view.Choreographer
+import android.view.inputmethod.InputMethodManager
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import dagger.Module
@@ -42,6 +43,11 @@ object AppModule {
     @Singleton
     fun provideAppearancePreferenceManager(@ApplicationContext context: Context) =
         AppearancePreferenceManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideInputMethodManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
     @Provides
     @Singleton
