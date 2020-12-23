@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
+    android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
@@ -19,13 +19,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/wifi_connected_to_label"
-                android:textAppearance="?attr/textAppearanceOverline" />
+                android:textAppearance="?attr/textAppearanceOverline"
+                android:textColor="?colorOnBackground" />
 
             <TextView
                 android:id="@+id/wifi_network_name_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?colorOnBackground" />
 
         </LinearLayout>
 
@@ -41,11 +43,22 @@
 
     </LinearLayout>
 
-    <Button
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/available_wifi_networks_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false" />
+
+    <kenneth.app.spotlightlauncher.views.TextButton
         android:id="@+id/open_wifi_settings_button"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/section_card_padding"
         android:layout_marginStart="8dp"
         android:text="@string/open_wifi_settings_label" />
 

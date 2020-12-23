@@ -34,7 +34,6 @@ class SuggestedResultAdapter(activity: MainActivity) :
             cardContainer = findViewById(R.id.suggested_section_card)
 
             cardBlurView = findViewById<BlurView>(R.id.suggested_section_card_blur_background)
-                .also { it.startBlur() }
 
             suggestedContentContainer = findViewById<LinearLayout>(R.id.suggested_content)
                 .also { it.removeAllViews() }
@@ -42,6 +41,7 @@ class SuggestedResultAdapter(activity: MainActivity) :
 
         if (result.type != SuggestedResultType.NONE) {
             cardContainer.isVisible = true
+            cardBlurView.startBlur()
 
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)

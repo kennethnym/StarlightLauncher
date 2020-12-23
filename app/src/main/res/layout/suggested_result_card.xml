@@ -13,6 +13,8 @@
         android:id="@+id/suggested_section_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/card_background"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -21,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/section_card_padding"
             android:text="@string/suggested_section_title"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:textAppearance="@style/SearchResultSectionHeader" />
 
         <LinearLayout
             android:id="@+id/suggested_content"

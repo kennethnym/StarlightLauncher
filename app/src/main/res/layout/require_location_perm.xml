@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="16dp"
     android:background="@drawable/require_location_perm_bg"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <TextView
@@ -15,23 +16,24 @@
         android:layout_marginBottom="8dp"
         android:text="@string/wifi_coarse_location_perm_required_label"
         android:textAppearance="?attr/textAppearanceOverline"
-        android:textColor="?attr/colorOnPrimary" />
+        android:textColor="?colorOnBackground" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:text="@string/wifi_coarse_location_perm_required_description"
+        android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceBody1"
-        android:textColor="?attr/colorOnPrimary" />
+        android:textColor="?colorOnBackground" />
 
-    <Button
+    <kenneth.app.spotlightlauncher.views.TextButton
         android:id="@+id/grant_location_permission_button"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginVertical="@dimen/section_card_padding"
         android:text="@string/grant_permission_label"
-        android:textColor="?attr/colorOnPrimary" />
+        android:textColor="?attr/colorOnBackground" />
 
 </LinearLayout>
