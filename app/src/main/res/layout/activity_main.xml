@@ -106,6 +106,10 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/section_card_margin_vertical" />
+
                 <include layout="@layout/suggested_result_card" />
 
                 <include layout="@layout/apps_section_card" />

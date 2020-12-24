@@ -17,15 +17,17 @@ import com.bumptech.glide.Glide
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.getDuckDuckGoRedirectUrlFromQuery
+import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.BlurView
+import javax.inject.Inject
 
 /**
  * An adapter that displays web result to the user.
  */
-class WebResultAdapter(activity: MainActivity) :
-    SectionResultAdapter<SmartSearcher.WebResult>(activity) {
+class WebResultAdapter @Inject constructor(private val activity: Activity) :
+    SectionResultAdapter<SmartSearcher.WebResult>() {
     private lateinit var webResultCard: LinearLayout
     private lateinit var cardBlurBackground: BlurView
 

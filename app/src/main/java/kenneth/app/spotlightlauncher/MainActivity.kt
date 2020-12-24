@@ -6,6 +6,8 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -29,7 +31,12 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.searching.SearchType
@@ -40,7 +47,22 @@ import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
 import kenneth.app.spotlightlauncher.utils.calculateBitmapBrightness
 import kenneth.app.spotlightlauncher.utils.viewToBitmap
 import kenneth.app.spotlightlauncher.views.*
+import javax.annotation.Nullable
 import javax.inject.Inject
+
+@Module
+@InstallIn(ActivityComponent::class)
+object MainActivityModule {
+    @Provides
+    fun provideMainActivity(@ActivityContext context: Context): MainActivity? {
+        var ctx = context
+        while (ctx is ContextWrapper) {
+            if (ctx is MainActivity) return ctx
+            ctx = ctx.baseContext
+        }
+        return null
+    }
+}
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

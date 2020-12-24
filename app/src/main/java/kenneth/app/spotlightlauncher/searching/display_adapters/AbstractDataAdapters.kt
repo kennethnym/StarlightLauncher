@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +10,7 @@ import kenneth.app.spotlightlauncher.MainActivity
  * A regular adapter interface to display search results. If the result needs to be displayed in
  * a RecyclerView, use SectionRecyclerViewAdapter.
  */
-abstract class SectionResultAdapter<T>(protected val activity: MainActivity) {
+abstract class SectionResultAdapter<T> {
     abstract fun displayResult(result: T)
 }
 

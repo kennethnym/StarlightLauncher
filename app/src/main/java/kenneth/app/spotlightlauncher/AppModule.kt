@@ -1,8 +1,10 @@
 package kenneth.app.spotlightlauncher
 
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
+import android.net.wifi.WifiManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
 import androidx.preference.Preference
@@ -48,6 +50,16 @@ object AppModule {
     @Singleton
     fun provideInputMethodManager(@ApplicationContext context: Context) =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    @Provides
+    @Singleton
+    fun provideBluetoothManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+
+    @Provides
+    @Singleton
+    fun provideWifiManager(@ApplicationContext context: Context) =
+        context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     @Provides
     @Singleton

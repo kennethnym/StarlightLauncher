@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/toggle_bluetooth_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?backgroundColor"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/section_card_padding"
@@ -20,7 +22,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bluetooth_label"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            android:textColor="?colorOnBackground"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Space
             android:layout_width="0dp"
@@ -36,41 +40,18 @@
 
     <Space
         android:layout_width="0dp"
-        android:layout_height="@dimen/section_card_padding" />
+        android:layout_height="8dp" />
 
-    <LinearLayout
-        android:id="@+id/nearby_bluetooth_device_list_container"
-        android:layout_width="match_parent"
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+
+    <kenneth.app.spotlightlauncher.views.TextButton
+        android:id="@+id/open_bluetooth_settings_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/section_card_padding"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
-            android:layout_marginBottom="8dp"
-            android:text="@string/bluetooth_nearby_devices_label"
-            android:textAppearance="?attr/textAppearanceOverline" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/nearby_bluetooth_device_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/section_card_padding"
-            android:nestedScrollingEnabled="false"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/no_nearby_bluetooth_devices_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
-            android:text="@string/bluetooth_no_nearby_devices_label"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:visibility="gone" />
-
-    </LinearLayout>
+        android:layout_marginVertical="@dimen/section_card_padding"
+        android:text="@string/open_bluetooth_settings_label" />
 
 </LinearLayout>

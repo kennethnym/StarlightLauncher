@@ -1,19 +1,45 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
+import android.net.wifi.WifiManager
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
-import com.google.android.material.card.MaterialCardView
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
+import kenneth.app.spotlightlauncher.searching.display_adapters.bluetooth.BluetoothController
 import kenneth.app.spotlightlauncher.views.BlurView
+import javax.inject.Inject
 
-class SuggestedResultAdapter(activity: MainActivity) :
-    SectionResultAdapter<SmartSearcher.SuggestedResult>(activity) {
+@Module
+@InstallIn(ActivityComponent::class)
+object SuggestedResultAdapterModule {
+    @Provides
+    fun provideWifiController(
+        mainActivity: MainActivity?,
+        wifiManager: WifiManager
+    ): WifiController? =
+        if (mainActivity == null) {
+            null
+        } else {
+            WifiController(mainActivity, wifiManager)
+        }
+}
+
+class SuggestedResultAdapter @Inject constructor(
+    private val activity: Activity,
+    private val bluetoothController: BluetoothController,
+    private val wifiController: WifiController?,
+) :
+    SectionResultAdapter<SmartSearcher.SuggestedResult>() {
     /**
      * The entire card view that displays suggested result
      */
@@ -26,15 +52,10 @@ class SuggestedResultAdapter(activity: MainActivity) :
      */
     private lateinit var suggestedContentContainer: LinearLayout
 
-    private val wifiController = WifiController(activity)
-    private val bluetoothController = BluetoothController(activity)
-
     override fun displayResult(result: SmartSearcher.SuggestedResult) {
         with(activity) {
             cardContainer = findViewById(R.id.suggested_section_card)
-
-            cardBlurView = findViewById<BlurView>(R.id.suggested_section_card_blur_background)
-
+            cardBlurView = findViewById(R.id.suggested_section_card_blur_background)
             suggestedContentContainer = findViewById<LinearLayout>(R.id.suggested_content)
                 .also { it.removeAllViews() }
         }
@@ -45,9 +66,16 @@ class SuggestedResultAdapter(activity: MainActivity) :
 
             when (result.type) {
                 SuggestedResultType.MATH -> displayMathResult(result)
-                SuggestedResultType.WIFI -> wifiController.displayWifiControl(
-                    suggestedContentContainer
-                )
+                SuggestedResultType.WIFI -> {
+                    if (wifiController != null) {
+                        wifiController.displayWifiControl(
+                            suggestedContentContainer
+                        )
+                    } else {
+                        cardContainer.isVisible = false
+                        cardBlurView.pauseBlur()
+                    }
+                }
                 SuggestedResultType.BLUETOOTH -> bluetoothController.displayBluetoothControl(
                     suggestedContentContainer
                 )

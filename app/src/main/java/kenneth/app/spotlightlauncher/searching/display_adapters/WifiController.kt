@@ -20,34 +20,40 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import javax.inject.Inject
 
-class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
+/**
+ * Controls the behavior of the wifi control suggested results.
+ */
+class WifiController constructor(
+    private val mainActivity: MainActivity,
+    private val wifiManager: WifiManager,
+) : BroadcastReceiver() {
     private lateinit var parentView: LinearLayout
     private lateinit var wifiLabel: TextView
     private lateinit var wifiSwitch: Switch
 
     private val requestPermissionLauncher: ActivityResultLauncher<String>
-    private val wifiManager =
-        activity.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     private val ssid: String
         get() =
             if (wifiManager.isWifiEnabled && wifiManager.connectionInfo.supplicantState == SupplicantState.COMPLETED)
                 wifiManager.connectionInfo.ssid
             else if (wifiManager.isWifiEnabled)
-                activity.getString(R.string.unknown_wifi_network_label)
+                mainActivity.getString(R.string.unknown_wifi_network_label)
             else
-                activity.getString(R.string.wifi_not_connected)
+                mainActivity.getString(R.string.wifi_not_connected)
 
     init {
+
         val intentReceiverFilter = IntentFilter().apply {
             addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
             addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         }
 
-        activity.registerReceiver(this, intentReceiverFilter)
+        mainActivity.registerReceiver(this, intentReceiverFilter)
 
-        requestPermissionLauncher = activity.registerForActivityResult(
+        requestPermissionLauncher = mainActivity.registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
             ::handlePermissionResult
         )
@@ -70,25 +76,25 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
     fun displayWifiControl(parentView: LinearLayout) {
         this.parentView = parentView
 
-        wifiLabel = activity.findViewById(R.id.wifi_network_name_label)
-            ?: LayoutInflater.from(activity)
+        wifiLabel = mainActivity.findViewById(R.id.wifi_network_name_label)
+            ?: LayoutInflater.from(mainActivity)
                 .inflate(
                     R.layout.wifi_control,
                     parentView,
                 ).findViewById(R.id.wifi_network_name_label)
 
-        wifiSwitch = activity.findViewById<Switch>(R.id.wifi_switch)
+        wifiSwitch = mainActivity.findViewById<Switch>(R.id.wifi_switch)
 
         val hasCoarseLocationPermission =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                activity.applicationContext.checkSelfPermission(
+                mainActivity.applicationContext.checkSelfPermission(
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             else true
 
         val isWifiEnabled = wifiManager.isWifiEnabled
 
-        with(activity) {
+        with(mainActivity) {
             wifiSwitch.apply {
                 isChecked = isWifiEnabled
                 setOnClickListener(::toggleWifi)
@@ -102,11 +108,11 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
             wifiLabel.text = ssid
         } else {
             wifiLabel.text =
-                if (isWifiEnabled) activity.getString(R.string.unknown_wifi_network_label)
-                else activity.getString(R.string.wifi_not_connected)
+                if (isWifiEnabled) mainActivity.getString(R.string.unknown_wifi_network_label)
+                else mainActivity.getString(R.string.wifi_not_connected)
 
-            if (activity.findViewById<LinearLayout>(R.id.require_location_perm_notification) == null) {
-                val notification = LayoutInflater.from(activity)
+            if (mainActivity.findViewById<LinearLayout>(R.id.require_location_perm_notification) == null) {
+                val notification = LayoutInflater.from(mainActivity)
                     .inflate(R.layout.require_location_perm, parentView, false)
                     .also {
                         it.findViewById<Button>(R.id.grant_location_permission_button)
@@ -122,7 +128,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
      * Unregister intent receiver registered by WifiController
      */
     fun unregisterIntentReceiver() {
-        activity.unregisterReceiver(this)
+        mainActivity.unregisterReceiver(this)
     }
 
     private fun askForLocationPermission() {
@@ -132,7 +138,7 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
     private fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
             parentView.removeView(
-                activity.findViewById(R.id.require_location_perm_notification)
+                mainActivity.findViewById(R.id.require_location_perm_notification)
             )
             wifiLabel.text = ssid
         }
@@ -148,13 +154,13 @@ class WifiController(private val activity: MainActivity) : BroadcastReceiver() {
             // first, undo the check
             switch.isChecked = !switch.isChecked
 
-            activity.startActivity(Intent(Settings.Panel.ACTION_WIFI))
+            mainActivity.startActivity(Intent(Settings.Panel.ACTION_WIFI))
         } else {
             wifiManager.isWifiEnabled = switch.isChecked
         }
     }
 
     private fun openWifiSettings() {
-        activity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+        mainActivity.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
     }
 }

@@ -1,5 +1,6 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.widget.LinearLayout
@@ -29,14 +30,6 @@ object AdaptersModule {
     @Provides
     fun provideFileListAdapter(@ActivityContext context: Context) =
         FileListDataAdapter.getInstance(context as MainActivity)
-
-    @Provides
-    fun provideSuggestedResultAdapter(@ActivityContext context: Context) =
-        SuggestedResultAdapter(context as MainActivity)
-
-    @Provides
-    fun provideWebResultAdapter(@ActivityContext context: Context) =
-        WebResultAdapter(context as MainActivity)
 }
 
 /**
@@ -44,7 +37,7 @@ object AdaptersModule {
  * adapters into one class.
  */
 class ResultAdapter @Inject constructor(
-    @ActivityContext private val context: Context,
+    private val activity: Activity,
     private val webResultAdapter: WebResultAdapter,
     private val appsGridAdapter: AppsGridDataAdapter,
     private val fileListAdapter: FileListDataAdapter,
@@ -52,8 +45,6 @@ class ResultAdapter @Inject constructor(
 ) {
     private lateinit var widgetListContainer: LinearLayout
     private lateinit var sectionCardList: LinearLayout
-
-    private val activity = context as MainActivity
 
     fun displayResult(result: Searcher.Result, type: SearchType) {
         with(activity) {

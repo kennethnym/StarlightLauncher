@@ -57,6 +57,10 @@
     <string name="bluetooth_nearby_devices_label">Nearby devices</string>
     <string name="bluetooth_device_type_icon_description">%1$s icon</string>
     <string name="bluetooth_no_nearby_devices_label">No nearby devices</string>
+    <string name="open_bluetooth_settings_label">Open Bluetooth settings</string>
+    <string name="bluetooth_device_connected">Connected</string>
+    <string name="bluetooth_device_connecting">Connecting</string>
+    <string name="bluetooth_device_disconnecting">Disconnecting</string>
 
     <!-- Web result -->
     <string name="web_result_label">Web Result</string>
