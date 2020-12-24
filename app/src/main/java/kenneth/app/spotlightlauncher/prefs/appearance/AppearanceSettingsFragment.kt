@@ -21,8 +21,11 @@ class AppearanceSettingsFragment : PreferenceFragmentCompat(),
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.appearance_preferences, rootKey)
 
-        findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_app_labels))
-            ?.isChecked = appearancePreferenceManager.showAppLabels
+        findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_pinned_apps_labels))
+            ?.isChecked = appearancePreferenceManager.showNamesOfPinnedApps
+
+        findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_app_names_in_search_result))
+            ?.isChecked = appearancePreferenceManager.showAppNamesInSearchResult
 
         changeToolbarTitle()
     }

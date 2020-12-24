@@ -2,12 +2,12 @@
 <resources>
     <string name="appearance_pref_key">appearance</string>
     <string name="appearance_pref_screen">appearance_pref_screen</string>
-    <string name="appearance_show_app_labels">appearance_show_app_labels</string>
+    <string name="appearance_show_pinned_apps_labels">appearance_show_pinned_apps_labels</string>
+    <string name="appearance_show_app_names_in_search_result">appearance_show_app_names_in_search_result</string>
     <string name="appearance_icon_pack">appearance_icon_pack</string>
     <string name="appearance_current_icon_pack_category">appearance_current_icon_pack</string>
     <string name="appearance_installed_icon_pack_category">appearance_installed_icon_pack</string>
     <string name="appearance_revert_icon_pack">appearance_revert_icon_pack</string>
-
 
     <string name="file_search_pref_key">file_search</string>
     <string name="file_search_enabled">file_search_enabled</string>

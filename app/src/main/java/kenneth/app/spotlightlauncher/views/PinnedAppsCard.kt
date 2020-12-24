@@ -16,12 +16,15 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.AppModule
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
+import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.searching.AppSearcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.AppsGridDataAdapter
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
+import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,8 +53,13 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
                     if (pinnedApps.isNotEmpty()) {
                         isVisible = true
                         adapter.displayData(pinnedApps)
+                        it.lifecycle.addObserver(this)
                     } else {
                         isVisible = false
+                        try {
+                            it.lifecycle.removeObserver(this)
+                        } catch (ex: Exception) {
+                        }
                     }
 
                     pinnedAppsPreferenceManager.setPinnedAppsListener(::onPinnedAppsChanged)
@@ -59,13 +67,11 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
         }
 
         findViewById<BlurView>(R.id.pinned_apps_card_blur_background).startBlur()
-
-        activity?.lifecycle?.addObserver(this)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun reloadLabels() {
-        pinnedAppsRecyclerViewAdapter.notifyDataSetChanged()
+        pinnedAppsRecyclerViewAdapter.reloadLabels()
     }
 
     private fun onPinnedAppsChanged() {
@@ -85,6 +91,8 @@ object PinnedAppsRecyclerViewAdapter :
      */
     private lateinit var viewParent: View
 
+    private lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
     override val layoutManager: RecyclerView.LayoutManager
         get() = GridLayoutManager(activity, 5)
 
@@ -93,11 +101,15 @@ object PinnedAppsRecyclerViewAdapter :
 
     override fun getInstance(activity: Activity) = this.apply {
         this.activity = activity
+        appearancePreferenceManager =
+            AppModule.provideAppearancePreferenceManager(activity.applicationContext)
     }
 
     fun getInstance(activity: Activity, viewParent: View) = this.apply {
         this.activity = activity
         this.viewParent = viewParent
+        appearancePreferenceManager =
+            AppModule.provideAppearancePreferenceManager(activity.applicationContext)
     }
 
     override fun onCreateViewHolder(
@@ -107,12 +119,25 @@ object PinnedAppsRecyclerViewAdapter :
         val gridItem = LayoutInflater.from(parent.context)
             .inflate(R.layout.apps_grid_item, parent, false) as LinearLayout
 
-        return AppsGridDataAdapter.ViewHolder(gridItem, activity)
+        return AppsGridDataAdapter.ViewHolder(gridItem, activity).apply {
+            showLabel = appearancePreferenceManager.showNamesOfPinnedApps
+        }
     }
 
     override fun displayData(data: List<ResolveInfo>?) {
         super.displayData(data)
         data?.let { this.data = it }
+        notifyDataSetChanged()
+    }
+
+    fun reloadLabels() {
+        for (i in 0 until itemCount) {
+            recyclerView.getChildAt(i)?.let {
+                ((recyclerView.getChildViewHolder(it)) as AppsGridDataAdapter.ViewHolder)
+                    .showLabel = appearancePreferenceManager.showNamesOfPinnedApps
+            }
+        }
+
         notifyDataSetChanged()
     }
 }

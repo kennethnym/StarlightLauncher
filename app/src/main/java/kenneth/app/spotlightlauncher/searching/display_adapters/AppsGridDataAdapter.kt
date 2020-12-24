@@ -11,10 +11,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.graphics.drawable.toBitmap
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kenneth.app.spotlightlauncher.AppModule
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
@@ -25,7 +29,7 @@ import kenneth.app.spotlightlauncher.views.BlurView
  * An adapter that displays apps in a grid.
  */
 object AppsGridDataAdapter :
-    RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>() {
+    RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>(), LifecycleObserver {
     /**
      * The card container that is containing this RecyclerView
      */
@@ -33,19 +37,27 @@ object AppsGridDataAdapter :
 
     private lateinit var cardBlurBackground: BlurView
 
+    private lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
     override val layoutManager: GridLayoutManager
         get() = GridLayoutManager(activity, 5)
 
     override val recyclerView: RecyclerView
         get() = activity.findViewById(R.id.apps_grid)
 
-    override fun getInstance(activity: Activity) = this.apply { this.activity = activity }
+    override fun getInstance(activity: Activity) = this.apply {
+        this.activity = activity
+        appearancePreferenceManager =
+            AppModule.provideAppearancePreferenceManager(activity.applicationContext)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val gridItem = LayoutInflater.from(parent.context)
             .inflate(R.layout.apps_grid_item, parent, false) as LinearLayout
 
-        return ViewHolder(gridItem, activity)
+        return ViewHolder(gridItem, activity).apply {
+            showLabel = appearancePreferenceManager.showAppNamesInSearchResult
+        }
     }
 
     override fun displayData(data: List<ResolveInfo>?) {
@@ -72,25 +84,52 @@ object AppsGridDataAdapter :
 
             this.data = data
             notifyDataSetChanged()
+
+            (activity as? AppCompatActivity).let {
+                it?.lifecycle?.addObserver(this)
+            }
         }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun onResume() {
+        reloadAppLabels()
+    }
+
     fun hideAppsGrid() {
+        (activity as? AppCompatActivity).let {
+            it?.lifecycle?.removeObserver(this)
+        }
+
         if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
             cardBlurBackground.pauseBlur()
             cardContainer.visibility = View.GONE
         }
     }
 
+    private fun reloadAppLabels() {
+        for (i in 0 until itemCount) {
+            recyclerView.getChildAt(i)?.let {
+                (recyclerView.getChildViewHolder(it) as ViewHolder)
+                    .showLabel = appearancePreferenceManager.showAppNamesInSearchResult
+
+            }
+        }
+
+        notifyDataSetChanged()
+    }
+
     class ViewHolder(view: View, activity: Activity) :
         RecyclerViewDataAdapter.ViewHolder<ResolveInfo>(view, activity) {
+        /**
+         * Whether this app item should show app name under the icon.
+         */
+        var showLabel: Boolean = true
+
         private lateinit var appOptionMenu: AppOptionMenu
         private lateinit var appInfo: ResolveInfo
 
         private val appearancePreferenceManager = AppearancePreferenceManager.getInstance(activity)
-            .also {
-                it.registerOnSharedPreferenceChangeListener(::onSharedPreferenceChanged)
-            }
 
         override fun bindWith(data: ResolveInfo) {
             val appInfo = data
@@ -126,15 +165,6 @@ object AppsGridDataAdapter :
             }
         }
 
-        private fun onSharedPreferenceChanged(
-            @Suppress("UNUSED_PARAMETER") sharedPreferences: SharedPreferences,
-            key: String
-        ) {
-            if (key == appearancePreferenceManager.showAppLabelsPrefKey) {
-                setAppLabelVisibility()
-            }
-        }
-
         /**
          * Launch the clicked app
          */
@@ -166,7 +196,7 @@ object AppsGridDataAdapter :
             val appName = appInfo.loadLabel(activity.packageManager)
 
             with(view.findViewById<TextView>(R.id.app_label)) {
-                if (appearancePreferenceManager.showAppLabels) {
+                if (showLabel) {
                     isVisible = true
                     text = appName
                 } else {
