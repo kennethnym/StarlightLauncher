@@ -58,62 +58,81 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        when (ev?.actionMasked) {
-            null -> {
-            }
-            MotionEvent.ACTION_UP -> {
-                launcherOptionMenu?.let {
-                    isDragging = false
+        if (!canScrollVertically(SCROLL_DIRECTION_DOWN)) {
+            when (ev?.actionMasked) {
+                null -> {
+                }
+                MotionEvent.ACTION_UP -> {
+                    launcherOptionMenu?.let {
+                        isDragging = false
 
-                    val gestureDuration = System.currentTimeMillis() - initialGestureDownTimestamp
-                    val deltaY = ev.y - initialY
-                    val gestureVelocity = deltaY / gestureDuration
+                        val gestureDuration =
+                            System.currentTimeMillis() - initialGestureDownTimestamp
+                        val deltaY = ev.y - initialY
+                        val gestureVelocity = deltaY / gestureDuration
 
-                    when {
-                        deltaY >= -1 && deltaY <= 1 -> {
-                            // user attempted to click the shade of the menu
-                            // hide the menu
+                        when {
+                            deltaY >= -1 && deltaY <= 1 -> {
+                                // user attempted to click the shade of the menu
+                                // hide the menu
 
-                            if (it.isActive) {
+                                if (it.isActive) {
+                                    it.hide()
+                                }
+                            }
+                            gestureVelocity > 2 -> {
                                 it.hide()
                             }
-                        }
-                        gestureVelocity > 2 -> {
-                            it.hide()
-                        }
-                        gestureVelocity < -2 -> {
-                            it.show()
-                        }
-                        else -> {
-                            // gesture too slow
-                            // revert menu back to its position
-
-                            if (it.isActive) {
-                                // launcherOptionMenu is currently active
+                            gestureVelocity < -2 -> {
                                 it.show()
+                            }
+                            else -> {
+                                // gesture too slow
+                                // revert menu back to its position
+
+                                if (it.isActive) {
+                                    // launcherOptionMenu is currently active
+                                    it.show()
+                                } else {
+                                    it.hide()
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    launcherOptionMenu?.let {
+                        if (!isDragging) {
+                            isDragging = true
+                            initialGestureDownTimestamp = System.currentTimeMillis()
+                            initialY = ev.y
+                            prevY = initialY
+                            it.isVisible = true
+                        } else {
+                            val delta = ev.y - prevY
+
+                            // when scrolled to bottom, all gestures are intercepted, including
+                            // when the user wants to scroll back up.
+                            // we have to make sure to allow the user to scroll back up
+                            // when the menu is not active.
+                            //
+                            // if the menu is active or when the user is swiping up,
+                            // count them as interactions with the menu.
+                            // otherwise, let the scroll view handle the gesture.
+
+                            if (it.isActive || delta < 0) {
+                                it.translationY =
+                                    min(it.height.toFloat(), max(0f, it.translationY + delta * 2f))
+                                prevY = ev.y
                             } else {
-                                it.hide()
+                                return super.onTouchEvent(ev)
                             }
                         }
                     }
                 }
             }
-            else -> {
-                launcherOptionMenu?.let {
-                    if (!isDragging) {
-                        isDragging = true
-                        initialGestureDownTimestamp = System.currentTimeMillis()
-                        initialY = ev.y
-                        prevY = initialY
-                        it.isVisible = true
-                    } else {
-                        val delta = ev.y - prevY
-                        it.translationY =
-                            min(it.height.toFloat(), max(0f, it.translationY + delta * 2f))
-                        prevY = ev.y
-                    }
-                }
-            }
+
+            return true
         }
 
         return super.onTouchEvent(ev)

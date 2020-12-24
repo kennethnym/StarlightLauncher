@@ -26,10 +26,10 @@ import kenneth.app.spotlightlauncher.utils.navBarHeight
  */
 open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     /**
-     * Determines if menu is currently being shown on the screen.
+     * Determines if menu is currently being (partially or fully) shown on the screen.
      */
     val isActive: Boolean
-        get() = translationY == 0f
+        get() = translationY != menuHeight.toFloat()
 
     private var menuHeight = 0
 
