@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.searching.display_adapters
+package kenneth.app.spotlightlauncher.searching.display_adapters.suggested
 
 import android.Manifest
 import android.content.BroadcastReceiver
@@ -20,7 +20,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
-import javax.inject.Inject
 
 /**
  * Controls the behavior of the wifi control suggested results.
@@ -45,7 +44,6 @@ class WifiController constructor(
                 mainActivity.getString(R.string.wifi_not_connected)
 
     init {
-
         val intentReceiverFilter = IntentFilter().apply {
             addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
             addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)

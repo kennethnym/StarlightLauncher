@@ -1,5 +1,7 @@
 package kenneth.app.spotlightlauncher.searching
 
+import android.util.Patterns
+import android.webkit.URLUtil
 import com.github.keelar.exprk.Expressions
 import dagger.Module
 import dagger.Provides
@@ -9,10 +11,11 @@ import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 enum class SuggestedResultType {
-    NONE, MATH, WIFI, BLUETOOTH
+    NONE, MATH, WIFI, BLUETOOTH, URL
 }
 
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
@@ -63,6 +66,11 @@ class SmartSearcher @Inject constructor(
                     SuggestedResult(
                         query = keyword,
                         type = SuggestedResultType.BLUETOOTH,
+                    )
+                Patterns.WEB_URL.matcher(keyword).matches() ->
+                    SuggestedResult(
+                        query = keyword,
+                        type = SuggestedResultType.URL,
                     )
                 else -> SuggestedResult(
                     query = keyword,

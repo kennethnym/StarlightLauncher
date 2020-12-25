@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.searching.display_adapters.bluetooth
+package kenneth.app.spotlightlauncher.searching.display_adapters.suggested
 
 import android.app.Activity
 import android.bluetooth.*

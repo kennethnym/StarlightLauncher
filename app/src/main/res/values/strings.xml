@@ -62,6 +62,9 @@
     <string name="bluetooth_device_connecting">Connecting</string>
     <string name="bluetooth_device_disconnecting">Disconnecting</string>
 
+    <!-- URL opener -->
+    <string name="open_url_in_browser_label">Open URL in browser</string>
+
     <!-- Web result -->
     <string name="web_result_label">Web Result</string>
     <string name="open_in_browser_label">Open in Browser</string>

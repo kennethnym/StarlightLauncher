@@ -15,7 +15,9 @@ import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
-import kenneth.app.spotlightlauncher.searching.display_adapters.bluetooth.BluetoothController
+import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.BluetoothController
+import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.URLOpener
+import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.WifiController
 import kenneth.app.spotlightlauncher.views.BlurView
 import javax.inject.Inject
 
@@ -32,12 +34,20 @@ object SuggestedResultAdapterModule {
         } else {
             WifiController(mainActivity, wifiManager)
         }
+
+    @Provides
+    fun provideURLOpener(mainActivity: MainActivity?) =
+        if (mainActivity == null)
+            null
+        else
+            URLOpener(mainActivity)
 }
 
 class SuggestedResultAdapter @Inject constructor(
     private val activity: Activity,
     private val bluetoothController: BluetoothController,
     private val wifiController: WifiController?,
+    private val urlOpener: URLOpener?,
 ) :
     SectionResultAdapter<SmartSearcher.SuggestedResult>() {
     /**
@@ -78,6 +88,10 @@ class SuggestedResultAdapter @Inject constructor(
                 }
                 SuggestedResultType.BLUETOOTH -> bluetoothController.displayBluetoothControl(
                     suggestedContentContainer
+                )
+                SuggestedResultType.URL -> urlOpener?.displayControl(
+                    suggestedContentContainer,
+                    url = result.query
                 )
                 else -> {
                 }
