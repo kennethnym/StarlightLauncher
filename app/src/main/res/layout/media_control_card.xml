@@ -9,13 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_background"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:layout_marginHorizontal="@dimen/media_control_padding"
+            android:layout_marginTop="@dimen/media_control_padding">
 
             <ImageView
                 android:id="@+id/media_cover"
@@ -91,11 +92,21 @@
 
         </LinearLayout>
 
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="16dp" />
+
         <SeekBar
             android:id="@+id/media_seek_bar"
+            android:thumbTint="?colorOnBackground"
+            android:progressTint="?colorOnBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_marginHorizontal="8dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
 
     </LinearLayout>
 

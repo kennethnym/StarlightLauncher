@@ -18,6 +18,7 @@
     <dimen name="material_list_item_avatar_padding_right">16dp</dimen>
     <dimen name="file_list_item_padding_horizontal">8dp</dimen>
 
+    <dimen name="media_control_padding">24dp</dimen>
     <dimen name="media_control_button_size">24dp</dimen>
     <dimen name="media_control_button_space">16dp</dimen>
 

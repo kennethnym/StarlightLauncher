@@ -10,20 +10,19 @@ import android.media.session.PlaybackState
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
-import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.core.view.setMargins
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 /**
@@ -48,15 +47,41 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     private val playButtonDrawable = context.getDrawable(R.drawable.ic_play)!!
     private val pauseButtonDrawable = context.getDrawable(R.drawable.ic_pause)!!
 
+    /**
+     * True when user seeks to another position. Used by the polling function to prevent
+     * it from reverting the seek bar back to the old position.
+     *
+     * Since TransportControl.seekTo does not change the position immediately,
+     * when the seek bar is moved by the user, the polling function needs to stop updating seek bar value
+     * until position of actionMediaSession is updated, otherwise it'd immediately get back
+     * the old position from activeMediaSession and it'd change the position of seek bar
+     * to the old position.
+     */
+    private var newProgressSet = false
+
     private var activeMediaSession: MediaController? = null
 
     private val mediaTitle: TextView
     private val mediaArtist: TextView
     private val mediaCover: ImageView
+    private val mediaSeekBar: SeekBar
     private val skipBackwardButton: IconButton
     private val skipForwardButton: IconButton
     private val playPauseButton: IconButton
     private val blurBackground: BlurView
+
+    /**
+     * This thread is used to poll and show the current media progress, since there is no listeners
+     * available to listen to media progress.
+     */
+    private val mediaProgressPollingScope = CoroutineScope(Dispatchers.Default)
+    private var pollMediaProgress = false
+        set(poll) {
+            field = poll
+            if (poll) {
+                pollAndShowMediaProgress()
+            }
+        }
 
     /**
      * Gets from SharedPreferences whether media control is enabled by the user
@@ -71,16 +96,32 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private val activeMediaSessionListener = object : MediaController.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            if (metadata != null) showMediaMetadata(metadata)
+            metadata?.let { showMediaMetadata(it) }
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            if (state != null) showPlaybackState(state)
+            state?.let { showPlaybackState(it) }
         }
 
         override fun onSessionDestroyed() {
             activeMediaSession?.unregisterCallback(this)
             activeMediaSession = null
+        }
+    }
+
+    private val mediaSeekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
+
+        override fun onStartTrackingTouch(seekBar: SeekBar) {
+            pollMediaProgress = false
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            newProgressSet = true
+            pollMediaProgress = true
+            seekBar?.let {
+                activeMediaSession?.transportControls?.seekTo(it.progress.toLong())
+            }
         }
     }
 
@@ -90,6 +131,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         mediaTitle = findViewById(R.id.media_title)
         mediaArtist = findViewById(R.id.media_artist_name)
         mediaCover = findViewById(R.id.media_cover)
+        mediaSeekBar = findViewById(R.id.media_seek_bar)
         skipBackwardButton = findViewById(R.id.skip_backward_button)
         skipForwardButton = findViewById(R.id.skip_forward_button)
         playPauseButton = findViewById(R.id.play_pause_button)
@@ -168,7 +210,6 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      * the currently active MediaController when active session changes.
      */
     private fun addMediaSessionListener() {
-        Log.i("", "add listener")
         mediaSessionManager.addOnActiveSessionsChangedListener(
             { sessions ->
                 if (sessions != null && sessions.isNotEmpty()) {
@@ -196,6 +237,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private fun hideControl() {
         isInvisible = true
+        pollMediaProgress = false
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
         blurBackground.pauseBlur()
@@ -211,6 +253,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         if (activeMediaSession != null) {
             showMediaControl()
             activeMediaSession?.registerCallback(activeMediaSessionListener)
+            pollMediaProgress = true
         } else {
             hideControl()
         }
@@ -252,20 +295,31 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      * Reflects the given MediaMetadata to the UI.
      */
     private fun showMediaMetadata(mediaMetadata: MediaMetadata) {
-        mediaTitle.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM)
+        mediaTitle.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_TITLE)
             ?: context.getString(R.string.no_album_title_label)
 
         mediaArtist.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
             ?: context.getString(R.string.no_artist_label)
 
         mediaCover.apply {
-            val coverBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+            val coverBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
 
             if (coverBitmap != null) {
                 isVisible = true
                 setImageBitmap(coverBitmap)
             } else {
                 isVisible = false
+            }
+        }
+
+        mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
+            if (it != 0L) {
+                mediaSeekBar.apply {
+                    isVisible = true
+                    max = it.toInt()
+                }.also { seekBar ->
+                    seekBar.setOnSeekBarChangeListener(mediaSeekBarChangeListener)
+                }
             }
         }
     }
@@ -295,11 +349,43 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             }
         }
 
+        mediaSeekBar.apply {
+            progress = playbackState.position.toInt()
+            isEnabled = playbackState.actions and PlaybackState.ACTION_SEEK_TO != 0L
+        }
+
         skipBackwardButton.disabled =
             playbackState.actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS == 0L
 
         skipForwardButton.disabled =
             playbackState.actions and PlaybackState.ACTION_SKIP_TO_NEXT == 0L
+    }
+
+    /**
+     * Continuously poll and show currently media progress every second.
+     */
+    private fun pollAndShowMediaProgress() {
+        mediaProgressPollingScope.launch {
+            withContext(Dispatchers.Default) {
+                while (pollMediaProgress) {
+                    activeMediaSession?.playbackState?.position?.toInt()?.let {
+                        activity?.runOnUiThread {
+                            if (newProgressSet) {
+                                if (it == mediaSeekBar.progress) {
+                                    newProgressSet = false
+                                }
+                            } else {
+                                mediaSeekBar.progress = it
+                            }
+                        }
+                    }
+
+                    withContext(Dispatchers.Default) {
+                        delay(1000)
+                    }
+                }
+            }
+        }
     }
 }
 
