@@ -39,6 +39,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kenneth.app.spotlightlauncher.searching.SearchResultView
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
@@ -91,7 +92,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
     private lateinit var widgetListContainer: LinearLayout
-    private lateinit var sectionCardList: LinearLayout
     private lateinit var searchBox: EditText
     private lateinit var searchBoxContainer: LinearLayout
     private lateinit var searchBoxBlurBackground: BlurView
@@ -99,12 +99,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dateTimeViewContainer: DateTimeViewContainer
     private lateinit var appOptionMenu: AppOptionMenu
     private lateinit var mediaControlCard: MediaControlCard
+    private lateinit var searchResultContainer: SearchResultView
 
     private lateinit var searchBoxAnimationInterpolator: PathInterpolator
 
-    private var isSearchScreenActive = false
     private var isDarkModeActive = false
-    private var searchBoxContainerPaddingPx = 0
     private var statusBarHeight = 0
 
     /**
@@ -131,13 +130,13 @@ class MainActivity : AppCompatActivity() {
         rootView = findViewById(R.id.root)
         appOptionMenu = findViewById(R.id.app_option_menu)
         widgetListContainer = findViewById(R.id.widget_list_container)
-        sectionCardList = findViewById(R.id.section_card_list)
         searchBox = findViewById(R.id.search_box)
         searchBoxContainer = findViewById(R.id.search_box_container)
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
         wallpaperImage = findViewById(R.id.wallpaper_image)
         dateTimeViewContainer = findViewById(R.id.date_time_view_container)
         mediaControlCard = findViewById(R.id.media_control_card)
+        searchResultContainer = findViewById(R.id.search_result_container)
 
         // enable edge-to-edge app experience
 
@@ -147,9 +146,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             window.setDecorFitsSystemWindows(false)
         }
-
-        searchBoxContainerPaddingPx =
-            resources.getDimensionPixelSize(R.dimen.search_box_container_padding)
 
         requestPermissionLauncher =
             registerForActivityResult(
@@ -184,7 +180,7 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) newConfig.isNightModeActive
             else newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        if (isSearchScreenActive) {
+        if (appState.isSearchBoxActive) {
             if (isDarkModeActive) {
                 disableLightStatusBar()
             } else {
@@ -228,9 +224,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachListeners() {
-        findViewById<Button>(R.id.open_settings_button)
-            .setOnClickListener { openSettings() }
-
         with(searchBox) {
             setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) searcher.refreshAppList()
@@ -274,20 +267,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        with(searcher) {
-            setSearchResultListener { result, type ->
-                runOnUiThread {
-                    resultAdapter.displayResult(result, type)
-                }
-            }
-
-            setWebResultListener { result ->
-                runOnUiThread {
-                    resultAdapter.displayWebResult(result)
-                }
-            }
-        }
-
         rootView.viewTreeObserver.addOnGlobalLayoutListener(
             object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -297,11 +276,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
-    }
-
-    private fun openSettings() {
-        val settingsIntent = Intent(this, SettingsActivity::class.java)
-        startActivity(settingsIntent)
     }
 
     /**

@@ -10,12 +10,15 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.searching.SearchResultView
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * A module that provides all adapters needed to display search results.
@@ -36,6 +39,7 @@ object AdaptersModule {
  * ResultAdapter is used to adapt search results into views. It combines numerous RecyclerView
  * adapters into one class.
  */
+@ActivityScoped
 class ResultAdapter @Inject constructor(
     private val activity: Activity,
     private val webResultAdapter: WebResultAdapter,
@@ -44,14 +48,14 @@ class ResultAdapter @Inject constructor(
     private val suggestedResultAdapter: SuggestedResultAdapter
 ) {
     private lateinit var widgetListContainer: LinearLayout
-    private lateinit var sectionCardList: LinearLayout
+    private lateinit var searchResultContainer: SearchResultView
 
     fun displayResult(result: Searcher.Result, type: SearchType) {
         with(activity) {
             widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
                 isVisible = false
             }
-            sectionCardList = findViewById<LinearLayout>(R.id.section_card_list).apply {
+            searchResultContainer = findViewById<SearchResultView>(R.id.search_result_container).apply {
                 isVisible = true
             }
         }
@@ -68,6 +72,9 @@ class ResultAdapter @Inject constructor(
             SearchType.APPS -> {
                 appsGridAdapter.displayData(result.apps)
             }
+            SearchType.SUGGESTED -> {
+                suggestedResultAdapter.displayResult(result.suggested)
+            }
         }
     }
 
@@ -77,8 +84,8 @@ class ResultAdapter @Inject constructor(
         webResultAdapter.hideWebResult()
         suggestedResultAdapter.hideSuggestedResult()
 
-        if (::sectionCardList.isInitialized) {
-            sectionCardList.isVisible = false
+        if (::searchResultContainer.isInitialized) {
+            searchResultContainer.isVisible = false
         }
     }
 

@@ -12,15 +12,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
 import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
-import kotlin.Comparator
 import kotlin.concurrent.schedule
 
 private const val SEARCH_DELAY: Long = 500
@@ -31,7 +28,7 @@ typealias ResultCallback = (Searcher.Result, SearchType) -> Unit
  * Different types that Searcher will search for
  */
 enum class SearchType {
-    ALL, APPS, FILES,
+    ALL, APPS, FILES, SUGGESTED,
 }
 
 @Module
@@ -45,18 +42,20 @@ object SearcherModule {
     fun provideAppSearcher(@ActivityContext context: Context) = AppSearcher(context)
 }
 
+@ActivityScoped
 class Searcher @Inject constructor(
     @ActivityContext private val context: Context,
     private val appSearcher: AppSearcher,
     private val smartSearcher: SmartSearcher,
     private val filePreferenceManager: FilePreferenceManager,
-    private val locale: Locale
 ) {
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
-    private val webRequestCoroutine = CoroutineScope(Dispatchers.IO)
-    private val searchCoroutine = CoroutineScope(Dispatchers.IO)
+    private var webRequestCoroutine = CoroutineScope(Dispatchers.IO)
+    private var appSearchCoroutine = CoroutineScope(Dispatchers.IO)
+    private var fileSearchCoroutine = CoroutineScope(Dispatchers.IO)
+    private var suggestedSearchCoroutine = CoroutineScope(Dispatchers.IO)
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
@@ -80,16 +79,12 @@ class Searcher @Inject constructor(
         if (::searchTimer.isInitialized) cancelPendingSearch()
 
         searchTimer = Timer().schedule(SEARCH_DELAY) {
-            webRequestCoroutine.launch {
-                smartSearcher.performWebSearch(keyword)
-            }
-            searchCoroutine.launch {
-                val result = withContext(Dispatchers.IO) {
-                    performSearch(keyword.toLowerCase(locale))
+            webRequestCoroutine = CoroutineScope(Dispatchers.IO).also {
+                it.launch {
+                    smartSearcher.performWebSearch(keyword)
                 }
-
-                resultCallback(result, SearchType.ALL)
             }
+            performSearch(keyword)
         }
     }
 
@@ -114,6 +109,10 @@ class Searcher @Inject constructor(
      */
     fun cancelPendingSearch() {
         smartSearcher.cancelWebSearch()
+        appSearchCoroutine.cancel()
+        fileSearchCoroutine.cancel()
+        webRequestCoroutine.cancel()
+        suggestedSearchCoroutine.cancel()
         if (::searchTimer.isInitialized) {
             searchTimer.cancel()
         }
@@ -130,15 +129,47 @@ class Searcher @Inject constructor(
     private fun notSystemApps(appInfo: ResolveInfo): Boolean =
         (appInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
 
-    private fun performSearch(keyword: String): Result {
+    private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
-        return Result(
-            query = keyword,
-            apps = appSearcher.searchApps(searchRegex),
-            files = searchFiles(searchRegex),
-            suggested = smartSearcher.search(keyword),
-        )
+        appSearchCoroutine = CoroutineScope(Dispatchers.IO).also {
+            it.launch {
+                val result = withContext(Dispatchers.IO) {
+                    appSearcher.searchApps(searchRegex)
+                }
+
+                resultCallback(
+                    Result(keyword, apps = result),
+                    SearchType.APPS,
+                )
+            }
+        }
+
+        fileSearchCoroutine = CoroutineScope(Dispatchers.IO).also {
+            it.launch {
+                val result = withContext(Dispatchers.IO) {
+                    searchFiles(searchRegex)
+                }
+
+                resultCallback(
+                    Result(keyword, files = result),
+                    SearchType.FILES,
+                )
+            }
+        }
+
+        suggestedSearchCoroutine = CoroutineScope(Dispatchers.IO).also {
+            it.launch {
+                val result = withContext(Dispatchers.IO) {
+                    smartSearcher.search(keyword)
+                }
+
+                resultCallback(
+                    Result(keyword, suggested = result),
+                    SearchType.SUGGESTED,
+                )
+            }
+        }
     }
 
     private fun searchFiles(searchRegex: Regex): List<DocumentFile>? {

@@ -3,9 +3,7 @@ package kenneth.app.spotlightlauncher.searching.display_adapters
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.ResolveInfo
-import android.telephony.ims.ImsMmTelManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +24,7 @@ import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
 import kenneth.app.spotlightlauncher.views.TextButton
+import kotlin.math.min
 
 private const val INITIAL_ITEM_COUNT = 10
 
@@ -81,6 +80,7 @@ object AppsGridDataAdapter :
         findViews()
 
         if (data?.isEmpty() != false) {
+            cardContainer.isVisible = true
             recyclerView.isVisible = false
             showMoreButton.isVisible = false
             noResultLabel.isVisible = true
@@ -100,7 +100,8 @@ object AppsGridDataAdapter :
             }
 
             allData = data
-            this.data = allData.subList(0, INITIAL_ITEM_COUNT).toMutableList()
+            this.data = allData.subList(0, min(data.size, INITIAL_ITEM_COUNT))
+                .toMutableList()
 
             notifyDataSetChanged()
 
@@ -166,9 +167,15 @@ object AppsGridDataAdapter :
     private fun showMoreItems() {
         val currentItemCount = data.size
         val newItemCount = currentItemCount + INITIAL_ITEM_COUNT
+        val totalItemCount = allData.size
 
-        (data as MutableList).addAll(allData.subList(currentItemCount, newItemCount))
-        showMoreButton.isVisible = newItemCount < allData.size
+        (data as MutableList).addAll(
+            allData.subList(
+                currentItemCount,
+                min(totalItemCount, newItemCount)
+            )
+        )
+        showMoreButton.isVisible = newItemCount < totalItemCount
 
         notifyItemRangeInserted(currentItemCount, INITIAL_ITEM_COUNT)
     }

@@ -14,10 +14,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.getDuckDuckGoRedirectUrlFromQuery
-import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.BlurView
@@ -66,15 +64,15 @@ class WebResultAdapter @Inject constructor(private val activity: Activity) :
 
     override fun displayResult(result: SmartSearcher.WebResult) {
         webResult = result
-        val cardList = activity.findViewById<LinearLayout>(R.id.section_card_list)
+        val searchResultContainer = activity.findViewById<LinearLayout>(R.id.search_result_container)
 
         webResultCard =
-            cardList.findViewById<LinearLayout>(R.id.web_result_section_card).apply {
+            searchResultContainer.findViewById<LinearLayout>(R.id.web_result_section_card).apply {
                 visibility = View.VISIBLE
             }
 
         cardBlurBackground =
-            cardList.findViewById<BlurView>(R.id.web_result_section_card_blur_background)
+            searchResultContainer.findViewById<BlurView>(R.id.web_result_section_card_blur_background)
                 .also { it.startBlur() }
 
         if (webResult.title.isNotBlank()) {
