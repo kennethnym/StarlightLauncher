@@ -27,4 +27,9 @@ class AppState @Inject constructor() {
             Theme.LIGHT -> R.style.LightLauncherTheme
             Theme.DARK -> R.style.DarkLauncherTheme
         }
+
+    /**
+     * Determines if the search box is activated.
+     */
+    var isSearchBoxActive: Boolean = false
 }

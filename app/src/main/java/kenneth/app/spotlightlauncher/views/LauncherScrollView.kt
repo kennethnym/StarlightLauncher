@@ -7,8 +7,12 @@ import android.view.MotionEvent
 import android.view.ViewTreeObserver
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
+import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.AppState
+import kenneth.app.spotlightlauncher.AppState_Factory
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
@@ -17,7 +21,11 @@ private const val SCROLL_DIRECTION_DOWN = 1
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
  */
+@AndroidEntryPoint
 class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
+    @Inject
+    lateinit var appState: AppState
+
     /**
      * The initial y position that initiated the swipe up gesture.
      */
@@ -58,7 +66,7 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        if (!canScrollVertically(SCROLL_DIRECTION_DOWN)) {
+        if (!canScrollVertically(SCROLL_DIRECTION_DOWN) && !appState.isSearchBoxActive) {
             when (ev?.actionMasked) {
                 null -> {
                 }

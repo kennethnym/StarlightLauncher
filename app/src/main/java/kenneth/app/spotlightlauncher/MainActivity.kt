@@ -357,6 +357,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleSearchBoxAnimation(isActive: Boolean) {
+        appState.isSearchBoxActive = isActive
+
         if (!::searchBoxAnimationInterpolator.isInitialized) {
             searchBoxAnimationInterpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
         }
