@@ -37,7 +37,7 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
      * The data to be displayed by this adapter. Exposed to allow access to the data this adapter
      * is holding.
      */
-    lateinit var data: List<T>
+    open lateinit var data: List<T>
 
     /**
      * The MainActivity that the RecyclerView is in.

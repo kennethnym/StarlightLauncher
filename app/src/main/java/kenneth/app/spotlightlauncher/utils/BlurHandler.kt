@@ -106,7 +106,7 @@ class BlurHandler @Inject constructor(
                 else
                     scaledHeight
 
-            if (bitmapX + bgWidth <= it.width && bitmapY + bgHeight <= it.height) {
+            if (bgWidth > 0 && bgHeight > 0 && bitmapX + bgWidth <= it.width && bitmapY + bgHeight <= it.height) {
                 val bitmap = Bitmap.createBitmap(
                     it,
                     bitmapX,

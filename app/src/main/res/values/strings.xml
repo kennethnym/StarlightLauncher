@@ -31,6 +31,7 @@
 
     <!-- Apps section -->
     <string name="app_icon_description">App icon for %1$s</string>
+    <string name="show_more_label">Show more</string>
 
     <!-- App option menu -->
     <string name="pin_app_label">Pin this app</string>

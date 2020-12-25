@@ -13,8 +13,7 @@
         android:background="@drawable/card_background"
         android:fitsSystemWindows="false"
         android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,9 +36,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
             android:text="@string/apps_section_no_result"
             android:textAppearance="?attr/textAppearanceBody2" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
+
+        <kenneth.app.spotlightlauncher.views.TextButton
+            android:id="@+id/show_more_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextButton"
+            android:text="@string/show_more_label" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/section_card_padding" />
 
     </LinearLayout>
 

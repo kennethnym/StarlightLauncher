@@ -56,6 +56,7 @@ class Searcher @Inject constructor(
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
     private val webRequestCoroutine = CoroutineScope(Dispatchers.IO)
+    private val searchCoroutine = CoroutineScope(Dispatchers.IO)
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
@@ -82,8 +83,12 @@ class Searcher @Inject constructor(
             webRequestCoroutine.launch {
                 smartSearcher.performWebSearch(keyword)
             }
-            webRequestCoroutine.launch {
-                resultCallback(performSearch(keyword.toLowerCase(locale)), SearchType.ALL)
+            searchCoroutine.launch {
+                val result = withContext(Dispatchers.IO) {
+                    performSearch(keyword.toLowerCase(locale))
+                }
+
+                resultCallback(result, SearchType.ALL)
             }
         }
     }
@@ -125,17 +130,13 @@ class Searcher @Inject constructor(
     private fun notSystemApps(appInfo: ResolveInfo): Boolean =
         (appInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
 
-    private suspend fun performSearch(keyword: String): Result {
+    private fun performSearch(keyword: String): Result {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         return Result(
             query = keyword,
-            apps = withContext(Dispatchers.Main) {
-                appSearcher.searchApps(searchRegex)
-            },
-            files = withContext(Dispatchers.Main) {
-                searchFiles(searchRegex)
-            },
+            apps = appSearcher.searchApps(searchRegex),
+            files = searchFiles(searchRegex),
             suggested = smartSearcher.search(keyword),
         )
     }

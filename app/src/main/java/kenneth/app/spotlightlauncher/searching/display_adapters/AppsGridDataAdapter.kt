@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ResolveInfo
+import android.telephony.ims.ImsMmTelManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,20 +25,34 @@ import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManage
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.AppOptionMenu
 import kenneth.app.spotlightlauncher.views.BlurView
+import kenneth.app.spotlightlauncher.views.TextButton
+
+private const val INITIAL_ITEM_COUNT = 10
 
 /**
  * An adapter that displays apps in a grid.
  */
 object AppsGridDataAdapter :
     RecyclerViewDataAdapter<ResolveInfo, AppsGridDataAdapter.ViewHolder>(), LifecycleObserver {
+    private lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
     /**
      * The card container that is containing this RecyclerView
      */
     private lateinit var cardContainer: LinearLayout
-
     private lateinit var cardBlurBackground: BlurView
 
-    private lateinit var appearancePreferenceManager: AppearancePreferenceManager
+    /**
+     * The TextView used to indicate there's no result available.
+     */
+    private lateinit var noResultLabel: TextView
+    private lateinit var showMoreButton: TextButton
+
+    /**
+     * The data field only stores a portion of all the apps that came up in the search result
+     * to avoid clutter and improve performance. This field is used to store the entire list of apps.
+     */
+    private lateinit var allData: List<ResolveInfo>
 
     override val layoutManager: GridLayoutManager
         get() = GridLayoutManager(activity, 5)
@@ -63,26 +78,30 @@ object AppsGridDataAdapter :
     override fun displayData(data: List<ResolveInfo>?) {
         super.displayData(data)
 
-        with(activity) {
-            cardContainer = findViewById<LinearLayout>(R.id.apps_section_card).apply {
-                visibility = View.VISIBLE
-            }
-            cardBlurBackground = findViewById<BlurView>(R.id.apps_section_card_blur_background)
-                .also { it.startBlur() }
-        }
+        findViews()
 
         if (data?.isEmpty() != false) {
-            with(activity) {
-                findViewById<RecyclerView>(R.id.apps_grid).visibility = View.GONE
-                findViewById<TextView>(R.id.apps_section_no_result).visibility = View.VISIBLE
+            recyclerView.isVisible = false
+            showMoreButton.isVisible = false
+            noResultLabel.isVisible = true
+            cardBlurBackground.pauseBlur()
+            (activity as? AppCompatActivity).let {
+                it?.lifecycle?.removeObserver(this)
             }
         } else {
-            with(activity) {
-                findViewById<RecyclerView>(R.id.apps_grid).visibility = View.VISIBLE
-                findViewById<TextView>(R.id.apps_section_no_result).visibility = View.GONE
+            cardContainer.isVisible = true
+            recyclerView.isVisible = true
+            noResultLabel.isVisible = false
+            cardBlurBackground.startBlur()
+
+            with(showMoreButton) {
+                isVisible = data.size > INITIAL_ITEM_COUNT
+                setOnClickListener { showMoreItems() }
             }
 
-            this.data = data
+            allData = data
+            this.data = allData.subList(0, INITIAL_ITEM_COUNT).toMutableList()
+
             notifyDataSetChanged()
 
             (activity as? AppCompatActivity).let {
@@ -103,7 +122,32 @@ object AppsGridDataAdapter :
 
         if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
             cardBlurBackground.pauseBlur()
-            cardContainer.visibility = View.GONE
+            cardContainer.isVisible = false
+        }
+    }
+
+    /**
+     * Finds and stores all relevant views
+     */
+    private fun findViews() {
+        with(activity) {
+            if (!::cardContainer.isInitialized) {
+                cardContainer = findViewById(R.id.apps_section_card)
+            }
+
+            if (!::cardBlurBackground.isInitialized) {
+                cardBlurBackground = findViewById(R.id.apps_section_card_blur_background)
+            }
+        }
+
+        with(cardContainer) {
+            if (!::noResultLabel.isInitialized) {
+                noResultLabel = findViewById(R.id.apps_section_no_result)
+            }
+
+            if (!::showMoreButton.isInitialized) {
+                showMoreButton = findViewById(R.id.show_more_button)
+            }
         }
     }
 
@@ -117,6 +161,16 @@ object AppsGridDataAdapter :
         }
 
         notifyDataSetChanged()
+    }
+
+    private fun showMoreItems() {
+        val currentItemCount = data.size
+        val newItemCount = currentItemCount + INITIAL_ITEM_COUNT
+
+        (data as MutableList).addAll(allData.subList(currentItemCount, newItemCount))
+        showMoreButton.isVisible = newItemCount < allData.size
+
+        notifyItemRangeInserted(currentItemCount, INITIAL_ITEM_COUNT)
     }
 
     class ViewHolder(view: View, activity: Activity) :
