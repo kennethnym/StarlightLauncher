@@ -10,6 +10,9 @@ import android.media.session.PlaybackState
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
+import android.util.Log
+import android.view.Gravity
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -24,6 +27,8 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
 import kotlinx.coroutines.*
 import javax.inject.Inject
+
+typealias VisibilityListener = (visibility: Int) -> Unit
 
 /**
  * Displays a media control card on the home screen when media is playing.
@@ -69,12 +74,17 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     private val skipForwardButton: IconButton
     private val playPauseButton: IconButton
     private val blurBackground: BlurView
+    private lateinit var dateTimeViewContainer: DateTimeViewContainer
 
     /**
      * This thread is used to poll and show the current media progress, since there is no listeners
      * available to listen to media progress.
      */
     private val mediaProgressPollingScope = CoroutineScope(Dispatchers.Default)
+
+    /**
+     * Determines if this widget should poll media progress every second.
+     */
     private var pollMediaProgress = false
         set(poll) {
             field = poll
@@ -82,6 +92,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
                 pollAndShowMediaProgress()
             }
         }
+
+    private lateinit var visibilityListener: VisibilityListener
 
     /**
      * Gets from SharedPreferences whether media control is enabled by the user
@@ -126,6 +138,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     init {
+        Log.d("spotlight", "MediaControlCard init")
+
         inflate(context, R.layout.media_control_card, this)
 
         mediaTitle = findViewById(R.id.media_title)
@@ -141,10 +155,21 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             checkNotificationListenerAndUpdate()
             attachListeners()
         } else {
-            isInvisible = true
+            isVisible = false
+            dateTimeViewContainer.gravity = Gravity.CENTER
         }
 
         activity?.lifecycle?.addObserver(this)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        dateTimeViewContainer = (parent as DateTimeViewContainer).apply {
+            gravity =
+                if (this@MediaControlCard.isVisible) Gravity.CENTER or Gravity.BOTTOM
+                else Gravity.CENTER
+        }
     }
 
     /**
@@ -236,11 +261,15 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      * - notification listener is revoked manually by the user
      */
     private fun hideControl() {
-        isInvisible = true
+        isVisible = false
         pollMediaProgress = false
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
         blurBackground.pauseBlur()
+
+        if (::dateTimeViewContainer.isInitialized) {
+            dateTimeViewContainer.gravity = Gravity.CENTER
+        }
     }
 
     /**
@@ -282,6 +311,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private fun showMediaControl() {
         isInvisible = false
+        dateTimeViewContainer.gravity = Gravity.CENTER or Gravity.BOTTOM
 
         activeMediaSession?.let {
             it.metadata?.let(::showMediaMetadata)

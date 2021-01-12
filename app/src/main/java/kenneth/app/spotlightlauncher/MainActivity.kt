@@ -98,8 +98,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wallpaperImage: ImageView
     private lateinit var dateTimeViewContainer: DateTimeViewContainer
     private lateinit var appOptionMenu: AppOptionMenu
-    private lateinit var mediaControlCard: MediaControlCard
-    private lateinit var searchResultContainer: SearchResultView
 
     private lateinit var searchBoxAnimationInterpolator: PathInterpolator
 
@@ -135,8 +133,6 @@ class MainActivity : AppCompatActivity() {
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
         wallpaperImage = findViewById(R.id.wallpaper_image)
         dateTimeViewContainer = findViewById(R.id.date_time_view_container)
-        mediaControlCard = findViewById(R.id.media_control_card)
-        searchResultContainer = findViewById(R.id.search_result_container)
 
         // enable edge-to-edge app experience
 
