@@ -48,7 +48,6 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
-    implementation "com.squareup.picasso:picasso:2.8"
     implementation "com.google.android.material:material:1.2.1"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.activity:activity-ktx:1.2.0-beta01"

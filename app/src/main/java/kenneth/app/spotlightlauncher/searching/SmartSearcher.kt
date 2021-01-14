@@ -110,7 +110,7 @@ class SmartSearcher @Inject constructor(
                                     WebResult.Topic(
                                         title = it.text,
                                         url = it.firstUrl,
-                                        previewUrl = it.icon.url,
+                                        previewUrl = it.icon.fullUrl,
                                     )
                                 }
                         )

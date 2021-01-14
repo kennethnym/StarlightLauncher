@@ -2,6 +2,15 @@ package kenneth.app.spotlightlauncher.api
 
 import android.net.Uri
 import com.beust.klaxon.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,6 +31,7 @@ fun getDuckDuckGoRedirectUrlFromQuery(query: String): Uri = Uri.parse(
 )
 
 class DuckDuckGoApi @Inject constructor(
+    private val json: Json,
     private val httpClient: OkHttpClient,
 ) {
     fun newCall(query: String): Call {
@@ -41,15 +51,12 @@ class DuckDuckGoApi @Inject constructor(
      * Wrapper class around okhttp3.Call
      */
     inner class Call(private val httpCall: okhttp3.Call) {
-        private val json = Klaxon()
-            .fieldConverter(Result.Icon.Url::class, iconUrlConverter)
-
         fun execute() = try {
             val response = httpCall.execute()
-            val responseStr = response.body()?.string() ?: ""
+            val responseStr = response.body()?.string()
 
-            if (responseStr.isNotBlank()) {
-                parseJsonToResult(responseStr)
+            if (responseStr != null) {
+                json.decodeFromString<Result>(responseStr)
             } else {
                 null
             }
@@ -59,76 +66,68 @@ class DuckDuckGoApi @Inject constructor(
 
         fun cancel() = httpCall.cancel()
 
-        private fun parseJsonToResult(jsonStr: String): Result {
-            val jsonObject = Parser.default().parse(StringReader(jsonStr)) as JsonObject
-
-            return Result(
-                abstractText = jsonObject.string("AbstractText") ?: "",
-                heading = jsonObject.string("Heading") ?: "",
-                relatedTopics = jsonObject.array<JsonObject>("RelatedTopics")
-                    ?.flatMap {
-                        if (it.containsKey("Name") && it.containsKey("Topics")) {
-                            val arr = it.array<JsonObject>("Topics")
-
-                            if (arr != null) json.parseFromJsonArray(arr) ?: emptyList()
-                            else emptyList()
-                        } else {
-                            val parsed = json.parseFromJsonObject<Result.RelatedTopic>(it)
-
-                            if (parsed != null) listOf(parsed)
-                            else emptyList()
-                        }
-                    }
-                    ?.toList()
-                    ?: emptyList()
-            )
-        }
+//        private fun parseJsonToResult(jsonStr: String): Result {
+//            val jsonObject = Parser.default().parse(StringReader(jsonStr)) as JsonObject
+//
+//            return Result(
+//                abstractText = jsonObject.string("AbstractText") ?: "",
+//                heading = jsonObject.string("Heading") ?: "",
+//                relatedTopics = jsonObject.array<JsonObject>("RelatedTopics")
+//                    ?.flatMap {
+//                        if (it.containsKey("Name") && it.containsKey("Topics")) {
+//                            val arr = it.array<JsonObject>("Topics")
+//
+//                            if (arr != null) json.parseFromJsonArray(arr) ?: emptyList()
+//                            else emptyList()
+//                        } else {
+//                            val parsed = json.parseFromJsonObject<Result.RelatedTopic>(it)
+//
+//                            if (parsed != null) listOf(parsed)
+//                            else emptyList()
+//                        }
+//                    }
+//                    ?.toList()
+//                    ?: emptyList()
+//            )
+//        }
     }
 
-    private val iconUrlConverter = object : Converter {
-        override fun canConvert(cls: Class<*>) = cls == String::class.java
-
-        override fun fromJson(jv: JsonValue) =
-            if (jv.string == null || jv.string == "") jv.string
-            else "$apiUrl${jv.string}"
-
-        override fun toJson(value: Any): String = """{ "Icon": $value }"""
-    }
-
+    @Serializable
     data class Result(
-        @Json(name = "AbstractText")
+        @SerialName("AbstractText")
         val abstractText: String,
 
-        @Json(name = "Heading")
+        @SerialName("Heading")
         val heading: String,
 
-        @Json(name = "RelatedTopics")
+        @SerialName("RelatedTopics")
         val relatedTopics: List<RelatedTopic>
     ) {
+        @Serializable
         data class RelatedTopic(
-            @Json(name = "FirstURL")
+            @SerialName("FirstURL")
             val firstUrl: String,
 
-            @Json(name = "Text")
+            @SerialName("Text")
             val text: String,
 
-            @Json(name = "Icon")
+            @SerialName("Icon")
             val icon: Icon,
         )
 
+        @Serializable
         data class Icon constructor(
-            @Json(name = "Width")
+            @SerialName("Width")
             val width: String,
 
-            @Json(name = "Height")
+            @SerialName("Height")
             val height: String,
 
-            @Json(name = "URL")
-            @Icon.Url
+            @SerialName("URL")
             val url: String,
         ) {
-            @Target(AnnotationTarget.FIELD)
-            annotation class Url
+            @Transient
+            val fullUrl = "$apiUrl$url"
         }
     }
 }

@@ -1,9 +1,12 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Size
 import android.view.LayoutInflater
@@ -13,10 +16,12 @@ import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.loader.content.CursorLoader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.model.stream.MediaStoreImageThumbLoader
 import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
@@ -27,6 +32,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.min
+
+private const val INITIAL_ITEM_COUNT = 5
 
 private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")
 
@@ -36,8 +44,10 @@ object FileListDataAdapter :
      * The card view that is containing this RecyclerView
      */
     private lateinit var cardContainer: LinearLayout
-
     private lateinit var cardBlurBackground: BlurView
+    private lateinit var showMoreButton: TextButton
+
+    private lateinit var allData: List<DocumentFile>
 
     override val layoutManager: RecyclerView.LayoutManager
         get() = LinearLayoutManager(activity)
@@ -67,31 +77,44 @@ object FileListDataAdapter :
             cardBlurBackground = findViewById<BlurView>(R.id.files_section_card_blur_background)
                 .also { it.startBlur() }
 
+            showMoreButton = findViewById(R.id.files_list_show_more_button)
+
             val fileListRecyclerView = findViewById<RecyclerView>(R.id.files_list)
 
             when {
                 data == null -> {
-                    fileListRecyclerView.visibility = View.GONE
-                    findViewById<TextButton>(R.id.open_settings_button).visibility = View.VISIBLE
+                    fileListRecyclerView.isVisible = false
+                    showMoreButton.isVisible = false
+                    findViewById<TextButton>(R.id.open_settings_button).isVisible = true
                     findViewById<TextView>(R.id.files_section_result_status).apply {
-                        visibility = View.VISIBLE
+                        isVisible = true
                         text = getString(R.string.files_section_include_path_instruction)
                         setPadding(0, 0, 0, 0)
                     }
                 }
                 data.isEmpty() -> {
-                    fileListRecyclerView.visibility = View.GONE
+                    fileListRecyclerView.isVisible = false
+                    showMoreButton.isVisible = false
+                    findViewById<TextButton>(R.id.open_settings_button).isVisible = false
                     findViewById<TextView>(R.id.files_section_result_status).apply {
-                        visibility = View.VISIBLE
+                        isVisible = true
                         text = getString(R.string.files_section_no_result)
                         setPadding(0, 0, 0, 8.dp)
                     }
                 }
                 else -> {
-                    fileListRecyclerView.visibility = View.VISIBLE
-                    findViewById<TextView>(R.id.files_section_result_status).visibility = View.GONE
+                    fileListRecyclerView.isVisible = true
+                    showMoreButton.isVisible = true
+                    findViewById<TextButton>(R.id.open_settings_button).isVisible = false
+                    findViewById<TextView>(R.id.files_section_result_status).isVisible = false
+                    findViewById<TextButton>(R.id.files_list_show_more_button).apply {
+                        isVisible = true
+                        setOnClickListener { showMoreFiles() }
+                    }
 
-                    this@FileListDataAdapter.data = fileList!!
+                    this@FileListDataAdapter.allData = fileList!!
+                    this@FileListDataAdapter.data =
+                        fileList.subList(0, min(fileList.size, INITIAL_ITEM_COUNT)).toMutableList()
 
                     notifyDataSetChanged()
                 }
@@ -102,8 +125,24 @@ object FileListDataAdapter :
     fun hideFileList() {
         if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
             cardBlurBackground.pauseBlur()
-            cardContainer.visibility = View.GONE
+            cardContainer.isVisible = false
         }
+    }
+
+    private fun showMoreFiles() {
+        val currentItemCount = data.size
+        val newItemCount = currentItemCount + INITIAL_ITEM_COUNT
+        val totalItemCount = allData.size
+
+        (data as MutableList).addAll(
+            allData.subList(
+                currentItemCount,
+                min(totalItemCount, newItemCount)
+            )
+        )
+        showMoreButton.isVisible = newItemCount < totalItemCount
+
+        notifyItemRangeInserted(currentItemCount, INITIAL_ITEM_COUNT)
     }
 
     class ViewHolder(view: LinearLayout, activity: Activity) :
@@ -119,52 +158,28 @@ object FileListDataAdapter :
 
                 findViewById<LinearLayout>(R.id.files_list_item_container)
                     .setOnClickListener { openFile(file) }
-
-                val mimeType = getFileMimeType(file)
-
-                if (mimeType != null && imageOrVideoMimeType.matches(mimeType)) {
-                    imagePreviewCoroutine.launch {
-                        val bitmap = withContext(Dispatchers.IO) {
-                            getUriPreview(
-                                file.uri,
-                                size = resources.getDimensionPixelSize(R.dimen.material_list_item_bigger_avatar_dimen)
-                            )
-                        }
-
-                        findViewById<ImageView>(R.id.files_list_item_preview).setImageBitmap(bitmap)
-                    }
-                }
             }
         }
 
-        private fun getUriPreview(uri: Uri, size: Int) =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                activity.contentResolver.loadThumbnail(
-                    uri,
-                    Size(size, size),
-                    null
-                )
-            } else {
-                val loader = CursorLoader(
-                    activity,
-                    uri,
-                    arrayOf(MediaStore.Images.Media.DATA),
-                    null,
-                    null,
-                    null
-                )
-                val cursor = loader.loadInBackground()
-                val colIndex = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+        private fun getUriPreview(uri: Uri, size: Int): Bitmap? {
+            val cursor = MediaStore.Images.Thumbnails.queryMiniThumbnails(
+                view.context.contentResolver,
+                uri,
+                MediaStore.Images.Thumbnails.MINI_KIND,
+                null
+            )
 
+            return if (cursor != null && cursor.count > 0) {
                 cursor.moveToFirst()
+                val thumbnailUri =
+                    cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA))
 
-                MediaStore.Images.Thumbnails.getThumbnail(
-                    activity.contentResolver,
-                    cursor.getLong(colIndex),
-                    MediaStore.Images.Thumbnails.MICRO_KIND,
-                    null,
+                MediaStore.Images.Media.getBitmap(
+                    view.context.contentResolver,
+                    Uri.parse(thumbnailUri)
                 )
-            }
+            } else null
+        }
 
         private fun getFileMimeType(file: DocumentFile): String? {
             val ext = MimeTypeMap.getFileExtensionFromUrl(file.uri.toString())
@@ -178,7 +193,10 @@ object FileListDataAdapter :
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
 
-            activity.startActivity(intent)
+            try {
+                activity.startActivity(intent)
+            } catch (ex: ActivityNotFoundException) {
+            }
         }
     }
 }

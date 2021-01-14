@@ -64,7 +64,8 @@ class WebResultAdapter @Inject constructor(private val activity: Activity) :
 
     override fun displayResult(result: SmartSearcher.WebResult) {
         webResult = result
-        val searchResultContainer = activity.findViewById<LinearLayout>(R.id.search_result_container)
+        val searchResultContainer =
+            activity.findViewById<LinearLayout>(R.id.search_result_container)
 
         webResultCard =
             searchResultContainer.findViewById<LinearLayout>(R.id.web_result_section_card).apply {

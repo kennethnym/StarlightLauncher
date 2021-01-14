@@ -7,16 +7,14 @@ import android.content.IntentFilter
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.OpenWeatherApi
@@ -122,10 +120,14 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     private fun showWeather() {
         if (dateTimePreferenceManager.shouldShowWeather) {
             weatherApiScope.launch {
-                val weather = openWeatherApi.run {
-                    latLong = dateTimePreferenceManager.weatherLocation
-                    unit = dateTimePreferenceManager.weatherUnit
-                    getCurrentWeather()
+                val weather = try {
+                    openWeatherApi.run {
+                        latLong = dateTimePreferenceManager.weatherLocation
+                        unit = dateTimePreferenceManager.weatherUnit
+                        getCurrentWeather()
+                    }
+                } catch (ex: Exception) {
+                    return@launch
                 }
 
                 val isWeatherAvailable = weather != null
@@ -138,7 +140,8 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                     if (isWeatherAvailable) {
                         temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
 
-                        Picasso.get()
+                        Glide
+                            .with(context)
                             .load(weather.weather[0].iconURL)
                             .into(weatherIcon)
 

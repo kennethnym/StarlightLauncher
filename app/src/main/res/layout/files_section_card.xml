@@ -45,17 +45,22 @@
             android:textAlignment="center"
             android:textColor="?colorOnBackground" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="16dp" />
-
         <kenneth.app.spotlightlauncher.views.TextButton
             android:id="@+id/open_settings_button"
             style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/open_settings"
+            android:visibility="gone" />
+
+        <kenneth.app.spotlightlauncher.views.TextButton
+            android:id="@+id/files_list_show_more_button"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/show_more_label"
             android:visibility="gone" />
 
     </LinearLayout>
