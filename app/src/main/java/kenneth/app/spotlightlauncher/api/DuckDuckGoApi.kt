@@ -8,8 +8,8 @@ import okhttp3.Request
 import java.io.StringReader
 import javax.inject.Inject
 
-val apiUrlString = "https://api.duckduckgo.com/"
-val apiUrl = HttpUrl.parse(apiUrlString)!!
+private const val API_URL_STRING = "https://api.duckduckgo.com/"
+private val apiUrl = HttpUrl.parse(API_URL_STRING)!!
 
 /**
  * Creates a URL that redirects to duckduckgo search page with the given query.
@@ -116,7 +116,7 @@ class DuckDuckGoApi @Inject constructor(
             val icon: Icon,
         )
 
-        data class Icon @JvmOverloads constructor(
+        data class Icon constructor(
             @Json(name = "Width")
             val width: String,
 

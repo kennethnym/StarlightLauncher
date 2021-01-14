@@ -9,4 +9,16 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <string-array name="weather_unit_entries">
+        <item>Kelvin</item>
+        <item>Celsius</item>
+        <item>Imperial</item>
+    </string-array>
+
+    <string-array name="weather_unit_values">
+        <item>STANDARD</item>
+        <item>METRIC</item>
+        <item>IMPERIAL</item>
+    </string-array>
 </resources>

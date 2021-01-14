@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <kenneth.app.spotlightlauncher.prefs.datetime.LocationSearchBoxPreference app:key="@string/date_time_location_search_box" />
+
+    <Preference
+        app:key="@string/date_time_use_current_location"
+        app:summary="@string/date_time_use_current_location_summary"
+        app:title="@string/date_time_use_current_location_title" />
+
+</PreferenceScreen>

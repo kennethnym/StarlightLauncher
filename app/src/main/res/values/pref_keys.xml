@@ -15,6 +15,16 @@
     <string name="file_search_add_path">file_search_add_path</string>
     <string name="file_search_included_paths">file_search_included_paths</string>
 
+    <string name="date_time_pref_key">date_time</string>
+    <string name="date_time_show_weather">date_time_show_weather</string>
+    <string name="date_time_location_search_box">date_time_location_search_box</string>
+    <string name="date_time_use_current_location">date_time_use_current_location</string>
+    <string name="date_time_weather_location_lat">date_time_weather_location_lat</string>
+    <string name="date_time_weather_location_long">date_time_weather_location_long</string>
+    <string name="date_time_weather_location_name">date_time_weather_location_name</string>
+    <string name="date_time_location_picker">date_time_location_picker</string>
+    <string name="date_time_weather_unit">date_time_weather_unit</string>
+
     <string name="media_control_pref_key">media_control</string>
     <string name="media_control_notification_listener_permission">
         media_control_notification_listener_permission

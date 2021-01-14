@@ -25,9 +25,6 @@ typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
 object SmartSearcherModule {
     @Provides
     fun provideExpressionParser() = Expressions()
-
-    @Provides
-    fun provideDuckDuckGoApiClient(httpClient: OkHttpClient) = DuckDuckGoApi(httpClient)
 }
 
 /**

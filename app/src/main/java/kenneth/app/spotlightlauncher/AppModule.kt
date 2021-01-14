@@ -7,21 +7,20 @@ import android.media.session.MediaSessionManager
 import android.net.wifi.WifiManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.IconPackManager
+import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.util.*
-import java.util.prefs.Preferences
 import javax.inject.Singleton
 
 @Module
@@ -30,6 +29,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient() = OkHttpClient()
+
+    @Provides
+    @Singleton
+    fun provideJsonHandler() = Json { ignoreUnknownKeys = true }
 
     @Provides
     @Singleton
@@ -75,6 +78,11 @@ object AppModule {
     @Singleton
     fun providePinnedAppsPreferenceManager(@ApplicationContext context: Context) =
         PinnedAppsPreferenceManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideDateTimePreferenceManager(@ApplicationContext context: Context) =
+        DateTimePreferenceManager.getInstance(context)
 
     @Provides
     fun provideLocale() = Locale.getDefault()

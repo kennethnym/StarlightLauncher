@@ -5,6 +5,10 @@
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
+    <!-- Date time view -->
+    <string name="date_time_weather_separator">·</string>
+    <string name="weather_image_description">Icon of the current weather</string>
+
     <!-- Media control -->
     <string name="album_art_description">Album art of the currently playing music</string>
     <string name="no_album_title_label">No title</string>
@@ -117,6 +121,30 @@
         To remove a path, simply tap on it.
     </string>
     <string name="file_add_path_title">Add path…</string>
+
+    <!-- Date time preferences -->
+    <string name="date_time_pref_title">Clock</string>
+    <string name="date_time_pref_summary">
+        Adjust appearance of the clock on the home screen: 12/24 hours, weather info, etc.
+    </string>
+    <string name="date_time_weather_category">Weather</string>
+    <string name="date_time_show_weather_title">
+        Show current weather
+    </string>
+    <string name="date_time_show_weather_summary">
+        Shows current weather next to the current date.
+    </string>
+    <string name="date_time_pick_location_title">Pick a location</string>
+    <string name="date_time_pick_location_summary">
+        Shows current weather of the specified location.
+    </string>
+    <string name="date_time_picked_location_label">Picked location: %1$s</string>
+    <string name="date_time_unknown_location">Unknown</string>
+    <string name="date_time_location_picker_title">Weather location</string>
+    <string name="date_time_location_search_box_hint">Search for a place…</string>
+    <string name="date_time_use_current_location_title">Use my location</string>
+    <string name="date_time_use_current_location_summary">Requires one-time location permission</string>
+    <string name="date_time_weather_unit_title">Temperature unit</string>
 
     <!-- Media control preferences -->
     <string name="media_control_title">Media control</string>
