@@ -2,7 +2,6 @@ package kenneth.app.spotlightlauncher.searching.display_adapters
 
 import android.app.Activity
 import android.content.Context
-import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import dagger.Module
@@ -17,8 +16,8 @@ import kenneth.app.spotlightlauncher.searching.SearchResultView
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
+import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.SuggestedResultAdapter
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * A module that provides all adapters needed to display search results.
@@ -55,9 +54,10 @@ class ResultAdapter @Inject constructor(
             widgetListContainer = findViewById<LinearLayout>(R.id.widget_list_container).apply {
                 isVisible = false
             }
-            searchResultContainer = findViewById<SearchResultView>(R.id.search_result_container).apply {
-                isVisible = true
-            }
+            searchResultContainer =
+                findViewById<SearchResultView>(R.id.search_result_container).apply {
+                    isVisible = true
+                }
         }
 
         when (type) {

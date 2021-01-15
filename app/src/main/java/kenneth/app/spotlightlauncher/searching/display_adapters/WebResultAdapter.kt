@@ -1,16 +1,15 @@
 package kenneth.app.spotlightlauncher.searching.display_adapters
 
-import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,6 +18,7 @@ import kenneth.app.spotlightlauncher.api.getDuckDuckGoRedirectUrlFromQuery
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.views.BlurView
+import kenneth.app.spotlightlauncher.views.TextButton
 import javax.inject.Inject
 
 /**
@@ -28,95 +28,57 @@ class WebResultAdapter @Inject constructor(private val activity: Activity) :
     SectionResultAdapter<SmartSearcher.WebResult>() {
     private lateinit var webResultCard: LinearLayout
     private lateinit var cardBlurBackground: BlurView
+    private lateinit var webResultTitle: TextView
+    private lateinit var webResultContent: TextView
+    private lateinit var openInBrowserButton: TextButton
+    private lateinit var relatedTopicsButton: TextButton
 
     private lateinit var webResult: SmartSearcher.WebResult
-    private lateinit var relatedTopicsButton: Button
 
     private val topicListAdapter = RelatedTopicListDataAdapter.getInstance(activity)
 
     private var showRelatedTopics = false
 
-    private val layoutTransitionListener = object : LayoutTransition.TransitionListener {
-        override fun startTransition(
-            transition: LayoutTransition?,
-            viewGroup: ViewGroup?,
-            view: View?,
-            type: Int
-        ) {
-            if (type == LayoutTransition.APPEARING) {
-                viewGroup?.findViewById<View>(R.id.related_topics_section_dividers)
-                    ?.alpha = 0.1f
-            }
-        }
-
-        override fun endTransition(
-            transition: LayoutTransition?,
-            viewGroup: ViewGroup?,
-            view: View?,
-            type: Int
-        ) {
-            if (type == LayoutTransition.APPEARING) {
-                viewGroup?.findViewById<View>(R.id.related_topics_section_dividers)
-                    ?.alpha = 0.1f
-            }
-        }
-    }
-
     override fun displayResult(result: SmartSearcher.WebResult) {
         webResult = result
-        val searchResultContainer =
-            activity.findViewById<LinearLayout>(R.id.search_result_container)
 
-        webResultCard =
-            searchResultContainer.findViewById<LinearLayout>(R.id.web_result_section_card).apply {
-                visibility = View.VISIBLE
-            }
-
-        cardBlurBackground =
-            searchResultContainer.findViewById<BlurView>(R.id.web_result_section_card_blur_background)
-                .also { it.startBlur() }
+        findViews()
 
         if (webResult.title.isNotBlank()) {
-            with(webResultCard) {
-                findViewById<TextView>(R.id.web_result_title).text = webResult.title
+            webResultTitle.text = webResult.title
+            webResultContent.apply {
+                val hasNoDescription = webResult.content == ""
 
-                findViewById<TextView>(R.id.web_result_content).apply {
-                    val hasNoDescription = webResult.content == ""
+                text =
+                    if (hasNoDescription) context.getString(R.string.web_result_no_description_label)
+                    else webResult.content
 
-                    text =
-                        if (hasNoDescription) context.getString(R.string.web_result_no_description_label)
-                        else webResult.content
+                setTypeface(
+                    typeface,
+                    if (hasNoDescription) Typeface.ITALIC else Typeface.NORMAL
+                )
+            }
 
-                    setTypeface(
-                        typeface,
-                        if (hasNoDescription) Typeface.ITALIC else Typeface.NORMAL
-                    )
+            openInBrowserButton.setOnClickListener { openInBrowser() }
+
+            if (webResult.relatedTopics.isNotEmpty()) {
+                relatedTopicsButton.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener { toggleRelatedTopics() }
                 }
 
-                findViewById<Button>(R.id.open_in_browser_button)
-                    .setOnClickListener { openInBrowser() }
-
-                relatedTopicsButton = findViewById(R.id.related_topics_button)
-
-                if (webResult.relatedTopics.isNotEmpty()) {
-                    relatedTopicsButton.apply {
-                        visibility = View.VISIBLE
-                        setOnClickListener { toggleRelatedTopics() }
+                if (showRelatedTopics) {
+                    if (activity.findViewById<RecyclerView>(R.id.related_topics_list) != null) {
+                        topicListAdapter.displayData(webResult.relatedTopics)
+                    } else {
+                        showRelatedTopics = false
+                        toggleRelatedTopics()
                     }
-
-                    if (showRelatedTopics) {
-                        if (activity.findViewById<RecyclerView>(R.id.related_topics_list) != null) {
-                            topicListAdapter.displayData(webResult.relatedTopics)
-                        } else {
-                            showRelatedTopics = false
-                            toggleRelatedTopics()
-                        }
-                    }
-                } else if (showRelatedTopics) {
-                    relatedTopicsButton.visibility = View.GONE
-                    topicListAdapter.hideList()
-                    showRelatedTopics = false
                 }
+            } else if (showRelatedTopics) {
+                relatedTopicsButton.visibility = View.GONE
+                topicListAdapter.hideList()
+                showRelatedTopics = false
             }
         } else {
             hideWebResult()
@@ -126,8 +88,39 @@ class WebResultAdapter @Inject constructor(private val activity: Activity) :
 
     fun hideWebResult() {
         if (::webResultCard.isInitialized && ::cardBlurBackground.isInitialized) {
-            cardBlurBackground.pauseBlur()
-            webResultCard.visibility = View.GONE
+            cardBlurBackground.apply {
+                pauseBlur()
+                isVisible = false
+            }
+            webResultCard.isVisible = false
+        }
+    }
+
+    private fun findViews() {
+        with(activity) {
+            if (!::webResultCard.isInitialized) {
+                webResultCard = findViewById(R.id.web_result_section_card)
+            }
+
+            if (!::cardBlurBackground.isInitialized) {
+                cardBlurBackground = findViewById(R.id.web_result_section_card_blur_background)
+            }
+
+            if (!::webResultTitle.isInitialized) {
+                webResultTitle = findViewById(R.id.web_result_title)
+            }
+
+            if (!::webResultContent.isInitialized) {
+                webResultContent = findViewById(R.id.web_result_content)
+            }
+
+            if (!::openInBrowserButton.isInitialized) {
+                openInBrowserButton = findViewById(R.id.open_in_browser_button)
+            }
+
+            if (!::relatedTopicsButton.isInitialized) {
+                relatedTopicsButton = findViewById(R.id.related_topics_button)
+            }
         }
     }
 

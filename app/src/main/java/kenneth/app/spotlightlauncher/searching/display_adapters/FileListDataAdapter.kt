@@ -36,8 +36,6 @@ import kotlin.math.min
 
 private const val INITIAL_ITEM_COUNT = 5
 
-private val imageOrVideoMimeType = Regex("(^image/.+)|(^video/.+)")
-
 object FileListDataAdapter :
     RecyclerViewDataAdapter<DocumentFile, FileListDataAdapter.ViewHolder>() {
     /**
@@ -46,6 +44,8 @@ object FileListDataAdapter :
     private lateinit var cardContainer: LinearLayout
     private lateinit var cardBlurBackground: BlurView
     private lateinit var showMoreButton: TextButton
+    private lateinit var openSettingsButton: TextButton
+    private lateinit var resultStatusLabel: TextView
 
     private lateinit var allData: List<DocumentFile>
 
@@ -69,63 +69,90 @@ object FileListDataAdapter :
 
         val fileList = data
 
-        with(activity) {
-            cardContainer = findViewById<LinearLayout>(R.id.files_section_card).apply {
-                visibility = View.VISIBLE
+        findViews()
+
+        cardContainer.isVisible = true
+        cardBlurBackground
+            .apply { isVisible = true }
+            .also { it.startBlur() }
+
+        when {
+            data == null -> {
+                recyclerView.isVisible = false
+                showMoreButton.isVisible = false
+                openSettingsButton.isVisible = true
+                resultStatusLabel.apply {
+                    isVisible = true
+                    text = activity.getString(R.string.files_section_include_path_instruction)
+                    setPadding(0, 0, 0, 0)
+                }
             }
-
-            cardBlurBackground = findViewById<BlurView>(R.id.files_section_card_blur_background)
-                .also { it.startBlur() }
-
-            showMoreButton = findViewById(R.id.files_list_show_more_button)
-
-            val fileListRecyclerView = findViewById<RecyclerView>(R.id.files_list)
-
-            when {
-                data == null -> {
-                    fileListRecyclerView.isVisible = false
-                    showMoreButton.isVisible = false
-                    findViewById<TextButton>(R.id.open_settings_button).isVisible = true
-                    findViewById<TextView>(R.id.files_section_result_status).apply {
-                        isVisible = true
-                        text = getString(R.string.files_section_include_path_instruction)
-                        setPadding(0, 0, 0, 0)
-                    }
+            data.isEmpty() -> {
+                recyclerView.isVisible = false
+                showMoreButton.isVisible = false
+                openSettingsButton.isVisible = false
+                resultStatusLabel.apply {
+                    isVisible = true
+                    text = activity.getString(R.string.files_section_no_result)
+                    setPadding(0, 0, 0, 8.dp)
                 }
-                data.isEmpty() -> {
-                    fileListRecyclerView.isVisible = false
-                    showMoreButton.isVisible = false
-                    findViewById<TextButton>(R.id.open_settings_button).isVisible = false
-                    findViewById<TextView>(R.id.files_section_result_status).apply {
-                        isVisible = true
-                        text = getString(R.string.files_section_no_result)
-                        setPadding(0, 0, 0, 8.dp)
-                    }
+            }
+            else -> {
+                recyclerView.isVisible = true
+                showMoreButton.isVisible = true
+                openSettingsButton.isVisible = false
+                resultStatusLabel.isVisible = false
+                showMoreButton.apply {
+                    isVisible = true
+                    setOnClickListener { showMoreFiles() }
                 }
-                else -> {
-                    fileListRecyclerView.isVisible = true
-                    showMoreButton.isVisible = true
-                    findViewById<TextButton>(R.id.open_settings_button).isVisible = false
-                    findViewById<TextView>(R.id.files_section_result_status).isVisible = false
-                    findViewById<TextButton>(R.id.files_list_show_more_button).apply {
-                        isVisible = true
-                        setOnClickListener { showMoreFiles() }
-                    }
 
-                    this@FileListDataAdapter.allData = fileList!!
-                    this@FileListDataAdapter.data =
-                        fileList.subList(0, min(fileList.size, INITIAL_ITEM_COUNT)).toMutableList()
+                allData = fileList!!
+                this.data =
+                    fileList.subList(0, min(fileList.size, INITIAL_ITEM_COUNT)).toMutableList()
 
-                    notifyDataSetChanged()
-                }
+                notifyDataSetChanged()
             }
         }
     }
 
+    /**
+     * Hides the views associated with this adapter.
+     */
     fun hideFileList() {
         if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
-            cardBlurBackground.pauseBlur()
+            cardBlurBackground.apply {
+                pauseBlur()
+                isVisible = false
+            }
             cardContainer.isVisible = false
+        }
+    }
+
+    /**
+     * Finds and stores all relevant views
+     */
+    private fun findViews() {
+        with(activity) {
+            if (!::cardContainer.isInitialized) {
+                cardContainer = findViewById(R.id.files_section_card)
+            }
+
+            if (!::cardBlurBackground.isInitialized) {
+                cardBlurBackground = findViewById(R.id.files_section_card_blur_background)
+            }
+
+            if (!::showMoreButton.isInitialized) {
+                showMoreButton = findViewById(R.id.files_list_show_more_button)
+            }
+
+            if (!::openSettingsButton.isInitialized) {
+                openSettingsButton = findViewById(R.id.open_settings_button)
+            }
+
+            if (!::resultStatusLabel.isInitialized) {
+                resultStatusLabel = findViewById(R.id.files_section_result_status)
+            }
         }
     }
 
@@ -147,8 +174,6 @@ object FileListDataAdapter :
 
     class ViewHolder(view: LinearLayout, activity: Activity) :
         RecyclerViewDataAdapter.ViewHolder<DocumentFile>(view, activity) {
-        private val imagePreviewCoroutine = CoroutineScope(Dispatchers.IO)
-
         override fun bindWith(data: DocumentFile) {
             val file = data
 
@@ -159,26 +184,6 @@ object FileListDataAdapter :
                 findViewById<LinearLayout>(R.id.files_list_item_container)
                     .setOnClickListener { openFile(file) }
             }
-        }
-
-        private fun getUriPreview(uri: Uri, size: Int): Bitmap? {
-            val cursor = MediaStore.Images.Thumbnails.queryMiniThumbnails(
-                view.context.contentResolver,
-                uri,
-                MediaStore.Images.Thumbnails.MINI_KIND,
-                null
-            )
-
-            return if (cursor != null && cursor.count > 0) {
-                cursor.moveToFirst()
-                val thumbnailUri =
-                    cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA))
-
-                MediaStore.Images.Media.getBitmap(
-                    view.context.contentResolver,
-                    Uri.parse(thumbnailUri)
-                )
-            } else null
         }
 
         private fun getFileMimeType(file: DocumentFile): String? {

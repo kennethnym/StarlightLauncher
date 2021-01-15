@@ -8,7 +8,7 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/material_list_item_padding_horizontal">
+    android:paddingHorizontal="@dimen/search_results_list_item_padding">
 
     <ImageView
         android:id="@+id/related_topic_preview"

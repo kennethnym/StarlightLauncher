@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ResolveInfo
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,8 +80,10 @@ object AppsGridDataAdapter :
 
         findViews()
 
+        cardBlurBackground.isVisible = true
+        cardContainer.isVisible = true
+
         if (data?.isEmpty() != false) {
-            cardContainer.isVisible = true
             recyclerView.isVisible = false
             showMoreButton.isVisible = false
             noResultLabel.isVisible = true
@@ -89,7 +92,6 @@ object AppsGridDataAdapter :
                 it?.lifecycle?.removeObserver(this)
             }
         } else {
-            cardContainer.isVisible = true
             recyclerView.isVisible = true
             noResultLabel.isVisible = false
             cardBlurBackground.startBlur()
@@ -116,13 +118,19 @@ object AppsGridDataAdapter :
         reloadAppLabels()
     }
 
+    /**
+     * Hides the views associated with this adapter.
+     */
     fun hideAppsGrid() {
         (activity as? AppCompatActivity).let {
             it?.lifecycle?.removeObserver(this)
         }
 
         if (::cardContainer.isInitialized && ::cardBlurBackground.isInitialized) {
-            cardBlurBackground.pauseBlur()
+            cardBlurBackground.apply {
+                pauseBlur()
+                isVisible = false
+            }
             cardContainer.isVisible = false
         }
     }

@@ -83,19 +83,11 @@
 
             </kenneth.app.spotlightlauncher.views.BlurView>
 
-            <LinearLayout
+            <kenneth.app.spotlightlauncher.views.WidgetList
                 android:id="@+id/widget_list_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <kenneth.app.spotlightlauncher.views.PinnedAppsCard
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
+                android:layout_weight="1" />
 
             <kenneth.app.spotlightlauncher.searching.SearchResultView
                 android:id="@+id/search_result_container"

@@ -1,9 +1,8 @@
-package kenneth.app.spotlightlauncher.searching.display_adapters
+package kenneth.app.spotlightlauncher.searching.display_adapters.suggested
 
 import android.app.Activity
 import android.net.wifi.WifiManager
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -15,9 +14,7 @@ import kenneth.app.spotlightlauncher.MainActivity
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
-import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.BluetoothController
-import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.URLOpener
-import kenneth.app.spotlightlauncher.searching.display_adapters.suggested.WifiController
+import kenneth.app.spotlightlauncher.searching.display_adapters.SectionResultAdapter
 import kenneth.app.spotlightlauncher.views.BlurView
 import javax.inject.Inject
 
@@ -63,12 +60,9 @@ class SuggestedResultAdapter @Inject constructor(
     private lateinit var suggestedContentContainer: LinearLayout
 
     override fun displayResult(result: SmartSearcher.SuggestedResult) {
-        with(activity) {
-            cardContainer = findViewById(R.id.suggested_section_card)
-            cardBlurView = findViewById(R.id.suggested_section_card_blur_background)
-            suggestedContentContainer = findViewById<LinearLayout>(R.id.suggested_content)
-                .also { it.removeAllViews() }
-        }
+        findViews()
+
+        suggestedContentContainer.removeAllViews()
 
         if (result.type != SuggestedResultType.NONE) {
             cardContainer.isVisible = true
@@ -101,10 +95,32 @@ class SuggestedResultAdapter @Inject constructor(
         }
     }
 
+    /**
+     * Hides the views associated with this adapter.
+     */
     fun hideSuggestedResult() {
         if (::cardContainer.isInitialized && ::cardBlurView.isInitialized) {
-            cardBlurView.pauseBlur()
-            cardContainer.visibility = View.GONE
+            cardBlurView.apply {
+                pauseBlur()
+                isVisible = false
+            }
+            cardContainer.isVisible = false
+        }
+    }
+
+    private fun findViews() {
+        with(activity) {
+            if (!::cardContainer.isInitialized) {
+                cardContainer = findViewById(R.id.suggested_section_card)
+            }
+
+            if (!::cardBlurView.isInitialized) {
+                cardBlurView = findViewById(R.id.suggested_section_card_blur_background)
+            }
+
+            if (!::suggestedContentContainer.isInitialized) {
+                suggestedContentContainer = findViewById(R.id.suggested_content)
+            }
         }
     }
 

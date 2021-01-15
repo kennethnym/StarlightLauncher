@@ -43,7 +43,6 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
             }
 
             setWebResultListener { result ->
-                Log.i("as,asdaswd", "askjdjklasdjkasjdkas")
                 activity?.runOnUiThread {
                     searchResultAdapter.displayWebResult(result)
                 }

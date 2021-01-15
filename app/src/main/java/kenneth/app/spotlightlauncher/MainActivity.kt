@@ -37,9 +37,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.spotlightlauncher.searching.SearchResultView
 import kenneth.app.spotlightlauncher.searching.SearchType
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.display_adapters.ResultAdapter
@@ -48,7 +46,6 @@ import kenneth.app.spotlightlauncher.utils.KeyboardAnimationCallback
 import kenneth.app.spotlightlauncher.utils.calculateBitmapBrightness
 import kenneth.app.spotlightlauncher.utils.viewToBitmap
 import kenneth.app.spotlightlauncher.views.*
-import javax.annotation.Nullable
 import javax.inject.Inject
 
 @Module
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rootView: ConstraintLayout
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
-    private lateinit var widgetListContainer: LinearLayout
+    private lateinit var widgetList: WidgetList
     private lateinit var searchBox: EditText
     private lateinit var searchBoxContainer: LinearLayout
     private lateinit var searchBoxBlurBackground: BlurView
@@ -127,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
         rootView = findViewById(R.id.root)
         appOptionMenu = findViewById(R.id.app_option_menu)
-        widgetListContainer = findViewById(R.id.widget_list_container)
+        widgetList = findViewById(R.id.widget_list_container)
         searchBox = findViewById(R.id.search_box)
         searchBoxContainer = findViewById(R.id.search_box_container)
         searchBoxBlurBackground = findViewById(R.id.search_box_blur_background)
@@ -356,7 +353,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        toggleWidgetsVisibility(isVisible = !isActive)
+        if (isActive) {
+            widgetList.hideWidgets()
+        } else {
+            widgetList.showWidgets()
+        }
 
         AnimatorSet().apply {
             play(searchBoxAnimation)
@@ -364,49 +365,6 @@ class MainActivity : AppCompatActivity() {
 
             start()
         }
-    }
-
-    private fun toggleWidgetsVisibility(isVisible: Boolean) {
-        val cardAnimatorSet = AnimatorSet()
-        val scale = if (isVisible) 1f else 0.8f
-        val alpha = if (isVisible) 1f else 0f
-
-        for ((i, widgetCard) in widgetListContainer.children.withIndex()) {
-            val scaleXAnimation = ObjectAnimator.ofFloat(
-                widgetCard,
-                "scaleX",
-                scale,
-            ).apply {
-                interpolator = searchBoxAnimationInterpolator
-                duration = 500
-            }
-
-            val scaleYAnimation = ObjectAnimator.ofFloat(
-                widgetCard,
-                "scaleY",
-                scale,
-            ).apply {
-                interpolator = searchBoxAnimationInterpolator
-                duration = 500
-            }
-
-            val fadeAnimation = ObjectAnimator.ofFloat(
-                widgetCard,
-                "alpha",
-                alpha,
-            )
-
-            AnimatorSet().apply {
-                play(scaleXAnimation)
-                    .with(scaleYAnimation)
-                    .with(fadeAnimation)
-                    .after(i * 500L)
-            }.also {
-                cardAnimatorSet.play(it)
-            }
-        }
-
-        cardAnimatorSet.start()
     }
 
     @SuppressLint("InlinedApi")
@@ -444,7 +402,7 @@ class MainActivity : AppCompatActivity() {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
 
-            widgetListContainer.isVisible = true
+            widgetList.isVisible = true
         } else {
             searcher.requestSearch(query.toString())
         }
