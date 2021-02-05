@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:blur="http://schemas.android.com/apk/res-auto"
     android:id="@+id/files_section_card_blur_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-    android:layout_marginVertical="@dimen/section_card_margin_vertical"
-    blur:blurAmount="?blurAmount">
+    app:blurAmount="?blurAmount">
 
     <LinearLayout
-        android:id="@+id/files_section_card"
+        android:id="@+id/files_section_card_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_background"

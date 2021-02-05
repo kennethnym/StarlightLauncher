@@ -3,18 +3,14 @@ package kenneth.app.spotlightlauncher.views
 import android.content.Context
 import android.content.pm.ResolveInfo
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
-import androidx.dynamicanimation.animation.DynamicAnimation
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.databinding.AppOptionMenuBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
-import kenneth.app.spotlightlauncher.utils.dp
-import kenneth.app.spotlightlauncher.utils.navBarHeight
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,17 +20,18 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
 
     private lateinit var app: ResolveInfo
 
-    private val appIcon: ImageView
+    private val binding: AppOptionMenuBinding =
+        AppOptionMenuBinding.inflate(LayoutInflater.from(context), this)
+
     private val appLabel: TextView
+    private val appIcon: ImageView
 
     // menu items
     private val pinAppItem: Item
 
     init {
-        inflate(context, R.layout.app_option_menu, this)
-
-        appLabel = findViewById(R.id.app_option_menu_app_label)
-        appIcon = findViewById(R.id.app_option_menu_app_icon)
+        appLabel = binding.appOptionMenuAppLabel
+        appIcon = binding.appOptionMenuAppIcon
         pinAppItem = findViewById(R.id.pin_app_item)
 
         attachListeners()

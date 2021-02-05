@@ -31,7 +31,10 @@ open class BlurView @JvmOverloads constructor(
     @Inject
     lateinit var appState: AppState
 
-    private var blurAmount: Int
+    /**
+     * Adjust the amount of blur.
+     */
+    protected var blurAmount: Int
 
     private var blurImageView: WeakReference<ImageView>
 

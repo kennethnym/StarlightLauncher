@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,11 +19,13 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.OpenWeatherApi
+import kenneth.app.spotlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.spotlightlauncher.utils.activity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -60,11 +63,9 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     private val timeFormat = SimpleDateFormat("K:mm", locale)
     private val dateFormat = SimpleDateFormat("MMM d", locale)
 
-    private val clock: TextView
-    private val date: TextView
-    private val temp: TextView
+    private val binding: DateTimeViewBinding
+
     private val separator: TextView
-    private val weatherIcon: ImageView
 
     init {
         layoutParams = LayoutParams(
@@ -75,13 +76,9 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         gravity = Gravity.CENTER
         orientation = VERTICAL
 
-        inflate(context, R.layout.date_time_view, this)
+        binding = DateTimeViewBinding.inflate(LayoutInflater.from(context), this, true)
 
-        clock = findViewById(R.id.clock)
-        date = findViewById(R.id.date)
-        separator = findViewById(R.id.date_time_weather_separator)
-        temp = findViewById(R.id.temp)
-        weatherIcon = findViewById(R.id.weather_icon)
+        separator = binding.dateTimeWeatherSeparator
 
         updateTime()
         showWeather()
@@ -114,7 +111,10 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     }
 
     private fun unregisterTickTickListener() {
-        context.unregisterReceiver(timeTickBroadcastReceiver)
+        try {
+            context.unregisterReceiver(timeTickBroadcastReceiver)
+        } catch (ex: IllegalArgumentException) {
+        }
     }
 
     private fun showWeather() {
@@ -133,31 +133,31 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                 val isWeatherAvailable = weather != null
 
                 activity?.runOnUiThread {
-                    temp.isVisible = isWeatherAvailable
+                    binding.temp.isVisible = isWeatherAvailable
                     separator.isVisible = isWeatherAvailable
-                    weatherIcon.isVisible = isWeatherAvailable
+                    binding.weatherIcon.isVisible = isWeatherAvailable
 
                     if (isWeatherAvailable) {
-                        temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
+                        binding.temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
 
                         Glide
                             .with(context)
                             .load(weather.weather[0].iconURL)
-                            .into(weatherIcon)
+                            .into(binding.weatherIcon)
 
-                        weatherIcon.contentDescription = weather.weather[0].description
+                        binding.weatherIcon.contentDescription = weather.weather[0].description
                     }
                 }
             }
         } else {
-            temp.isVisible = false
+            binding.temp.isVisible = false
         }
     }
 
     private fun updateTime() {
         val currentTime = Calendar.getInstance().time
 
-        clock.text = timeFormat.format(currentTime)
-        date.text = dateFormat.format(currentTime)
+        binding.clock.text = timeFormat.format(currentTime)
+        binding.date.text = dateFormat.format(currentTime)
     }
 }

@@ -18,7 +18,7 @@ object AppearancePreferenceManager {
     /**
      * Whether the user chooses to show names of pinned apps.
      */
-    val showNamesOfPinnedApps: Boolean
+    val areNamesOfPinnedAppsShown: Boolean
         get() = sharedPreferences.getBoolean(
             showPinnedAppsLabelsKey,
             DefaultValue.SHOW_PINNED_APPS_LABELS
@@ -27,7 +27,7 @@ object AppearancePreferenceManager {
     /**
      * Whether the user chooses to show names of apps in search result.
      */
-    val showAppNamesInSearchResult: Boolean
+    val areAppNamesInSearchResult: Boolean
         get() = sharedPreferences.getBoolean(
             showAppNamesInSearchResultKey,
             DefaultValue.SHOW_APP_NAMES_IN_SEARCH_RESULT,

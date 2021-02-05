@@ -3,37 +3,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        layout="@layout/suggested_result_card"
+    <kenneth.app.spotlightlauncher.searching.views.SuggestedResultCard
+        android:id="@+id/suggesed_result_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+        android:layout_marginVertical="@dimen/section_card_margin_vertical" />
 
     <Space
         android:layout_width="0dp"
         android:layout_height="@dimen/section_card_space_between" />
 
-    <include
-        layout="@layout/apps_section_card"
+    <kenneth.app.spotlightlauncher.searching.views.AppsSectionCard
+        android:id="@+id/apps_section_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+        android:layout_marginVertical="@dimen/section_card_margin_vertical" />
 
     <Space
         android:layout_width="0dp"
         android:layout_height="@dimen/section_card_space_between" />
 
-    <include
-        layout="@layout/files_section_card"
+    <kenneth.app.spotlightlauncher.searching.views.FilesSectionCard
+        android:id="@+id/files_section_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+        android:layout_marginVertical="@dimen/section_card_margin_vertical" />
 
     <Space
         android:layout_width="0dp"
         android:layout_height="@dimen/section_card_space_between" />
 
-    <include
-        layout="@layout/web_result_card"
+    <kenneth.app.spotlightlauncher.searching.views.WebResultCard
+        android:id="@+id/web_result_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
+        android:layout_marginVertical="@dimen/section_card_margin_vertical" />
 
     <Space
         android:layout_width="0dp"

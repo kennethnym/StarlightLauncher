@@ -1,9 +1,6 @@
 package kenneth.app.spotlightlauncher.prefs.appearance
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toolbar
-import androidx.core.graphics.drawable.toDrawable
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -22,10 +19,10 @@ class AppearanceSettingsFragment : PreferenceFragmentCompat(),
         setPreferencesFromResource(R.xml.appearance_preferences, rootKey)
 
         findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_pinned_apps_labels))
-            ?.isChecked = appearancePreferenceManager.showNamesOfPinnedApps
+            ?.isChecked = appearancePreferenceManager.areNamesOfPinnedAppsShown
 
         findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_app_names_in_search_result))
-            ?.isChecked = appearancePreferenceManager.showAppNamesInSearchResult
+            ?.isChecked = appearancePreferenceManager.areAppNamesInSearchResult
 
         changeToolbarTitle()
     }

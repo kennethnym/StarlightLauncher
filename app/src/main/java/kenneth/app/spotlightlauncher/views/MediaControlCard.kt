@@ -10,13 +10,10 @@ import android.media.session.PlaybackState
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
-import android.view.View
-import android.widget.ImageView
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -24,11 +21,10 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.spotlightlauncher.utils.activity
 import kotlinx.coroutines.*
 import javax.inject.Inject
-
-typealias VisibilityListener = (visibility: Int) -> Unit
 
 /**
  * Displays a media control card on the home screen when media is playing.
@@ -66,15 +62,10 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
 
     private var activeMediaSession: MediaController? = null
 
-    private val mediaTitle: TextView
-    private val mediaArtist: TextView
-    private val mediaCover: ImageView
-    private val mediaSeekBar: SeekBar
-    private val skipBackwardButton: IconButton
-    private val skipForwardButton: IconButton
-    private val playPauseButton: IconButton
-    private val blurBackground: BlurView
-    private lateinit var dateTimeViewContainer: DateTimeViewContainer
+    private val binding = MediaControlCardBinding.inflate(LayoutInflater.from(context), this, true)
+
+    private val dateTimeViewContainer
+        get() = parent as DateTimeViewContainer?
 
     /**
      * This thread is used to poll and show the current media progress, since there is no listeners
@@ -92,8 +83,6 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
                 pollAndShowMediaProgress()
             }
         }
-
-    private lateinit var visibilityListener: VisibilityListener
 
     /**
      * Gets from SharedPreferences whether media control is enabled by the user
@@ -138,25 +127,12 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     init {
-        Log.d("spotlight", "MediaControlCard init")
-
-        inflate(context, R.layout.media_control_card, this)
-
-        mediaTitle = findViewById(R.id.media_title)
-        mediaArtist = findViewById(R.id.media_artist_name)
-        mediaCover = findViewById(R.id.media_cover)
-        mediaSeekBar = findViewById(R.id.media_seek_bar)
-        skipBackwardButton = findViewById(R.id.skip_backward_button)
-        skipForwardButton = findViewById(R.id.skip_forward_button)
-        playPauseButton = findViewById(R.id.play_pause_button)
-        blurBackground = findViewById(R.id.media_control_blur_background)
-
         if (isMediaControlEnabled) {
             checkNotificationListenerAndUpdate()
             attachListeners()
         } else {
             isVisible = false
-            dateTimeViewContainer.gravity = Gravity.CENTER
+            dateTimeViewContainer?.gravity = Gravity.CENTER
         }
 
         activity?.lifecycle?.addObserver(this)
@@ -165,7 +141,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        dateTimeViewContainer = (parent as DateTimeViewContainer).apply {
+        dateTimeViewContainer.apply {
             gravity =
                 if (this@MediaControlCard.isVisible) Gravity.CENTER or Gravity.BOTTOM
                 else Gravity.CENTER
@@ -200,9 +176,9 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     private fun attachListeners() {
-        playPauseButton.setOnClickListener { togglePlayPause() }
-        skipBackwardButton.setOnClickListener { skipBackward() }
-        skipForwardButton.setOnClickListener { skipForward() }
+        binding.playPauseButton.setOnClickListener { togglePlayPause() }
+        binding.skipBackwardButton.setOnClickListener { skipBackward() }
+        binding.skipForwardButton.setOnClickListener { skipForward() }
         sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferenceChanged)
     }
 
@@ -246,12 +222,12 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     private fun skipForward() {
-        playPauseButton.disabled = true
+        binding.playPauseButton.disabled = true
         activeMediaSession?.transportControls?.skipToNext()
     }
 
     private fun skipBackward() {
-        playPauseButton.disabled = true
+        binding.playPauseButton.disabled = true
         activeMediaSession?.transportControls?.skipToPrevious()
     }
 
@@ -265,11 +241,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         pollMediaProgress = false
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
-        blurBackground.pauseBlur()
-
-        if (::dateTimeViewContainer.isInitialized) {
-            dateTimeViewContainer.gravity = Gravity.CENTER
-        }
+        dateTimeViewContainer?.gravity = Gravity.CENTER
+        binding.mediaControlBlurBackground.pauseBlur()
     }
 
     /**
@@ -311,27 +284,28 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private fun showMediaControl() {
         isInvisible = false
-        dateTimeViewContainer.gravity = Gravity.CENTER or Gravity.BOTTOM
+        dateTimeViewContainer?.gravity = Gravity.CENTER or Gravity.BOTTOM
 
         activeMediaSession?.let {
             it.metadata?.let(::showMediaMetadata)
             it.playbackState?.let(::showPlaybackState)
         }
 
-        blurBackground.startBlur()
+        binding.mediaControlBlurBackground.startBlur()
     }
 
     /**
      * Reflects the given MediaMetadata to the UI.
      */
     private fun showMediaMetadata(mediaMetadata: MediaMetadata) {
-        mediaTitle.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_TITLE)
+        binding.mediaTitle.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_TITLE)
             ?: context.getString(R.string.no_album_title_label)
 
-        mediaArtist.text = mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
-            ?: context.getString(R.string.no_artist_label)
+        binding.mediaArtistName.text =
+            mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+                ?: context.getString(R.string.no_artist_label)
 
-        mediaCover.apply {
+        binding.mediaCover.apply {
             val coverBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
 
             if (coverBitmap != null) {
@@ -344,7 +318,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
 
         mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
             if (it != 0L) {
-                mediaSeekBar.apply {
+                binding.mediaSeekBar.apply {
                     isVisible = true
                     max = it.toInt()
                 }.also { seekBar ->
@@ -360,34 +334,34 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     private fun showPlaybackState(playbackState: PlaybackState) {
         when (playbackState.state) {
             PlaybackState.STATE_PLAYING -> {
-                playPauseButton.apply {
+                binding.playPauseButton.apply {
                     icon = pauseButtonDrawable
                     disabled = false
                 }
             }
             PlaybackState.STATE_PAUSED -> {
-                playPauseButton.apply {
+                binding.playPauseButton.apply {
                     icon = playButtonDrawable
                     disabled = false
                 }
             }
             else -> {
-                playPauseButton.apply {
+                binding.playPauseButton.apply {
                     icon = playButtonDrawable
                     disabled = true
                 }
             }
         }
 
-        mediaSeekBar.apply {
+        binding.mediaSeekBar.apply {
             progress = playbackState.position.toInt()
             isEnabled = playbackState.actions and PlaybackState.ACTION_SEEK_TO != 0L
         }
 
-        skipBackwardButton.disabled =
+        binding.skipBackwardButton.disabled =
             playbackState.actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS == 0L
 
-        skipForwardButton.disabled =
+        binding.skipForwardButton.disabled =
             playbackState.actions and PlaybackState.ACTION_SKIP_TO_NEXT == 0L
     }
 
@@ -401,11 +375,11 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
                     activeMediaSession?.playbackState?.position?.toInt()?.let {
                         activity?.runOnUiThread {
                             if (newProgressSet) {
-                                if (it == mediaSeekBar.progress) {
+                                if (it == binding.mediaSeekBar.progress) {
                                     newProgressSet = false
                                 }
                             } else {
-                                mediaSeekBar.progress = it
+                                binding.mediaSeekBar.progress = it
                             }
                         }
                     }

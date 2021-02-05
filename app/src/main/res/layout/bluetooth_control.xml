@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bluetooth_control_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:id="@+id/toggle_bluetooth_container"
@@ -54,4 +48,4 @@
         android:layout_marginVertical="@dimen/section_card_padding"
         android:text="@string/open_bluetooth_settings_label" />
 
-</LinearLayout>
+</merge>

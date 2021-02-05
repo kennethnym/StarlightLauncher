@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:blur="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/suggested_section_card_blur_background"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-    android:layout_marginVertical="@dimen/section_card_margin_vertical"
-    android:fitsSystemWindows="false"
-    blur:blurAmount="?blurAmount">
+    android:fitsSystemWindows="false">
 
     <LinearLayout
         android:id="@+id/suggested_section_card"
@@ -33,5 +28,4 @@
 
     </LinearLayout>
 
-</kenneth.app.spotlightlauncher.views.BlurView>
-
+</merge>
