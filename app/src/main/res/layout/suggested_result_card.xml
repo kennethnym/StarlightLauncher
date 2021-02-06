@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/section_card_padding"

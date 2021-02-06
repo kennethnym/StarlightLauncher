@@ -14,13 +14,12 @@
         android:layout_width="48dp"
         android:layout_height="48dp" />
 
-    <TextView
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/app_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:maxLines="2"
-        android:textAlignment="center"
-        android:textColor="?colorOnBackground" />
+        android:textAlignment="center" />
 
 </LinearLayout>

@@ -4,6 +4,7 @@
     android:id="@+id/web_result_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/card_background"
     app:blurAmount="?blurAmount">
 
     <LinearLayout
@@ -16,27 +17,25 @@
         android:padding="@dimen/section_card_padding"
         android:visibility="gone">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.4"
             android:text="@string/web_result_label"
-            android:textColor="?colorOnBackground"
             android:textSize="16sp" />
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/web_result_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:textColor="?colorOnBackground"
             android:textSize="24sp" />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="16dp" />
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/web_result_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +43,6 @@
             android:ellipsize="end"
             android:maxLines="5"
             android:textAlignment="center"
-            android:textColor="?colorOnBackground"
             android:textSize="16sp" />
 
         <Space

@@ -20,13 +20,17 @@ class AppState @Inject constructor() {
      */
     var isInitialStart = true
 
-    var theme: Theme = Theme.LIGHT
+    var theme: Theme = Theme.DARK
 
     val themeStyleId: Int
         get() = when (theme) {
             Theme.LIGHT -> R.style.LightLauncherTheme
             Theme.DARK -> R.style.DarkLauncherTheme
         }
+
+    var adaptiveBackgroundColor: Int = 0
+
+    var adaptiveTextColor: Int = 0
 
     /**
      * Determines if the search box is activated.

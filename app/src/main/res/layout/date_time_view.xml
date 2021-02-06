@@ -5,11 +5,10 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/clock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?colorOnBackground"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -19,14 +18,13 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?colorOnBackground"
             android:textSize="16sp" />
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/date_time_weather_separator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,11 +32,10 @@
             android:text="@string/date_time_weather_separator"
             android:visibility="gone" />
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?colorOnBackground"
             android:textSize="16sp"
             android:visibility="gone" />
 

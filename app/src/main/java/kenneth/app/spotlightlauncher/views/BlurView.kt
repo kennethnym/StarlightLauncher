@@ -4,12 +4,18 @@ import android.content.Context
 import android.graphics.Matrix
 import android.util.AttributeSet
 import android.view.Choreographer
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.graphics.ColorUtils
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.BlurHandler
+import kenneth.app.spotlightlauncher.utils.activity
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -21,7 +27,7 @@ open class BlurView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
-) : FrameLayout(context, attrs, defStyle) {
+) : FrameLayout(context, attrs, defStyle), LifecycleObserver {
     @Inject
     lateinit var choreographer: Choreographer
 
@@ -71,18 +77,35 @@ open class BlurView @JvmOverloads constructor(
                 clipToOutline = true
                 scaleType = ImageView.ScaleType.MATRIX
                 imageMatrix = blurImageTranslationMatrix
-                setBackgroundResource(R.drawable.rounded_background)
+                background = this@BlurView.background
             }.also { addView(it, 0) }
         )
+
+        activity?.lifecycle?.addObserver(this)
     }
 
     fun startBlur() {
         shouldUpdateBlur = true
+        applyBlurTint()
         choreographer.postFrameCallbackDelayed(::frameCallback, FRAME_DELAY)
     }
 
     fun pauseBlur() {
         shouldUpdateBlur = false
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun onResume() {
+        applyBlurTint()
+    }
+
+    private fun applyBlurTint() {
+        if (blurImageView.get() == null) {
+            getImageView()
+        }
+
+        blurImageView.get()
+            ?.setColorFilter(ColorUtils.setAlphaComponent(appState.adaptiveBackgroundColor, 0x80))
     }
 
     private fun frameCallback(frameTimeNanos: Long) {

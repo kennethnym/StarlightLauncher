@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/section_card_margin_horizontal"
-        android:layout_marginVertical="@dimen/section_card_margin_vertical" />
+        android:layout_marginVertical="@dimen/section_card_margin_vertical"
+        android:background="@drawable/card_background" />
 
     <Space
         android:layout_width="0dp"

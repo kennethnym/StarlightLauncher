@@ -25,6 +25,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
@@ -100,12 +101,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        updateAdaptiveColors()
+        setTheme(appState.themeStyleId)
+
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             BindingRegister.activityMainBinding = it
         }
 
-        updateLauncherTheme()
-        setTheme(appState.themeStyleId)
         setContentView(binding.root)
 
         appState.apply {
@@ -256,21 +258,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Update the current launcher theme based on the brightness of the current wallpaper.
-     * If the current wallpaper is bright, LightLauncherTheme is used.
-     * Otherwise, DarkLauncherTheme is used.
+     * Update the current adaptive color scheme by finding the dominant color of the current wallpaper.
      */
-    private fun updateLauncherTheme() {
+    private fun updateAdaptiveColors() {
         if (
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
             val wallpaperBitmap = wallpaperManager.fastDrawable.toBitmap()
-            val wallpaperBrightness = calculateBitmapBrightness(wallpaperBitmap)
+            appState.apply {
+                adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
 
-            appState.theme =
-                if (wallpaperBrightness >= 128) AppState.Theme.LIGHT
-                else AppState.Theme.DARK
+                val white = getColor(android.R.color.white)
+                val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
+
+                adaptiveTextColor =
+                    if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
+                        white
+                    else black
+            }
 
             if (appState.isInitialStart) {
                 appState.isInitialStart = false

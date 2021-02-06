@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/media_control_blur_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/card_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,9 +15,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:layout_marginHorizontal="@dimen/media_control_padding"
-            android:layout_marginTop="@dimen/media_control_padding">
+            android:layout_marginTop="@dimen/media_control_padding"
+            android:gravity="center_vertical">
 
             <ImageView
                 android:id="@+id/media_cover"
@@ -30,20 +31,18 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
                     android:id="@+id/media_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?colorOnBackground"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
                     android:id="@+id/media_artist_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.8"
-                    android:textColor="?colorOnBackground" />
+                    android:alpha="0.8" />
 
             </LinearLayout>
 
@@ -98,11 +97,11 @@
 
         <SeekBar
             android:id="@+id/media_seek_bar"
-            android:thumbTint="?colorOnBackground"
-            android:progressTint="?colorOnBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp" />
+            android:layout_marginHorizontal="8dp"
+            android:progressTint="?colorOnBackground"
+            android:thumbTint="?colorOnBackground" />
 
         <Space
             android:layout_width="0dp"

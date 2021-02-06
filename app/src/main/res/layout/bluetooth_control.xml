@@ -11,12 +11,11 @@
         android:paddingHorizontal="@dimen/section_card_padding"
         android:paddingVertical="8dp">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/bluetooth_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bluetooth_label"
-            android:textColor="?colorOnBackground"
             android:textSize="18sp"
             android:textStyle="bold" />
 

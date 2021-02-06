@@ -19,11 +19,10 @@
         android:outlineProvider="background"
         android:visibility="gone" />
 
-    <TextView
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/file_list_item_file_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?colorOnBackground"
         android:textSize="16sp" />
 
 </LinearLayout>

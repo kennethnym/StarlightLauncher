@@ -3,7 +3,6 @@ package kenneth.app.spotlightlauncher.utils
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.Drawable
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
@@ -16,10 +15,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.AppState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
@@ -48,7 +43,6 @@ object BlurHandlerModule {
  */
 @Singleton
 class BlurHandler @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val renderScript: RenderScript,
     private val appState: AppState
 ) {
@@ -71,12 +65,18 @@ class BlurHandler @Inject constructor(
 
     /**
      * Change the wallpaper to be blurred.
+     * @param newWallpaperBitmap [Bitmap] representation of the new wallpaper.
      */
     fun changeWallpaper(newWallpaperBitmap: Bitmap) {
         wallpaper = newWallpaperBitmap
         shouldBlurWallpaper = true
     }
 
+    /**
+     * Sets the blurred wallpaper as the background of the given [ImageView].
+     * @param dest The [ImageView] this function should set the blurred wallpaper for.
+     * @param blurAmount Amount of blur
+     */
     fun blurView(dest: ImageView, blurAmount: Int) {
         if (shouldBlurWallpaper) {
             Log.i("", "blur")
@@ -95,7 +95,6 @@ class BlurHandler @Inject constructor(
             val bitmapY =
                 it.height * max(min(viewY, appState.screenHeight), 0) / appState.screenHeight
 
-            if (bitmapY >= it.height || bitmapX > it.width) return
             if (bitmapY >= it.height || bitmapX > it.width) return
 
             val bgWidth = min(it.width * dest.width / appState.screenWidth, appState.screenWidth)
@@ -172,41 +171,5 @@ class BlurHandler @Inject constructor(
         scaledBitmap.recycle()
 
         return blurredBitmap
-    }
-
-    /**
-     * A Drawable that draws part of the blurred wallpaper to a View
-     * based on its position and dimension (specified by the given Rectangle)
-     */
-    inner class BlurredWallpaperDrawable(
-        private val blurredWallpaper: Bitmap,
-        var viewDimension: Rect,
-    ) : Drawable() {
-        private val destRect = Rect(0, 0, 0, 0)
-        private val paint = Paint().apply {
-            isAntiAlias = true
-            isFilterBitmap = true
-        }
-
-        override fun draw(canvas: Canvas) {
-            val viewHeight = viewDimension.bottom - viewDimension.top
-            val viewWidth = viewDimension.right - viewDimension.left
-
-            canvas.drawBitmap(
-                blurredWallpaper,
-                viewDimension,
-                destRect.apply {
-                    right = viewWidth - 1
-                    bottom = viewHeight - 1
-                },
-                paint
-            )
-        }
-
-        override fun setAlpha(alpha: Int) {}
-
-        override fun setColorFilter(colorFilter: ColorFilter?) {}
-
-        override fun getOpacity() = PixelFormat.UNKNOWN
     }
 }

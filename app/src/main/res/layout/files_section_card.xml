@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/files_section_card_blur_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/files_section_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/card_background"
     app:blurAmount="?blurAmount">
 
     <LinearLayout
@@ -17,7 +18,7 @@
         android:paddingVertical="@dimen/section_card_padding"
         android:visibility="gone">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/files_section_title"
@@ -35,15 +36,14 @@
             android:fitsSystemWindows="false"
             android:nestedScrollingEnabled="false" />
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/files_section_result_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/section_card_padding"
             android:layout_marginBottom="@dimen/section_card_padding"
             android:text="@string/apps_section_no_result"
-            android:textAlignment="center"
-            android:textColor="?colorOnBackground" />
+            android:textAlignment="center" />
 
         <kenneth.app.spotlightlauncher.views.TextButton
             android:id="@+id/open_settings_button"

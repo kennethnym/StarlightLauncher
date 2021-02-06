@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/equation_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -9,7 +9,7 @@
         android:fontFamily="monospace"
         android:textAppearance="?attr/textAppearanceBody1" />
 
-    <TextView
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/equation_result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

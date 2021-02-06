@@ -60,7 +60,6 @@
                     android:id="@+id/search_box_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?backgroundColor"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 

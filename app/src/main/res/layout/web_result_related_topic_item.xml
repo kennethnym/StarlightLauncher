@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/related_topic_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
