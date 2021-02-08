@@ -35,12 +35,12 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <kenneth.app.spotlightlauncher.views.DateTimeView
+                <kenneth.app.spotlightlauncher.widgets.DateTimeView
                     android:id="@+id/date_time_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <kenneth.app.spotlightlauncher.views.MediaControlCard
+                <kenneth.app.spotlightlauncher.widgets.MediaControlCard
                     android:id="@+id/media_control_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

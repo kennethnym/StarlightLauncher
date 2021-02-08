@@ -25,6 +25,8 @@
     <string name="date_time_location_picker">date_time_location_picker</string>
     <string name="date_time_weather_unit">date_time_weather_unit</string>
 
+    <string name="note_list">note_list</string>
+
     <string name="media_control_pref_key">media_control</string>
     <string name="media_control_notification_listener_permission">
         media_control_notification_listener_permission

@@ -18,6 +18,9 @@
     <string name="pause_button_description">Pause media</string>
     <string name="skip_forward_button_description">Skip forward</string>
 
+    <!-- Quick notes widget -->
+    <string name="add_note_editor_text_hint">Add a quick note…</string>
+
     <string name="open_settings">Open settings</string>
 
     <string name="apps_section_title">Apps</string>

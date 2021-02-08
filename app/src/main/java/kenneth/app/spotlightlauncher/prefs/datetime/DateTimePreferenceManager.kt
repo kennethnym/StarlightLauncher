@@ -43,22 +43,16 @@ object DateTimePreferenceManager {
         )
 
     private lateinit var context: Context
-    private lateinit var sharedPreference: SharedPreferences
+    private val sharedPreference by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
-    private lateinit var showWeatherPrefKey: String
-    private lateinit var weatherUnitPrefKey: String
-    private lateinit var weatherLocationLatPrefKey: String
-    private lateinit var weatherLocationLongPrefKey: String
-    private lateinit var weatherLocationNamePrefKey: String
+    private val showWeatherPrefKey by lazy { context.getString(R.string.date_time_show_weather) }
+    private val weatherUnitPrefKey by lazy { context.getString(R.string.date_time_weather_unit) }
+    private val weatherLocationLatPrefKey by lazy { context.getString(R.string.date_time_weather_location_lat) }
+    private val weatherLocationLongPrefKey by lazy { context.getString(R.string.date_time_weather_location_long) }
+    private val weatherLocationNamePrefKey by lazy { context.getString(R.string.date_time_weather_location_name) }
 
     fun getInstance(context: Context) = this.apply {
         this.context = context
-
-        if (!::sharedPreference.isInitialized) {
-            sharedPreference = PreferenceManager.getDefaultSharedPreferences(context)
-        }
-
-        initializePrefKeys()
     }
 
     /**
@@ -70,30 +64,5 @@ object DateTimePreferenceManager {
             .putFloat(weatherLocationLongPrefKey, latLong.long)
             .putString(weatherLocationNamePrefKey, displayName)
             .apply()
-    }
-
-    private fun initializePrefKeys() {
-        if (!::showWeatherPrefKey.isInitialized) {
-            showWeatherPrefKey = context.getString(R.string.date_time_show_weather)
-        }
-
-        if (!::weatherLocationLatPrefKey.isInitialized) {
-            weatherLocationLatPrefKey = context.getString(R.string.date_time_weather_location_lat)
-        }
-
-        if (!::weatherLocationLongPrefKey.isInitialized) {
-            weatherLocationLongPrefKey = context.getString(R.string.date_time_weather_location_long)
-        }
-
-        if (!::weatherLocationNamePrefKey.isInitialized) {
-            weatherLocationNamePrefKey =
-                context.getString(R.string.date_time_weather_location_name)
-        }
-
-        if (!::weatherUnitPrefKey.isInitialized) {
-            weatherUnitPrefKey = context.getString(
-                R.string.date_time_weather_unit
-            )
-        }
     }
 }

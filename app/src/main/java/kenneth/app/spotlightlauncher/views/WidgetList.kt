@@ -19,6 +19,10 @@ class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         orientation = VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
 
+        val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal)
+
+        setPadding(paddingHorizontal, paddingHorizontal, paddingHorizontal, 0)
+
         inflate(context, R.layout.widget_list, this)
 
         animations = generateAnimations()
@@ -44,7 +48,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     private fun generateAnimations(): List<CardAnimation> =
         children.foldIndexed(mutableListOf()) { i, anims, child ->
             if (child.isVisible) {
-                anims.add(CardAnimation(child, i * 500L))
+                anims.add(CardAnimation(child, i * 20L))
             }
             anims
         }

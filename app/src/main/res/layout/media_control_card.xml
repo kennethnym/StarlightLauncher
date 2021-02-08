@@ -61,7 +61,6 @@
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:contentDescription="@string/skip_backward_button_description"
-                    android:tint="?colorOnBackground"
                     app:icon="@drawable/ic_step_backward_alt" />
 
                 <Space
@@ -72,7 +71,6 @@
                     android:id="@+id/play_pause_button"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
-                    android:tint="?colorOnBackground"
                     app:icon="@drawable/ic_play" />
 
                 <Space
@@ -84,7 +82,6 @@
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:contentDescription="@string/skip_forward_button_description"
-                    android:tint="?colorOnBackground"
                     app:icon="@drawable/ic_skip_forward_alt" />
 
             </LinearLayout>

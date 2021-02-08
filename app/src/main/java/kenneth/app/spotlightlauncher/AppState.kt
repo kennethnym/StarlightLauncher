@@ -28,8 +28,16 @@ class AppState @Inject constructor() {
             Theme.DARK -> R.style.DarkLauncherTheme
         }
 
+    /**
+     * Current background color of various views on the home screen based on
+     * the dominant color of the wallpaper.
+     */
     var adaptiveBackgroundColor: Int = 0
 
+    /**
+     * Current text color that changes based on [AppState.adaptiveBackgroundColor]
+     * to make sure there is enough contrast between the content and the backgound.
+     */
     var adaptiveTextColor: Int = 0
 
     /**

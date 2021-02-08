@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.views
+package kenneth.app.spotlightlauncher.widgets
 
 import android.content.ComponentName
 import android.content.Context
@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.spotlightlauncher.utils.activity
+import kenneth.app.spotlightlauncher.views.DateTimeViewContainer
 import kotlinx.coroutines.*
 import javax.inject.Inject
 

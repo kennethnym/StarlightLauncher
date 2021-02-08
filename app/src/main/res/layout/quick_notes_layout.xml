@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/quick_notes_widget_blur_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/widget_padding_horizontal"
+        android:layout_marginVertical="@dimen/widget_padding_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <kenneth.app.spotlightlauncher.views.AdaptiveColorImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_notes" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="0dp" />
+
+            <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
+                android:id="@+id/add_notes_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/add_note_editor_text_hint"
+                tools:ignore="Autofill" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="0dp" />
+
+            <kenneth.app.spotlightlauncher.views.IconButton
+                android:id="@+id/add_note_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="invisible"
+                app:icon="@drawable/ic_check" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/quick_notes_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="@dimen/widget_padding_vertical"
+            android:nestedScrollingEnabled="false" />
+
+    </LinearLayout>
+
+</kenneth.app.spotlightlauncher.views.BlurView>

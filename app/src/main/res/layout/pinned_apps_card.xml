@@ -3,7 +3,6 @@
     android:id="@+id/pinned_apps_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/widget_margin_horizontal"
     android:background="@drawable/card_background">
 
     <LinearLayout

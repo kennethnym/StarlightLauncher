@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.views
+package kenneth.app.spotlightlauncher.widgets
 
 import android.content.Context
 import android.content.pm.ResolveInfo
@@ -59,7 +59,6 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
         reloadAppLabels()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun reloadAppLabels() {
         for (i in 0 until pinnedAppsGridAdapter.itemCount) {
             binding.pinnedAppsGrid.getChildAt(i)?.let {
