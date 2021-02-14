@@ -6,7 +6,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.BindingRegister
 
 /**
  * A simple LinearLayout wrapper that
@@ -23,4 +25,11 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
             }
             layoutParams = newLayoutParams
         }
+
+    init {
+        setOnLongClickListener {
+            BindingRegister.activityMainBinding.launcherOptionMenu.show()
+            HANDLED
+        }
+    }
 }

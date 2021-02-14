@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-//    private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
 
     private var isDarkModeActive = false
 
@@ -131,6 +130,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         when {
+            binding.launcherOptionMenu.isActive -> {
+                binding.launcherOptionMenu.hide()
+            }
             binding.appOptionMenu.isVisible -> {
                 binding.appOptionMenu.hide()
             }
