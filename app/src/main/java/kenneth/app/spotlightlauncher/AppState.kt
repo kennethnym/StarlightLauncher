@@ -14,6 +14,13 @@ class AppState @Inject constructor() {
 
     var screenWidth: Int = 0
     var screenHeight: Int = 0
+        set(height) {
+            field = height
+            halfScreenHeight = height / 2
+        }
+
+    var halfScreenHeight: Int = 0
+        private set
 
     /**
      * Determines if MainActivity is starting for the first time.
@@ -44,4 +51,8 @@ class AppState @Inject constructor() {
      * Determines if the search box is activated.
      */
     var isSearchBoxActive: Boolean = false
+
+    var statusBarHeight = 0
+
+    var isWidgetPanelExpanded = false
 }

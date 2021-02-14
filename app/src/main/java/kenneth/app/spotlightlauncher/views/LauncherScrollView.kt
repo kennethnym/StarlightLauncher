@@ -1,22 +1,28 @@
 package kenneth.app.spotlightlauncher.views
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewTreeObserver
-import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.spotlightlauncher.AppState
-import kenneth.app.spotlightlauncher.AppState_Factory
-import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.*
+import kenneth.app.spotlightlauncher.utils.BindingRegister
+import kenneth.app.spotlightlauncher.utils.Velocity1DCalculator
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
-private const val SCROLL_DIRECTION_DOWN = 1
+/**
+ * The amount of pixel the user has to move in order to expand/retract widget panel.
+ * Defined to be 150px.
+ */
+private const val WIDGET_PANEL_MOVE_THRESHOLD = 150
 
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
@@ -26,13 +32,11 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
     @Inject
     lateinit var appState: AppState
 
-    /**
-     * The initial y position that initiated the swipe up gesture.
-     */
-    private var initialY: Float = 0f
+    @Inject
+    lateinit var velocityCalculator: Velocity1DCalculator
 
     /**
-     * The previous y position of the swipe up gesture.
+     * The previous y position of gesture.
      */
     private var prevY: Float = 0f
 
@@ -41,12 +45,8 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
      */
     private var isDragging = false
 
-    /**
-     * Records the initial time when the user begins the drag gesture.
-     */
-    private var initialGestureDownTimestamp = 0L
-
     private var launcherOptionMenu: LauncherOptionMenu? = null
+
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
@@ -61,88 +61,165 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         isFillViewport = true
         fitsSystemWindows = false
 
+        translationY = appState.halfScreenHeight.toFloat()
+
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        if (!canScrollVertically(SCROLL_DIRECTION_DOWN) && !appState.isSearchBoxActive) {
-            when (ev?.actionMasked) {
-                null -> {
+        return handleWidgetPanelGesture(ev)
+    }
+
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
+
+    fun expandWidgetPanel() {
+        appState.isWidgetPanelExpanded = true
+        WidgetPanelAnimation(0f).start()
+        DateTimeViewAnimation(0f).start()
+        BindingRegister.activityMainBinding.searchBox.showTopPadding()
+    }
+
+    fun retractWidgetPanel() {
+        val screenHeight = context.resources.displayMetrics.heightPixels
+        appState.isWidgetPanelExpanded = false
+        WidgetPanelAnimation(screenHeight / 2f).start()
+        DateTimeViewAnimation(1f).start()
+        with(BindingRegister.activityMainBinding.searchBox) {
+            removeTopPadding()
+            clearFocus()
+        }
+    }
+
+    private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean {
+        return when (ev?.actionMasked) {
+            null -> NOT_HANDLED
+            MotionEvent.ACTION_UP -> {
+                isDragging = false
+                velocityCalculator.finalPoint = y
+                val gestureDelta = velocityCalculator.distance
+
+                Log.d("hub", "gesture velocity ${velocityCalculator.velocity}")
+
+                when {
+                    gestureDelta < -WIDGET_PANEL_MOVE_THRESHOLD -> {
+                        expandWidgetPanel()
+                    }
+                    gestureDelta > WIDGET_PANEL_MOVE_THRESHOLD -> {
+                        retractWidgetPanel()
+                    }
+                    !appState.isWidgetPanelExpanded -> retractWidgetPanel()
+                    appState.isWidgetPanelExpanded -> expandWidgetPanel()
                 }
-                MotionEvent.ACTION_UP -> {
-                    launcherOptionMenu?.let {
-                        isDragging = false
 
-                        val gestureDuration =
-                            System.currentTimeMillis() - initialGestureDownTimestamp
-                        val deltaY = ev.y - initialY
-                        val gestureVelocity = deltaY / gestureDuration
+                HANDLED
+            }
+            MotionEvent.ACTION_DOWN -> {
+                recordGestureStart(ev)
+                HANDLED
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (!isDragging) {
+                    recordGestureStart(ev)
+                    HANDLED
+                } else {
+                    val dateTimeViewY = BindingRegister.activityMainBinding.dateTimeView.y
+                    // the delta y between activity_main > date_time_view and this view
+                    // if this is positive, this view is below date_time_view. vice versa.
+                    val delta = ev.y - prevY
+                    val scrollViewTranslationY =
+                        BindingRegister.activityMainBinding.pageScrollView.translationY
 
-                        when {
-                            deltaY >= -1 && deltaY <= 1 -> {
-                                // user attempted to click the shade of the menu
-                                // hide the menu
+                    with(BindingRegister.activityMainBinding) {
+                        pageScrollView.translationY = scrollViewTranslationY + delta
 
-                                if (it.isActive) {
-                                    it.hide()
-                                }
-                            }
-                            gestureVelocity > 2 -> {
-                                it.hide()
-                            }
-                            gestureVelocity < -2 -> {
-                                it.show()
-                            }
-                            else -> {
-                                // gesture too slow
-                                // revert menu back to its position
+                        val dateTimeViewScale = max(
+                            0f,
+                            (dateTimeViewY - y) / (dateTimeViewY - appState.halfScreenHeight)
+                        )
 
-                                if (it.isActive) {
-                                    // launcherOptionMenu is currently active
-                                    it.show()
-                                } else {
-                                    it.hide()
-                                }
-                            }
+                        dateTimeView.apply {
+                            scaleX = dateTimeViewScale
+                            scaleY = dateTimeViewScale
                         }
                     }
-                }
-                else -> {
-                    launcherOptionMenu?.let {
-                        if (!isDragging) {
-                            isDragging = true
-                            initialGestureDownTimestamp = System.currentTimeMillis()
-                            initialY = ev.y
-                            prevY = initialY
-                            it.isVisible = true
-                        } else {
-                            val delta = ev.y - prevY
 
-                            // when scrolled to bottom, all gestures are intercepted, including
-                            // when the user wants to scroll back up.
-                            // we have to make sure to allow the user to scroll back up
-                            // when the menu is not active.
-                            //
-                            // if the menu is active or when the user is swiping up,
-                            // count them as interactions with the menu.
-                            // otherwise, let the scroll view handle the gesture.
-
-                            if (it.isActive || delta < 0) {
-                                it.translationY =
-                                    min(it.height.toFloat(), max(0f, it.translationY + delta * 2f))
-                                prevY = ev.y
-                            } else {
-                                return super.onTouchEvent(ev)
-                            }
-                        }
-                    }
+                    HANDLED
                 }
             }
-
-            return true
+            else -> NOT_HANDLED
         }
+    }
 
-        return super.onTouchEvent(ev)
+    private fun recordGestureStart(ev: MotionEvent) {
+        prevY = ev.y
+        isDragging = true
+        velocityCalculator.initialPoint = y
+    }
+
+    private inner class WidgetPanelAnimation(private val finalPosition: Float) {
+        private val springDamping = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+        private val springStiffness = SpringForce.STIFFNESS_MEDIUM
+
+        fun start() {
+            SpringAnimation(
+                this@LauncherScrollView,
+                DynamicAnimation.TRANSLATION_Y,
+                finalPosition
+            ).run {
+                spring.apply {
+                    dampingRatio = springDamping
+                    stiffness = springStiffness
+                }
+
+                if (velocityCalculator.velocity > 0) {
+                    setStartVelocity(velocityCalculator.velocity)
+                }
+
+                start()
+            }
+        }
+    }
+
+    private inner class DateTimeViewAnimation(private val finalScale: Float) {
+        private val springDamping = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+        private val springStiffness = SpringForce.STIFFNESS_MEDIUM
+
+        fun start() {
+            SpringAnimation(
+                BindingRegister.activityMainBinding.dateTimeView,
+                DynamicAnimation.SCALE_X,
+                finalScale
+            ).run {
+                spring.apply {
+                    dampingRatio = springDamping
+                    stiffness = springStiffness
+                }
+
+                if (velocityCalculator.velocity > 0) {
+                    setStartVelocity(velocityCalculator.velocity)
+                }
+
+                start()
+            }
+
+            SpringAnimation(
+                BindingRegister.activityMainBinding.dateTimeView,
+                DynamicAnimation.SCALE_Y,
+                finalScale
+            ).run {
+                spring.apply {
+                    dampingRatio = springDamping
+                    stiffness = springStiffness
+                }
+
+                if (velocityCalculator.velocity > 0) {
+                    setStartVelocity(velocityCalculator.velocity)
+                }
+
+                start()
+            }
+        }
     }
 }

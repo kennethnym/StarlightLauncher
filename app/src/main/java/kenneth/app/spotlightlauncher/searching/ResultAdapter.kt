@@ -12,7 +12,7 @@ import javax.inject.Inject
 class ResultAdapter @Inject constructor() {
     fun displayResult(result: Searcher.Result, type: SearchType) {
         with(BindingRegister.activityMainBinding) {
-            widgetListContainer.isVisible = false
+            widgetList.isVisible = false
             searchResultContainer.isVisible = true
         }
 

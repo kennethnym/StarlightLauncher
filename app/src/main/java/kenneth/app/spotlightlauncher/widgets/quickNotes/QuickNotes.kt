@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.widgets
+package kenneth.app.spotlightlauncher.widgets.quickNotes
 
 import android.content.Context
 import android.util.AttributeSet
@@ -74,11 +74,20 @@ class NoteListAdapter @Inject constructor(
 ) : RecyclerViewDataAdapter<Note, NoteListItem>() {
     override val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
 
+    /**
+     * The [RecyclerView] this adapter is attached to.
+     */
+    lateinit var recyclerView: RecyclerView
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteListItem {
         val binding =
             QuickNotesListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return NoteListItem(this, binding, notesPreferenceManager)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
     }
 }
 
@@ -94,13 +103,47 @@ class NoteListItem(
     private val notesPreferenceManager: NotesPreferenceManager
 ) :
     RecyclerViewDataAdapter.ViewHolder<Note>(binding.root) {
+    private lateinit var note: Note
 
     override fun bindWith(data: Note) {
+        note = data
+
         with(binding) {
             quickNotesListItemContent.text = data.content
             quickNotesListItemDeleteButton.setOnClickListener {
-                notesPreferenceManager.deleteNote(data)
+                deleteNote()
             }
+            quickNotesListItemSeparator.isVisible = adapterPosition > 0
+        }
+    }
+
+    private fun deleteNote() {
+        val currentPosition = adapterPosition
+
+        notesPreferenceManager.deleteNote(note)
+        adapter.data = adapter.data.filter { it != note }
+        adapter.notifyItemRemoved(currentPosition)
+
+        if (currentPosition == 0) {
+            redrawSeparators()
+        }
+    }
+
+    /**
+     * When the first item is deleted, the second item will become the first item, but
+     * its separator will still be visible. Since that item is now the first item,
+     * that separator is no longer needed and needs to be hidden.
+     *
+     * This method finds the first item in the list and tells it to hide the separator.
+     */
+    private fun redrawSeparators() {
+        val viewOfFirstItem = adapter.recyclerView.getChildAt(1)
+
+        if (viewOfFirstItem != null) {
+            val holderOfFirstItem =
+                (adapter.recyclerView.getChildViewHolder(viewOfFirstItem) as NoteListItem)
+
+            holderOfFirstItem.binding.quickNotesListItemSeparator.isVisible = false
         }
     }
 }

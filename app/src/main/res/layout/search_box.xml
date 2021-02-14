@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_box_blur_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/search_box_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/search_box_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/search_box_container_padding"
+            android:background="@null"
+            android:hint="@string/search_box_label"
+            android:inputType="text"
+            android:textAlignment="center"
+            android:textColor="?colorOnBackground"
+            android:textColorHint="?hintTextColor"
+            android:textSize="@dimen/search_box_text_size"
+            android:textStyle="bold"
+            tools:ignore="Autofill" />
+
+    </LinearLayout>
+
+</kenneth.app.spotlightlauncher.views.BlurView>

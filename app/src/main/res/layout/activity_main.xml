@@ -18,6 +18,41 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <kenneth.app.spotlightlauncher.views.DateTimeViewContainer
+            android:id="@+id/date_time_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <kenneth.app.spotlightlauncher.widgets.DateTimeView
+                android:id="@+id/date_time_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <kenneth.app.spotlightlauncher.widgets.MediaControlCard
+                android:id="@+id/media_control_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/widget_margin_horizontal"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="invisible" />
+
+        </kenneth.app.spotlightlauncher.views.DateTimeViewContainer>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
     <kenneth.app.spotlightlauncher.views.LauncherScrollView
         android:id="@+id/page_scroll_view"
         android:layout_width="match_parent"
@@ -28,65 +63,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <kenneth.app.spotlightlauncher.views.DateTimeViewContainer
-                android:id="@+id/date_time_view_container"
+            <kenneth.app.spotlightlauncher.views.SearchBox
+                android:id="@+id/search_box"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <kenneth.app.spotlightlauncher.widgets.DateTimeView
-                    android:id="@+id/date_time_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <kenneth.app.spotlightlauncher.widgets.MediaControlCard
-                    android:id="@+id/media_control_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/widget_margin_horizontal"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="invisible" />
-
-            </kenneth.app.spotlightlauncher.views.DateTimeViewContainer>
-
-            <kenneth.app.spotlightlauncher.views.BlurView
-                android:id="@+id/search_box_blur_background"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/search_box_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <EditText
-                        android:id="@+id/search_box"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/search_box_container_padding"
-                        android:background="@null"
-                        android:hint="@string/search_box_label"
-                        android:inputType="text"
-                        android:textAlignment="center"
-                        android:textColor="?colorOnBackground"
-                        android:textColorHint="?hintTextColor"
-                        android:textSize="@dimen/search_box_text_size"
-                        android:textStyle="bold"
-                        tools:ignore="Autofill" />
-
-                </LinearLayout>
-
-            </kenneth.app.spotlightlauncher.views.BlurView>
+                android:layout_height="wrap_content" />
 
             <kenneth.app.spotlightlauncher.views.WidgetList
-                android:id="@+id/widget_list_container"
+                android:id="@+id/widget_list"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_height="wrap_content" />
 
             <kenneth.app.spotlightlauncher.searching.SearchResultView
                 android:id="@+id/search_result_container"

@@ -20,6 +20,7 @@
 
     <!-- Quick notes widget -->
     <string name="add_note_editor_text_hint">Add a quick note…</string>
+    <string name="show_all_notes_button_label">Show all -></string>
 
     <string name="open_settings">Open settings</string>
 

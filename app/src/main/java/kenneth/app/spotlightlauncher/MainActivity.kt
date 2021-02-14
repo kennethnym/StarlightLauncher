@@ -1,9 +1,6 @@
 package kenneth.app.spotlightlauncher
 
 import android.Manifest
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
@@ -14,13 +11,10 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.view.animation.PathInterpolator
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
@@ -28,8 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
-import androidx.core.widget.addTextChangedListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -84,12 +76,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-    private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
-
-    private lateinit var searchBoxAnimationInterpolator: PathInterpolator
+//    private lateinit var keyboardAnimationCallback: KeyboardAnimationCallback
 
     private var isDarkModeActive = false
-    private var statusBarHeight = 0
 
     /**
      * Right before requesting a permission, it is stored in this variable, so that when
@@ -104,16 +93,16 @@ class MainActivity : AppCompatActivity() {
         updateAdaptiveColors()
         setTheme(appState.themeStyleId)
 
+        appState.apply {
+            screenWidth = resources.displayMetrics.widthPixels
+            screenHeight = resources.displayMetrics.heightPixels
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             BindingRegister.activityMainBinding = it
         }
 
         setContentView(binding.root)
-
-        appState.apply {
-            screenWidth = resources.displayMetrics.widthPixels
-            screenHeight = resources.displayMetrics.heightPixels
-        }
 
         appearancePreferenceManager.iconPack?.load()
 
@@ -145,8 +134,8 @@ class MainActivity : AppCompatActivity() {
             binding.appOptionMenu.isVisible -> {
                 binding.appOptionMenu.hide()
             }
-            binding.searchBox.text.toString() == "" -> {
-                binding.searchBox.clearFocus()
+            appState.isWidgetPanelExpanded -> {
+                binding.pageScrollView.retractWidgetPanel()
             }
             else -> {
                 super.onBackPressed()
@@ -203,33 +192,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachListeners() {
-        with(binding.searchBox) {
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) searcher.refreshAppList()
-                onSearchBoxFocusChanged(hasFocus)
-            }
-
-            setOnEditorActionListener { _, actionID, _ ->
-                if (actionID == EditorInfo.IME_ACTION_DONE) {
-                    clearFocus()
-                }
-                false
-            }
-
-            addTextChangedListener { text -> handleSearchQuery(text) }
-        }
-
-        binding.searchBoxContainer.setOnClickListener {
-            binding.searchBox.requestFocus()
-            inputMethodManager.toggleSoftInput(
-                InputMethodManager.SHOW_FORCED,
-                InputMethodManager.HIDE_IMPLICIT_ONLY,
-            )
-        }
-
         with(binding.root) {
             setOnApplyWindowInsetsListener { _, insets ->
-                statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                appState.statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     val systemBarsInset = insets.getInsets(WindowInsets.Type.systemBars())
                     systemBarsInset.top
                 } else {
@@ -240,18 +205,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            keyboardAnimationCallback = KeyboardAnimationCallback(this).also {
-                binding.root.setWindowInsetsAnimationCallback(it)
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            keyboardAnimationCallback = KeyboardAnimationCallback(this).also {
+//                binding.root.setWindowInsetsAnimationCallback(it)
+//            }
+//        }
 
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(
             object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     updateWallpaper()
-                    startBlurs()
                 }
             }
         )
@@ -313,54 +277,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
-        toggleSearchBoxAnimation(isActive = hasFocus)
-    }
-
-    private fun toggleSearchBoxAnimation(isActive: Boolean) {
-        appState.isSearchBoxActive = isActive
-
-        if (!::searchBoxAnimationInterpolator.isInitialized) {
-            searchBoxAnimationInterpolator = PathInterpolator(0.16f, 1f, 0.3f, 1f)
-        }
-
-        val searchBoxAnimation = ObjectAnimator.ofFloat(
-            binding.dateTimeViewContainer,
-            "layoutWeight",
-            if (isActive) 0f else 1f,
-        ).apply {
-            interpolator = searchBoxAnimationInterpolator
-            duration = 500
-        }
-
-        val searchBoxPaddingAnimation = ValueAnimator.ofInt(
-            if (isActive) 0 else statusBarHeight,
-            if (isActive) statusBarHeight else 0,
-        ).apply {
-            interpolator = searchBoxAnimationInterpolator
-            duration = 500
-
-            addUpdateListener { updatedAnimation ->
-                binding.searchBoxContainer.updatePadding(
-                    top = updatedAnimation.animatedValue as Int
-                )
-            }
-        }
-
-        if (isActive) {
-            binding.widgetListContainer.hideWidgets()
-        } else {
-            binding.widgetListContainer.showWidgets()
-        }
-
-        AnimatorSet().apply {
-            play(searchBoxAnimation)
-                .with(searchBoxPaddingAnimation)
-
-            start()
-        }
-    }
-
     @SuppressLint("InlinedApi")
     private fun enableLightStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -391,17 +307,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleSearchQuery(query: Editable?) {
-        if (query == null || query.isBlank()) {
-            searcher.cancelPendingSearch()
-            resultAdapter.hideResult()
-
-            binding.widgetListContainer.isVisible = true
-        } else {
-            searcher.requestSearch(query.toString())
-        }
-    }
-
     /**
      * Gets the current wallpaper and renders it to binding.wallpaperImage
      */
@@ -417,9 +322,5 @@ class MainActivity : AppCompatActivity() {
                 blurHandler.changeWallpaper(viewToBitmap(binding.wallpaperImage))
             }
         }
-    }
-
-    private fun startBlurs() {
-        binding.searchBoxBlurBackground.startBlur()
     }
 }
