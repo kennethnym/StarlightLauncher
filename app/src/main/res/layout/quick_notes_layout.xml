@@ -31,9 +31,8 @@
 
             <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
                 android:id="@+id/add_notes_edit_text"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:hint="@string/add_note_editor_text_hint"
                 tools:ignore="Autofill" />

@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher.widgets.quickNotes
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import kenneth.app.spotlightlauncher.databinding.QuickNotesLayoutBinding
 import kenneth.app.spotlightlauncher.databinding.QuickNotesListItemBinding
 import kenneth.app.spotlightlauncher.models.Note
 import kenneth.app.spotlightlauncher.prefs.notes.NotesPreferenceManager
+import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import javax.inject.Inject
 
@@ -34,8 +36,13 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         with(binding) {
             addNoteButton.setOnClickListener { addNote() }
 
-            addNotesEditText.addTextChangedListener {
-                addNoteButton.isInvisible = it?.isBlank() == true
+            with(addNotesEditText) {
+                setOnFocusChangeListener { _, _ -> moveWayForKeyboard() }
+                setOnClickListener { moveWayForKeyboard() }
+
+                addTextChangedListener {
+                    addNoteButton.isInvisible = it?.isBlank() == true
+                }
             }
 
             val savedNotes = notesPreferenceManager.notes
@@ -51,6 +58,18 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             }
 
             quickNotesWidgetBlurBackground.startBlur()
+        }
+    }
+
+    private fun moveWayForKeyboard() {
+        if (binding.addNotesEditText.hasFocus() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val yPos = intArrayOf(0, 0).run {
+                this@QuickNotes.getLocationOnScreen(this)
+                this[1]
+            }
+
+            BindingRegister.activityMainBinding.pageScrollView
+                .moveWayForKeyboard(yPos)
         }
     }
 

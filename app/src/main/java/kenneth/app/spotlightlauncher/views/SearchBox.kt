@@ -26,6 +26,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    override fun isFocused(): Boolean {
+        return binding.searchBoxEditText.isFocused
+    }
+
     @Inject
     lateinit var searcher: Searcher
 

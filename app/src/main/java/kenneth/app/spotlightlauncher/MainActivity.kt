@@ -207,12 +207,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            keyboardAnimationCallback = KeyboardAnimationCallback(this).also {
-//                binding.root.setWindowInsetsAnimationCallback(it)
-//            }
-//        }
-
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(
             object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
