@@ -128,6 +128,7 @@
 
     <!-- Date time preferences -->
     <string name="date_time_pref_title">Clock</string>
+    <string name="date_time_use_24hr_clock_title">Use 24-hour format</string>
     <string name="date_time_pref_summary">
         Adjust appearance of the clock on the home screen: 12/24 hours, weather info, etc.
     </string>

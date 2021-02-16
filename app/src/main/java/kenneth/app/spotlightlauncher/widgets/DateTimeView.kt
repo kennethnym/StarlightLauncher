@@ -58,7 +58,14 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         }
     }
 
-    private val timeFormat = SimpleDateFormat("K:mm", locale)
+    private val timeFormat
+        get() = SimpleDateFormat(
+            if (dateTimePreferenceManager.shouldUse24HrClock)
+                "k:mm"
+            else "K:mm a",
+            locale
+        )
+
     private val dateFormat = SimpleDateFormat("MMM d", locale)
 
     private val binding: DateTimeViewBinding
@@ -86,6 +93,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         registerTimeTickListener()
+        updateTime()
         showWeather()
     }
 

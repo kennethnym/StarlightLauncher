@@ -3,6 +3,8 @@ package kenneth.app.spotlightlauncher.prefs.datetime
 import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
@@ -22,6 +24,10 @@ class DateTimeSettingsFragment : PreferenceFragmentCompat(),
             val pickedLocation = dateTimePreferenceManager.weatherLocationName
             summary =
                 "$summary\n${getString(R.string.date_time_picked_location_label, pickedLocation)}"
+        }
+
+        findPreference<SwitchPreferenceCompat>(getString(R.string.date_time_use_24hr_clock))?.apply {
+            isChecked = dateTimePreferenceManager.shouldUse24HrClock
         }
     }
 

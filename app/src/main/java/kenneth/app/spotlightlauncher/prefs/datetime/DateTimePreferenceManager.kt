@@ -3,16 +3,27 @@ package kenneth.app.spotlightlauncher.prefs.datetime
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.LatLong
 import kenneth.app.spotlightlauncher.api.TemperatureUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private object DefaultValue {
     const val SHOULD_SHOW_WEATHER = true
+    const val SHOULD_USE_24HR_CLOCK = false
     val WEATHER_UNIT = TemperatureUnit.METRIC.name
 }
 
-object DateTimePreferenceManager {
+@Singleton
+class DateTimePreferenceManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
+    val shouldUse24HrClock: Boolean
+        get() = sharedPreference.getBoolean(use24HrClockPrefKey, DefaultValue.SHOULD_USE_24HR_CLOCK)
+
     /**
      * The pair of latitude and longitude that describes the location where the user wants
      * the weather info of.
@@ -42,18 +53,14 @@ object DateTimePreferenceManager {
             ) ?: DefaultValue.WEATHER_UNIT
         )
 
-    private lateinit var context: Context
     private val sharedPreference by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
+    private val use24HrClockPrefKey by lazy { context.getString(R.string.date_time_use_24hr_clock) }
     private val showWeatherPrefKey by lazy { context.getString(R.string.date_time_show_weather) }
     private val weatherUnitPrefKey by lazy { context.getString(R.string.date_time_weather_unit) }
     private val weatherLocationLatPrefKey by lazy { context.getString(R.string.date_time_weather_location_lat) }
     private val weatherLocationLongPrefKey by lazy { context.getString(R.string.date_time_weather_location_long) }
     private val weatherLocationNamePrefKey by lazy { context.getString(R.string.date_time_weather_location_name) }
-
-    fun getInstance(context: Context) = this.apply {
-        this.context = context
-    }
 
     /**
      * Changes the weather location described by the given LatLong.

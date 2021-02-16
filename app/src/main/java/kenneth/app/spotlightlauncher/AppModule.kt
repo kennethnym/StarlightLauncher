@@ -80,11 +80,6 @@ object AppModule {
         PinnedAppsPreferenceManager.getInstance(context)
 
     @Provides
-    @Singleton
-    fun provideDateTimePreferenceManager(@ApplicationContext context: Context) =
-        DateTimePreferenceManager.getInstance(context)
-
-    @Provides
     fun provideLocale() = Locale.getDefault()
 
     @Provides
