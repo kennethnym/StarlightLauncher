@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:key="@string/quick_notes_export"
+        app:summary="@string/quick_notes_export_pref_summary"
+        app:title="@string/quick_notes_export_pref_title" />
+
+</PreferenceScreen>

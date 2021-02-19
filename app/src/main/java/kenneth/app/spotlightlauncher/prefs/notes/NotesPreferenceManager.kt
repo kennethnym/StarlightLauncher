@@ -20,9 +20,12 @@ class NotesPreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences
 ) {
+    val notesJSON: String?
+        get() = sharedPreferences.getString(noteListPrefKey, null)
+
     val notes: List<Note>
         get() {
-            val listStr = sharedPreferences.getString(noteListPrefKey, null)
+            val listStr = notesJSON
             return if (listStr != null) Json.decodeFromString(listStr) else emptyList()
         }
 

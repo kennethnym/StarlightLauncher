@@ -166,6 +166,17 @@
         The app does NOT and will NEVER monitor and collect device notifications.
     </string>
 
+    <!-- Quick notes preferences -->
+    <string name="quick_notes_title">Quick notes</string>
+    <string name="quick_notes_summary">Customize the quick notes widget; notes backups</string>
+    <string name="quick_notes_export_pref_title">Export to JSON</string>
+    <string name="quick_notes_export_pref_summary">Export your notes to a JSON file.</string>
+    <string name="quick_notes_file_name_dialog_title">Give the file a name</string>
+    <string name="quick_notes_file_name_dialog_message">You can also use the default name: %1$s</string>
+    <string name="quick_notes_file_name_dialog_positive_label">Use my file name</string>
+    <string name="quick_notes_file_name_dialog_negative_label">Use default name</string>
+    <string name="quick_notes_file_name_dialog_empty_name_error">You need to give it a name.</string>
+
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
