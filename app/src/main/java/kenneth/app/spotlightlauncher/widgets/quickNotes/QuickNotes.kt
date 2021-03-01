@@ -58,7 +58,16 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             }
 
             quickNotesWidgetBlurBackground.startBlur()
+            notesPreferenceManager.setOnNoteListChangedListener {
+                toggleShowAllButtonVisibility()
+            }
         }
+
+        toggleShowAllButtonVisibility()
+    }
+
+    private fun toggleShowAllButtonVisibility() {
+        binding.showAllNotesButton.isVisible = notesPreferenceManager.notes.isNotEmpty()
     }
 
     private fun moveWayForKeyboard() {

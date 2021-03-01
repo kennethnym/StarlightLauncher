@@ -12,6 +12,8 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
+typealias NoteListListener = (notes: List<Note>) -> Unit
+
 /**
  * Manages preferences related to notes
  */
@@ -29,7 +31,17 @@ class NotesPreferenceManager @Inject constructor(
             return if (listStr != null) Json.decodeFromString(listStr) else emptyList()
         }
 
+    private var noteListListener: NoteListListener? = null
+
     private val noteListPrefKey by lazy { context.getString(R.string.note_list) }
+
+    /**
+     * Registers the given [listener] as a listener of the note list.
+     * Whenver the list changes, [listener] is called.
+     */
+    fun setOnNoteListChangedListener(listener: NoteListListener) {
+        noteListListener = listener
+    }
 
     /**
      * Adds and saves the given [note].
@@ -42,6 +54,8 @@ class NotesPreferenceManager @Inject constructor(
             .edit()
             .putString(noteListPrefKey, Json.encodeToString(newList))
             .apply()
+
+        noteListListener?.let { it(newList) }
     }
 
     /**
@@ -55,5 +69,7 @@ class NotesPreferenceManager @Inject constructor(
             .edit()
             .putString(noteListPrefKey, Json.encodeToString(newList))
             .apply()
+
+        noteListListener?.let { it(newList) }
     }
 }
