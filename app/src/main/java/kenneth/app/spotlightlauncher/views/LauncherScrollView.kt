@@ -81,10 +81,6 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         return handleWidgetPanelGesture(ev)
     }
 
-    override fun performClick(): Boolean {
-        return super.performClick()
-    }
-
     /**
      * Instructs [LauncherScrollView] to move to leave space for the keyboard. It will make sure
      * the keyboard will not overlap with the given y position.
@@ -100,7 +96,6 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
     fun expandWidgetPanel() {
         appState.isWidgetPanelExpanded = true
         WidgetPanelAnimation(0f).start()
-        DateTimeViewAnimation(0f).start()
         BindingRegister.activityMainBinding.searchBox.showTopPadding()
     }
 
@@ -108,7 +103,6 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         val screenHeight = context.resources.displayMetrics.heightPixels
         appState.isWidgetPanelExpanded = false
         WidgetPanelAnimation(screenHeight / 2f).start()
-        DateTimeViewAnimation(1f).start()
         with(BindingRegister.activityMainBinding.searchBox) {
             removeTopPadding()
             clearFocus()
@@ -122,8 +116,6 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
                 isDragging = false
                 velocityCalculator.finalPoint = y
                 val gestureDelta = velocityCalculator.distance
-
-                Log.d("hub", "gesture velocity ${velocityCalculator.velocity}")
 
                 when {
                     gestureDelta < -WIDGET_PANEL_MOVE_THRESHOLD -> {
@@ -193,47 +185,6 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
             }
         }
     }
-
-    private inner class DateTimeViewAnimation(private val finalScale: Float) {
-        private val springDamping = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-        private val springStiffness = SpringForce.STIFFNESS_MEDIUM
-
-        fun start() {
-            SpringAnimation(
-                BindingRegister.activityMainBinding.dateTimeView,
-                DynamicAnimation.SCALE_X,
-                finalScale
-            ).run {
-                spring.apply {
-                    dampingRatio = springDamping
-                    stiffness = springStiffness
-                }
-
-                if (velocityCalculator.velocity > 0) {
-                    setStartVelocity(velocityCalculator.velocity)
-                }
-
-                start()
-            }
-
-            SpringAnimation(
-                BindingRegister.activityMainBinding.dateTimeView,
-                DynamicAnimation.SCALE_Y,
-                finalScale
-            ).run {
-                spring.apply {
-                    dampingRatio = springDamping
-                    stiffness = springStiffness
-                }
-
-                if (velocityCalculator.velocity > 0) {
-                    setStartVelocity(velocityCalculator.velocity)
-                }
-
-                start()
-            }
-        }
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -268,7 +219,6 @@ private class InsetAnimation(private val appState: AppState) :
     private var prevInset: Int? = null
 
     private var isKeyboardOpening = false
-    private var isKeyboardClosing = false
 
     private var shouldAnimate = false
 

@@ -11,3 +11,8 @@ const val HANDLED = true
  * by gesture handlers.
  */
 const val NOT_HANDLED = false
+
+/**
+ * Defines how long delay between each choreographer frame should be.
+ */
+const val ANIMATION_FRAME_DELAY = 1000 / 120L

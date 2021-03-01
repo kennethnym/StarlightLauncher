@@ -2,14 +2,13 @@ package kenneth.app.spotlightlauncher.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
-import android.view.Gravity
+import android.view.Choreographer
 import android.view.View
 import android.widget.LinearLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.HANDLED
-import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 import kotlin.math.max
@@ -24,6 +23,9 @@ import kotlin.math.max
 class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var choreographer: Choreographer
 
     var layoutWeight: Float
         get() = (layoutParams as LayoutParams).weight
@@ -41,19 +43,38 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
         }
     }
 
+    /**
+     * Scales itself based on where the widget panel is.
+     */
+    private fun scaleSelf(delay: Long) {
+        val pageScrollView = BindingRegister.activityMainBinding.pageScrollView
+
+        val dateTimeViewScale = max(
+            0f,
+            (y - pageScrollView.y) / (y - appState.halfScreenHeight)
+        )
+
+        scaleX = dateTimeViewScale
+        scaleY = dateTimeViewScale
+
+        startAnimation()
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        BindingRegister.activityMainBinding.pageScrollView
-            .addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
-                val dateTimeViewScale = max(
-                    0f,
-                    (y - view.y) / (y - appState.halfScreenHeight)
-                )
+        startAnimation()
+    }
 
-                Log.d("hub", "scale $dateTimeViewScale")
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        if (visibility == View.INVISIBLE || visibility == View.GONE) {
+            choreographer.removeFrameCallback(::scaleSelf)
+        } else {
+            startAnimation()
+        }
+    }
 
-                scaleX = dateTimeViewScale
-                scaleY = dateTimeViewScale
-            }
+    private fun startAnimation() {
+        choreographer.postFrameCallbackDelayed(::scaleSelf, ANIMATION_FRAME_DELAY)
     }
 }

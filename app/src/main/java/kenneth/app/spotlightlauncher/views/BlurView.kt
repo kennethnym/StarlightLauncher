@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.BlurHandler
@@ -19,8 +20,6 @@ import kenneth.app.spotlightlauncher.utils.activity
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-private const val BLUR_FPS = 120L
-private const val FRAME_DELAY = 1000 / BLUR_FPS
 
 @AndroidEntryPoint
 open class BlurView @JvmOverloads constructor(
@@ -87,7 +86,7 @@ open class BlurView @JvmOverloads constructor(
     fun startBlur() {
         shouldUpdateBlur = true
         applyBlurTint()
-        choreographer.postFrameCallbackDelayed(::frameCallback, FRAME_DELAY)
+        startAnimation()
     }
 
     fun pauseBlur() {
@@ -97,6 +96,10 @@ open class BlurView @JvmOverloads constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         applyBlurTint()
+    }
+
+    private fun startAnimation() {
+        choreographer.postFrameCallbackDelayed(::frameCallback, ANIMATION_FRAME_DELAY)
     }
 
     private fun applyBlurTint() {
@@ -116,7 +119,7 @@ open class BlurView @JvmOverloads constructor(
 
             blurImageView.get()?.let {
                 blurHandler.blurView(it, blurAmount)
-                choreographer.postFrameCallbackDelayed(::frameCallback, FRAME_DELAY)
+                startAnimation()
             }
         }
     }
