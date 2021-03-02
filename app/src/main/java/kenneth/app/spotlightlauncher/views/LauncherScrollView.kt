@@ -4,10 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
-import android.view.ViewTreeObserver
-import android.view.WindowInsets
-import android.view.WindowInsetsAnimation
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -16,17 +13,11 @@ import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.*
 import kenneth.app.spotlightlauncher.utils.BindingRegister
-import kenneth.app.spotlightlauncher.utils.Velocity1DCalculator
+import kenneth.app.spotlightlauncher.utils.GestureMover
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
-
-/**
- * The amount of pixel the user has to move in order to expand/retract widget panel.
- * Defined to be 150px.
- */
-private const val WIDGET_PANEL_MOVE_THRESHOLD = 150
 
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
@@ -36,24 +27,16 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
     @Inject
     lateinit var appState: AppState
 
-    @Inject
-    lateinit var velocityCalculator: Velocity1DCalculator
+    private lateinit var velocityTracker: VelocityTracker
 
     @RequiresApi(Build.VERSION_CODES.R)
     private var insetAnimation = InsetAnimation(appState)
 
-    /**
-     * The previous y position of gesture.
-     */
-    private var prevY: Float = 0f
-
-    /**
-     * Determines if the option menu is being dragged.
-     */
-    private var isDragging = false
+    private val gestureMover = GestureMover().apply {
+        targetView = this@LauncherScrollView
+    }
 
     private var launcherOptionMenu: LauncherOptionMenu? = null
-
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
@@ -113,53 +96,52 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         return when (ev?.actionMasked) {
             null -> NOT_HANDLED
             MotionEvent.ACTION_UP -> {
-                isDragging = false
-                velocityCalculator.finalPoint = y
-                val gestureDelta = velocityCalculator.distance
+                with(velocityTracker) {
+                    addMovement(ev)
+                    computeCurrentVelocity(1)
+                }
+
+                gestureMover.addMotionUpEvent(ev)
+
+                val gestureDistance = gestureMover.gestureDelta
 
                 when {
-                    gestureDelta < -WIDGET_PANEL_MOVE_THRESHOLD -> {
+                    gestureDistance < -GESTURE_ACTION_THRESHOLD -> {
                         expandWidgetPanel()
                     }
-                    gestureDelta > WIDGET_PANEL_MOVE_THRESHOLD -> {
+                    gestureDistance > GESTURE_ACTION_THRESHOLD -> {
                         retractWidgetPanel()
                     }
                     !appState.isWidgetPanelExpanded -> retractWidgetPanel()
                     appState.isWidgetPanelExpanded -> expandWidgetPanel()
                 }
 
+                gestureMover.reset()
+
                 HANDLED
             }
             MotionEvent.ACTION_DOWN -> {
-                recordGestureStart(ev)
+                initiateGesture(ev)
                 HANDLED
             }
             MotionEvent.ACTION_MOVE -> {
-                if (!isDragging) {
-                    recordGestureStart(ev)
-                    HANDLED
+                if (gestureMover.isGestureActive) {
+                    gestureMover.addMotionMoveEvent(ev)
+                    velocityTracker.addMovement(ev)
                 } else {
-                    // the delta y between activity_main > date_time_view and this view
-                    // if this is positive, this view is below date_time_view. vice versa.
-                    val delta = ev.y - prevY
-                    val scrollViewTranslationY =
-                        BindingRegister.activityMainBinding.pageScrollView.translationY
-
-                    with(BindingRegister.activityMainBinding) {
-                        pageScrollView.translationY = scrollViewTranslationY + delta
-                    }
-
-                    HANDLED
+                    initiateGesture(ev)
                 }
+                HANDLED
             }
             else -> NOT_HANDLED
         }
     }
 
-    private fun recordGestureStart(ev: MotionEvent) {
-        prevY = ev.y
-        isDragging = true
-        velocityCalculator.initialPoint = y
+    private fun initiateGesture(ev: MotionEvent) {
+        gestureMover.recordInitialEvent(ev)
+        velocityTracker = VelocityTracker.obtain().also {
+            it.addMovement(ev)
+        }
     }
 
     private inner class WidgetPanelAnimation(private val finalPosition: Float) {
@@ -177,10 +159,11 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
                     stiffness = springStiffness
                 }
 
-                if (velocityCalculator.velocity > 0) {
-                    setStartVelocity(velocityCalculator.velocity)
+                if (velocityTracker.yVelocity > 0) {
+                    setStartVelocity(velocityTracker.yVelocity)
                 }
 
+                velocityTracker.recycle()
                 start()
             }
         }

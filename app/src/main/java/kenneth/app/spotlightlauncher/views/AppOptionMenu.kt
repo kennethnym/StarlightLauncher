@@ -50,7 +50,7 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
         isVisible = true
         showIsAppPinned(pinnedAppsPreferenceManager.isAppPinned(app))
 
-        super.show()
+        show()
     }
 
     private fun attachListeners() {

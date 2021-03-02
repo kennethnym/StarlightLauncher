@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.views
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -17,7 +18,11 @@ import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import kenneth.app.spotlightlauncher.GESTURE_ACTION_THRESHOLD
+import kenneth.app.spotlightlauncher.HANDLED
+import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.utils.GestureMover
 import kenneth.app.spotlightlauncher.utils.dp
 import kenneth.app.spotlightlauncher.utils.navBarHeight
 
@@ -30,6 +35,11 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
      */
     val isActive: Boolean
         get() = translationY != menuHeight.toFloat()
+
+    private val gestureMover = GestureMover().apply {
+        targetView = this@BottomOptionMenu
+        minY = 0f
+    }
 
     private var menuHeight = 0
 
@@ -50,8 +60,6 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
                     stiffness = SpringForce.STIFFNESS_MEDIUM
                 }
             }
-
-            this@BottomOptionMenu.onGlobalLayout()
         }
     }
 
@@ -95,27 +103,52 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
         }
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return when (event?.actionMasked) {
+            null -> NOT_HANDLED
+
+            MotionEvent.ACTION_DOWN -> {
+                gestureMover.recordInitialEvent(event)
+                HANDLED
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                gestureMover.addMotionMoveEvent(event)
+                HANDLED
+            }
+
+            MotionEvent.ACTION_UP -> {
+                gestureMover.addMotionUpEvent(event)
+
+                val gestureDistance = gestureMover.gestureDelta
+
+                Log.d("hub", "gesture distance $gestureDistance")
+
+                if (gestureDistance > GESTURE_ACTION_THRESHOLD) {
+                    hide()
+                }
+
+                HANDLED
+            }
+
+            else -> NOT_HANDLED
+        }
+    }
+
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent?) =
         when (keyCode) {
             KeyEvent.KEYCODE_BACK -> {
                 hide()
-                true
+                HANDLED
             }
-            else -> false
+            else -> NOT_HANDLED
         }
-
-    /**
-     * Called when this view has been laid out. Useful for initializing animations.
-     * Override to implement custom logic.
-     */
-    open fun onGlobalLayout() {}
 
     /**
      * Shows this menu with an animation. If overriding, must call super to begin the animation.
      * Call super last when initialization logic is required before showing the menu.
      */
-    @CallSuper
-    open fun show() {
+    fun show() {
         isVisible = true
         showAnimation.start()
     }
@@ -124,8 +157,7 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
      * Hides this menu with an animation. If overriding, must call super to begin the animation.
      * Call super last when cleanup is required before hiding the menu.
      */
-    @CallSuper
-    open fun hide() {
+    fun hide() {
         with(hideAnimation) {
             addEndListener { _, _, _, _ -> this@BottomOptionMenu.isVisible = false }
             start()
