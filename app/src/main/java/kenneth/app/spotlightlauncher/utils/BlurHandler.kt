@@ -7,7 +7,6 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
-import android.util.Log
 import android.widget.ImageView
 import dagger.Module
 import dagger.Provides
@@ -79,7 +78,6 @@ class BlurHandler @Inject constructor(
      */
     fun blurView(dest: ImageView, blurAmount: Int) {
         if (shouldBlurWallpaper) {
-            Log.i("", "blur")
             cacheBlurredWallpaper(blurAmount.toFloat())
             shouldBlurWallpaper = false
         }

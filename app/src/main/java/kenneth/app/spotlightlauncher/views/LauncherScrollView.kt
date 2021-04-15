@@ -29,6 +29,8 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
 
     private lateinit var velocityTracker: VelocityTracker
 
+    private var isVelocityTrackerObtained = false
+
     @RequiresApi(Build.VERSION_CODES.R)
     private var insetAnimation = InsetAnimation(appState)
 
@@ -139,9 +141,15 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
 
     private fun initiateGesture(ev: MotionEvent) {
         gestureMover.recordInitialEvent(ev)
-        velocityTracker = VelocityTracker.obtain().also {
+        obtainVelocityTracker().also {
             it.addMovement(ev)
         }
+    }
+
+    private fun obtainVelocityTracker(): VelocityTracker {
+        velocityTracker = VelocityTracker.obtain()
+        isVelocityTrackerObtained = true
+        return velocityTracker
     }
 
     private inner class WidgetPanelAnimation(private val finalPosition: Float) {
@@ -159,11 +167,13 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
                     stiffness = springStiffness
                 }
 
-                if (velocityTracker.yVelocity > 0) {
+                if (isVelocityTrackerObtained && velocityTracker.yVelocity > 0) {
                     setStartVelocity(velocityTracker.yVelocity)
+                    velocityTracker.recycle()
+                } else {
+                    setStartVelocity(1f)
                 }
 
-                velocityTracker.recycle()
                 start()
             }
         }
@@ -213,7 +223,6 @@ private class InsetAnimation(private val appState: AppState) :
             isKeyboardOpening = false
             initialScrollViewY = BindingRegister.activityMainBinding.pageScrollView.translationY
         }
-        Log.d("hub", "initialScrollViewY $initialScrollViewY")
         return super.onStart(animation, bounds)
     }
 
@@ -226,10 +235,7 @@ private class InsetAnimation(private val appState: AppState) :
         if (shouldAnimate) {
             val keyboardTop = appState.screenHeight - insetBottom
 
-            Log.d("hub", "keyboard top $keyboardTop")
-
             avoidY?.let {
-                Log.d("hub", "avoidY $it")
                 if (keyboardTop <= it) {
                     BindingRegister.activityMainBinding.pageScrollView.translationY =
                         initialScrollViewY - max(0, insetBottom - (appState.screenHeight - it))
@@ -238,8 +244,6 @@ private class InsetAnimation(private val appState: AppState) :
         }
 
         prevInset?.let {
-            Log.d("hub", "inset bottom $insetBottom")
-            Log.d("hub", "prevInset $prevInset")
             if (insetBottom == 0 && insetBottom - it < 0) {
                 shouldAnimate = false
             }
