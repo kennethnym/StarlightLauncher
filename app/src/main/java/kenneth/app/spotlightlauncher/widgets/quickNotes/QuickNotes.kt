@@ -59,15 +59,23 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
             quickNotesWidgetBlurBackground.startBlur()
             notesPreferenceManager.setOnNoteListChangedListener {
-                toggleShowAllButtonVisibility()
+                toggleElementsVisibility()
             }
         }
 
-        toggleShowAllButtonVisibility()
+        toggleElementsVisibility()
     }
 
-    private fun toggleShowAllButtonVisibility() {
-        binding.showAllNotesButton.isVisible = notesPreferenceManager.notes.isNotEmpty()
+    /**
+     * Changes visibility of some elements depending on whether the note list is empty.
+     */
+    private fun toggleElementsVisibility() {
+        val hasNotes = notesPreferenceManager.notes.isNotEmpty()
+
+        with(binding) {
+            showAllNotesButton.isVisible = hasNotes
+            quickNotesList.isVisible = hasNotes
+        }
     }
 
     private fun moveWayForKeyboard() {
@@ -88,8 +96,9 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 val newNote = Note(content = it.toString(), dueDateTimestamp = null)
                 noteListAdapter.apply {
                     data = data + newNote
-                    notifyItemInserted(data.size)
+                    notifyItemInserted(data.size - 1)
                 }
+                binding.addNotesEditText.text?.clear()
                 notesPreferenceManager.addNote(newNote)
             }
         }
