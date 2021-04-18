@@ -61,8 +61,8 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     private val timeFormat
         get() = SimpleDateFormat(
             if (dateTimePreferenceManager.shouldUse24HrClock)
-                "k:mm"
-            else "K:mm a",
+                "HH:mm"
+            else "h:mm a",
             locale
         )
 
@@ -125,38 +125,43 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
 
     private fun showWeather() {
         if (dateTimePreferenceManager.shouldShowWeather) {
-            weatherApiScope.launch {
-                val weather = try {
-                    openWeatherApi.run {
-                        latLong = dateTimePreferenceManager.weatherLocation
-                        unit = dateTimePreferenceManager.weatherUnit
-                        getCurrentWeather()
-                    }
-                } catch (ex: Exception) {
-                    return@launch
-                }
-
-                val isWeatherAvailable = weather != null
-
-                activity?.runOnUiThread {
-                    binding.temp.isVisible = isWeatherAvailable
-                    separator.isVisible = isWeatherAvailable
-                    binding.weatherIcon.isVisible = isWeatherAvailable
-
-                    if (isWeatherAvailable) {
-                        binding.temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
-
-                        Glide
-                            .with(context)
-                            .load(weather.weather[0].iconURL)
-                            .into(binding.weatherIcon)
-
-                        binding.weatherIcon.contentDescription = weather.weather[0].description
-                    }
-                }
-            }
+            loadWeather()
         } else {
             binding.temp.isVisible = false
+            binding.weatherIcon.isVisible = false
+        }
+    }
+
+    private fun loadWeather() {
+        weatherApiScope.launch {
+            val weather = try {
+                openWeatherApi.run {
+                    latLong = dateTimePreferenceManager.weatherLocation
+                    unit = dateTimePreferenceManager.weatherUnit
+                    getCurrentWeather()
+                }
+            } catch (ex: Exception) {
+                return@launch
+            }
+
+            val isWeatherAvailable = weather != null
+
+            activity?.runOnUiThread {
+                binding.temp.isVisible = isWeatherAvailable
+                separator.isVisible = isWeatherAvailable
+                binding.weatherIcon.isVisible = isWeatherAvailable
+
+                if (isWeatherAvailable) {
+                    binding.temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
+
+                    Glide
+                        .with(context)
+                        .load(weather.weather[0].iconURL)
+                        .into(binding.weatherIcon)
+
+                    binding.weatherIcon.contentDescription = weather.weather[0].description
+                }
+            }
         }
     }
 
