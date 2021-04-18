@@ -23,7 +23,10 @@ class GestureMover {
      */
     var minY: Float? = null
 
-    private var initialY = 0f
+    /**
+     * The initial y position of the active gesture
+     */
+    var initialY = 0f
 
     private var viewInitialY = 0f
 

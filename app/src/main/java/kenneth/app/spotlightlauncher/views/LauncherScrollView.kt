@@ -31,6 +31,10 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
 
     private var isVelocityTrackerObtained = false
 
+    private var isScrolling = false
+
+    private var isPanelDragged = false
+
     @RequiresApi(Build.VERSION_CODES.R)
     private var insetAnimation = InsetAnimation(appState)
 
@@ -62,9 +66,8 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         }
     }
 
-    override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        return handleWidgetPanelGesture(ev)
-    }
+    override fun onTouchEvent(ev: MotionEvent?) =
+        handleWidgetPanelGesture(ev)
 
     /**
      * Instructs [LauncherScrollView] to move to leave space for the keyboard. It will make sure
@@ -79,6 +82,7 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
     }
 
     fun expandWidgetPanel() {
+        Log.d("hub", "expand")
         appState.isWidgetPanelExpanded = true
         WidgetPanelAnimation(0f).start()
         BindingRegister.activityMainBinding.searchBox.showTopPadding()
@@ -98,6 +102,13 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         return when (ev?.actionMasked) {
             null -> NOT_HANDLED
             MotionEvent.ACTION_UP -> {
+                if (isScrolling) {
+                    isScrolling = false
+                    return super.onTouchEvent(ev)
+                }
+
+                isPanelDragged = false
+
                 with(velocityTracker) {
                     addMovement(ev)
                     computeCurrentVelocity(1)
@@ -114,8 +125,9 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
                     gestureDistance > GESTURE_ACTION_THRESHOLD -> {
                         retractWidgetPanel()
                     }
-                    !appState.isWidgetPanelExpanded -> retractWidgetPanel()
+                    // revert to original position because gesture is not fast enough
                     appState.isWidgetPanelExpanded -> expandWidgetPanel()
+                    !appState.isWidgetPanelExpanded -> retractWidgetPanel()
                 }
 
                 gestureMover.reset()
@@ -128,8 +140,23 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
             }
             MotionEvent.ACTION_MOVE -> {
                 if (gestureMover.isGestureActive) {
-                    gestureMover.addMotionMoveEvent(ev)
-                    velocityTracker.addMovement(ev)
+                    if (
+                        isPanelDragged ||
+                        !appState.isWidgetPanelExpanded ||
+                        !isScrolling && ev.y - gestureMover.initialY > 0 && scrollY == 0
+                    ) {
+                        // scroll view is at the top and user wants to swipe down
+                        // i.e. retract widget panel
+                        // therefore we let user move the widget panel
+                        isPanelDragged = true
+                        gestureMover.addMotionMoveEvent(ev)
+                        velocityTracker.addMovement(ev)
+                    } else if (!isPanelDragged) {
+                        isScrolling = true
+                        // let user scroll the content
+                        return super.onTouchEvent(ev)
+                    }
+
                 } else {
                     initiateGesture(ev)
                 }
