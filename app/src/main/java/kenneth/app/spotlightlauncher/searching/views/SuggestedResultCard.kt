@@ -10,14 +10,17 @@ import kenneth.app.spotlightlauncher.databinding.SuggestedResultCardBinding
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 import kenneth.app.spotlightlauncher.searching.SuggestedResultType
 import kenneth.app.spotlightlauncher.views.BlurView
+import kenneth.app.spotlightlauncher.views.SectionCard
 
 /**
  * Displayed at the top of the search page to show the user suggested result from the launcher.
  */
-class SuggestedResultCard(context: Context, attrs: AttributeSet) : BlurView(context, attrs) {
+class SuggestedResultCard(context: Context, attrs: AttributeSet) :
+    SectionCard<SmartSearcher.SuggestedResult>(context, attrs) {
     private val binding = SuggestedResultCardBinding.inflate(LayoutInflater.from(context), this)
 
     init {
+        title = context.getString(R.string.suggested_section_title)
         blurAmount = TypedValue().run {
             context.theme.resolveAttribute(R.attr.blurAmount, this, true)
             data
@@ -27,13 +30,11 @@ class SuggestedResultCard(context: Context, attrs: AttributeSet) : BlurView(cont
     /**
      * Displays the given suggested result in this card.
      */
-    fun display(result: SmartSearcher.SuggestedResult) {
+    override fun display(result: SmartSearcher.SuggestedResult) {
         binding.suggestedContent.removeAllViews()
 
         if (result.type != SuggestedResultType.NONE) {
-            isVisible = true
-            binding.suggestedSectionCard.isVisible = true
-            startBlur()
+            super.display(result)
 
             when (result.type) {
                 SuggestedResultType.WIFI -> {
@@ -56,18 +57,8 @@ class SuggestedResultCard(context: Context, attrs: AttributeSet) : BlurView(cont
                         }
                     )
                 }
-                else -> {
-                }
+                else -> hide()
             }
         }
-    }
-
-    /**
-     * Hides this card.
-     */
-    fun hide() {
-        isVisible = false
-        pauseBlur()
-        binding.suggestedSectionCard.isVisible = false
     }
 }

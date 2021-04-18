@@ -21,94 +21,103 @@ import kenneth.app.spotlightlauncher.databinding.FilesSectionCardBinding
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.dp
+import kenneth.app.spotlightlauncher.views.SectionCard
 import javax.inject.Inject
 import kotlin.math.min
 
 private const val INITIAL_ITEM_COUNT = 5
 
 @AndroidEntryPoint
-class FilesSectionCard(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class FilesSectionCard(context: Context, attrs: AttributeSet) :
+    SectionCard<List<DocumentFile>?>(context, attrs) {
     @Inject
     lateinit var fileListAdapter: FileListAdapter
 
-    private val binding = FilesSectionCardBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding = FilesSectionCardBinding.inflate(LayoutInflater.from(context), this)
 
     private val settingsIntent = Intent(context, SettingsActivity::class.java)
 
     private lateinit var files: List<DocumentFile>
 
     init {
+        title = context.getString(R.string.files_section_title)
         binding.openSettingsButton.setOnClickListener {
             openSettings()
         }
     }
 
-    fun display(files: List<DocumentFile>?) {
-        isVisible = true
-        binding.filesSectionCardContainer.isVisible = true
-        binding.filesSectionCardBlurBackground.startBlur()
+    override fun display(files: List<DocumentFile>?) {
+        super.display(files)
 
         when {
             files == null -> {
-                with(binding) {
-                    filesList.isVisible = false
-                    filesListShowMoreButton.isVisible = false
-                    openSettingsButton.isVisible = true
-                    filesSectionResultStatus.apply {
-                        isVisible = true
-                        text = context.getString(R.string.files_section_include_path_instruction)
-                        setPadding(0, 0, 0, 0)
-                    }
-                }
+                // users have not added any path to allow for searching
+                showOpenSettingsInstruction()
             }
             files.isEmpty() -> {
-                with(binding) {
-                    filesList.isVisible = false
-                    filesListShowMoreButton.isVisible = false
-                    openSettingsButton.isVisible = false
-                    filesSectionResultStatus.apply {
-                        isVisible = true
-                        text = context.getString(R.string.files_section_no_result)
-                        setPadding(0, 0, 0, 8.dp)
-                    }
-                }
+                // no files found in the paths added by the user
+                showNoFilesFound()
             }
             else -> {
                 this.files = files
-
-                val isPaginationRequired = files.size > INITIAL_ITEM_COUNT
-
-                fileListAdapter.data =
-                    if (isPaginationRequired)
-                        files.subList(0, INITIAL_ITEM_COUNT)
-                    else files
-
-                with(binding) {
-                    filesList.apply {
-                        isVisible = true
-                        adapter = fileListAdapter
-                        layoutManager = fileListAdapter.layoutManager
-                    }
-                    filesListShowMoreButton.isVisible = isPaginationRequired
-                    openSettingsButton.isVisible = false
-                    filesSectionResultStatus.isVisible = false
-
-                    filesListShowMoreButton.apply {
-                        isVisible = true
-                        setOnClickListener { showMoreFiles() }
-                    }
-                }
+                showFileList()
             }
         }
     }
 
     /**
-     * Hides this card in the search result page.
+     * Tells the user to add searchable paths in settings so that this app can search
+     * for files in them.
      */
-    fun hide() {
-        binding.filesSectionCardContainer.isVisible = false
-        isVisible = false
-        binding.filesSectionCardBlurBackground.pauseBlur()
+    private fun showOpenSettingsInstruction() {
+        with(binding) {
+            filesList.isVisible = false
+            filesListShowMoreButton.isVisible = false
+            openSettingsButton.isVisible = true
+            filesSectionResultStatus.apply {
+                isVisible = true
+                text = context.getString(R.string.files_section_include_path_instruction)
+                setPadding(0, 0, 0, 0)
+            }
+        }
+    }
+
+    private fun showNoFilesFound() {
+        with(binding) {
+            filesList.isVisible = false
+            filesListShowMoreButton.isVisible = false
+            openSettingsButton.isVisible = false
+            filesSectionResultStatus.apply {
+                isVisible = true
+                text = context.getString(R.string.files_section_no_result)
+                setPadding(0, 0, 0, 8.dp)
+            }
+        }
+    }
+
+    private fun showFileList() {
+        val isPaginationRequired = files.size > INITIAL_ITEM_COUNT
+
+        fileListAdapter.data =
+            if (isPaginationRequired)
+                files.subList(0, INITIAL_ITEM_COUNT)
+            else files
+
+        with(binding) {
+            filesList.apply {
+                isVisible = true
+                adapter = fileListAdapter
+                layoutManager = fileListAdapter.layoutManager
+            }
+            filesListShowMoreButton.isVisible = isPaginationRequired
+            openSettingsButton.isVisible = false
+            filesSectionResultStatus.isVisible = false
+
+            filesListShowMoreButton.apply {
+                isVisible = true
+                setOnClickListener { showMoreFiles() }
+            }
+        }
     }
 
     /**
@@ -135,7 +144,7 @@ class FilesSectionCard(context: Context, attrs: AttributeSet) : LinearLayout(con
     }
 
     private fun openSettings() {
-        context.startActivity(settingsIntent);
+        context.startActivity(settingsIntent)
     }
 }
 

@@ -3,21 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
+        android:id="@+id/section_card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="16dp"
-        android:fitsSystemWindows="false">
+        android:background="@drawable/card_background"
+        android:fitsSystemWindows="false"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/section_card_padding"
+        android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/section_card_content"
-            android:layout_width="match_parent"
+        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+            android:id="@+id/section_card_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="@dimen/section_card_padding"
+            android:textAppearance="@style/SearchResultSectionHeader" />
 
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
 </merge>

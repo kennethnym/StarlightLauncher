@@ -1,57 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/apps_section_card_blur_background"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/card_background"
-    app:blurAmount="?blurAmount">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/apps_section_card_container"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/apps_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_background"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
         android:fitsSystemWindows="false"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:nestedScrollingEnabled="false" />
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/section_card_padding"
-            android:text="@string/apps_section_title"
-            android:textAppearance="@style/SearchResultSectionHeader" />
+    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        android:id="@+id/apps_section_no_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/apps_section_no_result" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/apps_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginBottom="8dp"
-            android:fitsSystemWindows="false"
-            android:nestedScrollingEnabled="false" />
+    <kenneth.app.spotlightlauncher.views.TextButton
+        android:id="@+id/show_more_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_card_padding"
+        android:text="@string/show_more_label" />
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
-            android:id="@+id/apps_section_no_result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:text="@string/apps_section_no_result" />
-
-        <kenneth.app.spotlightlauncher.views.TextButton
-            android:id="@+id/show_more_button"
-            style="@style/TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_card_padding"
-            android:text="@string/show_more_label" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="@dimen/section_card_padding" />
-
-    </LinearLayout>
-
-</kenneth.app.spotlightlauncher.views.BlurView>
+</merge>

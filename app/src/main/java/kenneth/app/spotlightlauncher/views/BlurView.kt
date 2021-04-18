@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher.views
 
 import android.content.Context
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Choreographer
 import android.view.View
@@ -41,8 +42,7 @@ open class BlurView @JvmOverloads constructor(
      */
     protected var blurAmount: Int
 
-    private var blurImageView: WeakReference<ImageView>
-
+    private var blurImageView: WeakReference<ImageView>? = null
     private val blurImageViewId: Int = generateViewId()
 
     private val blurImageTranslationMatrix = Matrix()
@@ -93,6 +93,12 @@ open class BlurView @JvmOverloads constructor(
         shouldUpdateBlur = false
     }
 
+    override fun setBackground(background: Drawable?) {
+        blurImageView?.let {
+            it.get()?.background = background
+        } ?: super.setBackground(background)
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         applyBlurTint()
@@ -103,21 +109,21 @@ open class BlurView @JvmOverloads constructor(
     }
 
     private fun applyBlurTint() {
-        if (blurImageView.get() == null) {
+        if (blurImageView?.get() == null) {
             getImageView()
         }
 
-        blurImageView.get()
+        blurImageView?.get()
             ?.setColorFilter(ColorUtils.setAlphaComponent(appState.adaptiveBackgroundColor, 0x80))
     }
 
     private fun frameCallback(frameTimeNanos: Long) {
         if (shouldUpdateBlur) {
-            if (blurImageView.get() == null) {
+            if (blurImageView?.get() == null) {
                 getImageView()
             }
 
-            blurImageView.get()?.let {
+            blurImageView?.get()?.let {
                 blurHandler.blurView(it, blurAmount)
                 startAnimation()
             }

@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -24,6 +23,7 @@ import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManage
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
+import kenneth.app.spotlightlauncher.views.SectionCard
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -38,7 +38,8 @@ private const val INITIAL_ITEM_COUNT = 10
  * Displays apps in the search result page
  */
 @AndroidEntryPoint
-class AppsSectionCard(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
+class AppsSectionCard(context: Context, attrs: AttributeSet) :
+    SectionCard<List<ResolveInfo>?>(context, attrs),
     LifecycleObserver {
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
@@ -46,27 +47,26 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) : LinearLayout(cont
     @Inject
     lateinit var appsGridAdapter: AppsGridAdapter
 
-    private val binding = AppsSectionCardBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding = AppsSectionCardBinding.inflate(LayoutInflater.from(context), this)
 
     /**
      * Stores the list of all apps to be shown by this card
      */
     private lateinit var allApps: List<ResolveInfo>
 
+    init {
+        title = context.getString(R.string.apps_section_title)
+    }
+
     /**
      * Displays the given list of apps in this view.
      * @param apps The list of apps to be displayed. If null, this view will display a "not found" state.
      */
-    fun display(apps: List<ResolveInfo>?) {
+    override fun display(apps: List<ResolveInfo>?) {
         binding.appsGrid.apply {
             adapter = appsGridAdapter
             layoutManager = appsGridAdapter.layoutManager
         }
-
-        isVisible = true
-        binding.appsSectionCardContainer.isVisible = true
-
-        binding.appsSectionCardBlurBackground.startBlur()
 
         if (apps?.isEmpty() != false) {
             with(binding) {
@@ -94,16 +94,16 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
             activity?.lifecycle?.addObserver(this)
         }
+
+        super.display(apps)
     }
 
     /**
      * Hides this card in the search result page.
      */
-    fun hide() {
+    override fun hide() {
+        super.hide()
         activity?.lifecycle?.removeObserver(this)
-        binding.appsSectionCardBlurBackground.pauseBlur()
-        isVisible = false
-        binding.appsSectionCardContainer.isVisible = false
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)

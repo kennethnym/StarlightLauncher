@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.PermissionHandler
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.WifiControlBinding
 import kenneth.app.spotlightlauncher.utils.activity
@@ -29,8 +30,6 @@ class WifiControl(context: Context) : LinearLayout(context) {
     lateinit var wifiManager: WifiManager
 
     private val binding: WifiControlBinding
-
-    private val requestPermissionLauncher: ActivityResultLauncher<String>?
 
     private val wifiSsid: String
         get() =
@@ -50,11 +49,6 @@ class WifiControl(context: Context) : LinearLayout(context) {
         )
 
         binding = WifiControlBinding.inflate(LayoutInflater.from(context), this)
-
-        requestPermissionLauncher = activity?.registerForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-            ::handlePermissionResult
-        )
 
         showWifiName()
 
@@ -88,7 +82,10 @@ class WifiControl(context: Context) : LinearLayout(context) {
     }
 
     private fun askForLocationPermission() {
-        requestPermissionLauncher?.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        PermissionHandler.run {
+            addListener(Manifest.permission.ACCESS_COARSE_LOCATION, ::handlePermissionResult)
+            requestPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
     }
 
     private fun handlePermissionResult(isGranted: Boolean) {

@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher.searching
 
 import androidx.core.view.isVisible
-import dagger.hilt.android.scopes.ActivityScoped
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 

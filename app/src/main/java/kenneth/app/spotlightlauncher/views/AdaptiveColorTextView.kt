@@ -12,8 +12,10 @@ import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdaptiveColorTextView(context: Context, attrs: AttributeSet) :
+class AdaptiveColorTextView(context: Context, attrs: AttributeSet?) :
     AppCompatTextView(context, attrs), LifecycleObserver {
+    constructor(context: Context) : this(context, null)
+
     @Inject
     lateinit var appState: AppState
 

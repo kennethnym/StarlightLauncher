@@ -79,11 +79,6 @@ class Searcher @Inject constructor(
         if (::searchTimer.isInitialized) cancelPendingSearch()
 
         searchTimer = Timer().schedule(SEARCH_DELAY) {
-            webRequestCoroutine = CoroutineScope(Dispatchers.IO).also {
-                it.launch {
-                    smartSearcher.performWebSearch(keyword)
-                }
-            }
             performSearch(keyword)
         }
     }

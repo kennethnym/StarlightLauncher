@@ -75,8 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
     private var isDarkModeActive = false
 
     /**
@@ -114,11 +112,7 @@ class MainActivity : AppCompatActivity() {
             window.setDecorFitsSystemWindows(false)
         }
 
-        requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission(),
-                ::handlePermissionResult
-            )
+        PermissionHandler.handlePermissionForActivity(this)
 
         isDarkModeActive =
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) resources.configuration.isNightModeActive
@@ -188,8 +182,10 @@ class MainActivity : AppCompatActivity() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestedPermission = Manifest.permission.READ_EXTERNAL_STORAGE
-            requestPermissionLauncher.launch(requestedPermission)
+            PermissionHandler.run {
+                addListener(Manifest.permission.READ_EXTERNAL_STORAGE, ::handlePermissionResult)
+                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
         }
     }
 
@@ -296,7 +292,7 @@ class MainActivity : AppCompatActivity() {
                     0,
                     WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
                 )
-        } else if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q) && !isDarkModeActive) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isDarkModeActive) {
             binding.root.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
