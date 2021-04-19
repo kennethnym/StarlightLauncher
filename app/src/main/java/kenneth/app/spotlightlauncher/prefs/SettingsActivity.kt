@@ -1,20 +1,26 @@
 package kenneth.app.spotlightlauncher.prefs
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Build.VERSION.SDK
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.prefs.intents.PreferenceChangedIntent
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(),
-    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+    SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var toolbar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +50,9 @@ class SettingsActivity : AppCompatActivity(),
                 .commit()
         }
 
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .registerOnSharedPreferenceChangeListener(this)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -70,6 +79,13 @@ class SettingsActivity : AppCompatActivity(),
         return true
     }
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        Log.d("hub", "pref changed")
+        key?.let {
+            sendBroadcast(PreferenceChangedIntent(key))
+            Log.d("hub", "broadcast sent")
+        }
+    }
 
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

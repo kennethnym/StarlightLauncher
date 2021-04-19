@@ -2,11 +2,11 @@ package kenneth.app.spotlightlauncher.prefs.appearance
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.preference.PreferenceManager
 import kenneth.app.spotlightlauncher.R
 
 private object DefaultValue {
-    const val SHOW_APP_LABELS = true
     const val SHOW_PINNED_APPS_LABELS = true
     const val SHOW_APP_NAMES_IN_SEARCH_RESULT = true
 }
@@ -42,18 +42,18 @@ object AppearancePreferenceManager {
     private lateinit var context: Context
     private lateinit var sharedPreferences: SharedPreferences
 
-    lateinit var showPinnedAppsLabelsKey: String
-    lateinit var showAppNamesInSearchResultKey: String
-    lateinit var iconPackPrefKey: String
+    val showPinnedAppsLabelsKey by lazy { context.getString(R.string.appearance_show_pinned_apps_labels) }
+    val showAppNamesInSearchResultKey by lazy { context.getString(R.string.appearance_show_app_names_in_search_result) }
+    val iconPackPrefKey by lazy { context.getString(R.string.appearance_icon_pack) }
 
     fun getInstance(context: Context) = this.apply {
         this.context = context
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        initializePrefKeys()
-
         if (iconPack == null) {
+            Log.d("hub", iconPackPrefKey)
             val selectedIconPackPackageName = sharedPreferences.getString(iconPackPrefKey, null)
+            Log.d("hub", selectedIconPackPackageName.toString())
 
             iconPack =
                 if (selectedIconPackPackageName != null)
@@ -88,20 +88,5 @@ object AppearancePreferenceManager {
             .apply()
 
         iconPack = null
-    }
-
-    private fun initializePrefKeys() {
-        if (!::iconPackPrefKey.isInitialized) {
-            iconPackPrefKey = context.getString(R.string.appearance_icon_pack)
-        }
-
-        if (!::showPinnedAppsLabelsKey.isInitialized) {
-            showPinnedAppsLabelsKey = context.getString(R.string.appearance_show_pinned_apps_labels)
-        }
-
-        if (!::showAppNamesInSearchResultKey.isInitialized) {
-            showAppNamesInSearchResultKey =
-                context.getString(R.string.appearance_show_app_names_in_search_result)
-        }
     }
 }

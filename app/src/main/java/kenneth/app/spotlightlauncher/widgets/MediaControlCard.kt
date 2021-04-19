@@ -19,6 +19,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.MediaControlCardBinding
@@ -306,16 +307,9 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
                 ?: context.getString(R.string.no_artist_label)
 
-        binding.mediaCover.apply {
-            val coverBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
-
-            if (coverBitmap != null) {
-                isVisible = true
-                setImageBitmap(coverBitmap)
-            } else {
-                isVisible = false
-            }
-        }
+        Glide.with(context)
+            .load(mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI))
+            .into(binding.mediaCover)
 
         mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
             if (it != 0L) {

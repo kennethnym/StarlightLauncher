@@ -1,17 +1,18 @@
 package kenneth.app.spotlightlauncher.searching.views
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ResolveInfo
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -20,6 +21,8 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.AppsGridItemBinding
 import kenneth.app.spotlightlauncher.databinding.AppsSectionCardBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kenneth.app.spotlightlauncher.prefs.intents.EXTRA_CHANGED_PREFERENCE_KEY
+import kenneth.app.spotlightlauncher.prefs.intents.PREFERENCE_CHANGED_ACTION
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
@@ -106,17 +109,6 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
         activity?.lifecycle?.removeObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun reloadAppLabels() {
-        for (i in 0 until appsGridAdapter.itemCount) {
-            binding.appsGrid.getChildAt(i)?.let {
-                (binding.appsGrid.getChildViewHolder(it) as AppsGridItem)
-                    .isLabelShown = appearancePreferenceManager.areAppNamesInSearchResult
-
-            }
-        }
-    }
-
     /**
      * Shows more apps in the apps grid
      */
@@ -153,11 +145,7 @@ class AppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        val isAppNameShown = appearanceManager.areAppNamesInSearchResult
-
-        return AppsGridItem(binding, appearanceManager).apply {
-            isLabelShown = isAppNameShown
-        }
+        return AppsGridItem(context, binding, appearanceManager)
     }
 }
 
@@ -167,7 +155,8 @@ class AppsGridAdapter @Inject constructor(
  * @param appearancePreferenceManager The [AppearancePreferenceManager] to be used to generate icon of the app
  *                          this view is holding.
  */
-class AppsGridItem(
+open class AppsGridItem(
+    context: Context,
     private val binding: AppsGridItemBinding,
     private val appearancePreferenceManager: AppearancePreferenceManager
 ) :
@@ -175,11 +164,8 @@ class AppsGridItem(
     /**
      * Whether this app item should show app name under the icon.
      */
-    var isLabelShown: Boolean = true
-        set(isLabelShown) {
-            field = isLabelShown
-            setAppLabelVisibility()
-        }
+    protected open val isLabelShown: Boolean
+        get() = appearancePreferenceManager.areAppNamesInSearchResult
 
     /**
      * The [ResolveInfo] of the app this view is showing.
@@ -188,24 +174,28 @@ class AppsGridItem(
 
     private val packageManager = itemView.context.packageManager
 
+    private val prefChangedActionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("hub", "intent received")
+            intent?.getStringExtra(EXTRA_CHANGED_PREFERENCE_KEY)?.let {
+                onAppearancePreferencesChanged(it)
+            }
+        }
+    }
+
+    init {
+        context.registerReceiver(prefChangedActionReceiver, IntentFilter(PREFERENCE_CHANGED_ACTION))
+    }
+
     override fun bindWith(data: ResolveInfo) {
         appInfo = data
 
         val appName = appInfo.loadLabel(packageManager)
-        val appIcon = appInfo.loadIcon(packageManager)
 
         binding.appIcon.apply {
             contentDescription = context.getString(R.string.app_icon_description, appName)
-
-            appearancePreferenceManager.iconPack?.let {
-                setImageBitmap(
-                    it.getIconOf(
-                        appInfo.activityInfo.packageName,
-                        default = appIcon
-                    )
-                )
-            } ?: setImageDrawable(appIcon)
         }
+        drawIcon()
 
         with(binding.root) {
             setOnClickListener { openApp() }
@@ -216,6 +206,14 @@ class AppsGridItem(
         }
 
         setAppLabelVisibility()
+    }
+
+    @CallSuper
+    protected open fun onAppearancePreferencesChanged(key: String) {
+        when (key) {
+            AppearancePreferenceManager.iconPackPrefKey -> drawIcon()
+            AppearancePreferenceManager.showAppNamesInSearchResultKey -> setAppLabelVisibility()
+        }
     }
 
     /**
@@ -242,10 +240,23 @@ class AppsGridItem(
         BindingRegister.activityMainBinding.appOptionMenu.show(withApp = appInfo)
     }
 
+    private fun drawIcon() {
+        val appIcon = appInfo.loadIcon(packageManager)
+
+        appearancePreferenceManager.iconPack?.let {
+            binding.appIcon.setImageBitmap(
+                it.getIconOf(
+                    appInfo.activityInfo.packageName,
+                    default = appIcon
+                )
+            )
+        } ?: binding.appIcon.setImageDrawable(appIcon)
+    }
+
     /**
      * Determines the visibility of app label based on whether it is enabled in shared pref
      */
-    private fun setAppLabelVisibility() {
+    protected fun setAppLabelVisibility() {
         if (::appInfo.isInitialized) {
             val appName = appInfo.loadLabel(packageManager)
 

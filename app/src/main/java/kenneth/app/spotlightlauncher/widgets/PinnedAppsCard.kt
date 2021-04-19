@@ -1,15 +1,13 @@
 package kenneth.app.spotlightlauncher.widgets
 
-import android.content.Context
+import android.content.*
 import android.content.pm.ResolveInfo
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,26 +45,12 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
 
     init {
         isVisible = pinnedAppsPreferenceManager.pinnedApps.isNotEmpty()
+        pinnedAppsPreferenceManager.setPinnedAppsListener(::onPinnedAppsChanged)
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         changeCardVisibility()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun onResume() {
-        reloadAppLabels()
-    }
-
-    private fun reloadAppLabels() {
-        for (i in 0 until pinnedAppsGridAdapter.itemCount) {
-            binding.pinnedAppsGrid.getChildAt(i)?.let {
-                (binding.pinnedAppsGrid.getChildViewHolder(it) as AppsGridItem)
-                    .isLabelShown = appearancePreferenceManager.areNamesOfPinnedAppsShown
-
-            }
-        }
     }
 
     /**
@@ -83,7 +67,6 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
                 layoutManager = pinnedAppsGridAdapter.layoutManager
             }
             activity?.lifecycle?.addObserver(this)
-            pinnedAppsPreferenceManager.setPinnedAppsListener(::onPinnedAppsChanged)
             binding.pinnedAppsCardBlurBackground.startBlur()
         } else {
             isVisible = false
@@ -112,10 +95,27 @@ class PinnedAppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        val isAppNameShown = appearancePreferenceManager.areNamesOfPinnedAppsShown
+        return PinnedAppsGridItem(context, binding, appearancePreferenceManager)
+    }
+}
 
-        return AppsGridItem(binding, appearancePreferenceManager).apply {
-            isLabelShown = isAppNameShown
+/**
+ * Extends [AppsGridItem] which is shown in the apps section of search result since
+ * its behavior is basically the same as grid item in pinned apps grid.
+ */
+class PinnedAppsGridItem(
+    context: Context,
+    binding: AppsGridItemBinding,
+    private val appearancePreferenceManager: AppearancePreferenceManager
+) : AppsGridItem(context, binding, appearancePreferenceManager) {
+    override val isLabelShown: Boolean
+        get() = appearancePreferenceManager.areNamesOfPinnedAppsShown
+
+    override fun onAppearancePreferencesChanged(key: String) {
+        if (key == AppearancePreferenceManager.showPinnedAppsLabelsKey) {
+            setAppLabelVisibility()
+        } else {
+            super.onAppearancePreferencesChanged(key)
         }
     }
 }
