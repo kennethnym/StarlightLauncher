@@ -165,24 +165,26 @@ class LauncherScrollView(context: Context, attrs: AttributeSet) : NestedScrollVi
         private val springStiffness = SpringForce.STIFFNESS_MEDIUM
 
         fun start() {
-            SpringAnimation(
-                this@LauncherScrollView,
-                DynamicAnimation.TRANSLATION_Y,
-                finalPosition
-            ).run {
-                spring.apply {
-                    dampingRatio = springDamping
-                    stiffness = springStiffness
-                }
+            if (this@LauncherScrollView.translationY != finalPosition) {
+                SpringAnimation(
+                    this@LauncherScrollView,
+                    DynamicAnimation.TRANSLATION_Y,
+                    finalPosition
+                ).run {
+                    spring.apply {
+                        dampingRatio = springDamping
+                        stiffness = springStiffness
+                    }
 
-                if (isVelocityTrackerObtained && velocityTracker.yVelocity > 0) {
-                    setStartVelocity(velocityTracker.yVelocity)
-                    velocityTracker.recycle()
-                } else {
-                    setStartVelocity(1f)
-                }
+                    if (isVelocityTrackerObtained && velocityTracker.yVelocity > 0) {
+                        setStartVelocity(velocityTracker.yVelocity)
+                        velocityTracker.recycle()
+                    } else {
+                        setStartVelocity(1f)
+                    }
 
-                start()
+                    start()
+                }
             }
         }
     }

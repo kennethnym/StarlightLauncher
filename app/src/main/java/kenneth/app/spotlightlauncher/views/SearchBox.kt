@@ -94,11 +94,15 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     }
 
     fun showTopPadding() {
-        createPaddingAnimation(showTopPadding = true).start()
+        if (binding.searchBoxContainer.paddingTop <= 0) {
+            createPaddingAnimation(showTopPadding = true).start()
+        }
     }
 
     fun removeTopPadding() {
-        createPaddingAnimation(showTopPadding = false).start()
+        if (binding.searchBoxContainer.paddingTop > 0) {
+            createPaddingAnimation(showTopPadding = false).start()
+        }
     }
 
     private fun handleSearchQuery(query: Editable?) {
