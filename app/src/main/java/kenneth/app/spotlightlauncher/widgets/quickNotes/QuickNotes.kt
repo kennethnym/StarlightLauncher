@@ -1,9 +1,7 @@
 package kenneth.app.spotlightlauncher.widgets.quickNotes
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -36,13 +34,14 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     init {
         with(binding) {
             addNoteButton.setOnClickListener { addNote() }
+            showAllNotesButton.setOnClickListener { showAllNotes() }
 
             with(addNotesEditText) {
                 setOnFocusChangeListener { _, _ ->
-                    BindingRegister.activityMainBinding.pageScrollView.expandWidgetPanel()
+                    BindingRegister.activityMainBinding.widgetsPanel.expand()
                 }
                 setOnClickListener {
-                    BindingRegister.activityMainBinding.pageScrollView.expandWidgetPanel()
+                    BindingRegister.activityMainBinding.widgetsPanel.expand()
                 }
                 addTextChangedListener {
                     addNoteButton.isInvisible = it?.isBlank() == true
@@ -68,6 +67,13 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         toggleElementsVisibility()
     }
 
+    private fun showAllNotes() {
+        BindingRegister.activityMainBinding.widgetsPanel.showOverlayFrom(
+            binding.root,
+            ::AllNotes
+        )
+    }
+
     /**
      * Changes visibility of some elements depending on whether the note list is empty.
      */
@@ -83,7 +89,7 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     private fun addNote() {
         binding.addNotesEditText.text?.let {
             if (it.isNotBlank()) {
-                val newNote = Note(content = it.toString(), dueDateTimestamp = null)
+                val newNote = Note(content = it.toString())
                 noteListAdapter.apply {
                     data = data + newNote
                     notifyItemInserted(data.size - 1)
@@ -126,10 +132,10 @@ class NoteListAdapter @Inject constructor(
  */
 class NoteListItem(
     private val adapter: NoteListAdapter,
-    private val binding: QuickNotesListItemBinding,
+    override val binding: QuickNotesListItemBinding,
     private val notesPreferenceManager: NotesPreferenceManager
 ) :
-    RecyclerViewDataAdapter.ViewHolder<Note>(binding.root) {
+    RecyclerViewDataAdapter.ViewHolder<Note>(binding) {
     private lateinit var note: Note
 
     override fun bindWith(data: Note) {

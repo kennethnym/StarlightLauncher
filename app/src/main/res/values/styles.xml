@@ -36,4 +36,29 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="PageHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="NoteCard_TimestampLabel" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:alpha">0.5</item>
+        <item name="fontFamily">@font/manrope_bold</item>
+    </style>
+
+    <style name="NoteCard_Content" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">@font/manrope_semibold</item>
+    </style>
+
+    <style name="NoteCard_ReminderTimeLabel" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:alpha">0.5</item>
+    </style>
+
 </resources>

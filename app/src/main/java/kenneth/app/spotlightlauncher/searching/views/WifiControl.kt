@@ -13,15 +13,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Switch
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.PermissionHandler
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.WifiControlBinding
-import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint

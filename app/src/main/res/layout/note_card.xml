@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/note_card_list_vertical_spacing"
+    android:background="@drawable/note_card_background"
+    android:elevation="8dp"
+    android:orientation="vertical"
+    android:padding="@dimen/section_card_padding">
+
+    <TextView
+        android:id="@+id/note_timestamp"
+        style="@style/NoteCard_TimestampLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/note_card_timestamp_placeholder" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="4dp" />
+
+    <TextView
+        android:id="@+id/note_content"
+        style="@style/NoteCard_Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/note_card_content_placeholder" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:contentDescription="@string/note_card_reminder_icon"
+            android:src="@drawable/ic_bell" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:id="@+id/note_reminder_time_label"
+            style="@style/NoteCard_ReminderTimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal">
+
+        <kenneth.app.spotlightlauncher.views.TextButton
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_pen"
+            android:drawablePadding="@dimen/text_button_icon_spacing"
+            android:text="@string/action_edit"
+            app:color="?colorPrimary" />
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="0dp" />
+
+        <kenneth.app.spotlightlauncher.views.TextButton
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_archive"
+            android:drawablePadding="@dimen/text_button_icon_spacing"
+            android:text="@string/action_archive"
+            app:color="?colorPrimary" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -6,6 +6,11 @@
         android:fontWeight="400" />
 
     <font
+        android:font="@font/manrope_semibold"
+        android:fontStyle="normal"
+        android:fontWeight="600" />
+
+    <font
         android:font="@font/manrope_bold"
         android:fontStyle="normal"
         android:fontWeight="700" />

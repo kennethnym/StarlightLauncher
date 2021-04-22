@@ -47,11 +47,11 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
      * Scales itself based on where the widget panel is.
      */
     private fun scaleSelf(delay: Long) {
-        val pageScrollView = BindingRegister.activityMainBinding.pageScrollView
+        val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
 
         val dateTimeViewScale = max(
             0f,
-            (y - pageScrollView.y) / (y - appState.halfScreenHeight)
+            (y - widgetsPanel.y) / (y - appState.halfScreenHeight)
         )
 
         scaleX = dateTimeViewScale

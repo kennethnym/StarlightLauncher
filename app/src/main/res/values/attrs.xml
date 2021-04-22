@@ -20,4 +20,8 @@
     <declare-styleable name="IconButton">
         <attr name="icon" />
     </declare-styleable>
+
+    <declare-styleable name="TextButton">
+        <attr name="color" />
+    </declare-styleable>
 </resources>

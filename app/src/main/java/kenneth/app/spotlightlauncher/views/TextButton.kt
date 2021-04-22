@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -12,21 +13,44 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
+private const val USE_ADAPTIVE_COLOR = -1
+
 @AndroidEntryPoint
 class TextButton(context: Context, attrs: AttributeSet) :
     androidx.appcompat.widget.AppCompatButton(context, attrs, R.style.TextButton),
     LifecycleObserver {
-
     @Inject
     lateinit var appState: AppState
 
+    private val shouldUseAdaptiveColor: Boolean
+
     init {
         activity?.lifecycle?.addObserver(this)
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.TextButton,
+            0, 0
+        ).run {
+            try {
+                val overriddenTextColor =
+                    getColor(R.styleable.TextButton_color, USE_ADAPTIVE_COLOR)
+                shouldUseAdaptiveColor = overriddenTextColor == USE_ADAPTIVE_COLOR
+
+                if (!shouldUseAdaptiveColor) {
+                    compoundDrawablesRelative.forEach { it?.setTint(overriddenTextColor) }
+                    setTextColor(overriddenTextColor)
+                }
+            } finally {
+                recycle()
+            }
+        }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setTextColor(appState.adaptiveTextColor)
+        if (shouldUseAdaptiveColor) {
+            setTextColor(appState.adaptiveTextColor)
+        }
     }
 
     override fun performClick(): Boolean {
@@ -57,7 +81,9 @@ class TextButton(context: Context, attrs: AttributeSet) :
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        setTextColor(appState.adaptiveTextColor)
+        if (shouldUseAdaptiveColor) {
+            setTextColor(appState.adaptiveTextColor)
+        }
     }
 
     private fun showClickedEffect() {

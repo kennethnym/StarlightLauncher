@@ -10,10 +10,7 @@ import javax.inject.Inject
  */
 class ResultAdapter @Inject constructor() {
     fun displayResult(result: Searcher.Result, type: SearchType) {
-        with(BindingRegister.activityMainBinding) {
-            widgetList.isVisible = false
-            searchResultContainer.isVisible = true
-        }
+        BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
 
         with(BindingRegister.searchResultViewBinding) {
             when (type) {
@@ -43,7 +40,7 @@ class ResultAdapter @Inject constructor() {
             suggesedResultCard.hide()
         }
 
-        BindingRegister.activityMainBinding.searchResultContainer.isVisible = false
+        BindingRegister.activityMainBinding.widgetsPanel.hideSearchResults()
     }
 
     fun displayWebResult(result: SmartSearcher.WebResult) {

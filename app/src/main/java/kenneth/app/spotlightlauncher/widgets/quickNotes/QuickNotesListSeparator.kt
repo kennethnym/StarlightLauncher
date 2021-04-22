@@ -3,7 +3,6 @@ package kenneth.app.spotlightlauncher.widgets.quickNotes
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -11,7 +10,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.utils.activity
-import kenneth.app.spotlightlauncher.utils.dp
 import javax.inject.Inject
 
 // List separator should have 30% opacity

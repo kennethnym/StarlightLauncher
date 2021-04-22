@@ -5,6 +5,18 @@
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
+    <!-- Common actions -->
+    <string name="action_edit">Edit</string>
+    <string name="action_archive">Archive</string>
+
+    <!-- Time ago -->
+    <string name="time_ago_today">Today %1$s</string>
+    <string name="time_ago_yesterday">Yesterday %1$s</string>
+    <plurals name="time_ago_days_ago">
+        <item quantity="one">A day ago, %1$s</item>
+        <item quantity="other">%2$d days ago, %1$s</item>
+    </plurals>
+
     <!-- Date time view -->
     <string name="date_time_weather_separator">·</string>
     <string name="weather_image_description">Icon of the current weather</string>
@@ -83,6 +95,12 @@
     <string name="related_topic_preview_description">Image preview for %1$s.</string>
 
     <string name="title_activity_settings">Settings</string>
+
+    <!-- notes widget -->
+    <string name="note_card_timestamp_placeholder">When this note is created on.</string>
+    <string name="note_card_content_placeholder">Note content</string>
+    <string name="note_card_reminder_icon">Icon for note reminder</string>
+    <string name="all_notes_page_title">Notes</string>
 
     <!-- Download folder -->
     <string name="download_folder">Download</string>

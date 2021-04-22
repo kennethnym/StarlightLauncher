@@ -11,14 +11,13 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
@@ -35,6 +34,12 @@ import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.ResultAdapter
 import kenneth.app.spotlightlauncher.utils.*
 import javax.inject.Inject
+
+/**
+ * Called when back button is pressed.
+ * If handler returns true, subsequent handlers will not be called.
+ */
+typealias BackPressHandler = () -> Boolean
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -75,6 +80,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private var backPressedCallbacks = mutableListOf<BackPressHandler>()
+
     private var isDarkModeActive = false
 
     /**
@@ -83,6 +90,10 @@ class MainActivity : AppCompatActivity() {
      * can hide the corresponding button.
      */
     private var requestedPermission: String = ""
+
+    fun addBackPressListener(handler: BackPressHandler) {
+        backPressedCallbacks.add(handler)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,23 +133,6 @@ class MainActivity : AppCompatActivity() {
         askForReadExternalStoragePermission()
     }
 
-    override fun onBackPressed() {
-        when {
-            binding.launcherOptionMenu.isActive -> {
-                binding.launcherOptionMenu.hide()
-            }
-            binding.appOptionMenu.isVisible -> {
-                binding.appOptionMenu.hide()
-            }
-            appState.isWidgetPanelExpanded -> {
-                binding.pageScrollView.retractWidgetPanel()
-            }
-            else -> {
-                super.onBackPressed()
-            }
-        }
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         isDarkModeActive =
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) newConfig.isNightModeActive
@@ -150,6 +144,14 @@ class MainActivity : AppCompatActivity() {
             } else {
                 enableLightStatusBar()
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        val isHandled = backPressedCallbacks.fold(false) { _, cb -> cb() }
+        Log.d("hub", "is handled? $isHandled")
+        if (!isHandled) {
+            super.onBackPressed()
         }
     }
 

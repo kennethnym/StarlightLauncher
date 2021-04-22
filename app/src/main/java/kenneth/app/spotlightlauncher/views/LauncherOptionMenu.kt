@@ -3,11 +3,8 @@ package kenneth.app.spotlightlauncher.views
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import android.view.Gravity
-import androidx.core.view.setPadding
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.prefs.SettingsActivity
-import kenneth.app.spotlightlauncher.utils.dp
 
 /**
  * Renders an option menu for configuring the launcher.

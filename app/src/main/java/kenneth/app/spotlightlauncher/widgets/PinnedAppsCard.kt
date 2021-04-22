@@ -95,7 +95,7 @@ class PinnedAppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return PinnedAppsGridItem(context, binding, appearancePreferenceManager)
+        return PinnedAppsGridItem(binding, appearancePreferenceManager)
     }
 }
 
@@ -104,10 +104,9 @@ class PinnedAppsGridAdapter @Inject constructor(
  * its behavior is basically the same as grid item in pinned apps grid.
  */
 class PinnedAppsGridItem(
-    context: Context,
     binding: AppsGridItemBinding,
     private val appearancePreferenceManager: AppearancePreferenceManager
-) : AppsGridItem(context, binding, appearancePreferenceManager) {
+) : AppsGridItem(binding, appearancePreferenceManager) {
     override val isLabelShown: Boolean
         get() = appearancePreferenceManager.areNamesOfPinnedAppsShown
 

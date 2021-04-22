@@ -9,10 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -145,7 +142,7 @@ class AppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return AppsGridItem(context, binding, appearanceManager)
+        return AppsGridItem(binding, appearanceManager)
     }
 }
 
@@ -156,11 +153,12 @@ class AppsGridAdapter @Inject constructor(
  *                          this view is holding.
  */
 open class AppsGridItem(
-    context: Context,
-    private val binding: AppsGridItemBinding,
+    final override val binding: AppsGridItemBinding,
     private val appearancePreferenceManager: AppearancePreferenceManager
 ) :
-    RecyclerViewDataAdapter.ViewHolder<ResolveInfo>(binding.root) {
+    RecyclerViewDataAdapter.ViewHolder<ResolveInfo>(binding) {
+    private val context = binding.root.context
+
     /**
      * Whether this app item should show app name under the icon.
      */

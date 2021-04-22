@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher.searching
 
 import android.content.Context
-import android.content.Intent
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater

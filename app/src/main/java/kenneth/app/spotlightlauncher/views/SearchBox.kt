@@ -1,7 +1,5 @@
 package kenneth.app.spotlightlauncher.views
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.text.Editable
@@ -12,14 +10,12 @@ import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.spotlightlauncher.searching.ResultAdapter
-import kenneth.app.spotlightlauncher.searching.ResultAdapter_Factory
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
@@ -109,19 +105,17 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         if (query == null || query.isBlank()) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
-
-            BindingRegister.activityMainBinding.widgetList.isVisible = true
         } else {
             searcher.requestSearch(query.toString())
         }
     }
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
-        with(BindingRegister.activityMainBinding.pageScrollView) {
+        with(BindingRegister.activityMainBinding.widgetsPanel) {
             if (hasFocus) {
-                expandWidgetPanel()
+                expand()
             } else {
-                retractWidgetPanel()
+                retract()
             }
         }
 
@@ -133,7 +127,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
         createPaddingAnimation(showTopPadding = isActive).start()
 
-        with(BindingRegister.activityMainBinding.widgetList) {
+        with(BindingRegister.activityMainBinding.widgetsPanel) {
             if (isActive) {
                 hideWidgets()
             } else {

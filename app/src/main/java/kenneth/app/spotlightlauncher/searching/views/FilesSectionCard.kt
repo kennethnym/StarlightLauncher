@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.LinearLayout
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
@@ -164,8 +163,8 @@ class FileListAdapter @Inject constructor(
  * The ViewHolder that displays a file item in [FileListAdapter]
  * @param binding The view binding of the underlying view.
  */
-class FileListItem(private val binding: FileListItemBinding) :
-    RecyclerViewDataAdapter.ViewHolder<DocumentFile>(binding.root) {
+class FileListItem(override val binding: FileListItemBinding) :
+    RecyclerViewDataAdapter.ViewHolder<DocumentFile>(binding) {
     /**
      * The file that is bound to this ViewHolder
      */

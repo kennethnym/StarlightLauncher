@@ -1,9 +1,11 @@
 package kenneth.app.spotlightlauncher.utils
 
 import android.app.Activity
+import android.content.Context
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import kenneth.app.spotlightlauncher.MainActivity
 
 /**
@@ -28,10 +30,8 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
      * This is responsible for holding views for this adapter. View logic of individual
      * items in the RecyclerView should be handled in this class.
      */
-    abstract class ViewHolder<T>(
-        view: View,
-//        protected val activity: Activity
-    ) : RecyclerView.ViewHolder(view) {
+    abstract class ViewHolder<T>(protected open val binding: ViewBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         /**
          * Binds this ViewHolder with the given data, and also displays the data.
          */

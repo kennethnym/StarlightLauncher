@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="vertical">
+
+            <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                style="@style/PageHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/section_card_padding"
+                android:text="@string/all_notes_page_title" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="32dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/note_card_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:fitsSystemWindows="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="@dimen/section_card_padding"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</merge>

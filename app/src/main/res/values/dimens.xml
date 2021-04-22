@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_button_icon_spacing">4dp</dimen>
+
     <dimen name="widget_margin_horizontal">16dp</dimen>
     <dimen name="widget_padding_vertical">16dp</dimen>
     <dimen name="widget_padding_horizontal">24dp</dimen>
@@ -27,4 +29,9 @@
     <dimen name="media_control_button_space">16dp</dimen>
 
     <dimen name="album_art_size">64dp</dimen>
+
+    <dimen name="overlay_padding_horizontal">16dp</dimen>
+    <dimen name="overlay_padding_top">88dp</dimen>
+
+    <dimen name="note_card_list_vertical_spacing">16dp</dimen>
 </resources>

@@ -53,35 +53,10 @@
 
     </LinearLayout>
 
-    <kenneth.app.spotlightlauncher.views.LauncherScrollView
-        android:id="@+id/page_scroll_view"
+    <kenneth.app.spotlightlauncher.views.widgetspanel.WidgetsPanel
+        android:id="@+id/widgets_panel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <kenneth.app.spotlightlauncher.views.SearchBox
-                android:id="@+id/search_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <kenneth.app.spotlightlauncher.views.WidgetList
-                android:id="@+id/widget_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <kenneth.app.spotlightlauncher.searching.SearchResultView
-                android:id="@+id/search_result_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-    </kenneth.app.spotlightlauncher.views.LauncherScrollView>
+        android:layout_height="match_parent" />
 
     <kenneth.app.spotlightlauncher.views.AppOptionMenu
         android:id="@+id/app_option_menu"

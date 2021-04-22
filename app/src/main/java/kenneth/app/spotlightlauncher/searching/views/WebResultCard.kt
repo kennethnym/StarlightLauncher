@@ -125,8 +125,8 @@ class RelatedTopicListAdapter @Inject constructor(
     }
 }
 
-class RelatedTopicListItem(private val binding: WebResultRelatedTopicItemBinding) :
-    RecyclerViewDataAdapter.ViewHolder<SmartSearcher.WebResult.Topic>(binding.root) {
+class RelatedTopicListItem(override val binding: WebResultRelatedTopicItemBinding) :
+    RecyclerViewDataAdapter.ViewHolder<SmartSearcher.WebResult.Topic>(binding) {
     private val context = itemView.context
 
     override fun bindWith(data: SmartSearcher.WebResult.Topic) {

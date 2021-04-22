@@ -53,6 +53,4 @@ class AppState @Inject constructor() {
     var isSearchBoxActive: Boolean = false
 
     var statusBarHeight = 0
-
-    var isWidgetPanelExpanded = false
 }

@@ -11,7 +11,7 @@ import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.CallSuper
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
@@ -22,9 +22,7 @@ import kenneth.app.spotlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.R
-import kenneth.app.spotlightlauncher.utils.GestureMover
-import kenneth.app.spotlightlauncher.utils.dp
-import kenneth.app.spotlightlauncher.utils.navBarHeight
+import kenneth.app.spotlightlauncher.utils.*
 
 /**
  * An option menu at the bottom with a shadow gradient background.
@@ -100,6 +98,13 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
             )
 
             insets
+        }
+
+        mainActivity?.addBackPressListener {
+            if (isActive) {
+                hide()
+                HANDLED
+            } else NOT_HANDLED
         }
     }
 
