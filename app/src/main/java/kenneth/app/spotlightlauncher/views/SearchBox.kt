@@ -10,6 +10,7 @@ import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,6 +74,12 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         binding.searchBoxBlurBackground.startBlur()
+        binding.searchBoxEditText.setHintTextColor(
+            ColorUtils.setAlphaComponent(
+                appState.adaptiveTextColor,
+                0x88
+            )
+        )
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
