@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.ViewGroup
+import androidx.appcompat.widget.TooltipCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -11,8 +13,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
+import kenneth.app.spotlightlauncher.utils.dp
 import javax.inject.Inject
 
+private val DEFAULT_ICON_SIZE = 16.dp.toFloat()
 private const val OPACITY_ENABLED = 1f
 private const val OPACITY_CLICKED = 0.5f
 private const val OPACITY_DISABLED = 0.2f
@@ -49,9 +53,16 @@ class IconButton(context: Context, attrs: AttributeSet) :
         ).apply {
             try {
                 icon = getDrawable(R.styleable.IconButton_icon)
+                val iconSize =
+                    getDimension(R.styleable.IconButton_iconSize, DEFAULT_ICON_SIZE).toInt()
+                layoutParams = ViewGroup.LayoutParams(iconSize, iconSize)
             } finally {
                 recycle()
             }
+        }
+
+        if (contentDescription?.isNotEmpty() == true) {
+            TooltipCompat.setTooltipText(this, contentDescription)
         }
 
         activity?.lifecycle?.addObserver(this)

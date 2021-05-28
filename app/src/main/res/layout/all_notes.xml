@@ -29,7 +29,6 @@
                 android:clipToPadding="false"
                 android:fitsSystemWindows="false"
                 android:nestedScrollingEnabled="false"
-                android:paddingHorizontal="@dimen/section_card_padding"
                 android:paddingBottom="16dp" />
 
         </LinearLayout>

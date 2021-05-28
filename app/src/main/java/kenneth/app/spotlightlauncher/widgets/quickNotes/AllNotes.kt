@@ -57,6 +57,6 @@ class NoteCardListAdapter @Inject constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {
         val binding = NoteCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return NoteCard(context, binding, timeAgo, notesPreferenceManager)
+        return NoteCard(context, this, binding, timeAgo, notesPreferenceManager)
     }
 }

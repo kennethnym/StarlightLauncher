@@ -12,6 +12,7 @@ import kotlin.time.ExperimentalTime
 
 class NoteCard(
     context: Context,
+    private val adapter: NoteCardListAdapter,
     override val binding: NoteCardBinding,
     private val timeAgo: TimeAgo,
     private val notesPreferenceManager: NotesPreferenceManager,
@@ -27,7 +28,9 @@ class NoteCard(
         with(binding) {
             noteTimestamp.text = timeAgo.prettify(note.createdOn)
             noteContent.text = note.content
+
             noteCardEditButton.setOnClickListener { switchToEditMode() }
+            deleteNoteButton.setOnClickListener { deleteNote() }
         }
     }
 
@@ -72,5 +75,10 @@ class NoteCard(
         notesPreferenceManager.editNote(newNote)
         turnOffEditMode()
         bindWith(newNote)
+    }
+
+    private fun deleteNote() {
+        notesPreferenceManager.deleteNote(note)
+        adapter.notifyItemRemoved(adapterPosition)
     }
 }

@@ -19,6 +19,7 @@
 
     <declare-styleable name="IconButton">
         <attr name="icon" />
+        <attr name="iconSize" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="TextButton">
