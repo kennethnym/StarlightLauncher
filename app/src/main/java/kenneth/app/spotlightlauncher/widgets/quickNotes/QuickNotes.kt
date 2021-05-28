@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -27,6 +28,9 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
     @Inject
     lateinit var noteListAdapter: NoteListAdapter
+
+    @Inject
+    lateinit var inputMethodManager: InputMethodManager
 
     private val binding: QuickNotesLayoutBinding =
         QuickNotesLayoutBinding.inflate(LayoutInflater.from(context), this, true)
@@ -90,16 +94,19 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     }
 
     private fun addNote() {
-        binding.addNotesEditText.text?.let {
-            if (it.isNotBlank()) {
-                val newNote = Note(content = it.toString())
-                noteListAdapter.apply {
-                    data = data + newNote
-                    notifyItemInserted(data.size - 1)
+        binding.addNotesEditText.run {
+            text?.let {
+                if (it.isNotBlank()) {
+                    val newNote = Note(content = it.toString())
+                    noteListAdapter.apply {
+                        data = data + newNote
+                        notifyItemInserted(data.size - 1)
+                    }
+                    binding.addNotesEditText.text?.clear()
+                    notesPreferenceManager.addNote(newNote)
                 }
-                binding.addNotesEditText.text?.clear()
-                notesPreferenceManager.addNote(newNote)
             }
+            inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
         }
     }
 }
