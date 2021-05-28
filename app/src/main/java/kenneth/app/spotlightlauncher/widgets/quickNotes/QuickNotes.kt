@@ -59,8 +59,11 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             }
 
             quickNotesWidgetBlurBackground.startBlur()
-            notesPreferenceManager.setOnNoteListChangedListener {
+            notesPreferenceManager.addNoteListChangedListener {
                 toggleElementsVisibility()
+                noteListAdapter
+                    .apply { data = it }
+                    .also { it.notifyDataSetChanged() }
             }
         }
 

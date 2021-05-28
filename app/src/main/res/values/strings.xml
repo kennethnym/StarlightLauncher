@@ -8,6 +8,8 @@
     <!-- Common actions -->
     <string name="action_edit">Edit</string>
     <string name="action_archive">Archive</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
 
     <!-- Time ago -->
     <string name="time_ago_today">Today %1$s</string>

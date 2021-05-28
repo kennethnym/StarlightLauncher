@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher.prefs.notes
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
@@ -22,25 +23,48 @@ class NotesPreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences
 ) {
-    val notesJSON: String?
-        get() = sharedPreferences.getString(noteListPrefKey, null)
+    var notesJson: String?
+        private set
 
-    val notes: List<Note>
-        get() {
-            val listStr = notesJSON
-            return if (listStr != null) Json.decodeFromString(listStr) else emptyList()
-        }
+    val notes: MutableList<Note>
 
-    private var noteListListener: NoteListListener? = null
+    private var noteListListeners = mutableListOf<NoteListListener>()
 
     private val noteListPrefKey by lazy { context.getString(R.string.note_list) }
+
+    init {
+        notesJson = sharedPreferences.getString(noteListPrefKey, null)
+        notes = notesJson
+            ?.let {
+                Json.decodeFromString<List<Note>>(it)
+                    .toMutableList()
+            }
+            ?: mutableListOf()
+    }
 
     /**
      * Registers the given [listener] as a listener of the note list.
      * Whenver the list changes, [listener] is called.
      */
-    fun setOnNoteListChangedListener(listener: NoteListListener) {
-        noteListListener = listener
+    fun addNoteListChangedListener(listener: NoteListListener) {
+        noteListListeners.add(listener)
+    }
+
+    /**
+     * Saves the edited note.
+     * @param note The edited note. The id has to be identical with the id of the original note.
+     */
+    fun editNote(note: Note) {
+        val i = notes.indexOfFirst { it.id == note.id }
+        notes[i] = note
+        notesJson = Json.encodeToString(notes)
+
+        sharedPreferences
+            .edit()
+            .putString(noteListPrefKey, notesJson)
+            .apply()
+
+        notifyListeners()
     }
 
     /**
@@ -48,14 +72,17 @@ class NotesPreferenceManager @Inject constructor(
      * @param note The new [Note] to add
      */
     fun addNote(note: Note) {
-        val newList = notes + note
+        Log.d("hub", "note $note")
+
+        notes += note
+        notesJson = Json.encodeToString(notes)
 
         sharedPreferences
             .edit()
-            .putString(noteListPrefKey, Json.encodeToString(newList))
+            .putString(noteListPrefKey, notesJson)
             .apply()
 
-        noteListListener?.let { it(newList) }
+        notifyListeners()
     }
 
     /**
@@ -63,13 +90,18 @@ class NotesPreferenceManager @Inject constructor(
      * @param note The [Note] to delete
      */
     fun deleteNote(note: Note) {
-        val newList = notes.filter { it != note }
+        notes.removeIf { it == note }
+        notesJson = Json.encodeToString(notes)
 
         sharedPreferences
             .edit()
-            .putString(noteListPrefKey, Json.encodeToString(newList))
+            .putString(noteListPrefKey, notesJson)
             .apply()
 
-        noteListListener?.let { it(newList) }
+        notifyListeners()
+    }
+
+    private fun notifyListeners() {
+        noteListListeners.forEach { it(notes) }
     }
 }

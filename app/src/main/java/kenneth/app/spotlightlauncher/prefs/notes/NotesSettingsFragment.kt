@@ -50,7 +50,7 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun exportNotes() {
-        if (notesPreferenceManager.notesJSON != null) {
+        if (notesPreferenceManager.notesJson != null) {
             showFileNameDialog()
         }
     }
@@ -125,7 +125,7 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
         try {
             context?.contentResolver?.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { fileStream ->
-                    val notesJSON = notesPreferenceManager.notesJSON
+                    val notesJSON = notesPreferenceManager.notesJson
 
                     if (notesJSON != null) {
                         fileStream.write(notesJSON.toByteArray())
