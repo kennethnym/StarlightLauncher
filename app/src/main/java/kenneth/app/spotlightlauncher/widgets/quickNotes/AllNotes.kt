@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.widgets.quickNotes
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,9 +17,12 @@ import kenneth.app.spotlightlauncher.prefs.notes.NotesPreferenceManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.TimeAgo
 import javax.inject.Inject
+import kotlin.experimental.ExperimentalTypeInference
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @AndroidEntryPoint
-class AllNotes(context: Context) : LinearLayout(context) {
+class AllNotes(context: Context) : FrameLayout(context) {
     @Inject
     lateinit var notesPreferenceManager: NotesPreferenceManager
 
@@ -30,7 +34,7 @@ class AllNotes(context: Context) : LinearLayout(context) {
     init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT,
+            LayoutParams.MATCH_PARENT,
         )
         val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
 
@@ -40,19 +44,53 @@ class AllNotes(context: Context) : LinearLayout(context) {
         val hasNotes = notes.isNotEmpty()
 
         noteCardListAdapter.data = notes
-        binding.noteCardList.apply {
-            isVisible = hasNotes
-            adapter = noteCardListAdapter
-            layoutManager = noteCardListAdapter.layoutManager
+
+        with(binding) {
+            noteCardList.apply {
+                isVisible = hasNotes
+                adapter = noteCardListAdapter
+                layoutManager = noteCardListAdapter.layoutManager
+            }
+            addNoteButton.setOnClickListener { addNote() }
+        }
+    }
+
+    private fun addNote() {
+        val emptyNote = Note(content = "")
+
+        notesPreferenceManager.addNote(emptyNote)
+        noteCardListAdapter
+            .apply {
+                data = notesPreferenceManager.notes
+                hasNewItem = true
+            }
+            .also {
+                val lastIndex = it.data.size - 1
+                it.notifyItemInserted(lastIndex)
+            }
+
+        binding.noteCardListScrollView.run {
+            val lastView = getChildAt(childCount - 1)
+            val lastViewBottom = lastView.bottom + paddingBottom
+            val amountToScroll = lastViewBottom - height - scrollY
+            smoothScrollBy(0, amountToScroll)
         }
     }
 }
 
+@ExperimentalTime
 class NoteCardListAdapter @Inject constructor(
     @ActivityContext private val context: Context,
     private val timeAgo: TimeAgo,
     private val notesPreferenceManager: NotesPreferenceManager,
 ) : RecyclerViewDataAdapter<Note, NoteCard>() {
+    /**
+     * Indicates whether there is a newly-inserted note card.
+     * If true, the note card will automatically enable edit mode. Afterwards,
+     * this will be flipped back to false.
+     */
+    var hasNewItem = false
+
     override val layoutManager = LinearLayoutManager(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {

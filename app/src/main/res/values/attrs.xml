@@ -23,6 +23,6 @@
     </declare-styleable>
 
     <declare-styleable name="TextButton">
-        <attr name="color" />
+        <attr name="color" format="color" />
     </declare-styleable>
 </resources>

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/note_card_list_scroll_view"
+        android:descendantFocusability="blocksDescendants"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,5 +37,25 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/all_notes_add_note_btn_bg"
+        android:paddingVertical="32dp">
+
+        <kenneth.app.spotlightlauncher.views.TextButton
+            android:id="@+id/add_note_button"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableStart="@drawable/ic_plus"
+            android:drawablePadding="@dimen/text_button_icon_spacing"
+            android:text="@string/all_notes_add_note_label"
+            app:color="@android:color/white" />
+
+    </FrameLayout>
 
 </merge>

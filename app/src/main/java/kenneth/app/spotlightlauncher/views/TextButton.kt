@@ -13,7 +13,7 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
-private const val USE_ADAPTIVE_COLOR = -1
+private const val USE_ADAPTIVE_COLOR = Integer.MAX_VALUE
 
 @AndroidEntryPoint
 class TextButton(context: Context, attrs: AttributeSet) :

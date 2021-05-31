@@ -1,9 +1,11 @@
 package kenneth.app.spotlightlauncher.views.widgetspanel
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -29,6 +31,9 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     lateinit var appState: AppState
 
     private lateinit var velocityTracker: VelocityTracker
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private val keyboardAnimation = KeyboardAnimation(this, appState)
 
     private var isVelocityTrackerObtained = false
 
@@ -69,6 +74,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
                 retract()
                 HANDLED
             } else NOT_HANDLED
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setWindowInsetsAnimationCallback(keyboardAnimation)
         }
     }
 
@@ -111,8 +120,25 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     fun showOverlayFrom(view: View, contentConstructor: (context: Context) -> View) {
-        binding.overlay.run {
-            showFrom(view, withContent = contentConstructor(context))
+        binding.overlay.showFrom(view, withContent = contentConstructor(context))
+    }
+
+    /**
+     * Sets the currently focused view so that [WidgetsPanel]
+     * can move appropriately to avoid the onscreen keyboard from blocking the view.
+     */
+    fun avoidView(view: View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            keyboardAnimation.avoidView(view)
+        }
+    }
+
+    /**
+     * Opposite of [avoidView]. [WidgetsPanel] will not move to avoid the keyboard.
+     */
+    fun stopAvoidingView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            keyboardAnimation.stopAvoidingView()
         }
     }
 

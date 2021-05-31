@@ -1,15 +1,18 @@
 package kenneth.app.spotlightlauncher.widgets.quickNotes
 
 import android.content.Context
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import kenneth.app.spotlightlauncher.databinding.NoteCardBinding
 import kenneth.app.spotlightlauncher.models.Note
 import kenneth.app.spotlightlauncher.prefs.notes.NotesPreferenceManager
+import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.TimeAgo
 import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 class NoteCard(
     context: Context,
     private val adapter: NoteCardListAdapter,
@@ -18,13 +21,14 @@ class NoteCard(
     private val notesPreferenceManager: NotesPreferenceManager,
 ) :
     RecyclerViewDataAdapter.ViewHolder<Note>(binding) {
+
     private val inputMethodManager =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     private lateinit var note: Note
 
-    @ExperimentalTime
     override fun bindWith(data: Note) {
         note = data
+
         with(binding) {
             noteTimestamp.text = timeAgo.prettify(note.createdOn)
             noteContent.text = note.content
@@ -32,9 +36,13 @@ class NoteCard(
             noteCardEditButton.setOnClickListener { switchToEditMode() }
             deleteNoteButton.setOnClickListener { deleteNote() }
         }
+
+        if (adapter.hasNewItem) {
+            switchToEditMode()
+            adapter.hasNewItem = false
+        }
     }
 
-    @ExperimentalTime
     private fun switchToEditMode() {
         with(binding) {
             noteContent.isVisible = false
@@ -52,6 +60,7 @@ class NoteCard(
             noteCardCancelEdit.setOnClickListener { turnOffEditMode() }
             noteCardSaveEdit.setOnClickListener { saveEdit() }
         }
+        BindingRegister.activityMainBinding.widgetsPanel.avoidView(binding.root)
     }
 
     private fun turnOffEditMode() {
@@ -63,9 +72,9 @@ class NoteCard(
 
             inputMethodManager.hideSoftInputFromWindow(noteContentEditText.windowToken, 0)
         }
+        BindingRegister.activityMainBinding.widgetsPanel.stopAvoidingView()
     }
 
-    @ExperimentalTime
     private fun saveEdit() {
         val newNoteContent = binding.noteContentEditText.text.toString()
         val newNote = note.copy(

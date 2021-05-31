@@ -20,7 +20,9 @@ import kenneth.app.spotlightlauncher.prefs.notes.NotesPreferenceManager
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @AndroidEntryPoint
 class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     @Inject
