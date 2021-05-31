@@ -7,13 +7,20 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
+import android.view.WindowInsets
 import android.widget.ImageView
+import androidx.core.view.WindowInsetsCompat
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.components.SingletonComponent
 import kenneth.app.spotlightlauncher.AppState
+import kenneth.app.spotlightlauncher.MainActivity
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
@@ -26,7 +33,7 @@ import kotlin.math.roundToInt
 private const val BLUR_SCALE = 0.2f
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object BlurHandlerModule {
     @Provides
     fun provideWallpaperManager(@ApplicationContext context: Context): WallpaperManager =
@@ -40,8 +47,9 @@ object BlurHandlerModule {
 /**
  * Handles blur background of cards in the home screen
  */
-@Singleton
+@ActivityScoped
 class BlurHandler @Inject constructor(
+    @ActivityContext private val context: Context,
     private val renderScript: RenderScript,
     private val appState: AppState
 ) {
@@ -85,9 +93,10 @@ class BlurHandler @Inject constructor(
         blurredWallpaper?.let {
             if (dest.width <= 0 || dest.height <= 0) return
 
-            val viewCoordinates = IntArray(2)
-            dest.getLocationOnScreen(viewCoordinates)
-            val (viewX, viewY) = viewCoordinates
+            val (viewX, viewY) = IntArray(2).run {
+                dest.getLocationOnScreen(this)
+                this
+            }
 
             val bitmapX = it.width * max(viewX, 0) / appState.screenWidth
             val bitmapY =
@@ -95,6 +104,11 @@ class BlurHandler @Inject constructor(
 
             if (bitmapY >= it.height || bitmapX > it.width) return
 
+            val navBarInset = WindowInsetsCompat.toWindowInsetsCompat(
+                (context as MainActivity)
+                    .window.decorView.rootWindowInsets
+            )
+                .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             val bgWidth = min(it.width * dest.width / appState.screenWidth, appState.screenWidth)
             val scaledHeight = it.height * dest.height / appState.screenHeight
             val bgHeight =

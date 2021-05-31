@@ -102,6 +102,9 @@ class MainActivity : AppCompatActivity() {
         updateAdaptiveColors()
         setTheme(appState.themeStyleId)
 
+        // enable edge-to-edge app experience
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         appState.apply {
             screenWidth = resources.displayMetrics.widthPixels
             screenHeight = resources.displayMetrics.heightPixels
@@ -114,15 +117,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         appearancePreferenceManager.iconPack?.load()
-
-        // enable edge-to-edge app experience
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            binding.root.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        } else {
-            window.setDecorFitsSystemWindows(false)
-        }
 
         PermissionHandler.handlePermissionForActivity(this)
 
@@ -298,7 +292,7 @@ class MainActivity : AppCompatActivity() {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isDarkModeActive) {
             binding.root.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         }
     }
 

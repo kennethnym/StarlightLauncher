@@ -11,7 +11,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.*
 import kenneth.app.spotlightlauncher.databinding.WidgetsPanelBinding
@@ -61,8 +60,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     private val binding: WidgetsPanelBinding
 
     init {
-        isFillViewport = true
-        fitsSystemWindows = false
         translationY = appState.halfScreenHeight.toFloat()
 
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)

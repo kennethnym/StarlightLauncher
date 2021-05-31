@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -27,6 +28,7 @@ class SettingsActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.settings_activity)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         toolbar = findViewById<MaterialToolbar>(R.id.settings_toolbar).also {
             it.setOnApplyWindowInsetsListener { view, insets ->

@@ -33,9 +33,7 @@
     <kenneth.app.spotlightlauncher.views.widgetspanel.Overlay
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-    </kenneth.app.spotlightlauncher.views.widgetspanel.Overlay>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </FrameLayout>

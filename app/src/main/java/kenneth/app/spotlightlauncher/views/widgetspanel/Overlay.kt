@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.core.animation.addListener
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -41,6 +42,11 @@ class Overlay(context: Context, attrs: AttributeSet) :
      */
     private var isClosing = false
 
+    /**
+     * The content of [Overlay]
+     */
+    private var content: View? = null
+
     init {
         targetView = this
         mainActivity?.addBackPressListener {
@@ -57,6 +63,7 @@ class Overlay(context: Context, attrs: AttributeSet) :
     fun showFrom(view: View, withContent: View) {
         isVisible = true
         originalView = view
+        content = withContent
         startBlur()
 
         val offsetRect = Rect().apply {
@@ -68,20 +75,26 @@ class Overlay(context: Context, attrs: AttributeSet) :
         translationX = offsetRect.left.toFloat()
         translationY = offsetRect.top.toFloat()
 
+        val navBarInset = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+            .getInsets(WindowInsetsCompat.Type.systemBars())
+            .bottom
+
         val xAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat(), 0f)
 
         val yAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, offsetRect.top.toFloat(), 0f)
 
+        val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 1f)
+
         val widthAnimator = ObjectAnimator.ofInt(this, "width", view.width, appState.screenWidth)
         val heightAnimator =
-            ObjectAnimator.ofInt(this, "height", view.height, appState.screenHeight)
+            ObjectAnimator.ofInt(this, "height", view.height, appState.screenHeight + navBarInset)
 
         AnimatorSet().run {
-            duration = 200
+            duration = 500
             interpolator = PathInterpolator(0.33f, 1f, 0.68f, 1f)
-            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator)
+            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             start()
         }
 
@@ -106,15 +119,16 @@ class Overlay(context: Context, attrs: AttributeSet) :
 
         val xAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat())
         val yAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, offsetRect.top.toFloat())
+        val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 0f)
 
         val widthAnimator = ObjectAnimator.ofInt(this, "width", originalView.width)
         val heightAnimator = ObjectAnimator.ofInt(this, "height", originalView.height)
 
         AnimatorSet().run {
-            duration = 200
+            duration = 500
             interpolator = PathInterpolator(0.33f, 1f, 0.68f, 1f)
 
-            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator)
+            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             addListener({
                 isVisible = false
                 isClosing = false
