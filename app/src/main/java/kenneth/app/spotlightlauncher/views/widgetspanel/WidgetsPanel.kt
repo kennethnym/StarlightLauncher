@@ -107,6 +107,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         isExpanded = true
         WidgetPanelAnimation(0f).start()
         binding.searchBox.showTopPadding()
+        gestureMover.reset()
     }
 
     fun retract() {
@@ -117,6 +118,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             removeTopPadding()
             clearFocus()
         }
+        gestureMover.reset()
     }
 
     fun showOverlayFrom(view: View, contentConstructor: (context: Context) -> View) {
