@@ -164,11 +164,16 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
     }
 
-    private fun handleDragGesture(ev: MotionEvent): Boolean =
-        if (
+    private fun handleDragGesture(ev: MotionEvent): Boolean {
+        Log.d(
+            "hub",
+            "isScrolling $isScrolling, isPanelDragged $isPanelDragged, isExpanded $isExpanded "
+                + "${ev.y} " + " ${gestureMover.initialY}"
+        )
+        return if (
             isPanelDragged ||
             !isExpanded ||
-            !isScrolling && ev.y - gestureMover.initialY > 0 && scrollY == 0
+            !isScrolling && ev.y - gestureMover.initialY >= 0 && scrollY == 0
         ) {
             // scroll view is at the top and user wants to swipe down
             // i.e. retract widget panel
@@ -183,9 +188,11 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             // let user scroll the content
             super.onTouchEvent(ev)
         }
+    }
 
     private fun handleGestureEnd(ev: MotionEvent): Boolean {
         if (isScrolling) {
+            Log.d("hub", "no logner scrolling")
             isScrolling = false
             return super.onTouchEvent(ev)
         }

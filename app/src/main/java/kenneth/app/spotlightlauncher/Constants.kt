@@ -20,4 +20,4 @@ const val ANIMATION_FRAME_DELAY = 1000 / 120L
 /**
  * How far should a gesture travel in order to activate certain actions
  */
-const val GESTURE_ACTION_THRESHOLD = 150
+const val GESTURE_ACTION_THRESHOLD = 100

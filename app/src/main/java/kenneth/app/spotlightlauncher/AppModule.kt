@@ -2,7 +2,6 @@ package kenneth.app.spotlightlauncher
 
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.media.AudioManager
 import android.media.session.MediaSessionManager
 import android.net.wifi.WifiManager
 import android.view.Choreographer
@@ -11,12 +10,11 @@ import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.IconPackManager
-import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -24,7 +22,7 @@ import java.util.*
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
     @Singleton

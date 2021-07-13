@@ -7,14 +7,11 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
-import android.view.WindowInsets
 import android.widget.ImageView
 import androidx.core.view.WindowInsetsCompat
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
@@ -22,7 +19,6 @@ import dagger.hilt.components.SingletonComponent
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.MainActivity
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

@@ -21,7 +21,6 @@ import android.widget.*
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
-import androidx.core.view.isVisible
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         PermissionHandler.handlePermissionForActivity(this)
 
         isDarkModeActive =
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) resources.configuration.isNightModeActive
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) resources.configuration.isNightModeActive
             else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         attachListeners()

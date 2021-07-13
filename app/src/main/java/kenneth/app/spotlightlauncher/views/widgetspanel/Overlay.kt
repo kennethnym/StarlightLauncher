@@ -5,25 +5,26 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.core.animation.addListener
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.get
 import androidx.core.view.isVisible
-import androidx.dynamicanimation.animation.DynamicAnimation
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
 import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.animations.DimensionAnimatable
 import kenneth.app.spotlightlauncher.animations.DimensionAnimator
 import kenneth.app.spotlightlauncher.utils.BindingRegister
-import kenneth.app.spotlightlauncher.utils.activity
-import kenneth.app.spotlightlauncher.utils.addBackPressedCallback
 import kenneth.app.spotlightlauncher.utils.mainActivity
 import kenneth.app.spotlightlauncher.views.BlurView
+
+/**
+ * Defines, in milliseconds, how long the animation of showing [Overlay] should be.
+ */
+private const val SHOW_OVERLAY_ANIMATION_DURATION = 200L
+
+private val SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR =
+    PathInterpolator(0.33f, 1f, 0.68f, 1f)
 
 /**
  * An empty view that overlays on top of [WidgetsPanel].
@@ -92,8 +93,8 @@ class Overlay(context: Context, attrs: AttributeSet) :
             ObjectAnimator.ofInt(this, "height", view.height, appState.screenHeight + navBarInset)
 
         AnimatorSet().run {
-            duration = 500
-            interpolator = PathInterpolator(0.33f, 1f, 0.68f, 1f)
+            duration = SHOW_OVERLAY_ANIMATION_DURATION
+            interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
             playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             start()
         }
@@ -125,8 +126,8 @@ class Overlay(context: Context, attrs: AttributeSet) :
         val heightAnimator = ObjectAnimator.ofInt(this, "height", originalView.height)
 
         AnimatorSet().run {
-            duration = 500
-            interpolator = PathInterpolator(0.33f, 1f, 0.68f, 1f)
+            duration = SHOW_OVERLAY_ANIMATION_DURATION
+            interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
 
             playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             addListener({

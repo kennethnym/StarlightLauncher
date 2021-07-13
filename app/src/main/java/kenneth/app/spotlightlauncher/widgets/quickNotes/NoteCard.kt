@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher.widgets.quickNotes
 
 import android.content.Context
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import kenneth.app.spotlightlauncher.databinding.NoteCardBinding
