@@ -7,6 +7,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.models.Note
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -99,6 +100,18 @@ class NotesPreferenceManager @Inject constructor(
             .apply()
 
         notifyListeners()
+    }
+
+    /**
+     * Restores notes from the given json.
+     * @param json The JSON string that contains a list of notes to be restored
+     * @throws kotlinx.serialization.SerializationException when the JSON is invalid or is not
+     * in a correct shape.
+     */
+    fun restoreNotesFromJSON(json: String) {
+        val restoredNotes = Json.decodeFromString<List<Note>>(json)
+        notesJson = json
+        notes.addAll(restoredNotes)
     }
 
     private fun notifyListeners() {

@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.dp
+import kotlinx.serialization.SerializationException
 import java.io.FileOutputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -23,6 +24,11 @@ import java.util.*
 import javax.inject.Inject
 
 private const val NOTES_JSON_FILE_PREFIX = "HubLauncher_Notes_"
+
+/**
+ * The mime type of the backup file created by Hub Launcher.
+ */
+private const val BACKUP_FILE_MIME_TYPE = "*/*"
 
 @AndroidEntryPoint
 class NotesSettingsFragment : PreferenceFragmentCompat() {
@@ -38,6 +44,9 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+    private val backupFilePicker =
+        registerForActivityResult(ActivityResultContracts.GetContent(), ::handlePickedBackupFile)
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.quick_notes_preferences, rootKey)
         changeToolbarTitle()
@@ -47,12 +56,22 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
                 exportNotes()
                 HANDLED
             }
+
+        findPreference<Preference>(getString(R.string.quick_notes_restore))
+            ?.setOnPreferenceClickListener {
+                startRestoreNoteProcess()
+                HANDLED
+            }
     }
 
     private fun exportNotes() {
         if (notesPreferenceManager.notesJson != null) {
             showFileNameDialog()
         }
+    }
+
+    private fun startRestoreNoteProcess() {
+        backupFilePicker.launch(BACKUP_FILE_MIME_TYPE)
     }
 
     override fun onResume() {
@@ -103,6 +122,44 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
 
                 setNegativeButton(getString(R.string.quick_notes_file_name_dialog_negative_label)) { _, _ ->
                     createJSONFile(defaultFileName)
+                }
+
+                show()
+            }
+        }
+    }
+
+    private fun handlePickedBackupFile(fileUri: Uri?) {
+        val contentResolver = context?.contentResolver
+        if (contentResolver == null || fileUri == null)
+            return
+
+        val fileContent = contentResolver.openInputStream(fileUri)
+            ?.bufferedReader()
+            ?.use { it.readText() }
+
+        if (fileContent != null)
+            restoreNotes(fileContent)
+    }
+
+    /**
+     * Restores the backed up notes, given the content of the JSON backup file.
+     */
+    private fun restoreNotes(backupJSON: String) {
+        try {
+            notesPreferenceManager.restoreNotesFromJSON(backupJSON)
+        } catch (ex: SerializationException) {
+            AlertDialog.Builder(context).run {
+                setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
+                setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
+
+                setPositiveButton(getString(R.string.quick_notes_restore_failed_positive_btn_label)) { dialog, _ ->
+                    startRestoreNoteProcess()
+                    dialog.cancel()
+                }
+
+                setNegativeButton(getString(R.string.quick_notes_restore_failed_negative_btn_label)) { dialog, _ ->
+                    dialog.cancel()
                 }
 
                 show()

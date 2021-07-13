@@ -28,6 +28,7 @@
 
     <string name="quick_notes_pref_key">quick_notes</string>
     <string name="quick_notes_export">quick_notes_export</string>
+    <string name="quick_notes_restore">quick_notes_restore</string>
     <string name="note_list">note_list</string>
 
     <string name="media_control_pref_key">media_control</string>

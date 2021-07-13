@@ -7,4 +7,9 @@
         app:summary="@string/quick_notes_export_pref_summary"
         app:title="@string/quick_notes_export_pref_title" />
 
+    <Preference
+        app:key="@string/quick_notes_restore"
+        app:summary="@string/quick_notes_restore_pref_summary"
+        app:title="@string/quick_notes_restore_pref_title" />
+
 </PreferenceScreen>
