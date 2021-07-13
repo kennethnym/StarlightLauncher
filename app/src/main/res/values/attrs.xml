@@ -13,13 +13,22 @@
     </declare-styleable>
 
     <declare-styleable name="AppOptionMenuItem">
-        <attr name="icon" format="reference" />
         <attr name="label" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="IconButton">
-        <attr name="icon" />
+    <declare-styleable name="Icon">
+        <attr name="icon" format="reference" />
         <attr name="iconSize" format="dimension" />
+        <attr name="iconColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="IconButton">
+        <!--
+        Whether IconButton should use the given custom color instead of the default color
+        By default, IconButton will have an adaptive color that adapts to the background color
+        to ensure there's enough contrast.
+        -->
+        <attr name="useCustomColor" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="TextButton">

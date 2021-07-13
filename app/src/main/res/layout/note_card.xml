@@ -159,6 +159,8 @@
         android:elevation="10dp"
         android:padding="@dimen/section_card_padding"
         app:icon="@drawable/ic_times"
-        app:iconSize="24dp" />
+        app:iconColor="?colorOnSurface"
+        app:iconSize="24dp"
+        app:useCustomColor="true" />
 
 </FrameLayout>

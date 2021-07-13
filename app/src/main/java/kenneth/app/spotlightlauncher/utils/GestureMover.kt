@@ -77,4 +77,5 @@ class GestureMover {
         gestureDelta = 0f
         minY = null
     }
+
 }

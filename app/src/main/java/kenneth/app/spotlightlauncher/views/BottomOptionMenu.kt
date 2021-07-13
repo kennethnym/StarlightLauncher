@@ -182,13 +182,22 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
                 0, 0
             ).apply {
                 try {
-                    val icon = getDrawable(R.styleable.AppOptionMenuItem_icon)
                     val label = getString(R.styleable.AppOptionMenuItem_label)
-
                     labelTextView = findViewById<TextView>(R.id.item_label).apply {
                         text = label
                     }
+                } finally {
+                    recycle()
+                }
+            }
 
+            context.theme.obtainStyledAttributes(
+                attrs,
+                R.styleable.Icon,
+                0, 0
+            ).apply {
+                try {
+                    val icon = getDrawable(R.styleable.Icon_icon)
                     if (icon != null) {
                         iconView = findViewById<ImageView>(R.id.item_icon).apply {
                             setImageDrawable(icon)

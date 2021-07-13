@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.views
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.appcompat.widget.TooltipCompat
@@ -45,17 +46,23 @@ class IconButton(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var appState: AppState
 
+    private val shouldUseAdaptiveColor: Boolean
+
     init {
         context.theme.obtainStyledAttributes(
             attrs,
-            R.styleable.IconButton,
+            R.styleable.Icon,
             0, 0
         ).apply {
             try {
-                icon = getDrawable(R.styleable.IconButton_icon)
                 val iconSize =
-                    getDimension(R.styleable.IconButton_iconSize, DEFAULT_ICON_SIZE).toInt()
+                    getDimension(R.styleable.Icon_iconSize, DEFAULT_ICON_SIZE).toInt()
+                val iconColor = getColor(R.styleable.Icon_iconColor, appState.adaptiveTextColor)
+
+                shouldUseAdaptiveColor = getBoolean(R.styleable.IconButton_useCustomColor, true);
+                icon = getDrawable(R.styleable.Icon_icon)
                 layoutParams = ViewGroup.LayoutParams(iconSize, iconSize)
+                setColorFilter(iconColor)
             } finally {
                 recycle()
             }
@@ -70,7 +77,9 @@ class IconButton(context: Context, attrs: AttributeSet) :
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setColorFilter(appState.adaptiveTextColor)
+
+        if (shouldUseAdaptiveColor)
+            setColorFilter(appState.adaptiveTextColor)
     }
 
     override fun performClick(): Boolean {
@@ -101,7 +110,8 @@ class IconButton(context: Context, attrs: AttributeSet) :
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        setColorFilter(appState.adaptiveTextColor)
+        if (shouldUseAdaptiveColor)
+            setColorFilter(appState.adaptiveTextColor)
     }
 
     private fun showClickedEffect() {
