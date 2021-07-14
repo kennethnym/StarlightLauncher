@@ -155,12 +155,12 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
             setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
             setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
 
-            setPositiveButton(getString(R.string.quick_notes_restore_failed_positive_btn_label)) { dialog, _ ->
+            setPositiveButton(getString(R.string.quick_notes_restore_failed_dialog_positive_btn_label)) { dialog, _ ->
                 startRestoreNoteProcess()
                 dialog.cancel()
             }
 
-            setNegativeButton(getString(R.string.quick_notes_restore_failed_negative_btn_label)) { dialog, _ ->
+            setNegativeButton(getString(R.string.quick_notes_restore_failed_dialog_negative_btn_label)) { dialog, _ ->
                 dialog.cancel()
             }
 
