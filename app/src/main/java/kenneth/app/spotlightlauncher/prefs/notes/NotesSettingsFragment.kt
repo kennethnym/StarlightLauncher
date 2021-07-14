@@ -130,16 +130,12 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun handlePickedBackupFile(fileUri: Uri?) {
-        val contentResolver = context?.contentResolver
-        if (contentResolver == null || fileUri == null)
-            return
-
-        val fileContent = contentResolver.openInputStream(fileUri)
-            ?.bufferedReader()
-            ?.use { it.readText() }
-
-        if (fileContent != null)
-            restoreNotes(fileContent)
+        if (fileUri != null) {
+            context?.contentResolver?.openInputStream(fileUri)
+                ?.bufferedReader()
+                ?.use { it.readText() }
+                ?.let { restoreNotes(it) }
+        }
     }
 
     /**
@@ -148,29 +144,46 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     private fun restoreNotes(backupJSON: String) {
         try {
             notesPreferenceManager.restoreNotesFromJSON(backupJSON)
+            showRestoreSuccessDialog()
         } catch (ex: SerializationException) {
-            AlertDialog.Builder(context).run {
-                setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
-                setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
+            showInvalidBackupFileDialog()
+        }
+    }
 
-                setPositiveButton(getString(R.string.quick_notes_restore_failed_positive_btn_label)) { dialog, _ ->
-                    startRestoreNoteProcess()
-                    dialog.cancel()
-                }
+    private fun showInvalidBackupFileDialog() {
+        AlertDialog.Builder(context).run {
+            setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
+            setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
 
-                setNegativeButton(getString(R.string.quick_notes_restore_failed_negative_btn_label)) { dialog, _ ->
-                    dialog.cancel()
-                }
-
-                show()
+            setPositiveButton(getString(R.string.quick_notes_restore_failed_positive_btn_label)) { dialog, _ ->
+                startRestoreNoteProcess()
+                dialog.cancel()
             }
+
+            setNegativeButton(getString(R.string.quick_notes_restore_failed_negative_btn_label)) { dialog, _ ->
+                dialog.cancel()
+            }
+
+            show()
+        }
+    }
+
+    private fun showRestoreSuccessDialog() {
+        AlertDialog.Builder(context).run {
+            setTitle(getString(R.string.quick_notes_restore_success_dialog_title))
+            setMessage(getString(R.string.quick_notes_restore_success_dialog_message))
+
+            setPositiveButton(getString(R.string.action_ok)) { dialog, _ ->
+                dialog.cancel()
+            }
+
+            show()
         }
     }
 
     private fun createJSONFile(fileName: String) {
         val fileSaveIntent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            type = "application/json"
-
+            type = BACKUP_FILE_MIME_TYPE
             addCategory(Intent.CATEGORY_OPENABLE)
             putExtra(Intent.EXTRA_TITLE, fileName)
         }

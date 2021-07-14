@@ -6,6 +6,7 @@
     <string name="search_result_section_apps">Apps</string>
 
     <!-- Common actions -->
+    <string name="action_ok">OK</string>
     <string name="action_edit">Edit</string>
     <string name="action_archive">Archive</string>
     <string name="action_done">Done</string>
@@ -208,6 +209,8 @@
     <string name="quick_notes_restore_failed_dialog_message">The backup file selected is not in a correct format.</string>
     <string name="quick_notes_restore_failed_positive_btn_label">Select another file</string>
     <string name="quick_notes_restore_failed_negative_btn_label">Go back</string>
+    <string name="quick_notes_restore_success_dialog_title">Notes restored</string>
+    <string name="quick_notes_restore_success_dialog_message">Your backed up notes have been restored successfully.</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
