@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +24,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    var shouldShowLoadingIndicator: Boolean
+        get() = !binding.searchLoadingIndicator.isInvisible
+        set(show) {
+            binding.searchLoadingIndicator.isInvisible = !show
+        }
+
     @Inject
     lateinit var searcher: Searcher
 

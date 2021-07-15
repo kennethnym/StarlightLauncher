@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/search_box_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -26,6 +27,14 @@
             android:textSize="@dimen/search_box_text_size"
             android:textStyle="bold"
             tools:ignore="Autofill" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/search_loading_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:indicatorColor="?colorPrimary" />
 
     </LinearLayout>
 

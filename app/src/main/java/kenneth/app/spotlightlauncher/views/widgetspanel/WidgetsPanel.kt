@@ -14,6 +14,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.*
 import kenneth.app.spotlightlauncher.databinding.WidgetsPanelBinding
+import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.GestureMover
 import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.utils.addBackPressedCallback
@@ -33,6 +34,9 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var searcher: Searcher
 
     private lateinit var velocityTracker: VelocityTracker
 
@@ -81,6 +85,14 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
+
+        searcher.addSearchResultListener { _, _ ->
+            if (searcher.hasFinishedSearching) {
+                activity?.runOnUiThread {
+                    binding.searchBox.shouldShowLoadingIndicator = false
+                }
+            }
+        }
     }
 
     override fun onTouchEvent(ev: MotionEvent?) =
@@ -90,11 +102,13 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     fun showSearchResults() {
         binding.widgetList.isVisible = false
         binding.searchResultContainer.isVisible = true
+        binding.searchBox.shouldShowLoadingIndicator = true
     }
 
     fun hideSearchResults() {
         binding.searchResultContainer.isVisible = false
         binding.widgetList.isVisible = true
+        binding.searchBox.shouldShowLoadingIndicator = false
     }
 
     fun showWidgets() {

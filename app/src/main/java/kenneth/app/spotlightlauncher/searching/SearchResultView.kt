@@ -35,7 +35,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
         }
 
         with(searcher) {
-            setSearchResultListener { result, type ->
+            addSearchResultListener { result, type ->
                 activity?.runOnUiThread {
                     searchResultAdapter.displayResult(result, type)
                 }

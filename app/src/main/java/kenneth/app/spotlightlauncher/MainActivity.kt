@@ -29,7 +29,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.spotlightlauncher.searching.SearchType
+import kenneth.app.spotlightlauncher.searching.SearchCategory
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.ResultAdapter
 import kenneth.app.spotlightlauncher.utils.*
@@ -257,7 +257,7 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE -> {
                 if (appState.isSearchBoxActive) {
                     searcher.requestSpecificSearch(
-                        SearchType.FILES,
+                        SearchCategory.FILES,
                         query
                     )
                 }

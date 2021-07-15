@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
+import android.icu.number.NumberRangeFormatter
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.github.keelar.exprk.Expressions
@@ -22,14 +23,19 @@ import kotlin.concurrent.schedule
 
 private const val SEARCH_DELAY: Long = 500
 
-typealias ResultCallback = (Searcher.Result, SearchType) -> Unit
+typealias ResultCallback = (Searcher.Result, SearchCategory) -> Unit
 
 /**
- * Different types that Searcher will search for
+ * Different categories that Searcher will search for
  */
-enum class SearchType {
+enum class SearchCategory {
     ALL, APPS, FILES, SUGGESTED,
 }
+
+/**
+ * Defines how many search categories there are.
+ */
+private val NUMBER_OF_SEARCH_CATEGORIES = 3
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -49,6 +55,9 @@ class Searcher @Inject constructor(
     private val smartSearcher: SmartSearcher,
     private val filePreferenceManager: FilePreferenceManager,
 ) {
+    val hasFinishedSearching: Boolean
+        get() = numberOfLoadedCategories == NUMBER_OF_SEARCH_CATEGORIES
+
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
@@ -56,16 +65,23 @@ class Searcher @Inject constructor(
     private var appSearchCoroutine = CoroutineScope(Dispatchers.IO)
     private var fileSearchCoroutine = CoroutineScope(Dispatchers.IO)
     private var suggestedSearchCoroutine = CoroutineScope(Dispatchers.IO)
+    private val resultCallbacks = mutableListOf<ResultCallback>()
+
+    /**
+     * Counts the number of search categories that have finished loading.
+     * For example, if [Searcher] has finished searching through apps,
+     * this counter is incremented by 1.
+     */
+    private var numberOfLoadedCategories = 0
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
-    private lateinit var resultCallback: ResultCallback
 
     /**
      * Adds a listener that is called when search result is available.
      */
-    fun setSearchResultListener(callback: ResultCallback) {
-        resultCallback = callback
+    fun addSearchResultListener(callback: ResultCallback) {
+        resultCallbacks.add(callback)
     }
 
     fun setWebResultListener(callback: WebResultCallback) {
@@ -81,17 +97,18 @@ class Searcher @Inject constructor(
         searchTimer = Timer().schedule(SEARCH_DELAY) {
             performSearch(keyword)
         }
+        numberOfLoadedCategories = 0
     }
 
-    fun requestSpecificSearch(type: SearchType, keyword: String): Result {
+    fun requestSpecificSearch(category: SearchCategory, keyword: String): Result {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
-        return when (type) {
-            SearchType.FILES -> Result(
+        return when (category) {
+            SearchCategory.FILES -> Result(
                 query = keyword,
                 files = searchFiles(searchRegex),
             )
-            SearchType.APPS -> Result(
+            SearchCategory.APPS -> Result(
                 query = keyword,
                 apps = appSearcher.searchApps(searchRegex),
             )
@@ -111,6 +128,7 @@ class Searcher @Inject constructor(
         if (::searchTimer.isInitialized) {
             searchTimer.cancel()
         }
+        numberOfLoadedCategories = 0
     }
 
     /**
@@ -133,10 +151,15 @@ class Searcher @Inject constructor(
                     appSearcher.searchApps(searchRegex)
                 }
 
-                resultCallback(
-                    Result(keyword, apps = result),
-                    SearchType.APPS,
-                )
+                numberOfLoadedCategories++
+                resultCallbacks.forEach { cb ->
+                    CoroutineScope(Dispatchers.Default).launch {
+                        cb(
+                            Result(keyword, apps = result),
+                            SearchCategory.APPS,
+                        )
+                    }
+                }
             }
         }
 
@@ -146,10 +169,15 @@ class Searcher @Inject constructor(
                     searchFiles(searchRegex)
                 }
 
-                resultCallback(
-                    Result(keyword, files = result),
-                    SearchType.FILES,
-                )
+                numberOfLoadedCategories++
+                resultCallbacks.forEach { cb ->
+                    CoroutineScope(Dispatchers.Default).launch {
+                        cb(
+                            Result(keyword, files = result),
+                            SearchCategory.FILES,
+                        )
+                    }
+                }
             }
         }
 
@@ -159,10 +187,15 @@ class Searcher @Inject constructor(
                     smartSearcher.search(keyword)
                 }
 
-                resultCallback(
-                    Result(keyword, suggested = result),
-                    SearchType.SUGGESTED,
-                )
+                numberOfLoadedCategories++
+                resultCallbacks.forEach { cb ->
+                    CoroutineScope(Dispatchers.Default).launch {
+                        cb(
+                            Result(keyword, suggested = result),
+                            SearchCategory.SUGGESTED,
+                        )
+                    }
+                }
             }
         }
     }

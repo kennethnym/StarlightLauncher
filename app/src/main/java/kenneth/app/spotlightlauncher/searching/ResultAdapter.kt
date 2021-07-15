@@ -1,6 +1,5 @@
 package kenneth.app.spotlightlauncher.searching
 
-import androidx.core.view.isVisible
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 
@@ -9,23 +8,23 @@ import javax.inject.Inject
  * adapters into one class.
  */
 class ResultAdapter @Inject constructor() {
-    fun displayResult(result: Searcher.Result, type: SearchType) {
+    fun displayResult(result: Searcher.Result, category: SearchCategory) {
         BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
 
         with(BindingRegister.searchResultViewBinding) {
-            when (type) {
-                SearchType.ALL -> {
+            when (category) {
+                SearchCategory.ALL -> {
                     appsSectionCard.display(result.apps)
                     filesSectionCard.display(result.files)
                     suggesedResultCard.display(result.suggested)
                 }
-                SearchType.FILES -> {
+                SearchCategory.FILES -> {
                     filesSectionCard.display(result.files)
                 }
-                SearchType.APPS -> {
+                SearchCategory.APPS -> {
                     appsSectionCard.display(result.apps)
                 }
-                SearchType.SUGGESTED -> {
+                SearchCategory.SUGGESTED -> {
                     suggesedResultCard.display(result.suggested)
                 }
             }
