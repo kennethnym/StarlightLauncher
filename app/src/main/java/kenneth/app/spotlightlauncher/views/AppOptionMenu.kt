@@ -23,18 +23,17 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
     private val binding: AppOptionMenuBinding =
         AppOptionMenuBinding.inflate(LayoutInflater.from(context), this)
 
-    private val appLabel: TextView
-    private val appIcon: ImageView
+    private val appLabel: TextView = binding.appOptionMenuAppLabel
+    private val appIcon: ImageView = binding.appOptionMenuAppIcon
 
     // menu items
-    private val pinAppItem: Item
+    private val pinAppItem: Item = findViewById(R.id.pin_app_item)
 
     init {
-        appLabel = binding.appOptionMenuAppLabel
-        appIcon = binding.appOptionMenuAppIcon
-        pinAppItem = findViewById(R.id.pin_app_item)
-
-        attachListeners()
+        setOnClickListener { hide() }
+        pinAppItem.setOnClickListener { togglePin() }
+        findViewById<Item>(R.id.uninstall_item)
+            .setOnClickListener { uninstallApp() }
     }
 
     fun show(withApp: ResolveInfo) {
@@ -53,11 +52,6 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
         show()
     }
 
-    private fun attachListeners() {
-        setOnClickListener { hide() }
-        pinAppItem.setOnClickListener { togglePin() }
-    }
-
     private fun togglePin() {
         val pinnedApps = pinnedAppsPreferenceManager.pinnedApps
 
@@ -68,6 +62,10 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
             pinnedAppsPreferenceManager.removePinnedApps(app)
             showIsAppPinned(false)
         }
+    }
+
+    private fun uninstallApp() {
+
     }
 
     private fun showIsAppPinned(isPinned: Boolean) {

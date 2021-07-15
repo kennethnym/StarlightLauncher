@@ -26,6 +26,11 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
+    /**
+     * Determines whether [WidgetsPanel] can be expanded/retracted with swipes.
+     */
+    var canBeSwiped = true
+
     @Inject
     lateinit var appState: AppState
 
@@ -79,7 +84,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     override fun onTouchEvent(ev: MotionEvent?) =
-        handleWidgetPanelGesture(ev)
+        if (canBeSwiped) handleWidgetPanelGesture(ev)
+        else super.onTouchEvent(ev)
 
     fun showSearchResults() {
         binding.widgetList.isVisible = false

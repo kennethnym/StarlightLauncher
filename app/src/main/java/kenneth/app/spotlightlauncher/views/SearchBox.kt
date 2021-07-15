@@ -23,10 +23,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    override fun isFocused(): Boolean {
-        return binding.searchBoxEditText.isFocused
-    }
-
     @Inject
     lateinit var searcher: Searcher
 
@@ -96,6 +92,10 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         inputMethodManager.hideSoftInputFromWindow(binding.searchBoxBlurBackground.windowToken, 0)
     }
 
+    override fun isFocused(): Boolean {
+        return binding.searchBoxEditText.isFocused
+    }
+
     fun showTopPadding() {
         if (binding.searchBoxContainer.paddingTop <= 0) {
             createPaddingAnimation(showTopPadding = true).start()
@@ -119,10 +119,12 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
         with(BindingRegister.activityMainBinding.widgetsPanel) {
-            if (hasFocus) {
+            canBeSwiped = if (hasFocus) {
                 expand()
+                false
             } else {
                 retract()
+                true
             }
         }
 
