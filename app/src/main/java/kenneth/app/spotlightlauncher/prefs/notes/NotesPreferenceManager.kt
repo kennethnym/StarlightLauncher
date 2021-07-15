@@ -3,11 +3,9 @@ package kenneth.app.spotlightlauncher.prefs.notes
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.models.Note
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,7 +25,10 @@ class NotesPreferenceManager @Inject constructor(
     var notesJson: String?
         private set
 
-    val notes: MutableList<Note>
+    val notes: List<Note>
+        get() = notesMap.values.toList()
+
+    private val notesMap = mutableMapOf<String, Note>()
 
     private var noteListListeners = mutableListOf<NoteListListener>()
 
@@ -35,17 +36,12 @@ class NotesPreferenceManager @Inject constructor(
 
     init {
         notesJson = sharedPreferences.getString(noteListPrefKey, null)
-        notes = notesJson
-            ?.let {
-                Json.decodeFromString<List<Note>>(it)
-                    .toMutableList()
-            }
-            ?: mutableListOf()
+            ?.also { restoreNotesFromJSON(it) }
     }
 
     /**
      * Registers the given [listener] as a listener of the note list.
-     * Whenver the list changes, [listener] is called.
+     * Whenever the list changes, [listener] is called.
      */
     fun addNoteListChangedListener(listener: NoteListListener) {
         noteListListeners.add(listener)
@@ -56,8 +52,7 @@ class NotesPreferenceManager @Inject constructor(
      * @param note The edited note. The id has to be identical with the id of the original note.
      */
     fun editNote(note: Note) {
-        val i = notes.indexOfFirst { it.id == note.id }
-        notes[i] = note
+        notesMap[note.id] = note
         notesJson = Json.encodeToString(notes)
 
         sharedPreferences
@@ -75,7 +70,7 @@ class NotesPreferenceManager @Inject constructor(
     fun addNote(note: Note) {
         Log.d("hub", "note $note")
 
-        notes += note
+        notesMap[note.id] = note
         notesJson = Json.encodeToString(notes)
 
         sharedPreferences
@@ -91,7 +86,7 @@ class NotesPreferenceManager @Inject constructor(
      * @param note The [Note] to delete
      */
     fun deleteNote(note: Note) {
-        notes.removeIf { it == note }
+        notesMap.remove(note.id)
         notesJson = Json.encodeToString(notes)
 
         sharedPreferences
@@ -109,9 +104,9 @@ class NotesPreferenceManager @Inject constructor(
      * in a correct shape.
      */
     fun restoreNotesFromJSON(json: String) {
-        val restoredNotes = Json.decodeFromString<List<Note>>(json)
         notesJson = json
-        notes.addAll(restoredNotes)
+        Json.decodeFromString<List<Note>>(json)
+            .forEach { notesMap.putIfAbsent(it.id, it) }
     }
 
     private fun notifyListeners() {
