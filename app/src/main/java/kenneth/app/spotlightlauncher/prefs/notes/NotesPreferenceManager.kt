@@ -36,7 +36,10 @@ class NotesPreferenceManager @Inject constructor(
 
     init {
         notesJson = sharedPreferences.getString(noteListPrefKey, null)
-            ?.also { restoreNotesFromJSON(it) }
+        notesJson?.let { json ->
+            Json.decodeFromString<List<Note>>(json)
+                .forEach { notesMap.putIfAbsent(it.id, it) }
+        }
     }
 
     /**
@@ -55,11 +58,7 @@ class NotesPreferenceManager @Inject constructor(
         notesMap[note.id] = note
         notesJson = Json.encodeToString(notes)
 
-        sharedPreferences
-            .edit()
-            .putString(noteListPrefKey, notesJson)
-            .apply()
-
+        saveNotesToStorage()
         notifyListeners()
     }
 
@@ -73,11 +72,7 @@ class NotesPreferenceManager @Inject constructor(
         notesMap[note.id] = note
         notesJson = Json.encodeToString(notes)
 
-        sharedPreferences
-            .edit()
-            .putString(noteListPrefKey, notesJson)
-            .apply()
-
+        saveNotesToStorage()
         notifyListeners()
     }
 
@@ -89,11 +84,7 @@ class NotesPreferenceManager @Inject constructor(
         notesMap.remove(note.id)
         notesJson = Json.encodeToString(notes)
 
-        sharedPreferences
-            .edit()
-            .putString(noteListPrefKey, notesJson)
-            .apply()
-
+        saveNotesToStorage()
         notifyListeners()
     }
 
@@ -107,9 +98,18 @@ class NotesPreferenceManager @Inject constructor(
         notesJson = json
         Json.decodeFromString<List<Note>>(json)
             .forEach { notesMap.putIfAbsent(it.id, it) }
+        saveNotesToStorage()
+        notifyListeners()
     }
 
     private fun notifyListeners() {
         noteListListeners.forEach { it(notes) }
+    }
+
+    private fun saveNotesToStorage() {
+        sharedPreferences
+            .edit()
+            .putString(noteListPrefKey, notesJson)
+            .apply()
     }
 }
