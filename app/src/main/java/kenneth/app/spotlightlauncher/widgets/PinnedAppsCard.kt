@@ -16,7 +16,7 @@ import kenneth.app.spotlightlauncher.databinding.AppsGridItemBinding
 import kenneth.app.spotlightlauncher.databinding.PinnedAppsCardBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.spotlightlauncher.searching.AppSearcher
+import kenneth.app.spotlightlauncher.searching.AppManager
 import kenneth.app.spotlightlauncher.searching.views.AppsGridItem
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
@@ -35,12 +35,12 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
     lateinit var pinnedAppsGridAdapter: PinnedAppsGridAdapter
 
     @Inject
-    lateinit var appSearcher: AppSearcher
+    lateinit var appManager: AppManager
 
     private val binding = PinnedAppsCardBinding.inflate(LayoutInflater.from(context), this, true)
 
     private val pinnedApps: List<ResolveInfo>
-        get() = appSearcher.apps
+        get() = appManager.apps
             .filter { pinnedAppsPreferenceManager.isAppPinned(it) }
 
     init {

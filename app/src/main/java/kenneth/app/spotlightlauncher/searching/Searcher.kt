@@ -2,9 +2,9 @@ package kenneth.app.spotlightlauncher.searching
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
-import android.icu.number.NumberRangeFormatter
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.github.keelar.exprk.Expressions
@@ -35,7 +35,7 @@ enum class SearchCategory {
 /**
  * Defines how many search categories there are.
  */
-private val NUMBER_OF_SEARCH_CATEGORIES = 3
+private const val NUMBER_OF_SEARCH_CATEGORIES = 3
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -43,15 +43,12 @@ object SearcherModule {
     @Provides
     fun provideSmartSearcher(expressionParser: Expressions, duckduckgoApiClient: DuckDuckGoApi) =
         SmartSearcher(expressionParser, duckduckgoApiClient)
-
-    @Provides
-    fun provideAppSearcher(@ActivityContext context: Context) = AppSearcher(context)
 }
 
 @ActivityScoped
 class Searcher @Inject constructor(
     @ActivityContext private val context: Context,
-    private val appSearcher: AppSearcher,
+    private val appManager: AppManager,
     private val smartSearcher: SmartSearcher,
     private val filePreferenceManager: FilePreferenceManager,
 ) {
@@ -76,6 +73,17 @@ class Searcher @Inject constructor(
 
     private lateinit var searchTimer: TimerTask
     private lateinit var appList: List<ResolveInfo>
+
+    init {
+        context.registerReceiver(
+            appManager.PackageObserver(),
+            IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_ADDED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addDataScheme("package")
+            }
+        )
+    }
 
     /**
      * Adds a listener that is called when search result is available.
@@ -110,7 +118,7 @@ class Searcher @Inject constructor(
             )
             SearchCategory.APPS -> Result(
                 query = keyword,
-                apps = appSearcher.searchApps(searchRegex),
+                apps = appManager.searchApps(searchRegex),
             )
             else -> Result(query = keyword)
         }
@@ -148,7 +156,7 @@ class Searcher @Inject constructor(
         appSearchCoroutine = CoroutineScope(Dispatchers.IO).also {
             it.launch {
                 val result = withContext(Dispatchers.IO) {
-                    appSearcher.searchApps(searchRegex)
+                    appManager.searchApps(searchRegex)
                 }
 
                 numberOfLoadedCategories++

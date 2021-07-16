@@ -112,17 +112,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             BindingRegister.activityMainBinding = it
         }
-
-        setContentView(binding.root)
-
-        appearancePreferenceManager.iconPack?.load()
-
-        PermissionHandler.handlePermissionForActivity(this)
-
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) resources.configuration.isNightModeActive
             else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
+        setContentView(binding.root)
+        appearancePreferenceManager.iconPack?.load()
+        PermissionHandler.handlePermissionForActivity(this)
         attachListeners()
         askForReadExternalStoragePermission()
     }

@@ -20,10 +20,12 @@ import kenneth.app.spotlightlauncher.databinding.AppsSectionCardBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.intents.EXTRA_CHANGED_PREFERENCE_KEY
 import kenneth.app.spotlightlauncher.prefs.intents.PREFERENCE_CHANGED_ACTION
+import kenneth.app.spotlightlauncher.searching.AppManager
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.views.SectionCard
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -47,6 +49,9 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var appsGridAdapter: AppsGridAdapter
 
+    @Inject
+    lateinit var appManager: AppManager
+
     private val binding = AppsSectionCardBinding.inflate(LayoutInflater.from(context), this)
 
     /**
@@ -56,6 +61,7 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
 
     init {
         title = context.getString(R.string.apps_section_title)
+        appManager.addOnAppRemovedListener(::onAppUninstalled)
     }
 
     /**
@@ -79,8 +85,9 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
             allApps = apps
             appsGridAdapter.data =
                 if (totalAppCount > INITIAL_ITEM_COUNT)
-                    apps.subList(0, INITIAL_ITEM_COUNT)
-                else apps
+                    apps.subList(0, INITIAL_ITEM_COUNT).toMutableList()
+                else
+                    apps.toMutableList()
 
             with(binding) {
                 appsGrid.isVisible = true
@@ -107,6 +114,22 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
     }
 
     /**
+     * Called whenever a package is installed/removed. This method will update the apps grid
+     * accordingly.
+     */
+    private fun onAppUninstalled(uninstalledApp: ResolveInfo) {
+        val indexInGrid = appsGridAdapter.data
+            .indexOfFirst { it.activityInfo.packageName == uninstalledApp.activityInfo.packageName }
+
+        if (indexInGrid > 0) {
+            appsGridAdapter.run {
+                data.removeAt(indexInGrid)
+                notifyItemRemoved(indexInGrid)
+            }
+        }
+    }
+
+    /**
      * Shows more apps in the apps grid
      */
     private fun showMoreItems() {
@@ -119,9 +142,11 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
         // the total number of items after the items are added
         val newItemCount = currentItemCount + addedItemsCount
 
-        appsGridAdapter.data += allApps.subList(
-            currentItemCount,
-            min(totalItemCount, newItemCount)
+        appsGridAdapter.data.addAll(
+            allApps.subList(
+                currentItemCount,
+                min(totalItemCount, newItemCount)
+            )
         )
 
         binding.showMoreButton.isVisible = newItemCount < totalItemCount
@@ -134,7 +159,7 @@ class AppsGridAdapter @Inject constructor(
     @ActivityContext private val context: Context,
     private val appearanceManager: AppearancePreferenceManager,
 ) : RecyclerViewDataAdapter<ResolveInfo, AppsGridItem>() {
-    override var data: List<ResolveInfo> = mutableListOf()
+    override var data = mutableListOf<ResolveInfo>()
 
     override val layoutManager = GridLayoutManager(context, APPS_GRID_ITEMS_PER_ROW)
 

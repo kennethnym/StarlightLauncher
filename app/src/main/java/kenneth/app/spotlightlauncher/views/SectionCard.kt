@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.CallSuper
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updatePadding
@@ -39,7 +40,7 @@ open class SectionCard<TData>(context: Context, attrs: AttributeSet) : BlurView(
     private lateinit var mainLayout: LinearLayout
 
     init {
-        background = context.getDrawable(R.drawable.card_background)
+        background = ContextCompat.getDrawable(context, R.drawable.card_background)
         blurAmount = context.obtainStyledAttributes(intArrayOf(R.attr.blurAmount)).run {
             try {
                 getResourceId(0, 10)

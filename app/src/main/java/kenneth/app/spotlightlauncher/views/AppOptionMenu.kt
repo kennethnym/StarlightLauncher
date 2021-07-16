@@ -1,7 +1,12 @@
 package kenneth.app.spotlightlauncher.views
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageInstaller
 import android.content.pm.ResolveInfo
+import android.net.Uri
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -11,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.AppOptionMenuBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
+import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -65,7 +71,11 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
     }
 
     private fun uninstallApp() {
-
+        val uninstallIntent = Intent(
+            Intent.ACTION_DELETE,
+            Uri.fromParts("package", app.activityInfo.packageName, null),
+        )
+        context.startActivity(uninstallIntent)
     }
 
     private fun showIsAppPinned(isPinned: Boolean) {
