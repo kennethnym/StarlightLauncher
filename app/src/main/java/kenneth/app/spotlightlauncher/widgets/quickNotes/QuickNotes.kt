@@ -117,6 +117,8 @@ class NoteListAdapter @Inject constructor(
     @ActivityContext private val context: Context,
     private val notesPreferenceManager: NotesPreferenceManager,
 ) : RecyclerViewDataAdapter<Note, NoteListItem>() {
+    override var data = listOf<Note>()
+
     override val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
 
     /**

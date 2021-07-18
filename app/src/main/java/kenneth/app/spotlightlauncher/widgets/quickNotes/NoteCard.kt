@@ -23,14 +23,11 @@ class NoteCard(
 
     private val inputMethodManager =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    private lateinit var note: Note
 
     override fun bindWith(data: Note) {
-        note = data
-
         with(binding) {
-            noteTimestamp.text = timeAgo.prettify(note.createdOn)
-            noteContent.text = note.content
+            note = data
+            timeAgo = this@NoteCard.timeAgo
 
             noteCardEditButton.setOnClickListener { switchToEditMode() }
             deleteNoteButton.setOnClickListener { deleteNote() }
@@ -50,7 +47,7 @@ class NoteCard(
 
             noteContentEditText.apply {
                 isVisible = true
-                setText(note.content)
+                setText(note!!.content)
             }.also {
                 it.requestFocus()
                 inputMethodManager.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
@@ -76,7 +73,7 @@ class NoteCard(
 
     private fun saveEdit() {
         val newNoteContent = binding.noteContentEditText.text.toString()
-        val newNote = note.copy(
+        val newNote = binding.note!!.copy(
             content = newNoteContent,
         )
 
@@ -86,7 +83,7 @@ class NoteCard(
     }
 
     private fun deleteNote() {
-        notesPreferenceManager.deleteNote(note)
+        notesPreferenceManager.deleteNote(binding.note!!)
         adapter.notifyItemRemoved(adapterPosition)
     }
 }

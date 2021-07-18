@@ -150,6 +150,8 @@ class FilesSectionCard(context: Context, attrs: AttributeSet) :
 class FileListAdapter @Inject constructor(
     @ActivityContext private val context: Context
 ) : RecyclerViewDataAdapter<DocumentFile, FileListItem>() {
+    override var data = listOf<DocumentFile>()
+
     override val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileListItem {

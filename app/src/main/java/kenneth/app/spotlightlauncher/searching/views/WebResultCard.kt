@@ -113,6 +113,8 @@ class WebResultCard(context: Context, attrs: AttributeSet) : LinearLayout(contex
 class RelatedTopicListAdapter @Inject constructor(
     @ActivityContext private val context: Context
 ) : RecyclerViewDataAdapter<SmartSearcher.WebResult.Topic, RelatedTopicListItem>() {
+    override var data = listOf<SmartSearcher.WebResult.Topic>()
+
     override val layoutManager = LinearLayoutManager(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RelatedTopicListItem {

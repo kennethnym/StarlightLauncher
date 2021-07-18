@@ -1,166 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <data>
+
+        <variable
+            name="note"
+            type="kenneth.app.spotlightlauncher.models.Note" />
+
+        <variable
+            name="timeAgo"
+            type="kenneth.app.spotlightlauncher.utils.TimeAgo" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/section_card_padding"
-        android:layout_marginBottom="@dimen/note_card_list_vertical_spacing"
-        android:background="@drawable/note_card_background"
-        android:elevation="8dp"
-        android:orientation="vertical"
-        android:padding="@dimen/section_card_padding">
-
-        <TextView
-            android:id="@+id/note_timestamp"
-            style="@style/NoteCard_TimestampLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/note_card_timestamp_placeholder" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="4dp" />
-
-        <TextView
-            android:id="@+id/note_content"
-            style="@style/NoteCard_Content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/note_card_content_placeholder" />
-
-        <EditText
-            android:id="@+id/note_content_edit_text"
-            style="@style/NoteCard_Content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:hint="@string/note_card_content_placeholder"
-            android:importantForAutofill="no"
-            android:inputType="text|textAutoCorrect"
-            android:visibility="gone" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="8dp" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:contentDescription="@string/note_card_reminder_icon"
-                android:src="@drawable/ic_bell" />
-
-            <Space
-                android:layout_width="4dp"
-                android:layout_height="0dp" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:layout_marginBottom="@dimen/note_card_list_vertical_spacing"
+            android:background="@drawable/note_card_background"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="@dimen/section_card_padding">
 
             <TextView
-                android:id="@+id/note_reminder_time_label"
-                style="@style/NoteCard_ReminderTimeLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="16dp" />
-
-        <LinearLayout
-            android:id="@+id/note_card_action_bar_normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end|center_vertical"
-            android:orientation="horizontal">
-
-            <!-- action bar that is shown normally -->
-
-            <kenneth.app.spotlightlauncher.views.TextButton
-                android:id="@+id/note_card_edit_button"
-                style="@style/TextButton"
+                android:id="@+id/note_timestamp"
+                style="@style/NoteCard_TimestampLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_pen"
-                android:drawablePadding="@dimen/text_button_icon_spacing"
-                android:text="@string/action_edit"
-                app:color="?colorPrimary" />
+                android:text="@{timeAgo.prettify(note.createdOn)}" />
 
             <Space
-                android:layout_width="16dp"
-                android:layout_height="0dp" />
+                android:layout_width="0dp"
+                android:layout_height="4dp" />
 
-            <kenneth.app.spotlightlauncher.views.TextButton
-                style="@style/TextButton"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/note_content"
+                style="@style/NoteCard_Content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_archive"
-                android:drawablePadding="@dimen/text_button_icon_spacing"
-                android:text="@string/action_archive"
-                app:color="?colorPrimary" />
+                android:layout_marginBottom="8dp"
+                android:text="@{note.content}" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/note_card_action_bar_editing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end|center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <!-- action bar that is shown when user is editing this note -->
-
-            <kenneth.app.spotlightlauncher.views.TextButton
-                android:id="@+id/note_card_save_edit"
-                style="@style/TextButton"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/note_content_edit_text"
+                style="@style/NoteCard_Content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_check"
-                android:drawablePadding="@dimen/text_button_icon_spacing"
-                android:text="@string/action_done"
-                app:color="?colorPrimary" />
+                android:background="@null"
+                android:hint="@string/note_card_content_placeholder"
+                android:importantForAutofill="no"
+                android:inputType="text|textAutoCorrect"
+                android:visibility="gone" />
 
             <Space
-                android:layout_width="16dp"
-                android:layout_height="0dp" />
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
 
-            <kenneth.app.spotlightlauncher.views.TextButton
-                android:id="@+id/note_card_cancel_edit"
-                style="@style/TextButton"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_times"
-                android:drawablePadding="@dimen/text_button_icon_spacing"
-                android:text="@string/action_cancel"
-                app:color="?colorPrimary" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@string/note_card_reminder_icon"
+                    android:src="@drawable/ic_bell" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/note_reminder_time_label"
+                    style="@style/NoteCard_ReminderTimeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="16dp" />
+
+            <LinearLayout
+                android:id="@+id/note_card_action_bar_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <!-- action bar that is shown normally -->
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/note_card_edit_button"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_pen"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@string/action_edit"
+                    app:color="?colorPrimary" />
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="0dp" />
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_archive"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@string/action_archive"
+                    app:color="?colorPrimary" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/note_card_action_bar_editing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <!-- action bar that is shown when user is editing this note -->
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/note_card_save_edit"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_check"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@string/action_done"
+                    app:color="?colorPrimary" />
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="0dp" />
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/note_card_cancel_edit"
+                    style="@style/TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_times"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@string/action_cancel"
+                    app:color="?colorPrimary" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+        <kenneth.app.spotlightlauncher.views.IconButton
+            android:id="@+id/delete_note_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="@dimen/section_card_padding"
+            android:contentDescription="@string/note_card_delete_icon_description"
+            android:elevation="10dp"
+            android:padding="@dimen/section_card_padding"
+            app:icon="@drawable/ic_times"
+            app:iconColor="?colorOnSurface"
+            app:iconSize="24dp"
+            app:useCustomColor="true" />
 
-    <kenneth.app.spotlightlauncher.views.IconButton
-        android:id="@+id/delete_note_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginEnd="@dimen/section_card_padding"
-        android:contentDescription="@string/note_card_delete_icon_description"
-        android:elevation="10dp"
-        android:padding="@dimen/section_card_padding"
-        app:icon="@drawable/ic_times"
-        app:iconColor="?colorOnSurface"
-        app:iconSize="24dp"
-        app:useCustomColor="true" />
-
-</FrameLayout>
+    </FrameLayout>
+</layout>

@@ -24,7 +24,7 @@ abstract class RecyclerViewDataAdapter<T, VH : RecyclerViewDataAdapter.ViewHolde
      * The data to be displayed by this adapter. Exposed to allow access to the data this adapter
      * is holding.
      */
-    abstract var data: MutableList<T>
+    open val data = listOf<T>()
 
     /**
      * This is responsible for holding views for this adapter. View logic of individual

@@ -85,6 +85,8 @@ class PinnedAppsGridAdapter @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,
 ) :
     RecyclerViewDataAdapter<ResolveInfo, AppsGridItem>() {
+    override var data = listOf<ResolveInfo>()
+
     override val layoutManager: RecyclerView.LayoutManager
         get() = GridLayoutManager(context, 5)
 

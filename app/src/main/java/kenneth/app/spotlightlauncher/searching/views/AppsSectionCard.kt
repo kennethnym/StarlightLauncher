@@ -142,12 +142,10 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
         // the total number of items after the items are added
         val newItemCount = currentItemCount + addedItemsCount
 
-        appsGridAdapter.data.addAll(
-            allApps.subList(
-                currentItemCount,
-                min(totalItemCount, newItemCount)
-            )
-        )
+        appsGridAdapter.data.addAll(allApps.subList(
+            currentItemCount,
+            min(totalItemCount, newItemCount)
+        ))
 
         binding.showMoreButton.isVisible = newItemCount < totalItemCount
 
@@ -215,9 +213,8 @@ open class AppsGridItem(
 
         val appName = appInfo.loadLabel(packageManager)
 
-        binding.appIcon.apply {
-            contentDescription = context.getString(R.string.app_icon_description, appName)
-        }
+        binding.appIcon.contentDescription =
+            context.getString(R.string.app_icon_description, appName)
         drawIcon()
 
         with(binding.root) {

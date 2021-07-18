@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,7 +16,6 @@ import kenneth.app.spotlightlauncher.prefs.notes.NotesPreferenceManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.TimeAgo
 import javax.inject.Inject
-import kotlin.experimental.ExperimentalTypeInference
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -84,6 +82,8 @@ class NoteCardListAdapter @Inject constructor(
     private val timeAgo: TimeAgo,
     private val notesPreferenceManager: NotesPreferenceManager,
 ) : RecyclerViewDataAdapter<Note, NoteCard>() {
+    override var data = listOf<Note>()
+
     /**
      * Indicates whether there is a newly-inserted note card.
      * If true, the note card will automatically enable edit mode. Afterwards,
