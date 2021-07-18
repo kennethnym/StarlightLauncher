@@ -27,13 +27,24 @@ class AppManager @Inject constructor(
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
 
-    val apps =
-        context.packageManager.queryIntentActivities(mainIntent, 0)
+    private val currentAppList: MutableList<ResolveInfo>
+    private val appLabels: MutableList<String>
+
+    val apps
+        get() = currentAppList.toList()
+
+    init {
+        val (appLabels, apps) = context.packageManager.queryIntentActivities(mainIntent, 0)
             .filter(::notSystemApps)
-            .toMutableList()
+            .map { Pair(it.loadLabel(context.packageManager).toString(), it) }
+            .unzip()
+
+        currentAppList = apps.toMutableList()
+        this.appLabels = appLabels.toMutableList()
+    }
 
     fun searchApps(searchRegex: Regex) = apps
-        .filter { it.loadLabel(context.packageManager).contains(searchRegex) }
+        .filterIndexed { i, _ -> appLabels[i].contains(searchRegex) }
         .sortedWith(appRanker(searchRegex))
 
     /**
@@ -97,7 +108,7 @@ class AppManager @Inject constructor(
             val receivedPackageName = intent?.data?.schemeSpecificPart
             when (intent?.action) {
                 Intent.ACTION_PACKAGE_REMOVED -> {
-                    apps.removeAt(
+                    currentAppList.removeAt(
                         apps.indexOfFirst {
                             it.activityInfo.packageName == receivedPackageName
                         }
@@ -113,7 +124,7 @@ class AppManager @Inject constructor(
                     }
                     context?.packageManager
                         ?.resolveActivity(packageLauncherIntent, 0)
-                        ?.let { apps.add(it) }
+                        ?.let { currentAppList.add(it) }
 
                     setChanged()
                     notifyObservers(intent)
