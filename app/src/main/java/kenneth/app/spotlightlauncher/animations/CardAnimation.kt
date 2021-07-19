@@ -2,7 +2,6 @@ package kenneth.app.spotlightlauncher.animations
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.os.Build
 import android.view.View
 
 private const val INITIAL_SCALE = 0.7f

@@ -7,10 +7,13 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -22,7 +25,10 @@ private const val RES_TYPE_XML = "xml"
 
 typealias InstalledIconPacks = Map<String, IconPack>
 
-object IconPackManager {
+@Singleton
+class IconPackManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     val installedIconPacks: InstalledIconPacks
         get() = iconPackIntents
             .flatMap {
@@ -35,8 +41,7 @@ object IconPackManager {
                 }
             })
 
-    private lateinit var context: Context
-    private lateinit var packageManager: PackageManager
+    private val packageManager = context.packageManager
 
     /**
      * A list of intents that icon packs declare.
@@ -50,11 +55,6 @@ object IconPackManager {
         },
         Intent(NOVA_LAUNCHER_INTENT_ACTION),
     )
-
-    fun getInstance(context: Context) = this.apply {
-        this.context = context
-        packageManager = context.packageManager
-    }
 }
 
 class IconPack(
@@ -191,7 +191,7 @@ class IconPack(
             // format should be correct
 
             val drawableName = componentName.substring(startBraceIndex, endBraceIndex)
-                .toLowerCase(Locale.ROOT)
+                .lowercase()
                 .replace(Regex("(.|/)"), "_")
 
             return getBitmapOfDrawableRes(drawableName)
@@ -278,7 +278,7 @@ class IconPack(
         )
 
         if (drawableResId > 0) {
-            val drawable = iconPackResources.getDrawable(drawableResId, null)
+            val drawable = ResourcesCompat.getDrawable(iconPackResources, drawableResId, null)
             if (drawable is BitmapDrawable) return drawable.bitmap
         }
 

@@ -9,6 +9,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
+import kenneth.app.spotlightlauncher.HANDLED
+import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
@@ -55,7 +57,7 @@ class TextButton(context: Context, attrs: AttributeSet) :
 
     override fun performClick(): Boolean {
         super.performClick()
-        return true
+        return HANDLED
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -64,18 +66,18 @@ class TextButton(context: Context, attrs: AttributeSet) :
         return when (event?.action) {
             MotionEvent.ACTION_BUTTON_PRESS -> {
                 performClick()
-                true
+                HANDLED
             }
             MotionEvent.ACTION_DOWN -> {
                 showClickedEffect()
-                true
+                HANDLED
             }
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
                 hideClickedEffect()
-                true
+                HANDLED
             }
-            else -> false
+            else -> NOT_HANDLED
         }
     }
 

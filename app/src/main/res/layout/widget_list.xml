@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="16dp" />
 
-    <kenneth.app.spotlightlauncher.widgets.quickNotes.QuickNotes
+    <kenneth.app.spotlightlauncher.widgets.quicknotes.QuickNotes
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

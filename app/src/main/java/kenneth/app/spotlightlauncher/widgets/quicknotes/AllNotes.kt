@@ -1,4 +1,4 @@
-package kenneth.app.spotlightlauncher.widgets.quickNotes
+package kenneth.app.spotlightlauncher.widgets.quicknotes
 
 import android.content.Context
 import android.view.LayoutInflater

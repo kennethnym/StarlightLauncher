@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
@@ -82,7 +83,7 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
     init {
         setPadding(24.dp)
         orientation = VERTICAL
-        background = context.getDrawable(R.drawable.bottom_option_menu_background)
+        background = ContextCompat.getDrawable(context, R.drawable.bottom_option_menu_background)
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
         // need to measure the height of this view
@@ -148,6 +149,10 @@ open class BottomOptionMenu(context: Context, attrs: AttributeSet) : LinearLayou
             }
             else -> NOT_HANDLED
         }
+
+    final override fun setOnApplyWindowInsetsListener(listener: OnApplyWindowInsetsListener?) {
+        super.setOnApplyWindowInsetsListener(listener)
+    }
 
     /**
      * Shows this menu with an animation. If overriding, must call super to begin the animation.

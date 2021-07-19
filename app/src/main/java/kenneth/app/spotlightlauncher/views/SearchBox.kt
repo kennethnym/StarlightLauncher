@@ -24,6 +24,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    /**
+     * Whether the linear loading indicator under [SearchBox] should be visible
+     */
     var shouldShowLoadingIndicator: Boolean
         get() = !binding.searchLoadingIndicator.isInvisible
         set(show) {

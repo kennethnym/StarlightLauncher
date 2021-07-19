@@ -70,11 +70,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideIconPackManager(@ApplicationContext context: Context) =
-        IconPackManager.getInstance(context)
-
-    @Provides
-    @Singleton
     fun provideFilePreferenceManager(@ApplicationContext context: Context) =
         FilePreferenceManager.getInstance(context)
 

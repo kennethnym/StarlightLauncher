@@ -1,20 +1,14 @@
 package kenneth.app.spotlightlauncher.api
 
 import android.net.Uri
-import com.beust.klaxon.*
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.StringReader
 import javax.inject.Inject
 
 private const val API_URL_STRING = "https://api.duckduckgo.com/"

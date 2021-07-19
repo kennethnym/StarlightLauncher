@@ -7,14 +7,8 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import com.github.keelar.exprk.Expressions
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import kotlinx.coroutines.*
 import java.util.*
@@ -36,14 +30,6 @@ enum class SearchCategory {
  * Defines how many search categories there are.
  */
 private const val NUMBER_OF_SEARCH_CATEGORIES = 3
-
-@Module
-@InstallIn(ActivityComponent::class)
-object SearcherModule {
-    @Provides
-    fun provideSmartSearcher(expressionParser: Expressions, duckduckgoApiClient: DuckDuckGoApi) =
-        SmartSearcher(expressionParser, duckduckgoApiClient)
-}
 
 @ActivityScoped
 class Searcher @Inject constructor(

@@ -3,11 +3,11 @@ package kenneth.app.spotlightlauncher.searching.views
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.OpenUrlControlBinding
@@ -35,7 +35,7 @@ class OpenUrlControl(context: Context) : LinearLayout(context) {
             context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
             resourceId
         }
-        background = context.getDrawable(bgDrawableId)
+        background = ContextCompat.getDrawable(context, bgDrawableId)
         isClickable = true
         isFocusable = true
         gravity = Gravity.CENTER_VERTICAL

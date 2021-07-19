@@ -36,7 +36,7 @@ class TimeAgo @Inject constructor(
         val nowInstant = Clock.System.now()
         now = nowInstant.toLocalDateTime(timezone)
 
-        val dayDifference = (nowInstant - time).inDays.toInt()
+        val dayDifference = (nowInstant - time).inWholeDays
 
         return when {
             isToday(dateTime) -> context.getString(R.string.time_ago_today, formattedTime)
@@ -44,7 +44,7 @@ class TimeAgo @Inject constructor(
             dayDifference <= 3 ->
                 context.resources.getQuantityString(
                     R.plurals.time_ago_days_ago,
-                    dayDifference,
+                    dayDifference.toInt(),
                     formattedTime,
                     dayDifference
                 )

@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <kenneth.app.spotlightlauncher.widgets.quickNotes.QuickNotesListSeparator
+    <kenneth.app.spotlightlauncher.widgets.quicknotes.QuickNotesListSeparator
         android:id="@+id/quick_notes_list_item_separator"
         android:layout_width="match_parent"
         android:layout_height="2dp"

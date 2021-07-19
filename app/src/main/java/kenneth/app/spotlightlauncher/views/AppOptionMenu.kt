@@ -1,23 +1,18 @@
 package kenneth.app.spotlightlauncher.views
 
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageInstaller
 import android.content.pm.ResolveInfo
-import android.net.Uri
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.AppOptionMenuBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
 import kenneth.app.spotlightlauncher.searching.AppManager
-import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -82,13 +77,13 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
     private fun showIsAppPinned(isPinned: Boolean) {
         if (isPinned) {
             pinAppItem.apply {
-                context.getDrawable(R.drawable.ic_times_circle)
+                ContextCompat.getDrawable(context, R.drawable.ic_times_circle)
                     ?.also { setIcon(it) }
                 setLabel(context.getString(R.string.unpin_app_label))
             }
         } else {
             pinAppItem.apply {
-                context.getDrawable(R.drawable.ic_favorite)
+                ContextCompat.getDrawable(context, R.drawable.ic_favorite)
                     ?.also { setIcon(it) }
                 setLabel(context.getString(R.string.pin_app_label))
             }

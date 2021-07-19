@@ -16,13 +16,8 @@ class LauncherOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMe
     init {
         inflate(context, R.layout.launcher_option_menu, this)
 
-        launcherSettingsItem = findViewById(R.id.launcher_settings_item)
-
-        attachListeners()
-    }
-
-    private fun attachListeners() {
-        launcherSettingsItem.setOnClickListener { openSettings() }
+        launcherSettingsItem = findViewById<Item>(R.id.launcher_settings_item)
+            .also { it.setOnClickListener { openSettings() } }
     }
 
     private fun openSettings() {
