@@ -17,7 +17,7 @@
     </style>
 
     <style name="DarkLauncherTheme" parent="LightLauncherTheme">
-        <item name="backgroundColor">#80000000</item>
+        <item name="backgroundColor">#4D000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>
         <item name="hintTextColor">#80FFFFFF</item>
     </style>

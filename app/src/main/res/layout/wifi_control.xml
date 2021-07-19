@@ -21,7 +21,8 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/require_location_perm_bg"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,8 +101,8 @@
             style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/section_card_padding"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/section_card_padding"
             android:text="@string/open_wifi_settings_label" />
 
     </merge>
