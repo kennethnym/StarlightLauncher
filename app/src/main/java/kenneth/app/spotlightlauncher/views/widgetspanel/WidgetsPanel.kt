@@ -100,15 +100,19 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         else super.onTouchEvent(ev)
 
     fun showSearchResults() {
-        binding.widgetList.isVisible = false
-        binding.searchResultContainer.isVisible = true
-        binding.searchBox.shouldShowLoadingIndicator = true
+        with(binding) {
+            widgetList.isVisible = false
+            searchResultContainer.isVisible = true
+            searchBox.shouldShowLoadingIndicator = true
+        }
     }
 
     fun hideSearchResults() {
-        binding.searchResultContainer.isVisible = false
-        binding.widgetList.isVisible = true
-        binding.searchBox.shouldShowLoadingIndicator = false
+        with(binding) {
+            searchResultContainer.isVisible = false
+            widgetList.isVisible = true
+            searchBox.shouldShowLoadingIndicator = false
+        }
     }
 
     fun showWidgets() {

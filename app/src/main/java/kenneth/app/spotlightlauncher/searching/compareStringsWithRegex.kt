@@ -17,7 +17,7 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
     val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
         when {
             i == 0 -> len + 1
-            result.range.first - result1[i - 1].range.first > 1 -> 1
+            result.range.first - result1[i - 1].range.last > 1 -> 1
             else -> len + 1
         }
     }
@@ -25,7 +25,7 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
     val result2LongestMatch = result2.foldIndexed(0) { i, len, result ->
         when {
             i == 0 -> len + 1
-            result.range.first - result2[i - 1].range.first > 1 -> 1
+            result.range.first - result2[i - 1].range.last > 1 -> 1
             else -> len + 1
         }
     }
@@ -42,5 +42,9 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
     val result1FirstMatchIndex = result1[0].range.first
     val result2FirstMatchIndex = result2[0].range.first
 
-    return result1FirstMatchIndex - result2FirstMatchIndex
+    if (result1FirstMatchIndex != result2FirstMatchIndex) {
+        return result1FirstMatchIndex - result2FirstMatchIndex
+    }
+
+    return string1.length - string2.length
 }
