@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,9 @@ import javax.inject.Inject
 class WifiControl(context: Context) : LinearLayout(context) {
     @Inject
     lateinit var wifiManager: WifiManager
+
+    @Inject
+    lateinit var permissionHandler: PermissionHandler
 
     private val binding: WifiControlBinding
 
@@ -47,12 +51,12 @@ class WifiControl(context: Context) : LinearLayout(context) {
 
         binding = WifiControlBinding.inflate(LayoutInflater.from(context), this)
 
-        showWifiName()
+        showWifiStatus()
 
         binding.wifiSwitch.setOnClickListener(::toggleWifi)
     }
 
-    private fun showWifiName() {
+    private fun showWifiStatus() {
         val hasCoarseLocationPermission =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 context.applicationContext.checkSelfPermission(
@@ -79,7 +83,7 @@ class WifiControl(context: Context) : LinearLayout(context) {
     }
 
     private fun askForLocationPermission() {
-        PermissionHandler.run {
+        permissionHandler.run {
             addListener(Manifest.permission.ACCESS_COARSE_LOCATION, ::handlePermissionResult)
             requestPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
@@ -95,7 +99,7 @@ class WifiControl(context: Context) : LinearLayout(context) {
     }
 
     private fun toggleWifi(switchView: View) {
-        val switch = switchView as Switch
+        val switch = switchView as SwitchCompat
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // in Android Q, it is not possible to toggle wifi programmatically.

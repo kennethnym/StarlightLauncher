@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var inputMethodManager: InputMethodManager
 
+    @Inject
+    lateinit var permissionHandler: PermissionHandler
+
     private lateinit var binding: ActivityMainBinding
 
     private var backPressedCallbacks = mutableListOf<BackPressHandler>()
@@ -118,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         appearancePreferenceManager.iconPack?.load()
-        PermissionHandler.handlePermissionForActivity(this)
+        permissionHandler.handlePermissionRequestsForActivity(this)
         attachListeners()
         askForReadExternalStoragePermission()
     }
@@ -174,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
         ) {
-            PermissionHandler.run {
+            permissionHandler.run {
                 addListener(Manifest.permission.READ_EXTERNAL_STORAGE, ::handlePermissionResult)
                 requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
