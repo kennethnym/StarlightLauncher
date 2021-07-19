@@ -1,9 +1,12 @@
 package kenneth.app.spotlightlauncher.searching.views
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -28,6 +31,9 @@ class WifiControl(context: Context) : LinearLayout(context) {
     lateinit var wifiManager: WifiManager
 
     @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
+    @Inject
     lateinit var permissionHandler: PermissionHandler
 
     private val binding: WifiControlBinding
@@ -41,6 +47,14 @@ class WifiControl(context: Context) : LinearLayout(context) {
             else
                 context.getString(R.string.wifi_not_connected)
 
+    private val wifiIntentReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == WifiManager.NETWORK_STATE_CHANGED_ACTION) {
+                showWifiStatus()
+            }
+        }
+    }
+
     init {
         gravity = Gravity.CENTER
         orientation = VERTICAL
@@ -48,12 +62,14 @@ class WifiControl(context: Context) : LinearLayout(context) {
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT
         )
-
-        binding = WifiControlBinding.inflate(LayoutInflater.from(context), this)
+        binding = WifiControlBinding.inflate(LayoutInflater.from(context), this, true)
 
         showWifiStatus()
-
         binding.wifiSwitch.setOnClickListener(::toggleWifi)
+        context.registerReceiver(
+            wifiIntentReceiver,
+            IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+        )
     }
 
     private fun showWifiStatus() {
@@ -65,10 +81,12 @@ class WifiControl(context: Context) : LinearLayout(context) {
             else true
 
         if (hasCoarseLocationPermission) {
-            binding.wifiNetworkNameLabel.text = wifiSsid
+            binding.wifiSsid = wifiSsid
         } else {
             showLocationRequiredNotification()
         }
+
+        binding.isWifiEnabled = wifiManager.isWifiEnabled
     }
 
     private fun showLocationRequiredNotification() {
@@ -76,7 +94,7 @@ class WifiControl(context: Context) : LinearLayout(context) {
             if (wifiManager.isWifiEnabled) context.getString(R.string.unknown_wifi_network_label)
             else context.getString(R.string.wifi_not_connected)
 
-        with(binding.locationPermRequiredNotification) {
+        with(binding) {
             locationPermNotificationContainer.isVisible = true
             grantLocationPermissionButton.setOnClickListener { askForLocationPermission() }
         }
@@ -91,10 +109,10 @@ class WifiControl(context: Context) : LinearLayout(context) {
 
     private fun handlePermissionResult(isGranted: Boolean) {
         if (isGranted) {
-            binding.locationPermRequiredNotification.locationPermNotificationContainer
-                .isVisible = false
-
-            binding.wifiNetworkNameLabel.text = wifiSsid
+            with(binding) {
+                locationPermNotificationContainer.isVisible = false
+                wifiNetworkNameLabel.text = wifiSsid
+            }
         }
     }
 

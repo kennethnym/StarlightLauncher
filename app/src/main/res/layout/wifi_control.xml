@@ -1,57 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include
-        android:id="@+id/location_perm_required_notification"
-        layout="@layout/require_location_perm" />
+    <data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/section_card_padding">
+        <variable
+            name="wifiSsid"
+            type="String" />
+
+        <variable
+            name="isWifiEnabled"
+            type="Boolean" />
+    </data>
+
+    <merge>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/location_perm_notification_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/require_location_perm_bg"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/wifi_connected_to_label"
-                android:textAppearance="?attr/textAppearanceOverline" />
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/wifi_coarse_location_perm_required_label"
+                android:textAppearance="?attr/textAppearanceOverline"
+                android:textColor="?colorOnBackground" />
 
-            <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
-                android:id="@+id/wifi_network_name_label"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/wifi_coarse_location_perm_required_description"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?colorOnBackground" />
+
+            <kenneth.app.spotlightlauncher.views.TextButton
+                android:id="@+id/grant_location_permission_button"
+                style="@style/TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/section_card_padding"
+                android:text="@string/grant_permission_label"
+                android:textColor="?attr/colorOnBackground" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/section_card_padding">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wifi_connected_to_label"
+                    android:textAppearance="?attr/textAppearanceOverline" />
+
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                    android:id="@+id/wifi_network_name_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{wifiSsid}"
+                    android:textAppearance="?attr/textAppearanceBody1" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/wifi_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{isWifiEnabled}" />
 
         </LinearLayout>
 
         <Space
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="8dp" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/wifi_switch"
+        <kenneth.app.spotlightlauncher.views.TextButton
+            android:id="@+id/open_wifi_settings_button"
+            style="@style/TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/section_card_padding"
+            android:layout_marginStart="8dp"
+            android:text="@string/open_wifi_settings_label" />
 
-    </LinearLayout>
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="8dp" />
-
-    <kenneth.app.spotlightlauncher.views.TextButton
-        android:id="@+id/open_wifi_settings_button"
-        style="@style/TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/section_card_padding"
-        android:layout_marginStart="8dp"
-        android:text="@string/open_wifi_settings_label" />
-
-</merge>
+    </merge>
+</layout>

@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.media.session.MediaSessionManager
+import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
@@ -61,6 +62,11 @@ object AppModule {
     @Singleton
     fun provideWifiManager(@ApplicationContext context: Context) =
         context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+    @Provides
+    @Singleton
+    fun provideConnectivityManager(@ApplicationContext context: Context) =
+        context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     @Provides
     @Singleton
