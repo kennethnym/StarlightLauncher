@@ -33,6 +33,12 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             binding.searchLoadingIndicator.isInvisible = !show
         }
 
+    /**
+     * Whether [SearchBox] contains search query.
+     */
+    val hasQueryText
+        get() = !isQueryEmpty(binding.searchBoxEditText.text)
+
     @Inject
     lateinit var searcher: Searcher
 
@@ -54,7 +60,6 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     init {
         with(binding.searchBoxEditText) {
             setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) searcher.refreshAppList()
                 onSearchBoxFocusChanged(hasFocus)
             }
 
@@ -106,6 +111,10 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         return binding.searchBoxEditText.isFocused
     }
 
+    fun unfocus() {
+        binding.searchBoxEditText.clearFocus()
+    }
+
     fun showTopPadding() {
         if (binding.searchBoxContainer.paddingTop <= 0) {
             createPaddingAnimation(showTopPadding = true).start()
@@ -119,7 +128,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     }
 
     private fun handleSearchQuery(query: Editable?) {
-        if (query == null || query.isBlank()) {
+        if (isQueryEmpty(query)) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
         } else {
@@ -132,19 +141,21 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             canBeSwiped = if (hasFocus) {
                 expand()
                 false
-            } else {
+            } else if (!hasQueryText) {
                 retract()
                 true
-            }
-        }
+            } else false
 
-        toggleSearchBoxAnimation(isActive = hasFocus)
+            toggleSearchBoxAnimation(isActive = isExpanded)
+        }
     }
 
     private fun toggleSearchBoxAnimation(isActive: Boolean) {
-        appState.isSearchBoxActive = isActive
-
-        createPaddingAnimation(showTopPadding = isActive).start()
+        if (isActive && binding.searchBoxContainer.paddingTop < appState.statusBarHeight
+            || !isActive && binding.searchBoxContainer.paddingTop > 0
+        ) {
+            createPaddingAnimation(showTopPadding = isActive).start()
+        }
 
         with(BindingRegister.activityMainBinding.widgetsPanel) {
             if (isActive) {
@@ -170,4 +181,6 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             }
         }
     }
+
+    private fun isQueryEmpty(query: Editable?) = query == null || query.isBlank()
 }

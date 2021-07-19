@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) newConfig.isNightModeActive
             else newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        if (appState.isSearchBoxActive) {
+        if (binding.widgetsPanel.isExpanded) {
             if (isDarkModeActive) {
                 disableLightStatusBar()
             } else {
@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
         when (requestedPermission) {
             Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                if (appState.isSearchBoxActive) {
+                if (binding.widgetsPanel.isExpanded) {
                     searcher.requestSpecificSearch(
                         SearchCategory.FILES,
                         query

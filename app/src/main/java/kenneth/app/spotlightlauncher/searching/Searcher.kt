@@ -58,7 +58,6 @@ class Searcher @Inject constructor(
     private var numberOfLoadedCategories = 0
 
     private lateinit var searchTimer: TimerTask
-    private lateinit var appList: List<ResolveInfo>
 
     init {
         context.registerReceiver(
@@ -125,14 +124,6 @@ class Searcher @Inject constructor(
         numberOfLoadedCategories = 0
     }
 
-    /**
-     * Reloads the list of apps.
-     */
-    fun refreshAppList() {
-        appList =
-            context.packageManager.queryIntentActivities(mainIntent, 0).filter { notSystemApps(it) }
-    }
-
     private fun notSystemApps(appInfo: ResolveInfo): Boolean =
         (appInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
 
@@ -146,13 +137,8 @@ class Searcher @Inject constructor(
                 }
 
                 numberOfLoadedCategories++
-                resultCallbacks.forEach { cb ->
-                    CoroutineScope(Dispatchers.Default).launch {
-                        cb(
-                            Result(keyword, apps = result),
-                            SearchCategory.APPS,
-                        )
-                    }
+                resultCallbacks.forEach {
+                    it(Result(keyword, apps = result), SearchCategory.APPS)
                 }
             }
         }
@@ -164,13 +150,8 @@ class Searcher @Inject constructor(
                 }
 
                 numberOfLoadedCategories++
-                resultCallbacks.forEach { cb ->
-                    CoroutineScope(Dispatchers.Default).launch {
-                        cb(
-                            Result(keyword, files = result),
-                            SearchCategory.FILES,
-                        )
-                    }
+                resultCallbacks.forEach {
+                    it(Result(keyword, files = result), SearchCategory.FILES)
                 }
             }
         }
@@ -182,13 +163,8 @@ class Searcher @Inject constructor(
                 }
 
                 numberOfLoadedCategories++
-                resultCallbacks.forEach { cb ->
-                    CoroutineScope(Dispatchers.Default).launch {
-                        cb(
-                            Result(keyword, suggested = result),
-                            SearchCategory.SUGGESTED,
-                        )
-                    }
+                resultCallbacks.forEach {
+                    it(Result(keyword, suggested = result), SearchCategory.SUGGESTED)
                 }
             }
         }

@@ -32,6 +32,12 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
      */
     var canBeSwiped = true
 
+    /**
+     * Whether [WidgetsPanel] is expanded
+     */
+    var isExpanded = false
+        private set
+
     @Inject
     lateinit var appState: AppState
 
@@ -48,8 +54,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     private var isScrolling = false
 
     private var isPanelDragged = false
-
-    private var isExpanded = false
 
     private val gestureMover = GestureMover().apply {
         targetView = this@WidgetsPanel
@@ -76,7 +80,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true)
 
         activity?.addBackPressedCallback {
-            if (!binding.overlay.isVisible && isExpanded) {
+            if (!binding.overlay.isVisible && isExpanded && !binding.searchBox.hasQueryText) {
                 retract()
                 HANDLED
             } else NOT_HANDLED
@@ -98,6 +102,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     override fun onTouchEvent(ev: MotionEvent?) =
         if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
+
+    fun unfocusSearchBox() {
+        binding.searchBox.unfocus()
+    }
 
     fun showSearchResults() {
         with(binding) {

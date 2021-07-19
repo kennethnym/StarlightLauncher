@@ -5,6 +5,7 @@ import android.content.pm.ResolveInfo
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleObserver
@@ -83,6 +84,7 @@ class PinnedAppsCard(context: Context, attrs: AttributeSet) :
 class PinnedAppsGridAdapter @Inject constructor(
     @ActivityContext private val context: Context,
     private val appearancePreferenceManager: AppearancePreferenceManager,
+    private val inputMethodManager: InputMethodManager
 ) :
     RecyclerViewDataAdapter<ResolveInfo, AppsGridItem>() {
     override var data = listOf<ResolveInfo>()
@@ -97,7 +99,7 @@ class PinnedAppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return PinnedAppsGridItem(binding, appearancePreferenceManager)
+        return PinnedAppsGridItem(binding, appearancePreferenceManager, inputMethodManager)
     }
 }
 
@@ -107,8 +109,9 @@ class PinnedAppsGridAdapter @Inject constructor(
  */
 class PinnedAppsGridItem(
     binding: AppsGridItemBinding,
-    private val appearancePreferenceManager: AppearancePreferenceManager
-) : AppsGridItem(binding, appearancePreferenceManager) {
+    private val appearancePreferenceManager: AppearancePreferenceManager,
+    inputMethodManager: InputMethodManager
+) : AppsGridItem(binding, appearancePreferenceManager, inputMethodManager) {
     override val isLabelShown: Boolean
         get() = appearancePreferenceManager.areNamesOfPinnedAppsShown
 

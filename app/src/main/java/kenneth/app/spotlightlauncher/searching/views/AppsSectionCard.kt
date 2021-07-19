@@ -6,8 +6,12 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,8 +29,10 @@ import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.views.SectionCard
+import java.security.PrivateKey
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 import kotlin.math.min
 
 private const val APPS_GRID_ITEMS_PER_ROW = 5
@@ -142,10 +148,12 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
         // the total number of items after the items are added
         val newItemCount = currentItemCount + addedItemsCount
 
-        appsGridAdapter.data.addAll(allApps.subList(
-            currentItemCount,
-            min(totalItemCount, newItemCount)
-        ))
+        appsGridAdapter.data.addAll(
+            allApps.subList(
+                currentItemCount,
+                min(totalItemCount, newItemCount)
+            )
+        )
 
         binding.showMoreButton.isVisible = newItemCount < totalItemCount
 
@@ -156,6 +164,7 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
 class AppsGridAdapter @Inject constructor(
     @ActivityContext private val context: Context,
     private val appearanceManager: AppearancePreferenceManager,
+    private val inputMethodManager: InputMethodManager,
 ) : RecyclerViewDataAdapter<ResolveInfo, AppsGridItem>() {
     override var data = mutableListOf<ResolveInfo>()
 
@@ -165,7 +174,7 @@ class AppsGridAdapter @Inject constructor(
         val binding =
             AppsGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return AppsGridItem(binding, appearanceManager)
+        return AppsGridItem(binding, appearanceManager, inputMethodManager)
     }
 }
 
@@ -177,7 +186,8 @@ class AppsGridAdapter @Inject constructor(
  */
 open class AppsGridItem(
     final override val binding: AppsGridItemBinding,
-    private val appearancePreferenceManager: AppearancePreferenceManager
+    private val appearancePreferenceManager: AppearancePreferenceManager,
+    private val inputMethodManager: InputMethodManager
 ) :
     RecyclerViewDataAdapter.ViewHolder<ResolveInfo>(binding) {
     private val context = binding.root.context
@@ -240,6 +250,14 @@ open class AppsGridItem(
      * Launch the app when this view is clicked
      */
     private fun openApp() {
+        BindingRegister.activityMainBinding.widgetsPanel.unfocusSearchBox()
+
+        if (WindowInsetsCompat.toWindowInsetsCompat(binding.root.rootWindowInsets)
+                .isVisible(WindowInsetsCompat.Type.ime())
+        ) {
+            inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+        }
+
         val appActivity = appInfo.activityInfo
         val componentName =
             ComponentName(appActivity.applicationInfo.packageName, appActivity.name)
