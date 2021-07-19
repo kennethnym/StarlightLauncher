@@ -117,9 +117,9 @@ class AppsSectionCard(context: Context, attrs: AttributeSet) :
      * Called whenever a package is installed/removed. This method will update the apps grid
      * accordingly.
      */
-    private fun onAppUninstalled(uninstalledApp: ResolveInfo) {
+    private fun onAppUninstalled(uninstalledPackageName: String) {
         val indexInGrid = appsGridAdapter.data
-            .indexOfFirst { it.activityInfo.packageName == uninstalledApp.activityInfo.packageName }
+            .indexOfFirst { it.activityInfo.packageName == uninstalledPackageName }
 
         if (indexInGrid > 0) {
             appsGridAdapter.run {

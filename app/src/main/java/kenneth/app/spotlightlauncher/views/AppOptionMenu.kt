@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.AppOptionMenuBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
+import kenneth.app.spotlightlauncher.searching.AppManager
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
@@ -23,6 +24,9 @@ import javax.inject.Inject
 class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(context, attrs) {
     @Inject
     lateinit var pinnedAppsPreferenceManager: PinnedAppsPreferenceManager
+
+    @Inject
+    lateinit var appManager: AppManager
 
     private lateinit var app: ResolveInfo
 
@@ -40,6 +44,7 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
         pinAppItem.setOnClickListener { togglePin() }
         findViewById<Item>(R.id.uninstall_item)
             .setOnClickListener { uninstallApp() }
+        appManager.addOnAppRemovedListener(::onAppUninstalled)
     }
 
     fun show(withApp: ResolveInfo) {
@@ -71,11 +76,7 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
     }
 
     private fun uninstallApp() {
-        val uninstallIntent = Intent(
-            Intent.ACTION_DELETE,
-            Uri.fromParts("package", app.activityInfo.packageName, null),
-        )
-        context.startActivity(uninstallIntent)
+        appManager.uninstall(app.activityInfo.packageName)
     }
 
     private fun showIsAppPinned(isPinned: Boolean) {
@@ -91,6 +92,12 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
                     ?.also { setIcon(it) }
                 setLabel(context.getString(R.string.pin_app_label))
             }
+        }
+    }
+
+    private fun onAppUninstalled(uninstalledPackageName: String) {
+        if (uninstalledPackageName == app.activityInfo.packageName) {
+            hide()
         }
     }
 }

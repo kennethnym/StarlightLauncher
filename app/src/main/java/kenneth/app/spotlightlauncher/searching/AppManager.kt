@@ -9,15 +9,17 @@ import android.net.Uri
 import android.util.Log
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 import kotlin.Comparator
 
-typealias AppChangedCallback = (app: ResolveInfo) -> Unit
+typealias AppInstalledCallback = (app: ResolveInfo) -> Unit
+
+/**
+ * The signature of the callback that will be called whenever an app is removed.
+ * Register the callback using [AppManager.addOnAppRemovedListener]
+ */
+typealias AppRemovedCallback = (uninstalledPackageName: String) -> Unit
 
 @ActivityScoped
 class AppManager @Inject constructor(
@@ -51,7 +53,7 @@ class AppManager @Inject constructor(
      * Adds a listener that is called whenever a new app is installed.
      * The [ResolveInfo] of the installed app is passed to the listener.
      */
-    fun addOnAppInstalledListener(listener: AppChangedCallback) {
+    fun addOnAppInstalledListener(listener: AppInstalledCallback) {
         addObserver { o, arg ->
             if (o is AppManager && arg is Intent && arg.action == Intent.ACTION_PACKAGE_ADDED) {
                 arg.data
@@ -66,15 +68,26 @@ class AppManager @Inject constructor(
      * Adds a listener that is called whenever an app is removed.
      * The [ResolveInfo] of the removed app is passed to the listener.
      */
-    fun addOnAppRemovedListener(listener: AppChangedCallback) {
+    fun addOnAppRemovedListener(listener: AppRemovedCallback) {
         addObserver { o, arg ->
             if (o is AppManager && arg is Intent && arg.action == Intent.ACTION_PACKAGE_REMOVED) {
                 arg.data
                     ?.let { packageNameOfUri(it) }
-                    ?.let { resolvePackageName(it) }
                     ?.let(listener)
             }
         }
+    }
+
+    /**
+     * Uninstall the app with the given package name
+     * @param packageName The package name of the app to be uninstalled.
+     */
+    fun uninstall(packageName: String) {
+        val uninstallIntent = Intent(
+            Intent.ACTION_DELETE,
+            Uri.fromParts("package", packageName, null),
+        )
+        context.startActivity(uninstallIntent)
     }
 
     private fun notSystemApps(appInfo: ResolveInfo) =
