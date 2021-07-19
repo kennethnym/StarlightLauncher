@@ -82,7 +82,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             } else NOT_HANDLED
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
 
