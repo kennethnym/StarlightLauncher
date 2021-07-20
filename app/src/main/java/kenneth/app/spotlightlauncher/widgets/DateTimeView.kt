@@ -16,6 +16,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.OpenWeatherApi
 import kenneth.app.spotlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
@@ -49,11 +50,8 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
      */
     private val timeTickBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (context != null && intent != null) {
-                if (intent.action == Intent.ACTION_TIME_TICK) {
-                    Log.d("spotlight", "time tick")
-                    updateTime()
-                }
+            if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
+                updateTime()
             }
         }
     }
@@ -127,8 +125,11 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         if (dateTimePreferenceManager.shouldShowWeather) {
             loadWeather()
         } else {
-            binding.temp.isVisible = false
-            binding.weatherIcon.isVisible = false
+            with(binding) {
+                temp.isVisible = false
+                weatherIcon.isVisible = false
+                dateTimeWeatherSeparator.isVisible = false
+            }
         }
     }
 
@@ -152,7 +153,11 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                 binding.weatherIcon.isVisible = isWeatherAvailable
 
                 if (isWeatherAvailable) {
-                    binding.temp.text = "${weather!!.main.temp} ${openWeatherApi.unit.symbol}"
+                    binding.temp.text = context.getString(
+                        R.string.date_time_temperature_format,
+                        weather!!.main.temp,
+                        openWeatherApi.unit.symbol
+                    )
 
                     Glide
                         .with(context)
@@ -160,6 +165,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                         .into(binding.weatherIcon)
 
                     binding.weatherIcon.contentDescription = weather.weather[0].description
+                    binding.dateTimeWeatherSeparator.isVisible = true
                 }
             }
         }

@@ -153,8 +153,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
         } else {
-            binding.searchBoxRightSideBtn.icon =
-                ResourcesCompat.getDrawable(resources, R.drawable.ic_times, context.theme)
+            showClearSearchBoxButton()
             searcher.requestSearch(query.toString())
         }
     }
