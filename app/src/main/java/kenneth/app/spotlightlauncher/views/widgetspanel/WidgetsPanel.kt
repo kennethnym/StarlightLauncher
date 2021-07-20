@@ -132,10 +132,12 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     fun expand() {
-        Log.d("hub", "expand")
         isExpanded = true
         WidgetPanelAnimation(0f).start()
-        binding.searchBox.showTopPadding()
+        with(binding.searchBox) {
+            showTopPadding()
+            showRetractWidgetPanelButton()
+        }
         gestureMover.reset()
     }
 
@@ -146,6 +148,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         with(binding.searchBox) {
             removeTopPadding()
             clearFocus()
+            showExpandWidgetPanelButton()
         }
         gestureMover.reset()
     }

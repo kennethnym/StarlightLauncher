@@ -84,7 +84,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                 )
             }
 
-            clearSearchBoxBtn.setOnClickListener { clearSearchBox() }
+            searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
         }
     }
 
@@ -133,35 +133,45 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
+    fun showClearSearchBoxButton() {
+        binding.searchBoxRightSideBtn.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_times, context.theme)
+    }
+
+    fun showRetractWidgetPanelButton() {
+        binding.searchBoxRightSideBtn.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_down, context.theme)
+    }
+
+    fun showExpandWidgetPanelButton() {
+        binding.searchBoxRightSideBtn.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_up, context.theme)
+    }
+
     private fun handleSearchQuery(query: Editable?) {
         if (isQueryEmpty(query)) {
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
         } else {
-            binding.clearSearchBoxBtn.icon =
+            binding.searchBoxRightSideBtn.icon =
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_times, context.theme)
             searcher.requestSearch(query.toString())
         }
     }
 
-    private fun clearSearchBox() {
+    private fun onRightSideButtonClicked() {
         when {
             hasQueryText -> {
-                with(binding) {
-                    searchBoxEditText.text.clear()
-                    clearSearchBoxBtn.icon =
-                        ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_down, context.theme)
-                }
+                binding.searchBoxEditText.text.clear()
+                showRetractWidgetPanelButton()
             }
             BindingRegister.activityMainBinding.widgetsPanel.isExpanded -> {
                 BindingRegister.activityMainBinding.widgetsPanel.retract()
-                binding.clearSearchBoxBtn.icon =
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_up, context.theme)
+                showExpandWidgetPanelButton()
             }
             else -> {
                 BindingRegister.activityMainBinding.widgetsPanel.expand()
-                binding.clearSearchBoxBtn.icon =
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_down, context.theme)
+                showRetractWidgetPanelButton()
             }
         }
     }

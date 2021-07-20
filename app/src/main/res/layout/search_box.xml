@@ -36,7 +36,7 @@
                     tools:ignore="Autofill" />
 
                 <kenneth.app.spotlightlauncher.views.IconButton
-                    android:id="@+id/clear_search_box_btn"
+                    android:id="@+id/search_box_right_side_btn"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="end|center"
