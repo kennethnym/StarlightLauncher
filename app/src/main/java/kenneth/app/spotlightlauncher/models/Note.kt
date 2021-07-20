@@ -1,9 +1,8 @@
 package kenneth.app.spotlightlauncher.models
 
-import kenneth.app.spotlightlauncher.utils.InstantSerializer
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kenneth.app.spotlightlauncher.utils.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -15,9 +14,9 @@ data class Note(
 
     val id: String = UUID.randomUUID().toString(),
 
-    @Serializable(with = InstantSerializer::class)
-    val dueOn: Instant? = null,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val dueOn: LocalDateTime? = null,
 
-    @Serializable(with = InstantSerializer::class)
-    val createdOn: Instant = Clock.System.now(),
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val createdOn: LocalDateTime = LocalDateTime.now(),
 )

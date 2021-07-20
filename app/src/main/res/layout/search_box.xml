@@ -1,41 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/search_box_blur_background"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/search_box_container"
+    <kenneth.app.spotlightlauncher.views.BlurView
+        android:id="@+id/search_box_blur_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/search_box_edit_text"
+        <LinearLayout
+            android:id="@+id/search_box_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/search_box_container_padding"
-            android:background="@null"
-            android:hint="@string/search_box_label"
-            android:inputType="text"
-            android:textAlignment="center"
-            android:textColor="?colorOnBackground"
-            android:textColorHint="?hintTextColor"
-            android:textSize="@dimen/search_box_text_size"
-            android:textStyle="bold"
-            tools:ignore="Autofill" />
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/search_loading_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible"
-            app:indicatorColor="?colorPrimary" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/search_box_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/search_box_container_padding"
+                    android:background="@null"
+                    android:hint="@string/search_box_label"
+                    android:inputType="text"
+                    android:textAlignment="center"
+                    android:textColor="?colorOnBackground"
+                    android:textColorHint="?hintTextColor"
+                    android:textSize="@dimen/search_box_text_size"
+                    android:textStyle="bold"
+                    tools:ignore="Autofill" />
 
-</kenneth.app.spotlightlauncher.views.BlurView>
+                <kenneth.app.spotlightlauncher.views.IconButton
+                    android:id="@+id/clear_search_box_btn"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="@dimen/widget_margin_horizontal"
+                    app:icon="@drawable/ic_angle_up"
+                    app:iconSize="32dp" />
+
+            </FrameLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/search_loading_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                app:indicatorColor="?colorPrimary" />
+
+        </LinearLayout>
+
+    </kenneth.app.spotlightlauncher.views.BlurView>
+</layout>

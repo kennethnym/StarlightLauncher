@@ -41,12 +41,19 @@ class IconButton(context: Context, attrs: AttributeSet) :
         set(drawable) {
             field = drawable
             setImageDrawable(drawable)
+            setColorFilter(iconColor)
         }
 
     @Inject
     lateinit var appState: AppState
 
     private val shouldUseAdaptiveColor: Boolean
+
+    private var iconColor: Int = 0
+        set(color) {
+            field = color
+            setColorFilter(color)
+        }
 
     init {
         context.theme.obtainStyledAttributes(
@@ -57,12 +64,11 @@ class IconButton(context: Context, attrs: AttributeSet) :
             try {
                 val iconSize =
                     getDimension(R.styleable.Icon_iconSize, DEFAULT_ICON_SIZE).toInt()
-                val iconColor = getColor(R.styleable.Icon_iconColor, appState.adaptiveTextColor)
 
-                shouldUseAdaptiveColor = getBoolean(R.styleable.IconButton_useCustomColor, true);
+                shouldUseAdaptiveColor = getBoolean(R.styleable.IconButton_useCustomColor, true)
                 icon = getDrawable(R.styleable.Icon_icon)
+                iconColor = getColor(R.styleable.Icon_iconColor, appState.adaptiveTextColor)
                 layoutParams = ViewGroup.LayoutParams(iconSize, iconSize)
-                setColorFilter(iconColor)
             } finally {
                 recycle()
             }
@@ -111,7 +117,7 @@ class IconButton(context: Context, attrs: AttributeSet) :
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         if (shouldUseAdaptiveColor)
-            setColorFilter(appState.adaptiveTextColor)
+            iconColor = appState.adaptiveTextColor
     }
 
     private fun showClickedEffect() {

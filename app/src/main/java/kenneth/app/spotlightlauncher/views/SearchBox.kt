@@ -10,12 +10,14 @@ import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
+import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.spotlightlauncher.searching.ResultAdapter
 import kenneth.app.spotlightlauncher.searching.Searcher
@@ -73,12 +75,16 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             addTextChangedListener { text -> handleSearchQuery(text) }
         }
 
-        binding.searchBoxContainer.setOnClickListener {
-            binding.searchBoxEditText.requestFocus()
-            inputMethodManager.toggleSoftInput(
-                InputMethodManager.SHOW_FORCED,
-                InputMethodManager.HIDE_IMPLICIT_ONLY,
-            )
+        with(binding) {
+            searchBoxContainer.setOnClickListener {
+                binding.searchBoxEditText.requestFocus()
+                inputMethodManager.toggleSoftInput(
+                    InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_IMPLICIT_ONLY,
+                )
+            }
+
+            clearSearchBoxBtn.setOnClickListener { clearSearchBox() }
         }
     }
 
@@ -132,19 +138,47 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             searcher.cancelPendingSearch()
             resultAdapter.hideResult()
         } else {
+            binding.clearSearchBoxBtn.icon =
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_times, context.theme)
             searcher.requestSearch(query.toString())
+        }
+    }
+
+    private fun clearSearchBox() {
+        when {
+            hasQueryText -> {
+                with(binding) {
+                    searchBoxEditText.text.clear()
+                    clearSearchBoxBtn.icon =
+                        ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_down, context.theme)
+                }
+            }
+            BindingRegister.activityMainBinding.widgetsPanel.isExpanded -> {
+                BindingRegister.activityMainBinding.widgetsPanel.retract()
+                binding.clearSearchBoxBtn.icon =
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_up, context.theme)
+            }
+            else -> {
+                BindingRegister.activityMainBinding.widgetsPanel.expand()
+                binding.clearSearchBoxBtn.icon =
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_down, context.theme)
+            }
         }
     }
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
         with(BindingRegister.activityMainBinding.widgetsPanel) {
-            canBeSwiped = if (hasFocus) {
-                expand()
-                false
-            } else if (!hasQueryText) {
-                retract()
-                true
-            } else false
+            canBeSwiped = when {
+                hasFocus -> {
+                    expand()
+                    false
+                }
+                !hasQueryText -> {
+                    retract()
+                    true
+                }
+                else -> false
+            }
 
             toggleSearchBoxAnimation(isActive = isExpanded)
         }

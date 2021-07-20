@@ -4,10 +4,10 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
-import kotlinx.datetime.*
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 
 /**
  * Handles prettifying of dates.
@@ -18,11 +18,7 @@ class TimeAgo @Inject constructor(
 ) {
     private lateinit var now: LocalDateTime
 
-    @ExperimentalTime
-    fun prettify(time: Instant): String {
-        val timezone = TimeZone.currentSystemDefault()
-        val dateTime = time.toLocalDateTime(timezone)
-        val dateTimeJava = dateTime.toJavaLocalDateTime()
+    fun prettify(time: LocalDateTime): String {
         val is24hrFormat = dateTimePreferenceManager.shouldUse24HrClock
 
         val timeFormatPattern =
@@ -31,16 +27,15 @@ class TimeAgo @Inject constructor(
         val timeFormatter = DateTimeFormatter.ofPattern(timeFormatPattern)
         val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy $timeFormatPattern")
 
-        val formattedTime = timeFormatter.format(dateTimeJava)
+        val formattedTime = timeFormatter.format(time)
 
-        val nowInstant = Clock.System.now()
-        now = nowInstant.toLocalDateTime(timezone)
+        now = LocalDateTime.now()
 
-        val dayDifference = (nowInstant - time).inWholeDays
+        val dayDifference = ChronoUnit.DAYS.between(now, time)
 
         return when {
-            isToday(dateTime) -> context.getString(R.string.time_ago_today, formattedTime)
-            isYesterday(dateTime) -> context.getString(R.string.time_ago_yesterday, formattedTime)
+            isToday(time) -> context.getString(R.string.time_ago_today, formattedTime)
+            isYesterday(time) -> context.getString(R.string.time_ago_yesterday, formattedTime)
             dayDifference <= 3 ->
                 context.resources.getQuantityString(
                     R.plurals.time_ago_days_ago,
@@ -48,17 +43,17 @@ class TimeAgo @Inject constructor(
                     formattedTime,
                     dayDifference
                 )
-            else -> dateTimeFormatter.format(dateTimeJava)
+            else -> dateTimeFormatter.format(time)
         }
     }
 
     private fun isToday(time: LocalDateTime): Boolean =
         time.year == now.year &&
-            time.monthNumber == now.monthNumber &&
+            time.month.value == now.month.value &&
             time.dayOfMonth == now.dayOfMonth
 
     private fun isYesterday(time: LocalDateTime): Boolean =
         time.year == now.year &&
-            time.monthNumber == now.monthNumber &&
+            time.month.value == now.month.value &&
             now.dayOfMonth - time.dayOfMonth == 1
 }

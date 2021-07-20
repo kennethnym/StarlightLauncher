@@ -7,10 +7,10 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.setPadding
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.SearchResultLayoutBinding
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.activity
-import kenneth.app.spotlightlauncher.utils.dp
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,7 +28,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
         orientation = VERTICAL
         gravity = Gravity.START
 
-        setPadding(16.dp)
+        setPadding(resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal))
 
         binding = SearchResultLayoutBinding.inflate(LayoutInflater.from(context), this).also {
             BindingRegister.searchResultViewBinding = it
