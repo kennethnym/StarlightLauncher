@@ -307,9 +307,16 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
                 ?: context.getString(R.string.no_artist_label)
 
-        Glide.with(context)
-            .load(mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI))
-            .into(binding.mediaCover)
+        mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+            ?.let {
+                binding.mediaCover.isVisible = true
+                Glide.with(context)
+                    .load(it)
+                    .into(binding.mediaCover)
+            }
+            ?: run {
+                binding.mediaCover.isVisible = false
+            }
 
         mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
             if (it != 0L) {
