@@ -14,6 +14,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -47,8 +48,8 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     private val notificationListenerStubComponent =
         ComponentName(context, NotificationListenerStub::class.java)
 
-    private val playButtonDrawable = context.getDrawable(R.drawable.ic_play)!!
-    private val pauseButtonDrawable = context.getDrawable(R.drawable.ic_pause)!!
+    private val playButtonDrawable = ContextCompat.getDrawable(context, R.drawable.ic_play)!!
+    private val pauseButtonDrawable = ContextCompat.getDrawable(context, R.drawable.ic_pause)!!
 
     /**
      * True when user seeks to another position. Used by the polling function to prevent
