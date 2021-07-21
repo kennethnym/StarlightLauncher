@@ -1,10 +1,18 @@
 package kenneth.app.spotlightlauncher.searching
 
+import kotlin.math.max
+
 /**
  * Compares two strings with the given regex and ranks them. They are ranked based on the
  * following criterion, from highest to lowest:
  *   - whichever string has the longer matching substring
  *   - whichever string has a matching substring at a lower index in the string
+ *   - whichever string is shorter
+ *
+ * @param string1 The first string to compare
+ * @param string2 The second string to compare
+ * @return A negative number if [string1] comes first, a positve number if [string2] comes first,
+ * or 0 if both strings should stay in place.
  */
 fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int {
     val result1 = regex.findAll(string1).toList()
@@ -14,24 +22,11 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
     // if the query has a longer match of the name of the first app than the second app
     // the first app should come first
 
-    val result1LongestMatch = result1.foldIndexed(0) { i, len, result ->
-        when {
-            i == 0 -> len + 1
-            result.range.first - result1[i - 1].range.last > 1 -> 1
-            else -> len + 1
-        }
-    }
+    val string1LongestRegexMatch = longestConsecutiveRegexMatchInString(result1, string1)
+    val string2LongestRegexMatch = longestConsecutiveRegexMatchInString(result2, string2)
 
-    val result2LongestMatch = result2.foldIndexed(0) { i, len, result ->
-        when {
-            i == 0 -> len + 1
-            result.range.first - result2[i - 1].range.last > 1 -> 1
-            else -> len + 1
-        }
-    }
-
-    if (result1LongestMatch != result2LongestMatch) {
-        return result2LongestMatch - result1LongestMatch
+    if (string1LongestRegexMatch != string2LongestRegexMatch) {
+        return string2LongestRegexMatch - string1LongestRegexMatch
     }
 
     // if the longest matches have the same length
@@ -48,3 +43,46 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
 
     return string1.length - string2.length
 }
+
+/**
+ * Finds the length of the longest consecutive regex match in the given string.
+ *
+ * @param matches The list of regex matches in [string]
+ * @param string The string that contains the regex matches
+ * @return The number of characters of the longest consecutive regex match.
+ */
+private fun longestConsecutiveRegexMatchInString(matches: List<MatchResult>, string: String): Int =
+    matches
+        .foldIndexed(Pair(0, 0)) { i, pair, match ->
+            val (longestMatchLength, currentLongestMatchLength) = pair
+            val currentMatchLength = match.range.last - match.range.first + 1
+            when {
+                i == 0 -> pair.copy(second = currentLongestMatchLength + currentMatchLength)
+                isNeighboringRegexMatches(matches[i - 1], match) -> {
+                    val newLen = currentLongestMatchLength + currentMatchLength
+                    if (i == matches.size - 1)
+                        pair.copy(
+                            first = max(longestMatchLength, newLen),
+                            second = 0
+                        )
+                    else
+                        pair.copy(second = newLen)
+                }
+                else -> pair.copy(
+                    first = max(longestMatchLength, currentLongestMatchLength),
+                    second = 0
+                )
+            }
+        }
+        .first
+
+/**
+ * Determines if the two given regex matches are right next to each other,
+ * i.e. there are no characters in between the two regex matches.
+ *
+ * @param match1 The first regex match
+ * @param match2 The second regex match. Must come after [match1]
+ * @return Whether [match1] and [match2] are right next to each other.
+ */
+private fun isNeighboringRegexMatches(match1: MatchResult, match2: MatchResult): Boolean =
+    match2.range.first - match1.range.last == 1
