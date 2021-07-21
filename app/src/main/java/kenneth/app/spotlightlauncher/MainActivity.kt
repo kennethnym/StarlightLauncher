@@ -31,7 +31,7 @@ import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.searching.SearchCategory
 import kenneth.app.spotlightlauncher.searching.Searcher
-import kenneth.app.spotlightlauncher.searching.ResultAdapter
+import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
 import kenneth.app.spotlightlauncher.utils.*
 import javax.inject.Inject
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var searcher: Searcher
 
     @Inject
-    lateinit var resultAdapter: ResultAdapter
+    lateinit var searchResultAdapter: SearchResultAdapter
 
     @Inject
     lateinit var blurHandler: BlurHandler
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cleanup() {
-        resultAdapter.cleanup()
+        searchResultAdapter.cleanup()
     }
 
     /**

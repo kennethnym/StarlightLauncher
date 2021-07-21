@@ -19,7 +19,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
     lateinit var searcher: Searcher
 
     @Inject
-    lateinit var searchResultAdapter: ResultAdapter
+    lateinit var searchSearchResultAdapter: SearchResultAdapter
 
     private val binding: SearchResultLayoutBinding
 
@@ -37,13 +37,13 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
         with(searcher) {
             addSearchResultListener { result, type ->
                 activity?.runOnUiThread {
-                    searchResultAdapter.displayResult(result, type)
+                    searchSearchResultAdapter.displayResult(result, type)
                 }
             }
 
             setWebResultListener { result ->
                 activity?.runOnUiThread {
-                    searchResultAdapter.displayWebResult(result)
+                    searchSearchResultAdapter.displayWebResult(result)
                 }
             }
         }

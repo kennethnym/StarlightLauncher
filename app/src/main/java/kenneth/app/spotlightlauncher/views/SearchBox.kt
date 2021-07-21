@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.SearchBoxBinding
-import kenneth.app.spotlightlauncher.searching.ResultAdapter
+import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
@@ -51,7 +51,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     lateinit var appState: AppState
 
     @Inject
-    lateinit var resultAdapter: ResultAdapter
+    lateinit var searchResultAdapter: SearchResultAdapter
 
     private val binding = SearchBoxBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -149,9 +149,10 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     }
 
     private fun handleSearchQuery(query: Editable?) {
+        BindingRegister.searchResultViewBinding.suggesedResultCard.hide()
         if (isQueryEmpty(query)) {
             searcher.cancelPendingSearch()
-            resultAdapter.hideResult()
+            searchResultAdapter.hideResult()
         } else {
             showClearSearchBoxButton()
             searcher.requestSearch(query.toString())

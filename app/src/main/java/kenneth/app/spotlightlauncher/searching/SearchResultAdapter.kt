@@ -7,7 +7,7 @@ import javax.inject.Inject
  * ResultAdapter is used to adapt search results into views. It combines numerous RecyclerView
  * adapters into one class.
  */
-class ResultAdapter @Inject constructor() {
+class SearchResultAdapter @Inject constructor() {
     fun displayResult(result: Searcher.Result, category: SearchCategory) {
         BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
 
