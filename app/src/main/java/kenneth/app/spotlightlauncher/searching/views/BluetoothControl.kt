@@ -42,6 +42,11 @@ class BluetoothControl(context: Context) : LinearLayout(context) {
         with(binding) {
             openBluetoothSettingsButton.setOnClickListener { openBluetoothSettings() }
             toggleBluetoothContainer.setOnClickListener { toggleBluetooth() }
+
+            toggleBluetoothSwitch.apply {
+                isChecked = bluetoothAdapter.isEnabled
+                setOnClickListener { toggleBluetooth() }
+            }
         }
     }
 
