@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/app_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp" />
+        android:layout_width="@dimen/default_app_icon_size"
+        android:layout_height="@dimen/default_app_icon_size" />
 
     <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/app_label"

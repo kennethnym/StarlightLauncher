@@ -3,6 +3,7 @@
     <dimen name="text_button_icon_spacing">4dp</dimen>
 
     <dimen name="default_icon_size">24dp</dimen>
+    <dimen name="default_app_icon_size">48dp</dimen>
 
     <dimen name="widget_margin_horizontal">16dp</dimen>
     <dimen name="widget_padding_vertical">16dp</dimen>

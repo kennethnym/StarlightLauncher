@@ -1,5 +1,7 @@
 package kenneth.app.spotlightlauncher.searching
 
+import android.content.pm.ResolveInfo
+import androidx.core.view.isVisible
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 
@@ -25,7 +27,9 @@ class SearchResultAdapter @Inject constructor() {
                     appsSectionCard.display(result.apps)
                 }
                 SearchCategory.SUGGESTED -> {
-                    suggesedResultCard.display(result.suggested)
+                    if (result.suggested.result !is ResolveInfo || !suggesedResultCard.isVisible) {
+                        suggesedResultCard.display(result.suggested)
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher.searching.views
 
 import android.content.Context
+import android.content.pm.ResolveInfo
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -54,6 +55,13 @@ class SuggestedResultCard(context: Context, attrs: AttributeSet) :
                     binding.suggestedContent.addView(
                         MathResultView(context).also {
                             it.showResult(result)
+                        }
+                    )
+                }
+                SuggestedResultType.APP -> {
+                    binding.suggestedContent.addView(
+                        SuggestedAppView(context).apply {
+                            setSuggestedApp(result.result as ResolveInfo)
                         }
                     )
                 }

@@ -96,6 +96,9 @@
     <!-- URL opener -->
     <string name="open_url_in_browser_label">Open URL in browser</string>
 
+    <!-- Suggested app view -->
+    <string name="open_suggested_app">Open suggested app</string>
+
     <!-- Web result -->
     <string name="web_result_label">Web Result</string>
     <string name="open_in_browser_label">Open in Browser</string>

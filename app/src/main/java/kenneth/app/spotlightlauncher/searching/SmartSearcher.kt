@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class SuggestedResultType {
-    NONE, MATH, WIFI, BLUETOOTH, URL
+    NONE, MATH, WIFI, BLUETOOTH, URL, APP
 }
 
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit

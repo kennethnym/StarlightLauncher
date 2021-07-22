@@ -139,6 +139,16 @@ class Searcher @Inject constructor(
                 numberOfLoadedCategories++
                 resultCallbacks.forEach {
                     it(Result(keyword, apps = result), SearchCategory.APPS)
+                    it(
+                        Result(
+                            keyword,
+                            suggested = SmartSearcher.SuggestedResult(
+                                keyword,
+                                type = SuggestedResultType.APP,
+                                result = result[0]
+                            )
+                        ), SearchCategory.SUGGESTED
+                    )
                 }
             }
         }
