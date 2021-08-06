@@ -34,16 +34,15 @@ class SmartSearcher @Inject constructor(
     private var activeApiCall: DuckDuckGoApi.Call? = null
     private var webResultListener: WebResultCallback? = null
 
-    fun search(keyword: String): SuggestedResult {
+    fun  search(keyword: String): SearchResult.Suggested {
         return try {
             // first, try to parse the query as a math expression.
 
             val result = parseAsMathExpression(keyword)
 
-            SuggestedResult(
+            SearchResult.Suggested.Math(
                 query = keyword,
-                type = SuggestedResultType.MATH,
-                result = result,
+                result,
             )
         } catch (e: Exception) {
             // the query is not a valid math expression
@@ -51,25 +50,13 @@ class SmartSearcher @Inject constructor(
             when {
                 // wifi command
                 keyword.contains("wifi", ignoreCase = true) ->
-                    SuggestedResult(
-                        query = keyword,
-                        type = SuggestedResultType.WIFI
-                    )
+                    SearchResult.Suggested.Wifi(keyword)
                 // bluetooth command
                 keyword.contains("bluetooth", ignoreCase = true) ->
-                    SuggestedResult(
-                        query = keyword,
-                        type = SuggestedResultType.BLUETOOTH,
-                    )
+                    SearchResult.Suggested.Bluetooth(keyword)
                 Patterns.WEB_URL.matcher(keyword).matches() ->
-                    SuggestedResult(
-                        query = keyword,
-                        type = SuggestedResultType.URL,
-                    )
-                else -> SuggestedResult(
-                    query = keyword,
-                    type = SuggestedResultType.NONE,
-                )
+                    SearchResult.Suggested.Url(keyword)
+                else -> SearchResult.Suggested.None(keyword)
             }
         }
     }

@@ -10,27 +10,23 @@ import javax.inject.Inject
  * adapters into one class.
  */
 class SearchResultAdapter @Inject constructor() {
-    fun displayResult(result: Searcher.Result, category: SearchCategory) {
+    fun displayResult(result: SearchResult) {
         BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
 
         with(BindingRegister.searchResultViewBinding) {
-            when (category) {
-                SearchCategory.ALL -> {
-                    appsSectionCard.display(result.apps)
-                    filesSectionCard.display(result.files)
-                    suggesedResultCard.display(result.suggested)
-                }
-                SearchCategory.FILES -> {
+            when (result) {
+                is SearchResult.Files -> {
                     filesSectionCard.display(result.files)
                 }
-                SearchCategory.APPS -> {
+                is SearchResult.Apps -> {
                     appsSectionCard.display(result.apps)
                 }
-                SearchCategory.SUGGESTED -> {
-                    if (result.suggested.result !is ResolveInfo || !suggesedResultCard.isVisible) {
-                        suggesedResultCard.display(result.suggested)
+                is SearchResult.Suggested -> {
+                    if (result !is SearchResult.Suggested.App || !suggesedResultCard.isVisible) {
+                        suggesedResultCard.display(result)
                     }
                 }
+                else -> {}
             }
         }
     }

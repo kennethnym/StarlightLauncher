@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.MathResultLayoutBinding
+import kenneth.app.spotlightlauncher.searching.SearchResult
 import kenneth.app.spotlightlauncher.searching.SmartSearcher
 
 /**
@@ -30,8 +31,8 @@ class MathResultView(context: Context) : LinearLayout(context) {
     /**
      * Shows the given math result
      */
-    fun showResult(result: SmartSearcher.SuggestedResult) {
+    fun showResult(result: SearchResult.Suggested.Math) {
         binding.equationText.text = result.query
-        binding.equationResultText.text = (result.result as Float).toString()
+        binding.equationResultText.text = result.result.toString()
     }
 }

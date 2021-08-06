@@ -90,7 +90,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
 
-        searcher.addSearchResultListener { _, _ ->
+        searcher.addSearchResultListener {
             if (searcher.hasFinishedSearching) {
                 activity?.runOnUiThread {
                     binding.searchBox.shouldShowLoadingIndicator = false

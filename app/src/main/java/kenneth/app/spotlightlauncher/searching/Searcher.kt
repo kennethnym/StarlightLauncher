@@ -3,8 +3,6 @@ package kenneth.app.spotlightlauncher.searching
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ApplicationInfo
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -17,13 +15,13 @@ import kotlin.concurrent.schedule
 
 private const val SEARCH_DELAY: Long = 500
 
-typealias ResultCallback = (Searcher.Result, SearchCategory) -> Unit
+typealias ResultCallback = (SearchResult) -> Unit
 
 /**
  * Different categories that Searcher will search for
  */
 enum class SearchCategory {
-    ALL, APPS, FILES, SUGGESTED,
+    APPS, FILES, SUGGESTED,
 }
 
 /**
@@ -41,9 +39,6 @@ class Searcher @Inject constructor(
     val hasFinishedSearching: Boolean
         get() = numberOfLoadedCategories == NUMBER_OF_SEARCH_CATEGORIES
 
-    private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
-        addCategory(Intent.CATEGORY_LAUNCHER)
-    }
     private var webRequestCoroutine = CoroutineScope(Dispatchers.IO)
     private var appSearchCoroutine = CoroutineScope(Dispatchers.IO)
     private var fileSearchCoroutine = CoroutineScope(Dispatchers.IO)
@@ -93,19 +88,19 @@ class Searcher @Inject constructor(
         numberOfLoadedCategories = 0
     }
 
-    fun requestSpecificSearch(category: SearchCategory, keyword: String): Result {
+    fun requestSpecificSearch(category: SearchCategory, keyword: String): SearchResult {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         return when (category) {
-            SearchCategory.FILES -> Result(
+            SearchCategory.FILES -> SearchResult.Files(
                 query = keyword,
                 files = searchFiles(searchRegex),
             )
-            SearchCategory.APPS -> Result(
+            SearchCategory.APPS -> SearchResult.Apps(
                 query = keyword,
                 apps = appManager.searchApps(searchRegex),
             )
-            else -> Result(query = keyword)
+            else -> SearchResult.None(keyword)
         }
     }
 
@@ -124,9 +119,6 @@ class Searcher @Inject constructor(
         numberOfLoadedCategories = 0
     }
 
-    private fun notSystemApps(appInfo: ResolveInfo): Boolean =
-        (appInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
-
     private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
@@ -137,18 +129,11 @@ class Searcher @Inject constructor(
                 }
 
                 numberOfLoadedCategories++
-                resultCallbacks.forEach {
-                    it(Result(keyword, apps = result), SearchCategory.APPS)
-                    it(
-                        Result(
-                            keyword,
-                            suggested = SmartSearcher.SuggestedResult(
-                                keyword,
-                                type = SuggestedResultType.APP,
-                                result = result[0]
-                            )
-                        ), SearchCategory.SUGGESTED
-                    )
+                if (result.isNotEmpty()) {
+                    resultCallbacks.forEach {
+                        it(SearchResult.Apps(keyword, apps = result))
+                        it(SearchResult.Suggested.App(keyword, suggestedApp = result[0]))
+                    }
                 }
             }
         }
@@ -161,7 +146,7 @@ class Searcher @Inject constructor(
 
                 numberOfLoadedCategories++
                 resultCallbacks.forEach {
-                    it(Result(keyword, files = result), SearchCategory.FILES)
+                    it(SearchResult.Files(keyword, files = result))
                 }
             }
         }
@@ -174,7 +159,7 @@ class Searcher @Inject constructor(
 
                 numberOfLoadedCategories++
                 resultCallbacks.forEach {
-                    it(Result(keyword, suggested = result), SearchCategory.SUGGESTED)
+                    it(result)
                 }
             }
         }
@@ -216,14 +201,4 @@ class Searcher @Inject constructor(
 
         return files
     }
-
-    data class Result(
-        val query: String,
-        val apps: List<ResolveInfo> = emptyList(),
-        val files: List<DocumentFile>? = null,
-        val suggested: SmartSearcher.SuggestedResult = SmartSearcher.SuggestedResult(
-            query,
-            type = SuggestedResultType.NONE,
-        )
-    )
 }
