@@ -31,7 +31,7 @@ class TimeAgo @Inject constructor(
 
         now = LocalDateTime.now()
 
-        val dayDifference = ChronoUnit.DAYS.between(now, time)
+        val dayDifference = ChronoUnit.DAYS.between(time, now)
 
         return when {
             isToday(time) -> context.getString(R.string.time_ago_today, formattedTime)
