@@ -1,5 +1,7 @@
 package kenneth.app.spotlightlauncher
 
+import android.view.View
+import kenneth.app.spotlightlauncher.utils.ContextMenuCallback
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,10 +49,15 @@ class AppState @Inject constructor() {
      */
     var adaptiveTextColor: Int = 0
 
-    /**
-     * Determines if the search box is activated.
-     */
-    var isSearchBoxActive: Boolean = false
-
     var statusBarHeight = 0
+
+    /**
+     * The [ContextMenuCallback] that [MainActivity] should call after
+     * an item in the current floating menu is selected.
+     *
+     * If a [View] want to be notified of what item is selected after a floating context menu
+     * is shown for it, implement [ContextMenuCallback], then set this field when
+     * [View.onCreateContextMenu] is called.
+     */
+    var contextMenuCallbackForView: ContextMenuCallback? = null
 }

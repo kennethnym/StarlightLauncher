@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- This attribute defines the background color that should be used for views drawn on top of BlurView -->
+    <attr name="backgroundColorOnBlurView" format="color" />
+
     <declare-styleable name="LauncherTheme">
         <attr name="blurAmount" format="integer" />
     </declare-styleable>
@@ -9,7 +12,7 @@
     </declare-styleable>
 
     <declare-styleable name="SectionCard">
-        <attr name="title" />
+        <attr name="title" format="string" />
     </declare-styleable>
 
     <declare-styleable name="AppOptionMenuItem">
@@ -33,5 +36,6 @@
 
     <declare-styleable name="TextButton">
         <attr name="color" format="color" />
+        <attr name="useCustomColor" />
     </declare-styleable>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.appcompat.widget.TooltipCompat
@@ -17,6 +18,10 @@ import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.utils.dp
 import javax.inject.Inject
 
+/**
+ * Whether [IconButton] should show the icon with an adaptive color by default.
+ */
+private const val DEFAULT_USE_ADAPTIVE_COLOR = true
 private val DEFAULT_ICON_SIZE = 16.dp.toFloat()
 private const val OPACITY_ENABLED = 1f
 private const val OPACITY_CLICKED = 0.5f
@@ -60,12 +65,13 @@ class IconButton(context: Context, attrs: AttributeSet) :
             attrs,
             R.styleable.Icon,
             0, 0
-        ).apply {
+        ).run {
             try {
                 val iconSize =
                     getDimension(R.styleable.Icon_iconSize, DEFAULT_ICON_SIZE).toInt()
 
-                shouldUseAdaptiveColor = getBoolean(R.styleable.IconButton_useCustomColor, true)
+                shouldUseAdaptiveColor =
+                    getBoolean(R.styleable.IconButton_useCustomColor, DEFAULT_USE_ADAPTIVE_COLOR)
                 icon = getDrawable(R.styleable.Icon_icon)
                 iconColor = getColor(R.styleable.Icon_iconColor, appState.adaptiveTextColor)
                 layoutParams = ViewGroup.LayoutParams(iconSize, iconSize)

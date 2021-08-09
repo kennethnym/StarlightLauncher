@@ -2,7 +2,7 @@ package kenneth.app.spotlightlauncher.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
+import android.view.Gravity
 import android.view.MotionEvent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -15,7 +15,10 @@ import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
-private const val USE_ADAPTIVE_COLOR = Integer.MAX_VALUE
+/**
+ * Whether [TextButton] should show the content with an adaptive color by default.
+ */
+private const val DEFAULT_USE_ADAPTIVE_COLOR = true
 
 @AndroidEntryPoint
 class TextButton(context: Context, attrs: AttributeSet) :
@@ -27,6 +30,8 @@ class TextButton(context: Context, attrs: AttributeSet) :
     private val shouldUseAdaptiveColor: Boolean
 
     init {
+        gravity = Gravity.CENTER
+
         activity?.lifecycle?.addObserver(this)
         context.theme.obtainStyledAttributes(
             attrs,
@@ -34,14 +39,14 @@ class TextButton(context: Context, attrs: AttributeSet) :
             0, 0
         ).run {
             try {
-                val overriddenTextColor =
-                    getColor(R.styleable.TextButton_color, USE_ADAPTIVE_COLOR)
-                shouldUseAdaptiveColor = overriddenTextColor == USE_ADAPTIVE_COLOR
+                val textColor =
+                    getColor(R.styleable.TextButton_color, appState.adaptiveTextColor)
 
-                if (!shouldUseAdaptiveColor) {
-                    compoundDrawablesRelative.forEach { it?.setTint(overriddenTextColor) }
-                    setTextColor(overriddenTextColor)
-                }
+                shouldUseAdaptiveColor =
+                    getBoolean(R.styleable.TextButton_useCustomColor, DEFAULT_USE_ADAPTIVE_COLOR)
+
+                compoundDrawablesRelative.forEach { it?.setTint(textColor) }
+                setTextColor(textColor)
             } finally {
                 recycle()
             }

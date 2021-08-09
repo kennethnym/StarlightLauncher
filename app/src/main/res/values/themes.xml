@@ -8,7 +8,7 @@
         <item name="android:windowShowWallpaper">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
 
-        <item name="backgroundColor">#34FFFFFF</item>
+        <item name="backgroundColorOnBlurView">#34FFFFFF</item>
         <item name="colorOnBackground">#80000000</item>
         <item name="hintTextColor">#4D000000</item>
         <item name="cardCornerRadius">10dp</item>
@@ -17,7 +17,7 @@
     </style>
 
     <style name="DarkLauncherTheme" parent="LightLauncherTheme">
-        <item name="backgroundColor">#4D000000</item>
+        <item name="backgroundColorOnBlurView">#1A000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>
         <item name="hintTextColor">#80FFFFFF</item>
     </style>

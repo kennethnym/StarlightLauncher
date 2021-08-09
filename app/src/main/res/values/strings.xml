@@ -115,6 +115,13 @@
     <string name="note_card_reminder_icon">Icon for note reminder</string>
     <string name="all_notes_page_title">Notes</string>
 
+    <!-- unit converter widget -->
+    <string name="unit_miles">Miles</string>
+    <string name="unit_km">Kilometers</string>
+    <string name="measurement_distance">Distance</string>
+    <string name="measurement_weight">Weight</string>
+    <string name="unit_converter_widget_measurement_label">Measurement:</string>
+
     <!-- Download folder -->
     <string name="download_folder">Download</string>
 

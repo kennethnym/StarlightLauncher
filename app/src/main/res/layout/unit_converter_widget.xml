@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="selectedMeasurement"
+            type="kenneth.app.spotlightlauncher.widgets.unitconverter.Measurement" />
+
+        <variable
+            name="selectedSrcUnit"
+            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementUnit" />
+
+        <variable
+            name="selectedDestUnit"
+            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementUnit" />
+    </data>
+
+    <kenneth.app.spotlightlauncher.views.BlurView
+        android:id="@+id/unit_converter_widget_blur_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_background">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/widget_padding_horizontal"
+            android:paddingVertical="@dimen/widget_padding_vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unit_converter_widget_measurement_label"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="@dimen/text_separator_spacing"
+                    android:layout_height="0dp" />
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/measurement_selector_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_angle_down"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@{selectedMeasurement.label}" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
+                    android:id="@+id/src_unit_value_edit_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/blur_view_edit_text_bg"
+                    android:inputType="numberDecimal"
+                    android:minWidth="16dp"
+                    android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
+                    android:text="0"
+                    android:textSize="@dimen/unit_converter_widget_value_label_size"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
+                    android:layout_height="0dp" />
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/src_unit_selector_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_angle_down"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@{selectedSrcUnit.label}" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
+                    android:id="@+id/dest_unit_value_edit_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/blur_view_edit_text_bg"
+                    android:inputType="numberDecimal"
+                    android:minWidth="16dp"
+                    android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
+                    android:text="0"
+                    android:textSize="@dimen/unit_converter_widget_value_label_size"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
+                    android:layout_height="0dp" />
+
+                <kenneth.app.spotlightlauncher.views.TextButton
+                    android:id="@+id/dest_unit_selector_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_angle_down"
+                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:text="@{selectedDestUnit.label}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </kenneth.app.spotlightlauncher.views.BlurView>
+</layout>
