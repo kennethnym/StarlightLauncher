@@ -21,7 +21,21 @@ enum class MeasurementUnit(
     MILLIMETERS(4, "Millimeters"),
     CENTIMETERS(5, "Centimeters"),
     METERS(6, "Meters"),
-    KILOMETERS(7, "Kilometers");
+    KILOMETERS(7, "Kilometers"),
+
+    // Weight units
+    // ===========
+    // Imperial units
+    OUNCES(8, "Ounces"),
+    POUND(9, "Pound"),
+    SHORT_TONS(10, "Short tons"),
+    LONG_TONS(11, "Long tons"),
+
+    // Metric units
+    MILLIGRAMS(12, "Milligrams"),
+    GRAMS(13, "Grams"),
+    KILOGRAMS(14, "Kilograms"),
+    METRIC_TONS(15, "Metric tons");
 
     companion object {
         fun fromId(id: Int) = values().first { it.id == id }

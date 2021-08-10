@@ -57,6 +57,17 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
         set(measurement) {
             field = measurement
             binding.selectedMeasurement = measurement
+            // set default unit conversion for different measurement types
+            when (measurement) {
+                MeasurementType.LENGTH -> {
+                    selectedSrcUnit = MeasurementUnit.MILES
+                    selectedDestUnit = MeasurementUnit.KILOMETERS
+                }
+                MeasurementType.WEIGHT -> {
+                    selectedSrcUnit = MeasurementUnit.POUND
+                    selectedDestUnit = MeasurementUnit.KILOGRAMS
+                }
+            }
         }
 
     private var selectedSrcUnit = MeasurementUnit.MILES
@@ -147,6 +158,10 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
                         MeasurementType.LENGTH ->
                             resources
                                 .getStringArray(R.array.length_unit_selector_entries)
+                                .map { MeasurementUnit.valueOf(it) }
+                        MeasurementType.WEIGHT ->
+                            resources
+                                .getStringArray(R.array.weight_unit_selector_entries)
                                 .map { MeasurementUnit.valueOf(it) }
                     }
                 }

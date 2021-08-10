@@ -26,6 +26,7 @@
     <!-- Take the values here and convert it to Measurement enum via valueOf method -->
     <string-array name="measurement_selector_entries">
         <item>LENGTH</item>
+        <item>WEIGHT</item>
     </string-array>
 
     <!-- The entries in the length unit selector in the unit converter widget -->
@@ -39,5 +40,16 @@
         <item>CENTIMETERS</item>
         <item>METERS</item>
         <item>KILOMETERS</item>
+    </string-array>
+
+    <string-array name="weight_unit_selector_entries">
+        <item>OUNCES</item>
+        <item>POUND</item>
+        <item>SHORT_TONS</item>
+        <item>LONG_TONS</item>
+        <item>MILLIGRAMS</item>
+        <item>GRAMS</item>
+        <item>KILOGRAMS</item>
+        <item>METRIC_TONS</item>
     </string-array>
 </resources>
