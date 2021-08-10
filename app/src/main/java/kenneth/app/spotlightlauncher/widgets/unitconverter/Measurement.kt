@@ -1,17 +1,23 @@
 package kenneth.app.spotlightlauncher.widgets.unitconverter
 
-import kenneth.app.spotlightlauncher.utils.ContextMenuEntry
-
 /**
- * Supported measurements that [UnitConverterWidget] can provide conversions for.
+ * Describes the value and the unit of a measurement.
  */
-enum class Measurement(
-    override val id: Int,
-    override val label: String
-) : ContextMenuEntry {
-    LENGTH(0, "Length");
-
-    companion object {
-        fun fromId(id: Int) = values().first { it.id == id }
-    }
+data class Measurement(
+    val value: Double,
+    val unit: MeasurementUnit,
+) {
+    /**
+     * Converts this [Measurement] to another [Measurement] in the given unit.
+     *
+     * @param newUnit The [MeasurementUnit] the new [Measurement] should be in.
+     * @return The new [Measurement] in the new unit, or null if the conversion is unsupported.
+     */
+    fun convertTo(newUnit: MeasurementUnit) =
+        conversionFactors[unit]?.get(newUnit)?.let { factor ->
+            Measurement(
+                value = value * factor,
+                unit = newUnit,
+            )
+        }
 }

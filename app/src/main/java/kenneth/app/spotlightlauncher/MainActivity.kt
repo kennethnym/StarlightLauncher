@@ -164,6 +164,11 @@ class MainActivity : AppCompatActivity() {
         appState.contextMenuCallbackForView?.onContextItemSelected(item)
             ?: super.onContextItemSelected(item)
 
+    override fun onContextMenuClosed(menu: Menu) {
+        appState.contextMenuCallbackForView?.onContextMenuClosed()
+            ?: super.onContextMenuClosed(menu)
+    }
+
     private fun cleanup() {
         searchResultAdapter.cleanup()
     }

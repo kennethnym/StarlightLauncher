@@ -14,4 +14,6 @@ interface ContextMenuCallback {
      * @return false to allow normal context menu processing to proceed, true to consume it here
      */
     fun onContextItemSelected(item: MenuItem): Boolean
+
+    fun onContextMenuClosed()
 }

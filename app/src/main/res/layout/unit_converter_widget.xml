@@ -5,7 +5,7 @@
 
         <variable
             name="selectedMeasurement"
-            type="kenneth.app.spotlightlauncher.widgets.unitconverter.Measurement" />
+            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementType" />
 
         <variable
             name="selectedSrcUnit"
@@ -71,6 +71,7 @@
                     android:background="@drawable/blur_view_edit_text_bg"
                     android:inputType="numberDecimal"
                     android:minWidth="16dp"
+                    android:minEms="1"
                     android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
                     android:text="0"
                     android:textSize="@dimen/unit_converter_widget_value_label_size"
@@ -107,6 +108,7 @@
                     android:background="@drawable/blur_view_edit_text_bg"
                     android:inputType="numberDecimal"
                     android:minWidth="16dp"
+                    android:minEms="1"
                     android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
                     android:text="0"
                     android:textSize="@dimen/unit_converter_widget_value_label_size"

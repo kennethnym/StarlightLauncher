@@ -1,12 +1,15 @@
 package kenneth.app.spotlightlauncher.widgets.unitconverter
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.HANDLED
@@ -50,7 +53,7 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
     private val binding =
         UnitConverterWidgetBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private var selectedMeasurement = Measurement.LENGTH
+    private var selectedMeasurement = MeasurementType.LENGTH
         set(measurement) {
             field = measurement
             binding.selectedMeasurement = measurement
@@ -68,6 +71,17 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
             binding.selectedDestUnit = unit
         }
 
+    /**
+     * Whether [UnitConverterWidget] is modifying either srcUnitValueEditText or destUnitValueEditText.
+     */
+    private var isSelfUpdatingEditText = false
+
+    /**
+     * Whether [UnitConverterWidget] is responsible for drawing the floating context menu.
+     * If false, the default floating context menu is drawn when requested.
+     */
+    private var shouldDrawCustomContextMenu = false
+
     private lateinit var selectorValueType: SelectorValueType
 
     init {
@@ -82,44 +96,69 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
 
             measurementSelectorBtn.setOnClickListener {
                 selectorValueType = SelectorValueType.MEASUREMENT
+                shouldDrawCustomContextMenu = true
                 activity?.openContextMenu(this@UnitConverterWidget)
             }
 
             srcUnitSelectorBtn.setOnClickListener {
                 selectorValueType = SelectorValueType.SRC_UNIT
+                shouldDrawCustomContextMenu = true
                 activity?.openContextMenu(this@UnitConverterWidget)
             }
 
             destUnitSelectorBtn.setOnClickListener {
                 selectorValueType = SelectorValueType.DEST_UNIT
+                shouldDrawCustomContextMenu = true
                 activity?.openContextMenu(this@UnitConverterWidget)
+            }
+
+            srcUnitValueEditText.addTextChangedListener { text ->
+                startConversion(
+                    srcEditText = srcUnitValueEditText,
+                    srcUnit = this@UnitConverterWidget.selectedSrcUnit,
+                    destEditText = destUnitValueEditText,
+                    destUnit = this@UnitConverterWidget.selectedDestUnit,
+                )
+            }
+
+            destUnitValueEditText.addTextChangedListener { text ->
+                startConversion(
+                    srcEditText = destUnitValueEditText,
+                    srcUnit = this@UnitConverterWidget.selectedDestUnit,
+                    destEditText = srcUnitValueEditText,
+                    destUnit = this@UnitConverterWidget.selectedSrcUnit,
+                )
             }
         }
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?) {
-        appState.contextMenuCallbackForView = this
-        menu?.let {
-            val entries = when (selectorValueType) {
-                SelectorValueType.MEASUREMENT ->
-                    resources
-                        .getStringArray(R.array.measurement_selector_entries)
-                        .map { Measurement.valueOf(it) }
-
-                SelectorValueType.SRC_UNIT,
-                SelectorValueType.DEST_UNIT -> when (selectedMeasurement) {
-                    Measurement.LENGTH ->
+        if (shouldDrawCustomContextMenu) {
+            appState.contextMenuCallbackForView = this
+            menu?.let {
+                val entries = when (selectorValueType) {
+                    SelectorValueType.MEASUREMENT ->
                         resources
-                            .getStringArray(R.array.length_unit_selector_entries)
-                            .map { MeasurementUnit.valueOf(it) }
-                }
-            }
+                            .getStringArray(R.array.measurement_selector_entries)
+                            .map { MeasurementType.valueOf(it) }
 
-            drawContextMenuItems(
-                menu,
-                labels = entries.map { it.label },
-                ids = entries.map { it.id }
-            )
+                    SelectorValueType.SRC_UNIT,
+                    SelectorValueType.DEST_UNIT -> when (selectedMeasurement) {
+                        MeasurementType.LENGTH ->
+                            resources
+                                .getStringArray(R.array.length_unit_selector_entries)
+                                .map { MeasurementUnit.valueOf(it) }
+                    }
+                }
+
+                drawContextMenuItems(
+                    menu,
+                    labels = entries.map { it.label },
+                    ids = entries.map { it.id }
+                )
+            }
+        } else {
+            super.onCreateContextMenu(menu)
         }
     }
 
@@ -127,7 +166,7 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
         try {
             when (selectorValueType) {
                 SelectorValueType.MEASUREMENT -> {
-                    selectedMeasurement = Measurement.fromId(item.itemId)
+                    selectedMeasurement = MeasurementType.fromId(item.itemId)
                 }
                 SelectorValueType.SRC_UNIT -> {
                     selectedSrcUnit = MeasurementUnit.fromId(item.itemId)
@@ -141,9 +180,41 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
             NOT_HANDLED
         }
 
+    override fun onContextMenuClosed() {
+        shouldDrawCustomContextMenu = false
+    }
+
     private fun drawContextMenuItems(menu: ContextMenu, labels: List<String>, ids: List<Int>) {
         for (i in labels.indices) {
             menu.add(Menu.NONE, ids[i], Menu.NONE, labels[i])
+        }
+    }
+
+    /**
+     * Parses values in the text boxes, then starts the unit conversion if the values are valid.
+     *
+     * @param destEditText The EditText that should contain the result of the conversion.
+     */
+    private fun startConversion(
+        srcEditText: EditText,
+        srcUnit: MeasurementUnit,
+        destEditText: EditText,
+        destUnit: MeasurementUnit,
+    ) {
+        if (isSelfUpdatingEditText)
+            isSelfUpdatingEditText = false
+        else try {
+            Measurement(
+                value = srcEditText.text.toString().toDouble(),
+                unit = srcUnit,
+            )
+                .convertTo(destUnit)
+                ?.let { newMeasurement ->
+                    isSelfUpdatingEditText = true
+                    destEditText.setText(String.format("%.3f", newMeasurement.value))
+                }
+        } catch (ex: Exception) {
+            // the src text contains invalid number, ignoring
         }
     }
 }
