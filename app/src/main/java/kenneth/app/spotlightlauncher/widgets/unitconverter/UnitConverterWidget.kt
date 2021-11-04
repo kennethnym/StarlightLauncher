@@ -17,6 +17,7 @@ import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.UnitConverterWidgetBinding
 import kenneth.app.spotlightlauncher.utils.ContextMenuCallback
+import kenneth.app.spotlightlauncher.utils.ContextMenuEntry
 import kenneth.app.spotlightlauncher.utils.activity
 import java.lang.Exception
 import javax.inject.Inject
@@ -132,7 +133,7 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
                 )
             }
 
-            destUnitValueEditText.addTextChangedListener { text ->
+            destUnitValueEditText.addTextChangedListener {
                 startConversion(
                     srcEditText = destUnitValueEditText,
                     srcUnit = this@UnitConverterWidget.selectedDestUnit,
@@ -166,11 +167,7 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
                     }
                 }
 
-                drawContextMenuItems(
-                    menu,
-                    labels = entries.map { it.label },
-                    ids = entries.map { it.id }
-                )
+                drawContextMenuItems(menu, entries)
             }
         } else {
             super.onCreateContextMenu(menu)
@@ -185,9 +182,21 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
                 }
                 SelectorValueType.SRC_UNIT -> {
                     selectedSrcUnit = MeasurementUnit.fromId(item.itemId)
+                    startConversion(
+                        binding.srcUnitValueEditText,
+                        selectedSrcUnit,
+                        binding.destUnitValueEditText,
+                        selectedDestUnit,
+                    )
                 }
                 SelectorValueType.DEST_UNIT -> {
                     selectedDestUnit = MeasurementUnit.fromId(item.itemId)
+                    startConversion(
+                        binding.srcUnitValueEditText,
+                        selectedSrcUnit,
+                        binding.destUnitValueEditText,
+                        selectedDestUnit,
+                    )
                 }
             }
             HANDLED
@@ -199,9 +208,9 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
         shouldDrawCustomContextMenu = false
     }
 
-    private fun drawContextMenuItems(menu: ContextMenu, labels: List<String>, ids: List<Int>) {
-        for (i in labels.indices) {
-            menu.add(Menu.NONE, ids[i], Menu.NONE, labels[i])
+    private fun drawContextMenuItems(menu: ContextMenu, entries: List<ContextMenuEntry>) {
+        entries.forEach {
+            menu.add(Menu.NONE, it.id, Menu.NONE, it.label)
         }
     }
 
