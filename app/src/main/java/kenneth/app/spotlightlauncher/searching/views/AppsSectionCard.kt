@@ -241,8 +241,8 @@ open class AppsGridItem(
     @CallSuper
     protected open fun onAppearancePreferencesChanged(key: String) {
         when (key) {
-            AppearancePreferenceManager.iconPackPrefKey -> drawIcon()
-            AppearancePreferenceManager.showAppNamesInSearchResultKey -> setAppLabelVisibility()
+            appearancePreferenceManager.iconPackPrefKey -> drawIcon()
+            appearancePreferenceManager.showAppNamesInSearchResultKey -> setAppLabelVisibility()
         }
     }
 
@@ -279,16 +279,9 @@ open class AppsGridItem(
     }
 
     private fun drawIcon() {
-        val appIcon = appInfo.loadIcon(packageManager)
-
-        appearancePreferenceManager.iconPack?.let {
-            binding.appIcon.setImageBitmap(
-                it.getIconOf(
-                    appInfo.activityInfo.packageName,
-                    default = appIcon
-                )
-            )
-        } ?: binding.appIcon.setImageDrawable(appIcon)
+        binding.appIcon.setImageBitmap(
+            appearancePreferenceManager.iconPack.getIconOf(appInfo)
+        )
     }
 
     /**

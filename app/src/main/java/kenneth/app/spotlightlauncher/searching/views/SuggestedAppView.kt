@@ -8,10 +8,17 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.SuggestedAppViewBinding
+import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SuggestedAppView(context: Context) : LinearLayout(context) {
+    @Inject
+    lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
     private lateinit var suggestedApp: ResolveInfo
 
     private val binding: SuggestedAppViewBinding
@@ -40,7 +47,9 @@ class SuggestedAppView(context: Context) : LinearLayout(context) {
     fun setSuggestedApp(appInfo: ResolveInfo) {
         suggestedApp = appInfo
         with(binding) {
-            suggestedAppIcon.setImageDrawable(suggestedApp.loadIcon(context.packageManager))
+            suggestedAppIcon.setImageBitmap(
+                appearancePreferenceManager.iconPack.getIconOf(appInfo)
+            )
             suggestedAppName.text = suggestedApp.loadLabel(context.packageManager)
         }
     }

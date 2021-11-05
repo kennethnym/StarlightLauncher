@@ -45,11 +45,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAppearancePreferenceManager(@ApplicationContext context: Context) =
-        AppearancePreferenceManager.getInstance(context)
-
-    @Provides
-    @Singleton
     fun provideInputMethodManager(@ApplicationContext context: Context) =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 

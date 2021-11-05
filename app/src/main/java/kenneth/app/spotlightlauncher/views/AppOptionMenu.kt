@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.AppOptionMenuBinding
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
+import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.searching.AppManager
 import javax.inject.Inject
 
@@ -22,6 +23,9 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
 
     @Inject
     lateinit var appManager: AppManager
+
+    @Inject
+    lateinit var appearancePreferenceManager: AppearancePreferenceManager
 
     private lateinit var app: ResolveInfo
 
@@ -48,7 +52,7 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
 
         appIcon.apply {
             contentDescription = context.getString(R.string.app_icon_description, appName)
-            setImageDrawable(app.loadIcon(context.packageManager))
+            setImageBitmap(appearancePreferenceManager.iconPack.getIconOf(withApp))
         }
         appLabel.text = appName
 

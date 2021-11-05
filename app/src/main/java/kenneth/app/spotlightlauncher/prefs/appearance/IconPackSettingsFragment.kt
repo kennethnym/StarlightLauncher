@@ -70,7 +70,7 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
     /**
      * Creates a Preference entry for the given icon pack.
      */
-    private fun iconPackPreference(iconPack: IconPack): Preference =
+    private fun iconPackPreference(iconPack: InstalledIconPack): Preference =
         Preference(context).apply {
             key = iconPack.packageName
             title = iconPack.name
@@ -83,7 +83,7 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.appearance_icon_pack_title)
     }
 
-    private fun changeIconPack(newIconPack: IconPack) {
+    private fun changeIconPack(newIconPack: InstalledIconPack) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 appearancePreferenceManager.changeIconPack(newIconPack)
@@ -100,7 +100,8 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun restoreDefaultIcons() {
-        if (appearancePreferenceManager.iconPack == null) {
+        val selectedIconPack = appearancePreferenceManager.iconPack
+        if (selectedIconPack is DefaultIconPack) {
             Snackbar.make(
                 listView,
                 getString(R.string.appearance_icon_pack_already_using_default),
@@ -120,22 +121,28 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
             it.removeAll()
             it.addPreference(
                 appearancePreferenceManager.iconPack
-                    ?.run {
-                        iconPackPreference(this).apply {
-                            isSelectable = false
-                            isPersistent = false
-                        }
+                    .let { selectedIconPack ->
+                        if (selectedIconPack is InstalledIconPack)
+                            iconPackPreference(selectedIconPack).apply {
+                                isSelectable = false
+                                isPersistent = false
+                            }
+                        else noCurrentIconPackPreference
                     }
-                    ?: noCurrentIconPackPreference
             )
         }
 
         installedIconPacksCategory?.let {
             it.removeAll()
 
-            if (iconPackManager.installedIconPacks.isNotEmpty()) {
-                iconPackManager.installedIconPacks.forEach { iconPackEntry ->
-                    if (iconPackEntry.key != appearancePreferenceManager.iconPack?.packageName) {
+            val installedIconPacks = iconPackManager.queryInstalledIconPacks()
+            val selectedIconPack = appearancePreferenceManager.iconPack
+
+            if (installedIconPacks.isNotEmpty()) {
+                installedIconPacks.forEach { iconPackEntry ->
+                    if (selectedIconPack is InstalledIconPack &&
+                        iconPackEntry.key != selectedIconPack.packageName
+                    ) {
                         it.addPreference(
                             iconPackPreference(iconPackEntry.value).also { pref ->
                                 pref.setOnPreferenceClickListener {

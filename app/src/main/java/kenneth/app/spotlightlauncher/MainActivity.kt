@@ -26,6 +26,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kenneth.app.spotlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.spotlightlauncher.searching.SearchCategory
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
@@ -84,13 +85,6 @@ class MainActivity : AppCompatActivity() {
 
     private var isDarkModeActive = false
 
-    /**
-     * Right before requesting a permission, it is stored in this variable, so that when
-     * the request result comes back, we know what permission is being requested, and we
-     * can hide the corresponding button.
-     */
-    private var requestedPermission: String = ""
-
     fun addBackPressListener(handler: BackPressHandler) {
         backPressedCallbacks.add(handler)
     }
@@ -117,7 +111,9 @@ class MainActivity : AppCompatActivity() {
             else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         setContentView(binding.root)
-        appearancePreferenceManager.iconPack?.load()
+        appearancePreferenceManager.iconPack.let {
+            if (it is InstalledIconPack) it.load()
+        }
         permissionHandler.handlePermissionRequestsForActivity(this)
         attachListeners()
         askForReadExternalStoragePermission()
@@ -179,14 +175,8 @@ class MainActivity : AppCompatActivity() {
     private fun askForReadExternalStoragePermission() {
         // TODO: a temporary function to ask for READ_EXTERNAL_STORAGE permission
         // TODO: in prod this should be done during setup
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionHandler.run {
-                addListener(Manifest.permission.READ_EXTERNAL_STORAGE, ::handlePermissionResult)
-                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
+        permissionHandler.run {
+            requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -219,7 +209,6 @@ class MainActivity : AppCompatActivity() {
      */
     private fun updateAdaptiveColors() {
         if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
             val wallpaperBitmap = wallpaperManager.fastDrawable.toBitmap()
@@ -253,23 +242,6 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun handlePermissionResult(isGranted: Boolean) {
-        if (!isGranted) return
-
-        val query = findViewById<EditText>(R.id.search_box).text.toString()
-
-        when (requestedPermission) {
-            Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                if (binding.widgetsPanel.isExpanded) {
-                    searcher.requestSpecificSearch(
-                        SearchCategory.FILES,
-                        query
-                    )
-                }
-            }
-        }
-    }
-
     @SuppressLint("InlinedApi")
     private fun enableLightStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -293,11 +265,10 @@ class MainActivity : AppCompatActivity() {
                     0,
                     WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
                 )
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isDarkModeActive) {
+        } else
             binding.root.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        }
     }
 
     /**
@@ -305,7 +276,6 @@ class MainActivity : AppCompatActivity() {
      */
     private fun updateWallpaper() {
         if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
             val wallpaper = wallpaperManager.fastDrawable

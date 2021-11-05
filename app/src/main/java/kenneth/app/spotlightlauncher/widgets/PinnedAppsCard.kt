@@ -116,7 +116,7 @@ class PinnedAppsGridItem(
         get() = appearancePreferenceManager.areNamesOfPinnedAppsShown
 
     override fun onAppearancePreferencesChanged(key: String) {
-        if (key == AppearancePreferenceManager.showPinnedAppsLabelsKey) {
+        if (key == appearancePreferenceManager.showPinnedAppsLabelsKey) {
             setAppLabelVisibility()
         } else {
             super.onAppearancePreferencesChanged(key)

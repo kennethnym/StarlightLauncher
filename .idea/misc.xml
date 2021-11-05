@@ -11,11 +11,14 @@
         <entry key="app/src/main/res/drawable/note_card_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/require_location_perm_bg.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/rounded_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/note_card.xml" value="0.2821557971014493" />
         <entry key="app/src/main/res/layout/quick_notes_layout.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/search_box.xml" value="0.19270833333333334" />
+        <entry key="app/src/main/res/layout/search_result_layout.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/widget_list.xml" value="0.2821557971014493" />
+        <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
         <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.19375" />
       </map>
     </option>

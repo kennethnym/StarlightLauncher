@@ -4,17 +4,25 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
 import kenneth.app.spotlightlauncher.R
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private object DefaultValue {
     const val SHOW_PINNED_APPS_LABELS = true
     const val SHOW_APP_NAMES_IN_SEARCH_RESULT = true
 }
 
-/**
- * An interface to interact with appearance preferences stored in SharedPreferences
- */
-object AppearancePreferenceManager {
+@Singleton
+class AppearancePreferenceManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
+    private val defaultIconPack = DefaultIconPack(context)
+
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
     /**
      * Whether the user chooses to show names of pinned apps.
      */
@@ -33,34 +41,28 @@ object AppearancePreferenceManager {
             DefaultValue.SHOW_APP_NAMES_IN_SEARCH_RESULT,
         )
 
+    val showPinnedAppsLabelsKey by lazy {
+        context.getString(R.string.appearance_show_pinned_apps_labels)
+    }
+
+    val showAppNamesInSearchResultKey by lazy {
+        context.getString(R.string.appearance_show_app_names_in_search_result)
+    }
+
+    val iconPackPrefKey by lazy {
+        context.getString(R.string.appearance_icon_pack)
+    }
+
     /**
      * The icon pack to use, if user has picked any. null if user has not picked any icon pack.
      */
-    var iconPack: IconPack? = null
+    var iconPack: IconPack =
+        sharedPreferences.getString(iconPackPrefKey, null)
+            ?.let {
+                InstalledIconPack(context, it)
+            }
+            ?: defaultIconPack
         private set
-
-    private lateinit var context: Context
-    private lateinit var sharedPreferences: SharedPreferences
-
-    val showPinnedAppsLabelsKey by lazy { context.getString(R.string.appearance_show_pinned_apps_labels) }
-    val showAppNamesInSearchResultKey by lazy { context.getString(R.string.appearance_show_app_names_in_search_result) }
-    val iconPackPrefKey by lazy { context.getString(R.string.appearance_icon_pack) }
-
-    fun getInstance(context: Context) = this.apply {
-        this.context = context
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-        if (iconPack == null) {
-            Log.d("hub", iconPackPrefKey)
-            val selectedIconPackPackageName = sharedPreferences.getString(iconPackPrefKey, null)
-            Log.d("hub", selectedIconPackPackageName.toString())
-
-            iconPack =
-                if (selectedIconPackPackageName != null)
-                    IconPack(context, selectedIconPackPackageName)
-                else null
-        }
-    }
 
     /**
      * An alias to SharedPreferences.registerOnSharedPreferenceChangeListener
@@ -69,7 +71,7 @@ object AppearancePreferenceManager {
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    fun changeIconPack(iconPack: IconPack) {
+    fun changeIconPack(iconPack: InstalledIconPack) {
         sharedPreferences
             .edit()
             .putString(iconPackPrefKey, iconPack.packageName)
@@ -87,6 +89,6 @@ object AppearancePreferenceManager {
             .remove(iconPackPrefKey)
             .apply()
 
-        iconPack = null
+        iconPack = DefaultIconPack(context)
     }
 }
