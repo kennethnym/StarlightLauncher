@@ -142,6 +142,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                     getCurrentWeather()
                 }
             } catch (ex: Exception) {
+                Log.e("hub", "$ex")
                 return@launch
             }
 

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/date_time_pref_title">
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
             app:defaultValue="false"
             app:key="@string/date_time_use_24hr_clock"
             app:title="@string/date_time_use_24hr_clock_title" />
@@ -12,11 +13,17 @@
 
     <PreferenceCategory app:title="@string/date_time_weather_category">
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
             app:defaultValue="false"
             app:key="@string/date_time_show_weather"
             app:summary="@string/date_time_show_weather_summary"
             app:title="@string/date_time_show_weather_title" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="@string/date_time_use_auto_location_title"
+            app:key="@string/date_time_use_auto_location"
+            app:summary="@string/date_time_use_auto_location_summary" />
 
         <Preference
             app:fragment="kenneth.app.spotlightlauncher.prefs.datetime.WeatherLocationPickerFragment"

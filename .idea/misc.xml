@@ -19,7 +19,9 @@
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/widget_list.xml" value="0.2821557971014493" />
         <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
-        <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.19375" />
+        <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.335" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.26222826086956524" />
+        <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
       </map>
     </option>
   </component>

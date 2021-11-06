@@ -1,6 +1,5 @@
 package kenneth.app.spotlightlauncher.api
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -10,7 +9,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -38,9 +36,27 @@ class NominatimApi @Inject constructor(
             }
             val body = response.body()?.string() ?: return null
 
-            Log.d("spotlight", body)
-
             json.decodeFromString<List<Place>>(body)
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
+
+    suspend fun reverseGeocode(latLong: LatLong): Place? {
+        val (lat, long) = latLong
+        val url = HttpUrl.parse("$API_URL/reverse")!!
+            .newBuilder()
+            .addQueryParameter("lat", lat.toString())
+            .addQueryParameter("lon", long.toString())
+            .addQueryParameter("format", "json")
+            .build()
+
+        val req = Request.Builder().url(url).build()
+
+        return try {
+            withContext(Dispatchers.IO) {
+                httpClient.newCall(req).execute().body()?.string()
+            }?.let { json.decodeFromString<Place>(it) }
         } catch (ex: Exception) {
             throw ex
         }
