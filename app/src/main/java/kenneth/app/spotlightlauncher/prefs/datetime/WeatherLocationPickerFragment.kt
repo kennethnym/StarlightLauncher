@@ -115,7 +115,7 @@ class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
                 ?.let { locationManager.getLastKnownLocation(it) }
                 ?.let {
                     apiScope.launch {
-                        val latLong = LatLong(it.latitude, it.longitude)
+                        val latLong = LatLong(it)
                         nominatimApi.reverseGeocode(latLong)?.let { place ->
                             setWeatherLocation(latLong, place.displayName)
                         } ?: activity?.runOnUiThread {

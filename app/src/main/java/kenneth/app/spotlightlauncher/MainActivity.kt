@@ -6,6 +6,7 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -15,6 +16,8 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -107,8 +110,10 @@ class MainActivity : AppCompatActivity() {
             BindingRegister.activityMainBinding = it
         }
         isDarkModeActive =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) resources.configuration.isNightModeActive
-            else resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                resources.configuration.isNightModeActive
+            else
+                resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         setContentView(binding.root)
         appearancePreferenceManager.iconPack.let {
@@ -192,16 +197,16 @@ class MainActivity : AppCompatActivity() {
 
                 insets
             }
-        }
 
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener(
-            object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    updateWallpaper()
+            viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        updateWallpaper()
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     /**

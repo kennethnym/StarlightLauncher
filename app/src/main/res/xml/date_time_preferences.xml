@@ -20,10 +20,17 @@
             app:title="@string/date_time_show_weather_title" />
 
         <SwitchPreference
-            android:defaultValue="false"
-            android:title="@string/date_time_use_auto_location_title"
+            app:defaultValue="false"
             app:key="@string/date_time_use_auto_location"
-            app:summary="@string/date_time_use_auto_location_summary" />
+            app:summary="@string/date_time_use_auto_location_summary"
+            app:title="@string/date_time_use_auto_location_title" />
+
+        <ListPreference
+            app:entries="@array/date_time_auto_weather_check_frequency_entries"
+            app:entryValues="@array/date_time_auto_weather_check_frequency_values"
+            app:key="@string/date_time_auto_location_check_frequency"
+            app:summary="@string/date_time_use_auto_location_check_frequency_summary"
+            app:title="@string/date_time_use_auto_location_check_frequency_title" />
 
         <Preference
             app:fragment="kenneth.app.spotlightlauncher.prefs.datetime.WeatherLocationPickerFragment"

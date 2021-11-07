@@ -14,6 +14,8 @@ import javax.inject.Singleton
 private object DefaultValue {
     const val SHOULD_SHOW_WEATHER = true
     const val SHOULD_USE_24HR_CLOCK = false
+    const val SHOULD_USE_AUTO_WEATHER_LOCATION = false
+    const val AUTO_WEATHER_LOCATION_CHECK_FREQUENCY = 3600000L
     val WEATHER_UNIT = TemperatureUnit.METRIC.name
 }
 
@@ -53,14 +55,27 @@ class DateTimePreferenceManager @Inject constructor(
             ) ?: DefaultValue.WEATHER_UNIT
         )
 
+    val shouldUseAutoWeatherLocation: Boolean
+        get() = sharedPreference.getBoolean(
+            useAutoWeatherLocationKey,
+            DefaultValue.SHOULD_USE_AUTO_WEATHER_LOCATION
+        )
+
+    val autoWeatherLocationCheckFrequency: Long
+        get() = sharedPreference.getString(autoWeatherLocationCheckFrequencyKey, null)
+            ?.toLong()
+            ?: DefaultValue.AUTO_WEATHER_LOCATION_CHECK_FREQUENCY
+
     private val sharedPreference by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
-    private val use24HrClockPrefKey by lazy { context.getString(R.string.date_time_use_24hr_clock) }
-    private val showWeatherPrefKey by lazy { context.getString(R.string.date_time_show_weather) }
-    private val weatherUnitPrefKey by lazy { context.getString(R.string.date_time_weather_unit) }
-    private val weatherLocationLatPrefKey by lazy { context.getString(R.string.date_time_weather_location_lat) }
-    private val weatherLocationLongPrefKey by lazy { context.getString(R.string.date_time_weather_location_long) }
-    private val weatherLocationNamePrefKey by lazy { context.getString(R.string.date_time_weather_location_name) }
+    val use24HrClockPrefKey by lazy { context.getString(R.string.date_time_use_24hr_clock) }
+    val showWeatherPrefKey by lazy { context.getString(R.string.date_time_show_weather) }
+    val weatherUnitPrefKey by lazy { context.getString(R.string.date_time_weather_unit) }
+    val weatherLocationLatPrefKey by lazy { context.getString(R.string.date_time_weather_location_lat) }
+    val weatherLocationLongPrefKey by lazy { context.getString(R.string.date_time_weather_location_long) }
+    val weatherLocationNamePrefKey by lazy { context.getString(R.string.date_time_weather_location_name) }
+    val useAutoWeatherLocationKey by lazy { context.getString(R.string.date_time_use_auto_location) }
+    val autoWeatherLocationCheckFrequencyKey by lazy { context.getString(R.string.date_time_auto_location_check_frequency) }
 
     /**
      * Changes the weather location described by the given LatLong.

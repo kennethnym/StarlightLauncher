@@ -1,8 +1,12 @@
 package kenneth.app.spotlightlauncher.prefs.datetime
 
 import android.Manifest
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.widget.Switch
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
@@ -25,6 +29,11 @@ class DateTimeSettingsFragment : PreferenceFragmentCompat(),
     private lateinit var useAutoWeatherLocationPref: SwitchPreference
     private lateinit var weatherLocationPickerPref: Preference
 
+    private val locationPermRequest = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ::handleLocationPermRequestResult
+    )
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.date_time_preferences, rootKey)
 
@@ -38,15 +47,33 @@ class DateTimeSettingsFragment : PreferenceFragmentCompat(),
             if (value is Boolean) {
                 useAutoWeatherLocationPref.isEnabled = value
                 weatherLocationPickerPref.isEnabled = value
-            }
-            HANDLED
+                value
+            } else false
         }
 
-        useAutoWeatherLocationPref.setOnPreferenceChangeListener { _, value ->
-            if (value is Boolean) {
-                weatherLocationPickerPref.isEnabled = !value
+        useAutoWeatherLocationPref.run {
+            setOnPreferenceClickListener { pref ->
+                if (pref is SwitchPreference) {
+                    if (context?.let {
+                            ActivityCompat.checkSelfPermission(
+                                it,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        } != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        useAutoWeatherLocationPref.isChecked = false
+                        locationPermRequest.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    }
+                }
+                HANDLED
             }
-            HANDLED
+
+            setOnPreferenceChangeListener { _, value ->
+                if (value is Boolean) {
+                    weatherLocationPickerPref.isEnabled = !value
+                    HANDLED
+                } else false
+            }
         }
     }
 
@@ -81,10 +108,16 @@ class DateTimeSettingsFragment : PreferenceFragmentCompat(),
         showCurrentPreferences()
     }
 
+    private fun handleLocationPermRequestResult(isGranted: Boolean) {
+        useAutoWeatherLocationPref.isChecked = isGranted
+    }
+
     private fun showCurrentPreferences() {
         showPickedLocation()
         val shouldShowWeather = dateTimePreferenceManager.shouldShowWeather
         use24HrClockPref.isChecked = dateTimePreferenceManager.shouldUse24HrClock
+        useAutoWeatherLocationPref.isChecked =
+            dateTimePreferenceManager.shouldUseAutoWeatherLocation
         showWeatherPref.isChecked = shouldShowWeather
         weatherLocationPickerPref.isEnabled =
             shouldShowWeather && !useAutoWeatherLocationPref.isChecked

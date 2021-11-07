@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher
 
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.location.LocationManager
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
@@ -36,7 +37,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSharedPreference(@ApplicationContext context: Context) =
+    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
 
     @Provides

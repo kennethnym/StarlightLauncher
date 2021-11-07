@@ -1,15 +1,18 @@
 package kenneth.app.spotlightlauncher.widgets
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.Manifest
+import android.content.*
+import android.content.pm.PackageManager
+import android.location.Criteria
+import android.location.Location
+import android.location.LocationManager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -17,6 +20,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.api.LatLong
 import kenneth.app.spotlightlauncher.api.OpenWeatherApi
 import kenneth.app.spotlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.spotlightlauncher.prefs.datetime.DateTimePreferenceManager
@@ -41,8 +45,19 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var openWeatherApi: OpenWeatherApi
 
+    @Inject
+    lateinit var locationManager: LocationManager
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     private val timeTickIntentFilter = IntentFilter(Intent.ACTION_TIME_TICK)
     private val weatherApiScope = CoroutineScope(Dispatchers.IO)
+
+    private val weatherLocationCriteria = Criteria().apply {
+        accuracy = Criteria.ACCURACY_COARSE
+        powerRequirement = Criteria.POWER_LOW
+    }
 
     /**
      * A BroadcastReceiver that receives broadcast of Intent.ACTION_TIME_TICK.
@@ -70,6 +85,8 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
 
     private val separator: TextView
 
+    private var currentWeatherLocation: LatLong
+
     init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -78,14 +95,14 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         )
         gravity = Gravity.CENTER
         orientation = VERTICAL
-
         binding = DateTimeViewBinding.inflate(LayoutInflater.from(context), this, true)
-
         separator = binding.dateTimeWeatherSeparator
+        currentWeatherLocation = dateTimePreferenceManager.weatherLocation
 
         updateTime()
         showWeather()
         activity?.lifecycle?.addObserver(this)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferencesChanged)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -110,6 +127,12 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         registerTimeTickListener()
     }
 
+    private fun onSharedPreferencesChanged(sharedPreferences: SharedPreferences, key: String) {
+        if (key == dateTimePreferenceManager.useAutoWeatherLocationKey) {
+            toggleLocationUpdate()
+        }
+    }
+
     private fun registerTimeTickListener() {
         context.registerReceiver(timeTickBroadcastReceiver, timeTickIntentFilter)
     }
@@ -123,7 +146,20 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
 
     private fun showWeather() {
         if (dateTimePreferenceManager.shouldShowWeather) {
-            loadWeather()
+            if (dateTimePreferenceManager.shouldUseAutoWeatherLocation && ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                locationManager.getBestProvider(weatherLocationCriteria, true)?.let {
+                    locationManager.getLastKnownLocation(it)?.let { loc ->
+                        currentWeatherLocation = LatLong(loc)
+                        loadWeather()
+                    }
+                }
+            } else {
+                loadWeather()
+            }
         } else {
             with(binding) {
                 temp.isVisible = false
@@ -137,7 +173,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         weatherApiScope.launch {
             val weather = try {
                 openWeatherApi.run {
-                    latLong = dateTimePreferenceManager.weatherLocation
+                    latLong = currentWeatherLocation
                     unit = dateTimePreferenceManager.weatherUnit
                     getCurrentWeather()
                 }
@@ -170,6 +206,44 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
                 }
             }
         }
+    }
+
+    /**
+     * Enables or disables auto update of weather location.
+     */
+    private fun toggleLocationUpdate() {
+        if (dateTimePreferenceManager.shouldUseAutoWeatherLocation && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val locationCriteria = Criteria().apply {
+                accuracy = Criteria.ACCURACY_COARSE
+                powerRequirement = Criteria.POWER_LOW
+            }
+
+            locationManager.getBestProvider(locationCriteria, true)
+                ?.let {
+                    locationManager.getLastKnownLocation(it)?.let { loc ->
+                        currentWeatherLocation = LatLong(loc)
+                    }
+                    loadWeather()
+                    locationManager.requestLocationUpdates(
+                        it,
+                        dateTimePreferenceManager.autoWeatherLocationCheckFrequency,
+                        1000F,
+                        ::onLocationUpdated
+                    )
+                }
+        } else {
+            currentWeatherLocation = dateTimePreferenceManager.weatherLocation
+            locationManager.removeUpdates(::onLocationUpdated)
+        }
+    }
+
+    private fun onLocationUpdated(location: Location) {
+        currentWeatherLocation = LatLong(location)
+        loadWeather()
     }
 
     private fun updateTime() {
