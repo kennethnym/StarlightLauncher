@@ -20,8 +20,9 @@ class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         gravity = Gravity.CENTER_HORIZONTAL
 
         val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal)
+        val paddingTop = resources.getDimensionPixelSize(R.dimen.section_card_margin_vertical) * 2
 
-        setPadding(paddingHorizontal, 0, paddingHorizontal, 0)
+        setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
 
         inflate(context, R.layout.widget_list, this)
 
