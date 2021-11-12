@@ -18,7 +18,7 @@ import javax.inject.Inject
 /**
  * Whether [TextButton] should show the content with an adaptive color by default.
  */
-private const val DEFAULT_USE_ADAPTIVE_COLOR = true
+private const val DEFAULT_USE_CUSTOM_COLOR = false
 
 @AndroidEntryPoint
 class TextButton(context: Context, attrs: AttributeSet) :
@@ -43,7 +43,7 @@ class TextButton(context: Context, attrs: AttributeSet) :
                     getColor(R.styleable.TextButton_color, appState.adaptiveTextColor)
 
                 shouldUseAdaptiveColor =
-                    getBoolean(R.styleable.TextButton_useCustomColor, DEFAULT_USE_ADAPTIVE_COLOR)
+                    !getBoolean(R.styleable.TextButton_useCustomColor, DEFAULT_USE_CUSTOM_COLOR)
 
                 compoundDrawablesRelative.forEach { it?.setTint(textColor) }
                 setTextColor(textColor)

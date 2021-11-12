@@ -50,6 +50,10 @@ class NotesPreferenceManager @Inject constructor(
         noteListListeners.add(listener)
     }
 
+    fun removeNoteListChangedListener(listener: NoteListListener) {
+        noteListListeners.remove(listener)
+    }
+
     /**
      * Saves the edited note.
      * @param note The edited note. The id has to be identical with the id of the original note.

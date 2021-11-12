@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.R
@@ -93,8 +94,22 @@ class NoteCardListAdapter @Inject constructor(
 
     override val layoutManager = LinearLayoutManager(context)
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        notesPreferenceManager.addNoteListChangedListener(::onNoteListChanged)
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        notesPreferenceManager.removeNoteListChangedListener(::onNoteListChanged)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {
         val binding = NoteCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NoteCard(context, this, binding, timeAgo, notesPreferenceManager)
+    }
+
+    private fun onNoteListChanged(notes: List<Note>) {
+        data = notes
     }
 }
