@@ -95,8 +95,8 @@ class AppOptionMenu(context: Context, attrs: AttributeSet) : BottomOptionMenu(co
     }
 
     private fun onAppUninstalled(uninstalledPackageName: String) {
-        if (uninstalledPackageName == app.activityInfo.packageName) {
-            hide()
-        }
+//        if (uninstalledPackageName == app.activityInfo.packageName) {
+//            hide()
+//        }
     }
 }
