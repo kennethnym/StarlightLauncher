@@ -30,7 +30,6 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.InstalledIconPack
-import kenneth.app.spotlightlauncher.searching.SearchCategory
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
 import kenneth.app.spotlightlauncher.utils.*
