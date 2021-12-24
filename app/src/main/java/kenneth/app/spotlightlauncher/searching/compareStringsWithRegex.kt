@@ -14,40 +14,12 @@ import android.util.Log
 fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int {
     val result1 = regex.findAll(string1).toList()
     val result2 = regex.findAll(string2).toList()
-    val searchTerm = regex.toString().run {
-        substring(1 until length - 1)
-    }.lowercase()
 
-    /**
-     * Maps chars in a string to their corresponding index in the string.
-     */
-    val searchTermIndexMap = searchTerm.foldIndexed(mutableMapOf<Char, IntRange>()) { i, m, char ->
-        when {
-            m.contains(char) -> m.apply {
-                this[char] = this[char]!!.first..i
-            }
-            else -> m.apply { this[char] = i..i }
-        }
-    }
-
-    val result1IndexRange = regexMatchIndexRange(result1, searchTermIndexMap)
-    val result2IndexRange = regexMatchIndexRange(result2, searchTermIndexMap)
-
+    val result1IndexRange = regexMatchIndexRange(result1)
+    val result2IndexRange = regexMatchIndexRange(result2)
 
     result1IndexRange.zip(result2IndexRange)
         .forEach { (matchRange1, matchRange2) ->
-            // matchRange1 and matchRange2 defines the range of the index of the regex match
-            // in the search keyword
-            //
-            // for example, if the character 'a' is matched in the string 'authenticator'
-            // and the search keyword is 'abc', then matchRanges will be:
-            // [[0, 0] <- the first 'a' in 'authenticator', 'a' is the first character in 'abc'
-            //  [2, 2] <- the first 'c' in 'authenticator', 'c' is the third character in 'abc']
-            //
-            // longer ranges will be ranked higher
-            // if both ranges have the same size, then smaller indices will be ranked higher
-            // (i.e. the matched character appears earlier in the search term.)
-
             val matchRange1Size = matchRange1.second - matchRange1.first + 1
             val matchRange2Size = matchRange2.second - matchRange2.first + 1
 
@@ -60,40 +32,25 @@ fun compareStringsWithRegex(string1: String, string2: String, regex: Regex): Int
             }
         }
 
-    return result2IndexRange.size - result1IndexRange.size
+    return when {
+        result2IndexRange.size != result1IndexRange.size ->
+            result2IndexRange.size - result1IndexRange.size
+
+        else -> string1.length - string2.length
+    }
 }
 
-private fun regexMatchIndexRange(matches: List<MatchResult>, indexMap: Map<Char, IntRange>) =
+private fun regexMatchIndexRange(matches: List<MatchResult>) =
     matches
         .foldIndexed(mutableListOf<Pair<Int, Int>>()) { i, ranges, match ->
-            val char = match.value[0].lowercaseChar()
-            val charIndexInSearchTerm = indexMap[char]
             ranges.apply {
                 when {
-                    charIndexInSearchTerm == null -> {
-                    }
+                    ranges.isEmpty() -> add(match.range.first to match.range.last)
 
-                    isEmpty() || match.range.first - matches[i - 1].range.first > 1 -> add(
-                        charIndexInSearchTerm.first to charIndexInSearchTerm.first
-                    )
+                    match.range.first - last().second == 1 ->
+                        this[lastIndex] = last().copy(second = match.range.last)
 
-                    else -> {
-                        val (_, lastMatch) = last()
-                        when {
-                            lastMatch in charIndexInSearchTerm ->
-                                this[lastIndex] = last().run { copy(second = second + 1) }
-
-                            charIndexInSearchTerm.first - lastMatch == 1 -> {
-                                this[lastIndex] = last().run {
-                                    copy(second = charIndexInSearchTerm.first)
-                                }
-                            }
-
-                            else -> add(
-                                charIndexInSearchTerm.first to charIndexInSearchTerm.first
-                            )
-                        }
-                    }
+                    else -> add(match.range.first to match.range.last)
                 }
             }
         }

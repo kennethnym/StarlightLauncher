@@ -7,16 +7,38 @@
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Permission to access coarse location, required only if the user wishes to allow the launcher to
+    use their phone location to provide relevant weather info -->
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- Permission to access current wifi state to allow users to control wifi through the launcher -->
+    <uses-permission
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        android:required="false" />
+
+    <!--  -->
     <uses-permission
         android:name="android.permission.BLUETOOTH"
         android:required="false" />
+
+    <!-- Permission to read storage, required to retrieve the current wallpaper to provide blur effect  -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
+
+    <!-- Permission to uninstall apps through the launcher.  -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
+    <!-- Permission to read contacts so that the launcher can provide relevant contacts when searching. -->
+    <uses-permission
+        android:name="android.permission.READ_CONTACTS"
+        android:required="false" />
 
     <application
         android:name=".MainApplication"
