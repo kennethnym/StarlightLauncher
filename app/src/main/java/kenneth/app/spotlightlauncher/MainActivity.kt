@@ -6,7 +6,6 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -15,9 +14,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -27,11 +23,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import kenneth.app.spotlightlauncher.api.theme.AdaptiveTheme
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.InstalledIconPack
+import kenneth.app.spotlightlauncher.searching.SearchModuleManager
 import kenneth.app.spotlightlauncher.searching.Searcher
-import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
 import kenneth.app.spotlightlauncher.utils.*
 import javax.inject.Inject
 
@@ -61,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var searcher: Searcher
 
     @Inject
-    lateinit var searchResultAdapter: SearchResultAdapter
+    lateinit var searchModuleManager: SearchModuleManager
 
     @Inject
     lateinit var blurHandler: BlurHandler
@@ -96,6 +93,8 @@ class MainActivity : AppCompatActivity() {
 
         updateAdaptiveColors()
         setTheme(appState.themeStyleId)
+
+        searchModuleManager.initializeModules(this)
 
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -170,7 +169,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cleanup() {
-        searchResultAdapter.cleanup()
+//        searchResultAdapter.cleanup()
     }
 
     /**
@@ -217,15 +216,24 @@ class MainActivity : AppCompatActivity() {
         ) {
             val wallpaperBitmap = wallpaperManager.fastDrawable.toBitmap()
             appState.apply {
-                adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
-
+                val adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
                 val white = getColor(android.R.color.white)
                 val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
 
-                adaptiveTextColor =
+                adaptiveTheme = AdaptiveTheme(
+                    adaptiveBackgroundColor,
+                    adaptiveTextColor =
                     if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
                         white
                     else black
+                )
+
+                setTheme(
+                    if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
+                        R.style.DarkLauncherTheme
+                    else
+                        R.style.LightLauncherTheme
+                )
             }
 
             if (appState.isInitialStart) {

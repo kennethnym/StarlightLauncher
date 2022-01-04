@@ -48,7 +48,7 @@
                 style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/section_card_padding"
+                android:layout_marginVertical="@dimen/card_padding"
                 android:text="@string/grant_permission_label"
                 android:textColor="?attr/colorOnBackground" />
 
@@ -57,7 +57,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/section_card_padding">
+            android:layout_marginHorizontal="@dimen/card_padding">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/section_card_padding"
+            android:layout_marginTop="@dimen/card_padding"
             android:text="@string/open_wifi_settings_label" />
 
     </merge>

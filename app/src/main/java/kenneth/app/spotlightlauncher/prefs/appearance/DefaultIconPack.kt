@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
+import kenneth.app.spotlightlauncher.api.IconPack
 import java.lang.UnsupportedOperationException
 
 /**

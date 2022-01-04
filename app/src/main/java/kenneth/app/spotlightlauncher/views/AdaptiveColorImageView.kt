@@ -12,7 +12,7 @@ import kenneth.app.spotlightlauncher.utils.activity
 import javax.inject.Inject
 
 /**
- * An [ImageView] that changes tint based on [AppState.adaptiveTextColor].
+ * An [ImageView] that changes tint based on [appState.adaptiveTheme.adaptiveTextColor].
  * Can be used to display a font icon.
  */
 @AndroidEntryPoint
@@ -27,11 +27,11 @@ class AdaptiveColorImageView(context: Context, attrs: AttributeSet) :
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setColorFilter(appState.adaptiveTextColor)
+        setColorFilter(appState.adaptiveTheme.adaptiveTextColor)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
-        setColorFilter(appState.adaptiveTextColor)
+        setColorFilter(appState.adaptiveTheme.adaptiveTextColor)
     }
 }

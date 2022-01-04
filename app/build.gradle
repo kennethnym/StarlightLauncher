@@ -9,7 +9,7 @@ def apiKeys = new Properties()
 apiKeys.load(new FileInputStream(apiKeyFile))
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "kenneth.app.spotlightlauncher"
@@ -51,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':spotlight-launcher-api')
+    implementation project(path: ':app-search-module')
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
 
     implementation fileTree(dir: "libs", include: ["*.jar"])

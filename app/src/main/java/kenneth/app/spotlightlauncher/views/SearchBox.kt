@@ -19,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.databinding.SearchBoxBinding
-import kenneth.app.spotlightlauncher.searching.SearchResultAdapter
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
@@ -49,9 +48,6 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
     @Inject
     lateinit var appState: AppState
-
-    @Inject
-    lateinit var searchResultAdapter: SearchResultAdapter
 
     private val binding = SearchBoxBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -90,27 +86,19 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        binding.searchBoxBlurBackground.startBlur()
+//        binding.searchBoxBlurBackground.startBlur()
         binding.searchBoxEditText.setHintTextColor(
             ColorUtils.setAlphaComponent(
-                appState.adaptiveTextColor,
+                appState.adaptiveTheme.adaptiveTextColor,
                 0x88
             )
         )
     }
 
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        when (visibility) {
-            View.GONE, View.INVISIBLE -> binding.searchBoxBlurBackground.pauseBlur()
-            else -> binding.searchBoxBlurBackground.startBlur()
-        }
-    }
-
     override fun clearFocus() {
         super.clearFocus()
         binding.searchBoxEditText.clearFocus()
-        inputMethodManager.hideSoftInputFromWindow(binding.searchBoxBlurBackground.windowToken, 0)
+//        inputMethodManager.hideSoftInputFromWindow(binding.searchBoxBlurBackground.windowToken, 0)
     }
 
     override fun isFocused(): Boolean {
@@ -149,10 +137,10 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     }
 
     private fun handleSearchQuery(query: Editable?) {
-        BindingRegister.searchResultViewBinding.suggesedResultCard.hide()
         if (isQueryEmpty(query)) {
             searcher.cancelPendingSearch()
-            searchResultAdapter.hideResult()
+            BindingRegister.widgetsPanelBinding.searchResultView.clearSearchResults()
+            BindingRegister.activityMainBinding.widgetsPanel.hideSearchResults()
         } else {
             showClearSearchBoxButton()
             searcher.requestSearch(query.toString())

@@ -9,6 +9,11 @@
     <string name="appearance_installed_icon_pack_category">appearance_installed_icon_pack</string>
     <string name="appearance_revert_icon_pack">appearance_revert_icon_pack</string>
 
+    <string name="search_enabled_modules_pref_key">search_enabled_modules_pref_key</string>
+
+    <string name="search_layout_pref_key">search_layout</string>
+    <string name="search_category_order_pref_key">search_category_order_pref_key</string>
+
     <string name="file_search_pref_key">file_search</string>
     <string name="file_search_enabled">file_search_enabled</string>
     <string name="file_include_paths_category">file_search_paths_category</string>

@@ -245,7 +245,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
         dateTimeViewContainer?.gravity = Gravity.CENTER
-        binding.mediaControlBlurBackground.pauseBlur()
+//        binding.mediaControlBlurBackground.pauseBlur()
     }
 
     /**
@@ -294,7 +294,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             it.playbackState?.let(::showPlaybackState)
         }
 
-        binding.mediaControlBlurBackground.startBlur()
+//        binding.mediaControlBlurBackground.startBlur()
     }
 
     /**

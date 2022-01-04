@@ -72,11 +72,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFilePreferenceManager(@ApplicationContext context: Context) =
-        FilePreferenceManager.getInstance(context)
-
-    @Provides
-    @Singleton
     fun providePinnedAppsPreferenceManager(@ApplicationContext context: Context) =
         PinnedAppsPreferenceManager.getInstance(context)
 

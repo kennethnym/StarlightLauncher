@@ -9,6 +9,7 @@
     <dimen name="text_separator_spacing">8dp</dimen>
 
     <dimen name="widget_margin_horizontal">16dp</dimen>
+    <dimen name="widget_space_between">16dp</dimen>
     <dimen name="widget_padding_vertical">16dp</dimen>
     <dimen name="widget_padding_horizontal">24dp</dimen>
     <dimen name="widget_list_spacing">16dp</dimen>
@@ -16,10 +17,12 @@
     <dimen name="search_box_container_padding">24dp</dimen>
     <dimen name="search_box_text_size">24sp</dimen>
 
-    <dimen name="section_card_space_between">16dp</dimen>
-    <dimen name="section_card_padding">16dp</dimen>
-    <dimen name="section_card_margin_horizontal">8dp</dimen>
-    <dimen name="section_card_margin_vertical">8dp</dimen>
+    <dimen name="search_result_card_padding_bottom">16dp</dimen>
+
+    <dimen name="card_space_between">16dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin_horizontal">8dp</dimen>
+    <dimen name="card_margin_vertical">8dp</dimen>
 
     <dimen name="material_list_item_icon_dimen">24dp</dimen>
     <dimen name="material_list_item_icon_margin_end">32dp</dimen>

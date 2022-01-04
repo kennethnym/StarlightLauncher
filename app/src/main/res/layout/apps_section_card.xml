@@ -24,7 +24,7 @@
         style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_card_padding"
+        android:layout_marginTop="@dimen/card_padding"
         android:text="@string/show_more_label" />
 
 </merge>

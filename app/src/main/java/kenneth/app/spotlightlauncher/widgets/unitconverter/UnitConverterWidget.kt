@@ -104,8 +104,6 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
             selectedSrcUnit = this@UnitConverterWidget.selectedSrcUnit
             selectedDestUnit = this@UnitConverterWidget.selectedDestUnit
 
-            unitConverterWidgetBlurBackground.startBlur()
-
             measurementSelectorBtn.setOnClickListener {
                 selectorValueType = SelectorValueType.MEASUREMENT
                 shouldDrawCustomContextMenu = true

@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher
 
 import android.view.View
+import kenneth.app.spotlightlauncher.api.theme.AdaptiveTheme
 import kenneth.app.spotlightlauncher.utils.ContextMenuCallback
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,16 +39,9 @@ class AppState @Inject constructor() {
         }
 
     /**
-     * Current background color of various views on the home screen based on
-     * the dominant color of the wallpaper.
+     * Current adaptive theme based on the current wallpaper.
      */
-    var adaptiveBackgroundColor: Int = 0
-
-    /**
-     * Current text color that changes based on [AppState.adaptiveBackgroundColor]
-     * to make sure there is enough contrast between the content and the backgound.
-     */
-    var adaptiveTextColor: Int = 0
+    var adaptiveTheme = AdaptiveTheme()
 
     var statusBarHeight = 0
 

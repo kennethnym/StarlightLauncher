@@ -73,7 +73,9 @@ class IconButton(context: Context, attrs: AttributeSet) :
                 shouldUseAdaptiveColor =
                     getBoolean(R.styleable.IconButton_useCustomColor, DEFAULT_USE_ADAPTIVE_COLOR)
                 icon = getDrawable(R.styleable.Icon_icon)
-                iconColor = getColor(R.styleable.Icon_iconColor, appState.adaptiveTextColor)
+                // TODO: REFACTOR LAUNCHER THEMING
+                iconColor =
+                    getColor(R.styleable.Icon_iconColor, appState.adaptiveTheme.adaptiveTextColor)
                 layoutParams = ViewGroup.LayoutParams(iconSize, iconSize)
             } finally {
                 recycle()
@@ -91,7 +93,7 @@ class IconButton(context: Context, attrs: AttributeSet) :
         super.onAttachedToWindow()
 
         if (shouldUseAdaptiveColor)
-            setColorFilter(appState.adaptiveTextColor)
+            setColorFilter(appState.adaptiveTheme.adaptiveTextColor)
     }
 
     override fun performClick(): Boolean {
@@ -123,7 +125,7 @@ class IconButton(context: Context, attrs: AttributeSet) :
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         if (shouldUseAdaptiveColor)
-            iconColor = appState.adaptiveTextColor
+            iconColor = appState.adaptiveTheme.adaptiveTextColor
     }
 
     private fun showClickedEffect() {

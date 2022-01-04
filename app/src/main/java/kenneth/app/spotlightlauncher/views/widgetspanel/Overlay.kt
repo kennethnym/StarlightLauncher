@@ -10,13 +10,16 @@ import android.view.animation.PathInterpolator
 import androidx.core.animation.addListener
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.animations.DimensionAnimatable
 import kenneth.app.spotlightlauncher.animations.DimensionAnimator
+import kenneth.app.spotlightlauncher.api.view.Plate
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.mainActivity
-import kenneth.app.spotlightlauncher.views.BlurView
+import javax.inject.Inject
 
 /**
  * Defines, in milliseconds, how long the animation of showing [Overlay] should be.
@@ -30,9 +33,12 @@ private val SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR =
  * An empty view that overlays on top of [WidgetsPanel].
  * Widgets can use this to display additional info.
  */
-class Overlay(context: Context, attrs: AttributeSet) :
-    BlurView(context, attrs),
+@AndroidEntryPoint
+class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
     DimensionAnimatable by DimensionAnimator() {
+    @Inject
+    lateinit var appState: AppState
+
     /**
      * The [View] that this [Overlay] expanded from.
      */
@@ -65,7 +71,6 @@ class Overlay(context: Context, attrs: AttributeSet) :
         isVisible = true
         originalView = view
         content = withContent
-        startBlur()
 
         val offsetRect = Rect().apply {
             view.getDrawingRect(this)
@@ -133,7 +138,6 @@ class Overlay(context: Context, attrs: AttributeSet) :
             addListener({
                 isVisible = false
                 isClosing = false
-                pauseBlur()
             })
 
             start()

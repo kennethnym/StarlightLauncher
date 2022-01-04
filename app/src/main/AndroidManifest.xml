@@ -48,7 +48,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/LightLauncherTheme">
+        android:theme="@style/LightLauncherTheme"
+        tools:replace="android:name,android:allowBackup">
 
         <!-- This notification listener service is required in order to obtain info
           of the currently playing media. The registered listener class is empty. -->
@@ -87,5 +88,22 @@
 
         </activity>
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="kenneth.app.spotlightlauncher.SEARCH_MODULE" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="kenneth.app.spotlightlauncher.SEARCH_MODULE_SETTINGS" />
+        </intent>
+    </queries>
 
 </manifest>

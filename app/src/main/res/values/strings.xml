@@ -153,9 +153,18 @@
     <string name="appearance_revert_icon_pack_summary">Use default app icons instead.</string>
     <string name="appearance_icon_pack_already_using_default">Default icons are already in use.</string>
 
+    <!-- Search layout preferences -->
+    <string name="search_layout_title">Layout</string>
+    <string name="search_layout_summary">Adjust the layout of the search result screen.</string>
+    <string name="search_category_order_title">Search category order</string>
+    <string name="search_category_order_summary">
+        Rearrange the order that different search categories show up on the search result page
+        by long pressing then dragging them.
+    </string>
+
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
-    <string name="file_search_summary">Adjust how Spotlight searches your files</string>
+    <string name="file_search_summary">Adjust how Spotlight searches your files.</string>
     <string name="file_include_paths_category_header">Include paths</string>
     <string name="file_include_paths_summary">
         Add paths that you want Spotlight to search in. Spotlight will only search for files

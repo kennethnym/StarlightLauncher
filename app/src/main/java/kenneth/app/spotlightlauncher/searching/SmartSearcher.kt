@@ -6,10 +6,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import kenneth.app.spotlightlauncher.api.DuckDuckGoApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
 enum class SuggestedResultType {
     NONE, MATH, WIFI, BLUETOOTH, URL, APP
@@ -18,7 +20,7 @@ enum class SuggestedResultType {
 typealias WebResultCallback = (webResult: SmartSearcher.WebResult) -> Unit
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object SmartSearcherModule {
     @Provides
     fun provideExpressionParser() = Expressions()
@@ -27,6 +29,7 @@ object SmartSearcherModule {
 /**
  * SmartSearcher produces suggested results to the user.
  */
+@Singleton
 class SmartSearcher @Inject constructor(
     private val expressions: Expressions,
     private val duckduckgoApi: DuckDuckGoApi
@@ -34,32 +37,32 @@ class SmartSearcher @Inject constructor(
     private var activeApiCall: DuckDuckGoApi.Call? = null
     private var webResultListener: WebResultCallback? = null
 
-    fun  search(keyword: String): SearchResult.Suggested {
-        return try {
-            // first, try to parse the query as a math expression.
-
-            val result = parseAsMathExpression(keyword)
-
-            SearchResult.Suggested.Math(
-                query = keyword,
-                result,
-            )
-        } catch (e: Exception) {
-            // the query is not a valid math expression
-
-            when {
-                // wifi command
-                keyword.contains("wifi", ignoreCase = true) ->
-                    SearchResult.Suggested.Wifi(keyword)
-                // bluetooth command
-                keyword.contains("bluetooth", ignoreCase = true) ->
-                    SearchResult.Suggested.Bluetooth(keyword)
-                Patterns.WEB_URL.matcher(keyword).matches() ->
-                    SearchResult.Suggested.Url(keyword)
-                else -> SearchResult.Suggested.None(keyword)
-            }
-        }
-    }
+//    fun search(keyword: String): SearchResult.Suggested {
+//        return try {
+//            // first, try to parse the query as a math expression.
+//
+//            val result = parseAsMathExpression(keyword)
+//
+//            SearchResult.Suggested.Math(
+//                query = keyword,
+//                result,
+//            )
+//        } catch (e: Exception) {
+//            // the query is not a valid math expression
+//
+//            when {
+//                // wifi command
+//                keyword.contains("wifi", ignoreCase = true) ->
+//                    SearchResult.Suggested.Wifi(keyword)
+//                // bluetooth command
+//                keyword.contains("bluetooth", ignoreCase = true) ->
+//                    SearchResult.Suggested.Bluetooth(keyword)
+//                Patterns.WEB_URL.matcher(keyword).matches() ->
+//                    SearchResult.Suggested.Url(keyword)
+//                else -> SearchResult.Suggested.None(keyword)
+//            }
+//        }
+//    }
 
     fun setWebResultListener(listener: WebResultCallback) {
         webResultListener = listener

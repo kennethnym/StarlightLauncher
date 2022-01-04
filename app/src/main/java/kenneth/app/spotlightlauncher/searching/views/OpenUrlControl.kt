@@ -44,7 +44,7 @@ class OpenUrlControl(context: Context) : LinearLayout(context) {
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT,
         )
-        setPadding(resources.getDimensionPixelSize(R.dimen.section_card_padding))
+        setPadding(resources.getDimensionPixelSize(R.dimen.card_padding))
 
         binding = OpenUrlControlBinding.inflate(LayoutInflater.from(context), this)
 

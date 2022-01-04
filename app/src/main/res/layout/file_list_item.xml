@@ -3,7 +3,7 @@
     android:id="@+id/file_list_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
@@ -19,7 +19,7 @@
         android:outlineProvider="background"
         android:visibility="gone" />
 
-    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+    <TextView
         android:id="@+id/file_list_item_file_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

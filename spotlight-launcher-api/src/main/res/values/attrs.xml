@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- This theme attribute defines the intensity of blur effects used throughout Spotlight Launcher. -->
+    <attr name="blurAmount" format="integer" />
+
+    <!-- This attribute defines the background color that should be used for views drawn on top of BlurView -->
+    <attr name="backgroundColorOnBlurView" format="color" />
+
+    <attr name="plateColor" format="reference|color" />
+    <attr name="colorOnPlate" format="reference|color" />
+
+    <declare-styleable name="SearchResultCard">
+        <!-- Sets the title of SearchResultCard -->
+        <attr name="cardTitle" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="OptionMenuItem">
+        <attr name="itemLabel" format="string" />
+        <attr name="itemIcon" format="reference" />
+    </declare-styleable>
+</resources>

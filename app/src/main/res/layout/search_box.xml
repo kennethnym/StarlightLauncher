@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <kenneth.app.spotlightlauncher.views.BlurView
-        android:id="@+id/search_box_blur_background"
+    <kenneth.app.spotlightlauncher.api.view.Plate
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -29,20 +28,20 @@
                     android:hint="@string/search_box_label"
                     android:inputType="text"
                     android:textAlignment="center"
-                    android:textColor="?colorOnBackground"
-                    android:textColorHint="?hintTextColor"
+                    android:textColor="?colorOnPlate"
+                    android:textColorHint="?colorOnPlate"
                     android:textSize="@dimen/search_box_text_size"
                     android:textStyle="bold"
                     tools:ignore="Autofill" />
 
-                <kenneth.app.spotlightlauncher.views.IconButton
+                <kenneth.app.spotlightlauncher.api.view.IconButton
                     android:id="@+id/search_box_right_side_btn"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_gravity="end|center"
                     android:layout_marginEnd="@dimen/widget_margin_horizontal"
-                    app:icon="@drawable/ic_angle_up"
-                    app:iconSize="32dp" />
+                    android:src="@drawable/ic_angle_up"
+                    android:tint="?colorOnPlate" />
 
             </FrameLayout>
 
@@ -56,5 +55,6 @@
 
         </LinearLayout>
 
-    </kenneth.app.spotlightlauncher.views.BlurView>
+    </kenneth.app.spotlightlauncher.api.view.Plate>
+
 </layout>

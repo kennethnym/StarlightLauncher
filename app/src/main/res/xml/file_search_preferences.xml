@@ -6,16 +6,16 @@
         android:key="@string/file_search_enabled"
         android:title="Enable file search" />
 
-    <kenneth.app.spotlightlauncher.prefs.files.IncludePathsPreferenceCategory
+    <kenneth.app.spotlightlauncher.prefs.views.PreferenceCategoryWithSummary
         app:key="@string/file_include_paths_category"
         app:summary="@string/file_include_paths_summary"
         app:title="@string/file_include_paths_category_header">
 
         <Preference
-            app:key="@string/file_search_add_path"
             android:icon="@drawable/ic_baseline_add_24"
+            app:key="@string/file_search_add_path"
             app:title="@string/file_add_path_title" />
 
-    </kenneth.app.spotlightlauncher.prefs.files.IncludePathsPreferenceCategory>
+    </kenneth.app.spotlightlauncher.prefs.views.PreferenceCategoryWithSummary>
 
 </PreferenceScreen>

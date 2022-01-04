@@ -8,11 +8,17 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.prefs.SearchPreferenceManager
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FileSettingsFragment : PreferenceFragmentCompat() {
+    @Inject
+    lateinit var filePreferenceManager: FilePreferenceManager
+
     private lateinit var filePickerLauncher: ActivityResultLauncher<Uri>
-    private lateinit var filePreferenceManager: FilePreferenceManager
 
     private var pathPrefCategory: PreferenceCategory? = null
 
@@ -24,12 +30,9 @@ class FileSettingsFragment : PreferenceFragmentCompat() {
             ::handlePickedFolder
         )
 
-        filePreferenceManager =
-            FilePreferenceManager.getInstance(requireContext())
-
         pathPrefCategory = findPreference(getString(R.string.file_include_paths_category))
 
-        filePreferenceManager.includedPaths.forEach { uriString ->
+        filePreferenceManager.includedSearchPaths.forEach { uriString ->
             addPathPreference(
                 Uri.parse(
                     uriString

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The padding SearchResultCard should have. -->
+    <dimen name="search_result_card_padding">16dp</dimen>
+    <dimen name="search_result_card_title_margin">16dp</dimen>
+
+    <dimen name="option_menu_item_icon_size">24dp</dimen>
+    <dimen name="option_menu_item_icon_margin_end">24dp</dimen>
+    <!-- The spacing between option menu items -->
+    <dimen name="option_menu_item_spacing">24dp</dimen>
+</resources>

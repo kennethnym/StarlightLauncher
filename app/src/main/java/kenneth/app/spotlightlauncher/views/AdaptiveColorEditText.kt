@@ -15,7 +15,7 @@ import javax.inject.Inject
 private const val HINT_TEXT_OPACITY = 0x80
 
 /**
- * An [EditText] that changes tint based on [AppState.adaptiveTextColor].
+ * An [EditText] that changes tint based on [appState.adaptiveTheme.adaptiveTextColor].
  * Can be used to display a font icon.
  */
 @AndroidEntryPoint
@@ -32,21 +32,21 @@ class AdaptiveColorEditText(context: Context, attrs: AttributeSet) :
         super.onAttachedToWindow()
         setHintTextColor(
             ColorUtils.setAlphaComponent(
-                appState.adaptiveTextColor,
+                appState.adaptiveTheme.adaptiveTextColor,
                 HINT_TEXT_OPACITY
             )
         )
-        setTextColor(appState.adaptiveTextColor)
+        setTextColor(appState.adaptiveTheme.adaptiveTextColor)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         setHintTextColor(
             ColorUtils.setAlphaComponent(
-                appState.adaptiveTextColor,
+                appState.adaptiveTheme.adaptiveTextColor,
                 HINT_TEXT_OPACITY
             )
         )
-        setTextColor(appState.adaptiveTextColor)
+        setTextColor(appState.adaptiveTheme.adaptiveTextColor)
     }
 }

@@ -2,43 +2,42 @@ package kenneth.app.spotlightlauncher.prefs.files
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
 import java.lang.Exception
+import javax.inject.Inject
+import javax.inject.Singleton
 
 enum class UriAuthority(val str: String) {
     DOWNLOADS("com.android.providers.downloads.documents")
 }
 
-object FilePreferenceManager {
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var context: Context
-    private lateinit var includedPathsPrefKey: String
+@Singleton
+class FilePreferenceManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
+    private val sharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
-    lateinit var includedPaths: MutableList<String>
-        private set
+    private val includedPathsPrefKey =
+        context.getString(R.string.file_search_included_paths)
 
-    private const val PATH_LIST_SEPARATOR = ";"
+    private val pathListSeparator = ";"
 
-    fun getInstance(context: Context) = this.apply {
-        this.context = context
+    private val includedPaths = sharedPreferences.getString(includedPathsPrefKey, null)
+        ?.split(pathListSeparator)
+        ?.toMutableList()
+        ?: mutableListOf()
 
-        if (!::sharedPreferences.isInitialized) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        }
-
-        if (!::includedPathsPrefKey.isInitialized) {
-            includedPathsPrefKey = context.getString(R.string.file_search_included_paths)
-        }
-
-        if (!::includedPaths.isInitialized) {
-            includedPaths = sharedPreferences.getString(includedPathsPrefKey, null)
-                ?.split(PATH_LIST_SEPARATOR)?.toMutableList() ?: mutableListOf()
-        }
-    }
+    /**
+     * Paths included for file searching.
+     * Any path not included in this list will be ignored.
+     */
+    val includedSearchPaths
+        get() = includedPaths.toList()
 
     /**
      * Include a path and save it to SharedPreference.
@@ -80,7 +79,7 @@ object FilePreferenceManager {
     fun removePathWithUri(uri: Uri): Boolean {
         val uriString = uri.toString()
 
-        if (includedPaths.any { it == uriString }) {
+        if (includedSearchPaths.any { it == uriString }) {
             try {
                 context.contentResolver.releasePersistableUriPermission(
                     uri,
@@ -103,7 +102,7 @@ object FilePreferenceManager {
     private fun saveNewIncludedPaths() {
         sharedPreferences
             .edit()
-            .putString(includedPathsPrefKey, includedPaths.joinToString(PATH_LIST_SEPARATOR))
+            .putString(includedPathsPrefKey, includedSearchPaths.joinToString(pathListSeparator))
             .apply()
     }
 }

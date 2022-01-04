@@ -11,14 +11,14 @@
         android:fitsSystemWindows="false"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/section_card_padding"
+        android:paddingBottom="@dimen/card_padding"
         android:visibility="gone">
 
         <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/section_card_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/section_card_padding"
+            android:layout_margin="@dimen/card_padding"
             android:textAppearance="@style/SearchResultSectionHeader" />
 
     </LinearLayout>

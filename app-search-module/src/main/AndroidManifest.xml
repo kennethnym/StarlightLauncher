@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kenneth.app.spotlightlauncher.appsearchmodule">
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="false">
+
+        <!-- A dummy activity with an intent filter so that Spotlight Launcher can discover this application as a plugin -->
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- This intent category has to be present in order for Spotlight Launcher to consider this application as a plugin -->
+                <category android:name="kenneth.app.spotlightlauncher.intent.category.SEARCH_MODULE" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SpotlightLauncher.SettingsTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- This intent category lets Spotlight Launcher knows that this activity is for changing settings of this plugin. -->
+                <category android:name="kenneth.app.spotlightlauncher.SEARCH_MODULE_SETTINGS" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>

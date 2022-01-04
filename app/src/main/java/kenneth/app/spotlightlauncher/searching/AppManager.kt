@@ -7,10 +7,11 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.util.Log
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.spotlightlauncher.searching.utils.compareStringsWithRegex
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.Comparator
 
 typealias AppInstalledCallback = (app: ResolveInfo) -> Unit
@@ -21,9 +22,9 @@ typealias AppInstalledCallback = (app: ResolveInfo) -> Unit
  */
 typealias AppRemovedCallback = (uninstalledPackageName: String) -> Unit
 
-@ActivityScoped
+@Singleton
 class AppManager @Inject constructor(
-    @ActivityContext private val context: Context,
+    @ApplicationContext private val context: Context,
 ) : Observable() {
     private val mainIntent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)

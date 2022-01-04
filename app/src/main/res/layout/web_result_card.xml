@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.views.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<kenneth.app.spotlightlauncher.api.view.Plate xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/web_result_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background"
-    app:blurAmount="?blurAmount">
+    android:background="@drawable/card_background">
 
     <LinearLayout
         android:id="@+id/web_result_section_card"
@@ -14,7 +12,7 @@
         android:background="@drawable/card_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="@dimen/section_card_padding"
+        android:padding="@dimen/card_padding"
         android:visibility="gone">
 
         <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
@@ -80,4 +78,4 @@
 
     </LinearLayout>
 
-</kenneth.app.spotlightlauncher.views.BlurView>
+</kenneth.app.spotlightlauncher.api.view.Plate>

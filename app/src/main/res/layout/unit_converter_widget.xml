@@ -16,7 +16,7 @@
             type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementUnit" />
     </data>
 
-    <kenneth.app.spotlightlauncher.views.BlurView
+    <kenneth.app.spotlightlauncher.api.view.Plate
         android:id="@+id/unit_converter_widget_blur_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,23 +34,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/unit_converter_widget_measurement_label"
+                    android:textColor="?colorOnPlate"
                     android:textStyle="bold" />
 
                 <Space
                     android:layout_width="@dimen/text_separator_spacing"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/measurement_selector_btn"
+                    style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
                     android:drawablePadding="@dimen/text_button_icon_spacing"
-                    android:text="@{selectedMeasurement.label}" />
+                    android:text="@{selectedMeasurement.label}"
+                    android:textColor="@color/text_button_color_on_plate" />
 
             </LinearLayout>
 
@@ -64,7 +67,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
+                <EditText
                     android:id="@+id/src_unit_value_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -74,6 +77,7 @@
                     android:minEms="1"
                     android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
                     android:text="0"
+                    android:textColor="?colorOnPlate"
                     android:textSize="@dimen/unit_converter_widget_value_label_size"
                     android:textStyle="bold" />
 
@@ -81,8 +85,9 @@
                     android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/src_unit_selector_btn"
+                    style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
@@ -101,7 +106,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <kenneth.app.spotlightlauncher.views.AdaptiveColorEditText
+                <EditText
                     android:id="@+id/dest_unit_value_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -111,6 +116,7 @@
                     android:minEms="1"
                     android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
                     android:text="0"
+                    android:textColor="?colorOnPlate"
                     android:textSize="@dimen/unit_converter_widget_value_label_size"
                     android:textStyle="bold" />
 
@@ -118,17 +124,19 @@
                     android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/dest_unit_selector_btn"
+                    style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
                     android:drawablePadding="@dimen/text_button_icon_spacing"
-                    android:text="@{selectedDestUnit.label}" />
+                    android:text="@{selectedDestUnit.label}"
+                    android:textColor="@color/text_button_color_on_plate" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </kenneth.app.spotlightlauncher.views.BlurView>
+    </kenneth.app.spotlightlauncher.api.view.Plate>
 </layout>

@@ -24,7 +24,7 @@ class QuickNotesListSeparator(context: Context, attrs: AttributeSet) :
     init {
         setBackgroundColor(
             ColorUtils.setAlphaComponent(
-                appState.adaptiveTextColor,
+                appState.adaptiveTheme.adaptiveTextColor,
                 SEPARATOR_OPACITY
             )
         )
@@ -35,7 +35,7 @@ class QuickNotesListSeparator(context: Context, attrs: AttributeSet) :
     private fun onResume() {
         setBackgroundColor(
             ColorUtils.setAlphaComponent(
-                appState.adaptiveTextColor,
+                appState.adaptiveTheme.adaptiveTextColor,
                 SEPARATOR_OPACITY
             )
         )

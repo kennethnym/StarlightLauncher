@@ -15,7 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.*
 import kenneth.app.spotlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.spotlightlauncher.searching.Searcher
-import kenneth.app.spotlightlauncher.utils.GestureMover
+import kenneth.app.spotlightlauncher.utils.BindingRegister
+import kenneth.app.spotlightlauncher.api.utils.GestureMover
 import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.utils.addBackPressedCallback
 import kenneth.app.spotlightlauncher.views.LauncherOptionMenu
@@ -63,10 +64,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
-            viewTreeObserver.removeOnGlobalLayoutListener(this)
-            activity?.let {
-                launcherOptionMenu = it.findViewById(R.id.launcher_option_menu)
-            }
+//            viewTreeObserver.removeOnGlobalLayoutListener(this)
+//            activity?.let {
+//                launcherOptionMenu = it.findViewById(R.id.launcher_option_menu)
+//            }
         }
     }
 
@@ -77,7 +78,9 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
         viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
-        binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true)
+        binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
+            BindingRegister.widgetsPanelBinding = it
+        }
 
         activity?.addBackPressedCallback {
             if (!binding.overlay.isVisible && isExpanded && !binding.searchBox.hasQueryText) {
@@ -99,7 +102,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
     }
 
-    override fun onTouchEvent(ev: MotionEvent?) =
+    override fun onTouchEvent(ev: MotionEvent): Boolean =
         if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
 
@@ -110,14 +113,14 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     fun showSearchResults() {
         with(binding) {
             widgetList.isVisible = false
-            searchResultContainer.isVisible = true
+            searchResultView.isVisible = true
             searchBox.shouldShowLoadingIndicator = true
         }
     }
 
     fun hideSearchResults() {
         with(binding) {
-            searchResultContainer.isVisible = false
+            searchResultView.isVisible = false
             widgetList.isVisible = true
             searchBox.shouldShowLoadingIndicator = false
         }
@@ -200,11 +203,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     private fun handleDragGesture(ev: MotionEvent): Boolean {
-        Log.d(
-            "hub",
-            "isScrolling $isScrolling, isPanelDragged $isPanelDragged, isExpanded $isExpanded "
-                + "${ev.y} " + " ${gestureMover.initialY}"
-        )
         return if (
             isPanelDragged ||
             !isExpanded ||

@@ -9,6 +9,13 @@
     <PreferenceCategory app:title="@string/search_header">
 
         <Preference
+            app:fragment="kenneth.app.spotlightlauncher.prefs.searchlayout.SearchLayoutSettingsFragment"
+            app:icon="@drawable/ic_window_grid"
+            app:key="@string/search_layout_pref_key"
+            app:summary="@string/search_layout_summary"
+            app:title="@string/search_layout_title" />
+
+        <Preference
             app:fragment="kenneth.app.spotlightlauncher.prefs.files.FileSettingsFragment"
             app:icon="@drawable/ic_file_search_alt"
             app:key="@string/file_search_pref_key"

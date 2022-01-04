@@ -20,16 +20,16 @@ class AdaptiveColorTextView(context: Context, attrs: AttributeSet?) :
     lateinit var appState: AppState
 
     init {
-        activity?.lifecycle?.addObserver(this)
+//        activity?.lifecycle?.addObserver(this)
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        setTextColor(appState.adaptiveTextColor)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun onResume() {
-        setTextColor(appState.adaptiveTextColor)
-    }
+//    override fun onAttachedToWindow() {
+//        super.onAttachedToWindow()
+//        setTextColor(appState.adaptiveTheme.adaptiveTextColor)
+//    }
+//
+//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+//    private fun onResume() {
+//        setTextColor(appState.adaptiveTheme.adaptiveTextColor)
+//    }
 }

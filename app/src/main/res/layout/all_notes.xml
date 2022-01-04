@@ -18,7 +18,7 @@
                 style="@style/PageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/section_card_padding"
+                android:paddingHorizontal="@dimen/card_padding"
                 android:text="@string/all_notes_page_title" />
 
             <Space

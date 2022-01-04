@@ -8,6 +8,7 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import kenneth.app.spotlightlauncher.api.IconPack
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import kotlin.math.roundToInt

@@ -40,7 +40,7 @@ class TextButton(context: Context, attrs: AttributeSet) :
         ).run {
             try {
                 val textColor =
-                    getColor(R.styleable.TextButton_color, appState.adaptiveTextColor)
+                    getColor(R.styleable.TextButton_color, appState.adaptiveTheme.adaptiveTextColor)
 
                 shouldUseAdaptiveColor =
                     !getBoolean(R.styleable.TextButton_useCustomColor, DEFAULT_USE_CUSTOM_COLOR)
@@ -56,7 +56,7 @@ class TextButton(context: Context, attrs: AttributeSet) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (shouldUseAdaptiveColor) {
-            setTextColor(appState.adaptiveTextColor)
+            setTextColor(appState.adaptiveTheme.adaptiveTextColor)
         }
     }
 
@@ -89,7 +89,7 @@ class TextButton(context: Context, attrs: AttributeSet) :
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         if (shouldUseAdaptiveColor) {
-            setTextColor(appState.adaptiveTextColor)
+            setTextColor(appState.adaptiveTheme.adaptiveTextColor)
         }
     }
 

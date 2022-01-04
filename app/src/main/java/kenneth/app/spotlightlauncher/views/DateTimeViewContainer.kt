@@ -37,10 +37,10 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
         }
 
     init {
-        setOnLongClickListener {
-            BindingRegister.activityMainBinding.launcherOptionMenu.show()
-            HANDLED
-        }
+//        setOnLongClickListener {
+//            BindingRegister.activityMainBinding.launcherOptionMenu.show()
+//            HANDLED
+//        }
     }
 
     /**

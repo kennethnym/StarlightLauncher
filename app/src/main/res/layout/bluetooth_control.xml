@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/section_card_padding">
+        android:paddingHorizontal="@dimen/card_padding">
 
         <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/bluetooth_label"
@@ -38,7 +38,7 @@
         style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_card_padding"
+        android:layout_marginTop="@dimen/card_padding"
         android:text="@string/open_bluetooth_settings_label" />
 
 </merge>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/section_card_padding"
+    android:paddingHorizontal="@dimen/card_padding"
     android:paddingVertical="8dp">
 
     <ImageView

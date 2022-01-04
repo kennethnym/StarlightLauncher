@@ -3,26 +3,66 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../.gradle/caches/transforms-3/ecb7a6fbae1c4f5b73aff186ec126e91/transformed/preference-1.1.1/res/layout/image_frame.xml" value="0.3496376811594203" />
+        <entry key="../../Library/Android/sdk/platforms/android-31/data/res/layout/preference_category.xml" value="0.353713768115942" />
+        <entry key="app-search-module/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
+        <entry key="app-search-module/src/main/res/layout/app_grid_item.xml" value="0.37681159420289856" />
+        <entry key="app-search-module/src/main/res/layout/app_option_menu.xml" value="0.3496376811594203" />
+        <entry key="app-search-module/src/main/res/layout/app_search_result_card.xml" value="0.37681159420289856" />
+        <entry key="app-search-module/src/main/res/layout/apps_search_result_card.xml" value="0.3496376811594203" />
+        <entry key="app-search-module/src/main/res/layout/settings_activity.xml" value="0.3736413043478261" />
+        <entry key="app-search-module/src/main/res/xml/root_preference.xml" value="0.3736413043478261" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/blur_view_edit_text_bg.xml" value="0.36354166666666665" />
+        <entry key="app/src/main/res/drawable/bottom_option_menu_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/card_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/edit_text_in_widget_bg.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_angle_up.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_clock.xml" value="0.36354166666666665" />
+        <entry key="app/src/main/res/drawable/ic_draggabledots.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_exchange.xml" value="0.36354166666666665" />
+        <entry key="app/src/main/res/drawable/ic_export.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_twotone_computer_24.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_twotone_watch_24.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_window_grid.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/note_card_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/require_location_perm_bg.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/rounded_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2658514492753623" />
+        <entry key="app/src/main/res/layout/apps_grid_item.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/apps_section_card.xml" value="0.2391304347826087" />
+        <entry key="app/src/main/res/layout/bottom_option_menu_item.xml" value="0.23550724637681159" />
+        <entry key="app/src/main/res/layout/file_list_item.xml" value="0.22509057971014493" />
+        <entry key="app/src/main/res/layout/launcher_option_menu.xml" value="0.22146739130434784" />
+        <entry key="app/src/main/res/layout/media_control_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/note_card.xml" value="0.2821557971014493" />
+        <entry key="app/src/main/res/layout/pinned_apps_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/quick_notes_layout.xml" value="0.2803442028985507" />
-        <entry key="app/src/main/res/layout/search_box.xml" value="0.19270833333333334" />
+        <entry key="app/src/main/res/layout/quick_notes_list_item.xml" value="0.22509057971014493" />
+        <entry key="app/src/main/res/layout/search_box.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/search_category_order_list_item.xml" value="0.3496376811594203" />
+        <entry key="app/src/main/res/layout/search_category_order_preference_layout.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/search_result_card.xml" value="0.3496376811594203" />
         <entry key="app/src/main/res/layout/search_result_layout.xml" value="0.2658514492753623" />
+        <entry key="app/src/main/res/layout/settings_activity.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
+        <entry key="app/src/main/res/layout/web_result_card.xml" value="0.17685185185185184" />
         <entry key="app/src/main/res/layout/widget_list.xml" value="0.2821557971014493" />
         <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
-        <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.22146739130434784" />
+        <entry key="app/src/main/res/layout/wifi_control.xml" value="0.2269021739130435" />
+        <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.335" />
         <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/file_search_preferences.xml" value="0.2368659420289855" />
+        <entry key="app/src/main/res/xml/icon_pack_preferences.xml" value="0.3496376811594203" />
+        <entry key="app/src/main/res/xml/quick_notes_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.26222826086956524" />
+        <entry key="app/src/main/res/xml/search_layout_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
+        <entry key="spotlight-launcher-api/src/main/res/drawable/card_background.xml" value="0.2175925925925926" />
+        <entry key="spotlight-launcher-api/src/main/res/drawable/option_menu_background.xml" value="0.4197916666666667" />
+        <entry key="spotlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3736413043478261" />
+        <entry key="spotlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3496376811594203" />
       </map>
     </option>
   </component>

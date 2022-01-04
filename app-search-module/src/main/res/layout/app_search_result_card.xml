@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kenneth.app.spotlightlauncher.api.view.SearchResultCard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardTitle="@string/search_result_card_title">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/app_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
+        android:fitsSystemWindows="false"
+        android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:id="@+id/no_result_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/no_result" />
+
+    <kenneth.app.spotlightlauncher.api.view.TextButton
+        android:id="@+id/show_more_button"
+        style="@style/Style.SpotlightLauncher.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/search_result_card_padding"
+        android:text="@string/show_more" />
+
+</kenneth.app.spotlightlauncher.api.view.SearchResultCard>

@@ -22,6 +22,7 @@ import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
+
 @ExperimentalTime
 @AndroidEntryPoint
 class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -64,7 +65,6 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 layoutManager = noteListAdapter.layoutManager
             }
 
-            quickNotesWidgetBlurBackground.startBlur()
             notesPreferenceManager.addNoteListChangedListener {
                 toggleElementsVisibility()
                 noteListAdapter

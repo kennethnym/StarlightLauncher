@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_search_module_name">kenneth.app.spotlightlauncher.appsearchmodule</string>
+    <string name="app_search_module_display_name">Apps</string>
+    <string name="app_search_module_description">Searches for apps on your phone.</string>
+
+    <string name="search_result_card_title">Apps</string>
+    <string name="no_result">No result</string>
+    <string name="show_more">Show more</string>
+    <string name="app_icon_content_description">App icon for %1$s</string>
+    <string name="app_option_menu_item_label_pin_app">Pin this app</string>
+    <string name="app_option_menu_item_label_uninstall">Uninstall</string>
+
+    <string name="settings_activity_title">Settings</string>
+
+    <string name="appearance_preference_category_title">Appearance</string>
+    <string name="appearance_show_app_names_title">Show app names</string>
+    <string name="appearance_show_app_names_summary">Show the names of apps under their icons</string>
+</resources>

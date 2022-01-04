@@ -8,7 +8,7 @@
         android:id="@+id/related_topics_section_dividers"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_marginHorizontal="@dimen/section_card_padding"
+        android:layout_marginHorizontal="@dimen/card_padding"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:alpha="0.1"
@@ -17,8 +17,8 @@
     <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/section_card_padding"
-        android:layout_marginBottom="@dimen/section_card_padding"
+        android:layout_marginHorizontal="@dimen/card_padding"
+        android:layout_marginBottom="@dimen/card_padding"
         android:text="@string/related_topics_label"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
@@ -26,7 +26,7 @@
         android:id="@+id/related_topics_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/section_card_padding"
+        android:layout_marginBottom="@dimen/card_padding"
         android:nestedScrollingEnabled="false" />
 
 </LinearLayout>

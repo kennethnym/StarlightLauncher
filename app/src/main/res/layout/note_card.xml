@@ -20,12 +20,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/section_card_padding"
+            android:layout_marginHorizontal="@dimen/card_padding"
             android:layout_marginBottom="@dimen/note_card_list_vertical_spacing"
             android:background="@drawable/note_card_background"
             android:elevation="8dp"
             android:orientation="vertical"
-            android:padding="@dimen/section_card_padding">
+            android:padding="@dimen/card_padding">
 
             <TextView
                 android:id="@+id/note_timestamp"
@@ -171,10 +171,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_marginEnd="@dimen/section_card_padding"
+            android:layout_marginEnd="@dimen/card_padding"
             android:contentDescription="@string/note_card_delete_icon_description"
             android:elevation="10dp"
-            android:padding="@dimen/section_card_padding"
+            android:padding="@dimen/card_padding"
             app:icon="@drawable/ic_times"
             app:iconColor="?colorOnSurface"
             app:iconSize="24dp"

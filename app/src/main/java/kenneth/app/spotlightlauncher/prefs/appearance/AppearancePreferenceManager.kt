@@ -2,11 +2,10 @@ package kenneth.app.spotlightlauncher.prefs.appearance
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityScoped
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.api.IconPack
 import javax.inject.Inject
 import javax.inject.Singleton
 
