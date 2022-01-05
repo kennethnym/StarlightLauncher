@@ -12,11 +12,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
@@ -35,7 +34,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DateTimeView(context: Context, attrs: AttributeSet) :
-    LinearLayout(context, attrs), LifecycleObserver {
+    LinearLayout(context, attrs), LifecycleEventObserver {
     @Inject
     lateinit var locale: Locale
 
@@ -105,26 +104,35 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferencesChanged)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (source is AppCompatActivity) {
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> onResume()
+                Lifecycle.Event.ON_PAUSE -> onPause()
+                else -> {
+                }
+            }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        unregisterTimeTickListener()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        registerTimeTickListener()
+    }
+
     private fun onResume() {
         registerTimeTickListener()
         updateTime()
         showWeather()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun onPause() {
-        unregisterTickTickListener()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        unregisterTickTickListener()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        registerTimeTickListener()
+        unregisterTimeTickListener()
     }
 
     private fun onSharedPreferencesChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -137,7 +145,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
         context.registerReceiver(timeTickBroadcastReceiver, timeTickIntentFilter)
     }
 
-    private fun unregisterTickTickListener() {
+    private fun unregisterTimeTickListener() {
         try {
             context.unregisterReceiver(timeTickBroadcastReceiver)
         } catch (ex: IllegalArgumentException) {

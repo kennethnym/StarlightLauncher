@@ -9,6 +9,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.HANDLED
+import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.spotlightlauncher.api.view.OptionMenu
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 import kotlin.math.max
@@ -25,7 +27,9 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
     lateinit var appState: AppState
 
     @Inject
-    lateinit var choreographer: Choreographer
+    lateinit var launcher: SpotlightLauncherApi
+
+    private val choreographer = Choreographer.getInstance()
 
     var layoutWeight: Float
         get() = (layoutParams as LayoutParams).weight
@@ -37,10 +41,24 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
         }
 
     init {
-//        setOnLongClickListener {
-//            BindingRegister.activityMainBinding.launcherOptionMenu.show()
-//            HANDLED
-//        }
+        setOnLongClickListener {
+            launcher.showOptionMenu { buildLauncherOptionMenu(it, context) }
+            HANDLED
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        startAnimation()
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        if (visibility == View.INVISIBLE || visibility == View.GONE) {
+            choreographer.removeFrameCallback(::scaleSelf)
+        } else {
+            startAnimation()
+        }
     }
 
     /**
@@ -58,20 +76,6 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
         scaleY = dateTimeViewScale
 
         startAnimation()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        startAnimation()
-    }
-
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        if (visibility == View.INVISIBLE || visibility == View.GONE) {
-            choreographer.removeFrameCallback(::scaleSelf)
-        } else {
-            startAnimation()
-        }
     }
 
     private fun startAnimation() {

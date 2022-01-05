@@ -136,7 +136,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
      * @param icon The icon of this item. It will be placed at the start of the item.
      * @param label The label of this item. It will be placed next to the item.
      */
-    fun addItem(icon: Drawable, label: String) {
+    fun addItem(icon: Drawable, label: String, onClick: OnClickListener) {
         val item = OptionMenuItem(context).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -152,6 +152,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
             this.icon = icon
             this.label = label
+
+            setOnClickListener(onClick)
         }
         addView(item)
     }

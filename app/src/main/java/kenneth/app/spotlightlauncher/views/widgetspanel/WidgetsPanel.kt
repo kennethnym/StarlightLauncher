@@ -19,7 +19,6 @@ import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.api.utils.GestureMover
 import kenneth.app.spotlightlauncher.utils.activity
 import kenneth.app.spotlightlauncher.utils.addBackPressedCallback
-import kenneth.app.spotlightlauncher.views.LauncherOptionMenu
 import java.util.*
 import javax.inject.Inject
 
@@ -59,8 +58,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     private val gestureMover = GestureMover().apply {
         targetView = this@WidgetsPanel
     }
-
-    private var launcherOptionMenu: LauncherOptionMenu? = null
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
