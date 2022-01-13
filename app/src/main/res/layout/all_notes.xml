@@ -4,9 +4,9 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/note_card_list_scroll_view"
-        android:descendantFocusability="blocksDescendants"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -14,7 +14,7 @@
             android:clipToPadding="false"
             android:orientation="vertical">
 
-            <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+            <TextView
                 style="@style/PageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

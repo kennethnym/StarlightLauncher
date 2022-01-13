@@ -5,11 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <kenneth.app.spotlightlauncher.widgets.quicknotes.QuickNotesListSeparator
+    <View
         android:id="@+id/quick_notes_list_item_separator"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_marginVertical="8dp" />
+        android:layout_marginVertical="8dp"
+        android:alpha="0.3"
+        android:background="?android:textColorPrimaryDisableOnly" />
 
     <LinearLayout
         android:layout_width="match_parent"

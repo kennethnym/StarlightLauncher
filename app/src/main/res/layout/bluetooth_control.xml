@@ -9,7 +9,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/card_padding">
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        <TextView
             android:id="@+id/bluetooth_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,9 +33,9 @@
         android:layout_width="0dp"
         android:layout_height="8dp" />
 
-    <kenneth.app.spotlightlauncher.views.TextButton
+    <kenneth.app.spotlightlauncher.api.view.TextButton
         android:id="@+id/open_bluetooth_settings_button"
-        style="@style/TextButton"
+        style="@style/Style.SpotlightLauncher.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_padding"

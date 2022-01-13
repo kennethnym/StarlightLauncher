@@ -14,7 +14,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!-- This intent category has to be present in order for Spotlight Launcher to consider this application as a plugin -->
-                <category android:name="kenneth.app.spotlightlauncher.intent.category.SEARCH_MODULE" />
+                <category android:name="kenneth.app.spotlightlauncher.intent.category.EXTENSION" />
             </intent-filter>
 
         </activity>

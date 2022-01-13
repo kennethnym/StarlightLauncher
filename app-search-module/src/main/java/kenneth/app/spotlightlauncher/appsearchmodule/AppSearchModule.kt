@@ -14,15 +14,16 @@ private const val MODULE_NAME = "kenneth.app.spotlightlauncher.appsearchmodule"
 typealias AppList = List<ResolveInfo>
 
 class AppSearchModule : BroadcastReceiver(), SearchModule {
-    override val name = MODULE_NAME
-    override val displayName = "Apps"
-    override val description = "Searches for apps installed on your device."
+    override lateinit var metadata: SearchModule.Metadata
+        private set
 
     override val adapter
         get() = searchResultAdapter
 
     private lateinit var searchResultAdapter: AppSearchResultAdapter
     private lateinit var mainContext: Context
+    private lateinit var launcherContext: Context
+
     private val currentAppList = mutableListOf<ResolveInfo>()
     private val appLabels = mutableMapOf<String, String>()
 
@@ -33,25 +34,33 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
         get() = mainContext
 
     override fun initialize(launcher: SpotlightLauncherApi) {
-        mainContext = launcher.context
+        launcherContext = launcher.context
+        mainContext = launcherContext.createPackageContext(PACKAGE_NAME, 0)
         searchResultAdapter = AppSearchResultAdapter(this, launcher)
         preferences = AppSearchModulePreferences(context)
+
+        metadata = SearchModule.Metadata(
+            name = MODULE_NAME,
+            displayName = mainContext.getString(R.string.app_search_module_display_name),
+            description = mainContext.getString(R.string.app_search_module_description),
+        )
 
         val mainIntent = Intent(Intent.ACTION_MAIN).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
 
-        context.packageManager.queryIntentActivities(mainIntent, 0)
+        launcherContext.packageManager.queryIntentActivities(mainIntent, 0)
             .filter { (it.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1 }
             .forEach {
                 val packageName = it.activityInfo.packageName
                 val label =
-                    it.activityInfo.applicationInfo.loadLabel(context.packageManager).toString()
+                    it.activityInfo.applicationInfo.loadLabel(launcherContext.packageManager)
+                        .toString()
                 currentAppList.add(it)
                 appLabels[packageName] = label
             }
 
-        context.registerReceiver(this, IntentFilter().apply {
+        launcherContext.registerReceiver(this, IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
             addAction(Intent.ACTION_PACKAGE_REMOVED)
             addDataScheme("package")
@@ -59,7 +68,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
     }
 
     override fun cleanup() {
-        context.unregisterReceiver(this)
+        launcherContext.unregisterReceiver(this)
     }
 
     override fun search(keyword: String, keywordRegex: Regex): Result =

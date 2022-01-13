@@ -11,6 +11,8 @@ import kenneth.app.spotlightlauncher.api.SearchModule
 import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
 import kenneth.app.spotlightlauncher.api.intent.SpotlightLauncherIntent
 import kenneth.app.spotlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
+import kenneth.app.spotlightlauncher.widgets.WidgetManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +25,7 @@ class SearchModuleManager @Inject constructor(
         "kenneth.app.spotlightlauncher.appsearchmodule" to AppSearchModule()
     )
 
-    private val metadata = mutableMapOf<String, SearchModuleMetadata>(
+    private val metadata = mutableMapOf(
         "kenneth.app.spotlightlauncher.appsearchmodule" to SearchModuleMetadata(
             name = context.getString(R.string.app_search_module_name),
             displayName = context.getString(R.string.app_search_module_display_name),
@@ -40,15 +42,9 @@ class SearchModuleManager @Inject constructor(
 
     /**
      * Initializes all search modules.
-     *
-     * @param activityContext The activity context that the search module will be run in.
      */
-    fun initializeModules(activityContext: Context) {
-        if (spotlightLauncherApi is SpotlightLauncherApiImpl) {
-            spotlightLauncherApi.context = activityContext
-        }
-
-        with(activityContext.packageManager) {
+    fun initializeModules() {
+        with(context.packageManager) {
             queryIntentActivities(
                 Intent(Intent.ACTION_MAIN).apply {
                     addCategory(SpotlightLauncherIntent.CATEGORY_SEARCH_MODULE)
@@ -58,7 +54,7 @@ class SearchModuleManager @Inject constructor(
                 try {
                     val packageName = resolveInfo.activityInfo.packageName
                     val packageRes =
-                        activityContext.packageManager.getResourcesForApplication(packageName)
+                        context.packageManager.getResourcesForApplication(packageName)
 
                     val searchModuleName = packageRes.getString(
                         packageRes.getIdentifier("module_name", "string", packageName),
@@ -75,7 +71,7 @@ class SearchModuleManager @Inject constructor(
                     )
 
                     val clazz =
-                        activityContext.createPackageContext(
+                        context.createPackageContext(
                             packageName,
                             Context.CONTEXT_INCLUDE_CODE or Context.CONTEXT_IGNORE_SECURITY
                         )

@@ -2,8 +2,10 @@ package kenneth.app.spotlightlauncher.searching
 
 import android.content.ComponentName
 import kenneth.app.spotlightlauncher.api.SearchModule
+import kenneth.app.spotlightlauncher.extension.ExtensionMetadata
 
 data class SearchModuleMetadata(
+
     /**
      * A unique string to identify this search module.
      * For example, the full package path to this module can be used:
@@ -26,5 +28,5 @@ data class SearchModuleMetadata(
      *
      * This is null when the search module doesn't have a settings activity.
      */
-    val settingsActivityComponent: ComponentName? = null
+    val settingsActivityComponent: ComponentName? = null,
 )

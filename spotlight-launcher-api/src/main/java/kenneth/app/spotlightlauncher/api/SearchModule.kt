@@ -8,22 +8,7 @@ import kenneth.app.spotlightlauncher.api.view.SearchResultAdapter
  * based on the current search term.
  */
 interface SearchModule {
-    /**
-     * A unique string to identify this search module.
-     * For example, the full package path to this module can be used:
-     * `com.my.package.MySearchModule`
-     */
-    val name: String
-
-    /**
-     * A user facing name of this [SearchModule]
-     */
-    val displayName: String
-
-    /**
-     * A user facing description that describes what this [SearchModule] does
-     */
-    val description: String
+    val metadata: Metadata
 
     /**
      * The [SearchResultAdapter] that should be used to adapt search results to views.
@@ -48,4 +33,23 @@ interface SearchModule {
      * based on [keyword] and the [Regex] of [keyword]
      */
     fun search(keyword: String, keywordRegex: Regex): SearchResult
+
+    data class Metadata(
+        /**
+         * A unique string to identify this search module.
+         * For example, the full package path to this module can be used:
+         * `com.my.package.MySearchModule`
+         */
+        val name: String,
+
+        /**
+         * A user facing name of this [SearchModule]
+         */
+        val displayName: String,
+
+        /**
+         * A user facing description that describes what this [SearchModule] does
+         */
+        val description: String,
+    )
 }

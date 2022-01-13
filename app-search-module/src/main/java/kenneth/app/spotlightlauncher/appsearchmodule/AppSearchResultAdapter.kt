@@ -2,6 +2,7 @@ package kenneth.app.spotlightlauncher.appsearchmodule
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -114,4 +115,6 @@ class AppSearchResultAdapter(
 }
 
 class AppSearchResultViewHolder(val binding: AppSearchResultCardBinding) :
-    SearchResultAdapter.ViewHolder(binding.root)
+    SearchResultAdapter.ViewHolder {
+    override val rootView = binding.root
+}

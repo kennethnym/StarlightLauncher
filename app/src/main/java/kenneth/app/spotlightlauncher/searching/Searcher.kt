@@ -1,6 +1,7 @@
 package kenneth.app.spotlightlauncher.searching
 
 import kenneth.app.spotlightlauncher.api.SearchResult
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
@@ -14,6 +15,7 @@ typealias ResultCallback = (SearchResult) -> Unit
 @Singleton
 class Searcher @Inject constructor(
     private val searchModuleManager: SearchModuleManager,
+    private val extensionManager: ExtensionManager,
 ) {
     val hasFinishedSearching: Boolean
         get() = numberOfLoadedModules == searchModuleManager.installedSearchModules.size
@@ -61,7 +63,7 @@ class Searcher @Inject constructor(
     private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
-        searchModuleManager.installedSearchModules.forEach { (_, module) ->
+        extensionManager.listInstalledSearchModules().forEach { module ->
             CoroutineScope(Dispatchers.IO)
                 .also { searchCoroutineScopes.add(it) }
                 .run {

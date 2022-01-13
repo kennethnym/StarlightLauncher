@@ -27,5 +27,7 @@ interface SearchResultAdapter {
     /**
      * Holds the [View] that will display any given search results.
      */
-    abstract class ViewHolder(val rootView: View)
+    interface ViewHolder {
+        val rootView: View
+    }
 }

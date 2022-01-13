@@ -23,11 +23,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.spotlightlauncher.api.theme.AdaptiveTheme
+import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.prefs.appearance.InstalledIconPack
-import kenneth.app.spotlightlauncher.searching.SearchModuleManager
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.*
 import javax.inject.Inject
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var searcher: Searcher
 
     @Inject
-    lateinit var searchModuleManager: SearchModuleManager
+    lateinit var extensionManager: ExtensionManager
 
     @Inject
     lateinit var blurHandler: BlurHandler
@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var permissionHandler: PermissionHandler
 
+    @Inject
+    lateinit var launcherApi: SpotlightLauncherApi
+
     private lateinit var binding: ActivityMainBinding
 
     private var backPressedCallbacks = mutableListOf<BackPressHandler>()
@@ -94,7 +97,11 @@ class MainActivity : AppCompatActivity() {
         updateAdaptiveColors()
         setTheme(appState.themeStyleId)
 
-        searchModuleManager.initializeModules(this)
+        launcherApi.let {
+            if (it is SpotlightLauncherApiImpl) it.context = this
+        }
+
+        extensionManager.loadExtensions()
 
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -220,13 +227,13 @@ class MainActivity : AppCompatActivity() {
                 val white = getColor(android.R.color.white)
                 val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
 
-                adaptiveTheme = AdaptiveTheme(
-                    adaptiveBackgroundColor,
-                    adaptiveTextColor =
-                    if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
-                        white
-                    else black
-                )
+//                adaptiveTheme = AdaptiveTheme(
+//                    adaptiveBackgroundColor,
+//                    adaptiveTextColor =
+//                    if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
+//                        white
+//                    else black
+//                )
 
                 setTheme(
                     if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)

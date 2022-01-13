@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher
 
 import android.view.View
-import kenneth.app.spotlightlauncher.api.theme.AdaptiveTheme
 import kenneth.app.spotlightlauncher.utils.ContextMenuCallback
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,7 +40,7 @@ class AppState @Inject constructor() {
     /**
      * Current adaptive theme based on the current wallpaper.
      */
-    var adaptiveTheme = AdaptiveTheme()
+//    var adaptiveTheme = AdaptiveTheme()
 
     var statusBarHeight = 0
 
