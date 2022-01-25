@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.databinding.SearchCategoryOrderListItemBinding
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kenneth.app.spotlightlauncher.prefs.SearchPreferenceManager
-import kenneth.app.spotlightlauncher.searching.SearchModuleManager
 import kenneth.app.spotlightlauncher.utils.RecyclerViewDataAdapter
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class SearchCategoryOrderList(context: Context, attrs: AttributeSet?) :
     RecyclerView(context, attrs) {
     @Inject
-    lateinit var searchModuleManager: SearchModuleManager
+    lateinit var extensionManager: ExtensionManager
 
     @Inject
     lateinit var searchPreferenceManager: SearchPreferenceManager
@@ -71,7 +71,7 @@ class SearchCategoryOrderList(context: Context, attrs: AttributeSet?) :
         })
 
     fun showItems() {
-        val adapter = SearchCategoryOrderListAdapter(context, searchModuleManager).apply {
+        val adapter = SearchCategoryOrderListAdapter(context, extensionManager).apply {
             data = searchPreferenceManager.categoryOrder
         }
 
@@ -84,7 +84,7 @@ class SearchCategoryOrderList(context: Context, attrs: AttributeSet?) :
 
 private class SearchCategoryOrderListAdapter(
     private val context: Context,
-    private val searchModuleManager: SearchModuleManager,
+    private val extensionManager: ExtensionManager,
 ) : RecyclerViewDataAdapter<String, SearchCategoryOrderListItem>() {
     override var data = listOf<String>()
 
@@ -93,20 +93,20 @@ private class SearchCategoryOrderListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchCategoryOrderListItem {
         val binding =
             SearchCategoryOrderListItemBinding.inflate(LayoutInflater.from(context), parent, false)
-        return SearchCategoryOrderListItem(binding, searchModuleManager)
+        return SearchCategoryOrderListItem(binding, extensionManager)
     }
 }
 
 private class SearchCategoryOrderListItem(
     override val binding: SearchCategoryOrderListItemBinding,
-    private val searchModuleManager: SearchModuleManager,
+    private val extensionManager: ExtensionManager,
 ) :
     RecyclerViewDataAdapter.ViewHolder<String>(binding) {
     override fun bindWith(data: String) {
-        searchModuleManager.lookupSearchModule(data)?.let {
+        extensionManager.lookupSearchModule(data)?.let {
             binding.apply {
-                categoryTitle = it.displayName
-                categoryDescription = it.description
+                categoryTitle = it.metadata.displayName
+                categoryDescription = it.metadata.description
             }
         }
     }

@@ -9,7 +9,7 @@
         <item name="android:textColor">#80000000</item>
         <item name="android:windowBackground">@android:color/transparent</item>
 
-        <item name="plateColor">#34FFFFFF</item>
+        <item name="plateColor">#80FFFFFF</item>
         <item name="colorOnPlate">#80000000</item>
         <item name="backgroundColorOnBlurView">#34FFFFFF</item>
         <item name="colorOnBackground">#80000000</item>
@@ -27,7 +27,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textColor">@android:color/white</item>
 
-        <item name="plateColor">#1A000000</item>
+        <item name="plateColor">#4D000000</item>
         <item name="colorOnPlate">#FFFFFFFF</item>
         <item name="backgroundColorOnBlurView">#1A000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>

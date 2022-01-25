@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.225" />
         <entry key="../../.gradle/caches/transforms-3/ecb7a6fbae1c4f5b73aff186ec126e91/transformed/preference-1.1.1/res/layout/image_frame.xml" value="0.3496376811594203" />
         <entry key="../../Library/Android/sdk/platforms/android-31/data/res/layout/preference_category.xml" value="0.353713768115942" />
         <entry key="app-search-module/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
@@ -51,6 +52,7 @@
         <entry key="app/src/main/res/layout/settings_activity.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/web_result_card.xml" value="0.17685185185185184" />
+        <entry key="app/src/main/res/layout/web_result_related_topic_item.xml" value="0.196875" />
         <entry key="app/src/main/res/layout/widget_list.xml" value="0.2821557971014493" />
         <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
         <entry key="app/src/main/res/layout/wifi_control.xml" value="0.2269021739130435" />

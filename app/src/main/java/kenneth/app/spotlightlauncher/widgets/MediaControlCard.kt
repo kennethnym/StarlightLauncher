@@ -14,12 +14,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.R
@@ -35,7 +34,7 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class MediaControlCard(context: Context, attrs: AttributeSet) :
-    LinearLayout(context, attrs), LifecycleObserver {
+    LinearLayout(context, attrs), LifecycleEventObserver {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -151,6 +150,15 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         }
     }
 
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (source is AppCompatActivity) {
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> checkNotificationListenerAndUpdate()
+                else -> {}
+            }
+        }
+    }
+
     /**
      * Check if notification listener is enabled for this app.
      * If it is enabled, then check if there is any media currently playing and updates the
@@ -159,7 +167,6 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
      * Call this method when the app resumes, because user may have revoked
      * notification listener for this app when the app is in background.
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun checkNotificationListenerAndUpdate() {
         if (isMediaControlEnabled && isNotificationListenerEnabled()) {
             val activeMediaSessions = mediaSessionManager.getActiveSessions(
@@ -225,12 +232,12 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     private fun skipForward() {
-        binding.playPauseButton.disabled = true
+        binding.playPauseButton.isEnabled = false
         activeMediaSession?.transportControls?.skipToNext()
     }
 
     private fun skipBackward() {
-        binding.playPauseButton.disabled = true
+        binding.playPauseButton.isEnabled = false
         activeMediaSession?.transportControls?.skipToPrevious()
     }
 
@@ -339,19 +346,19 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             PlaybackState.STATE_PLAYING -> {
                 binding.playPauseButton.apply {
                     icon = pauseButtonDrawable
-                    disabled = false
+                    isEnabled = true
                 }
             }
             PlaybackState.STATE_PAUSED -> {
                 binding.playPauseButton.apply {
                     icon = playButtonDrawable
-                    disabled = false
+                    isEnabled = true
                 }
             }
             else -> {
                 binding.playPauseButton.apply {
                     icon = playButtonDrawable
-                    disabled = true
+                    isEnabled = false
                 }
             }
         }
@@ -361,11 +368,11 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
             isEnabled = playbackState.actions and PlaybackState.ACTION_SEEK_TO != 0L
         }
 
-        binding.skipBackwardButton.disabled =
-            playbackState.actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS == 0L
+        binding.skipBackwardButton.isEnabled =
+            playbackState.actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS != 0L
 
-        binding.skipForwardButton.disabled =
-            playbackState.actions and PlaybackState.ACTION_SKIP_TO_NEXT == 0L
+        binding.skipForwardButton.isEnabled =
+            playbackState.actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L
     }
 
     /**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_search_module_name">kenneth.app.spotlightlauncher.appsearchmodule</string>
+    <string name="app_search_module_name">kenneth.app.spotlightlauncher</string>
     <string name="app_search_module_display_name">Apps</string>
     <string name="app_search_module_description">Searches for apps on your phone.</string>
 

@@ -63,7 +63,7 @@ class Searcher @Inject constructor(
     private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
-        extensionManager.listInstalledSearchModules().forEach { module ->
+        extensionManager.installedSearchModules.forEach { module ->
             CoroutineScope(Dispatchers.IO)
                 .also { searchCoroutineScopes.add(it) }
                 .run {

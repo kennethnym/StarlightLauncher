@@ -31,14 +31,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                <TextView
                     android:id="@+id/media_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+                <TextView
                     android:id="@+id/media_artist_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,33 +56,35 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <kenneth.app.spotlightlauncher.views.IconButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/skip_backward_button"
+                    style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:contentDescription="@string/skip_backward_button_description"
-                    app:icon="@drawable/ic_step_backward_alt" />
+                    android:drawableStart="@drawable/ic_step_backward_alt" />
 
                 <Space
                     android:layout_width="@dimen/media_control_button_space"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.IconButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/play_pause_button"
+                    style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
-                    app:icon="@drawable/ic_play" />
+                    android:drawableStart="@drawable/ic_play" />
 
                 <Space
                     android:layout_width="@dimen/media_control_button_space"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.IconButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/skip_forward_button"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:contentDescription="@string/skip_forward_button_description"
-                    app:icon="@drawable/ic_skip_forward_alt" />
+                    android:drawableStart="@drawable/ic_skip_forward_alt" />
 
             </LinearLayout>
 

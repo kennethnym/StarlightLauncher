@@ -99,7 +99,7 @@
 
                 <!-- action bar that is shown normally -->
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_edit_button"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -107,21 +107,20 @@
                     android:drawableStart="@drawable/ic_pen"
                     android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@string/action_edit"
-                    app:color="?colorPrimary"
-                    app:useCustomColor="true" />
+                    android:textColor="?colorPrimary" />
 
                 <Space
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_archive"
                     android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@string/action_archive"
-                    app:color="?colorPrimary"
+                    android:textColor="?colorPrimary"
                     app:useCustomColor="true" />
 
             </LinearLayout>
@@ -136,7 +135,7 @@
 
                 <!-- action bar that is shown when user is editing this note -->
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_save_edit"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -144,14 +143,14 @@
                     android:drawableStart="@drawable/ic_check"
                     android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@string/action_done"
-                    app:color="?colorPrimary"
+                    android:textColor="?colorPrimary"
                     app:useCustomColor="true" />
 
                 <Space
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.views.TextButton
+                <kenneth.app.spotlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_cancel_edit"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -166,19 +165,16 @@
 
         </LinearLayout>
 
-        <kenneth.app.spotlightlauncher.views.IconButton
+        <kenneth.app.spotlightlauncher.api.view.TextButton
             android:id="@+id/delete_note_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:layout_marginEnd="@dimen/card_padding"
             android:contentDescription="@string/note_card_delete_icon_description"
+            android:drawableStart="@drawable/ic_times"
             android:elevation="10dp"
-            android:padding="@dimen/card_padding"
-            app:icon="@drawable/ic_times"
-            app:iconColor="?colorOnSurface"
-            app:iconSize="24dp"
-            app:useCustomColor="true" />
+            android:padding="@dimen/card_padding" />
 
     </FrameLayout>
 </layout>

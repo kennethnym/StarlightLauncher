@@ -45,12 +45,12 @@
                 android:layout_width="16dp"
                 android:layout_height="0dp" />
 
-            <kenneth.app.spotlightlauncher.views.IconButton
+            <kenneth.app.spotlightlauncher.api.view.TextButton
                 android:id="@+id/add_note_button"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:visibility="invisible"
-                app:icon="@drawable/ic_check" />
+                android:drawableStart="@drawable/ic_check"
+                android:visibility="invisible" />
 
         </LinearLayout>
 

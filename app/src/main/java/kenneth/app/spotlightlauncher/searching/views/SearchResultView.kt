@@ -5,14 +5,13 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import androidx.core.view.setPadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.api.SearchModule
 import kenneth.app.spotlightlauncher.api.SearchResult
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kenneth.app.spotlightlauncher.prefs.SearchPreferenceManager
-import kenneth.app.spotlightlauncher.searching.SearchModuleManager
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.BindingRegister
 import kenneth.app.spotlightlauncher.utils.activity
@@ -21,7 +20,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     @Inject
-    lateinit var searchModuleManager: SearchModuleManager
+    lateinit var extensionManager: ExtensionManager
 
     @Inject
     lateinit var searcher: Searcher
@@ -33,7 +32,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
     lateinit var appState: AppState
 
     private val searchResultContainers =
-        searchModuleManager.installedSearchModules
+        extensionManager.installedSearchModules
             .map { null }
             .toMutableList<SearchResultContainer?>()
 
@@ -64,8 +63,8 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
 
     private fun showSearchResult(result: SearchResult) {
         BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
-        searchModuleManager.lookupSearchModule(result.searchModuleName)?.let { searchModule ->
-            val order = searchPreferenceManager.orderOf(searchModule.name)
+        extensionManager.lookupSearchModule(result.searchModuleName)?.let { searchModule ->
+            val order = searchPreferenceManager.orderOf(searchModule.metadata.name)
 
             searchResultContainers[order]
                 ?.let {

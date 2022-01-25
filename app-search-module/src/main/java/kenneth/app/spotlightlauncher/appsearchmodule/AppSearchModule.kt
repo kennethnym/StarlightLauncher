@@ -9,7 +9,7 @@ import kenneth.app.spotlightlauncher.api.SearchResult
 import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
 import kenneth.app.spotlightlauncher.api.utils.sortByRegex
 
-private const val MODULE_NAME = "kenneth.app.spotlightlauncher.appsearchmodule"
+private const val MODULE_NAME = "kenneth.app.spotlightlauncher"
 
 typealias AppList = List<ResolveInfo>
 
@@ -35,7 +35,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
 
     override fun initialize(launcher: SpotlightLauncherApi) {
         launcherContext = launcher.context
-        mainContext = launcherContext.createPackageContext(PACKAGE_NAME, 0)
+        mainContext = launcherContext
         searchResultAdapter = AppSearchResultAdapter(this, launcher)
         preferences = AppSearchModulePreferences(context)
 

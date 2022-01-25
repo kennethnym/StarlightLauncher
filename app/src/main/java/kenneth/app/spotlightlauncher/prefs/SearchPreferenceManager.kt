@@ -7,6 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.spotlightlauncher.R
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.api.SearchModule
+import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kenneth.app.spotlightlauncher.searching.SearchModuleManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,7 +17,7 @@ private const val CATEGORY_ORDER_LIST_SEPARATOR = ";"
 @Singleton
 class SearchPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
-    private val searchModuleManager: SearchModuleManager,
+    private val extensionManager: ExtensionManager,
 ) {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -30,8 +31,8 @@ class SearchPreferenceManager @Inject constructor(
         sharedPreferences.getStringSet(enabledSearchModulesPrefKey, null)
             ?.toMutableSet()
             ?: mutableSetOf<String>().apply {
-                searchModuleManager.installedSearchModules.forEach { (_, module) ->
-                    add(module.name)
+                extensionManager.installedSearchModules.forEach {
+                    add(it.metadata.name)
                 }
             }
 
@@ -42,7 +43,7 @@ class SearchPreferenceManager @Inject constructor(
     var categoryOrder =
         sharedPreferences.getString(searchCategoryOrderPrefKey, null)
             ?.split(CATEGORY_ORDER_LIST_SEPARATOR)
-            ?: searchModuleManager.installedSearchModules.map { (_, module) -> module.name }
+            ?: extensionManager.installedSearchModules.map { it.metadata.name }
         private set
 
     /**

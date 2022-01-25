@@ -36,15 +36,4 @@
     <!--        android:layout_width="0dp"-->
     <!--        android:layout_height="@dimen/section_card_space_between" />-->
 
-    <!--    <kenneth.app.spotlightlauncher.searching.views.WebResultCard-->
-    <!--        android:id="@+id/web_result_card"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginVertical="@dimen/section_card_margin_vertical"-->
-    <!--        android:visibility="gone" />-->
-
-    <!--    <Space-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="48dp" />-->
-
 </merge>
