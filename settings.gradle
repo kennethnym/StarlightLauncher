@@ -2,3 +2,4 @@ include ':app'
 rootProject.name = "SpotlightLauncher"
 include ':spotlight-launcher-api'
 include ':app-search-module'
+include ':file-search-module'
