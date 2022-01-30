@@ -24,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.spotlightlauncher.extension.ExtensionManager
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
@@ -62,9 +63,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var blurHandler: BlurHandler
-
-    @Inject
-    lateinit var wallpaperManager: WallpaperManager
 
     @Inject
     lateinit var appState: AppState
@@ -221,19 +219,11 @@ class MainActivity : AppCompatActivity() {
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            val wallpaperBitmap = wallpaperManager.fastDrawable.toBitmap()
+            val wallpaperBitmap = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
             appState.apply {
                 val adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
                 val white = getColor(android.R.color.white)
                 val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
-
-//                adaptiveTheme = AdaptiveTheme(
-//                    adaptiveBackgroundColor,
-//                    adaptiveTextColor =
-//                    if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
-//                        white
-//                    else black
-//                )
 
                 setTheme(
                     if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
@@ -297,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            val wallpaper = wallpaperManager.fastDrawable
+            val wallpaper = WallpaperManager.getInstance(this).fastDrawable
             binding.wallpaperImage.setImageDrawable(wallpaper)
 
             if (binding.wallpaperImage.width > 0 && binding.wallpaperImage.height > 0) {

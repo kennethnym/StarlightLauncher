@@ -3,7 +3,7 @@
     android:id="@+id/pinned_apps_card_blur_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background">
+    android:background="@drawable/plate_background">
 
     <LinearLayout
         android:layout_width="match_parent"

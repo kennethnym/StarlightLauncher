@@ -3,6 +3,7 @@ package kenneth.app.spotlightlauncher.api
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.api.view.OptionMenu
 import kenneth.app.spotlightlauncher.api.view.OptionMenuBuilder
 
@@ -14,6 +15,11 @@ interface SpotlightLauncherApi {
      * The context of the launcher
      */
     val context: Context
+
+    /**
+     * The [BlurHandler] that is handling the blur effects of this launcher.
+     */
+    val blurHandler: BlurHandler
 
     /**
      * Shows the option menu with the content added by [builder].

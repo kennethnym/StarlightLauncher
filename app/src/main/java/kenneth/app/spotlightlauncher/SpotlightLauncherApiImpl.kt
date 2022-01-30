@@ -11,6 +11,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.spotlightlauncher.api.IconPack
 import kenneth.app.spotlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.spotlightlauncher.utils.BindingRegister
@@ -29,6 +30,7 @@ abstract class SpotlightLauncherApiModule {
 @Singleton
 class SpotlightLauncherApiImpl @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,
+    override val blurHandler: BlurHandler
 ) : SpotlightLauncherApi {
     override lateinit var context: Context
         internal set

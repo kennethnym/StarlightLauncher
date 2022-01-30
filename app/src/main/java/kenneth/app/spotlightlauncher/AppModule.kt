@@ -15,10 +15,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.prefs.PinnedAppsPreferenceManager
-import kenneth.app.spotlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.spotlightlauncher.prefs.appearance.IconPackManager
-import kenneth.app.spotlightlauncher.prefs.files.FilePreferenceManager
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.util.*
@@ -83,4 +81,8 @@ object AppModule {
 
     @Provides
     fun provideChoreographer() = Choreographer.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideBlurHandler(@ApplicationContext context: Context) = BlurHandler(context)
 }

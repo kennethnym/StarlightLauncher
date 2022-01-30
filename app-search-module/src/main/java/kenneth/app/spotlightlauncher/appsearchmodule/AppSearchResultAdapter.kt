@@ -29,6 +29,9 @@ class AppSearchResultAdapter(
     override fun onCreateViewHolder(parent: ViewGroup): AppSearchResultViewHolder {
         val binding =
             AppSearchResultCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                .apply {
+                    appSearchResultCard.blurWith(launcher.blurHandler)
+                }
         return AppSearchResultViewHolder(binding)
     }
 

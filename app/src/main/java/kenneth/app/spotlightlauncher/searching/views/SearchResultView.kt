@@ -1,10 +1,13 @@
 package kenneth.app.spotlightlauncher.searching.views
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.WindowInsets
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
@@ -55,6 +58,18 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
                 }
             }
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        updatePadding(
+            bottom = activity?.window?.decorView?.rootWindowInsets?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    it.getInsets(WindowInsets.Type.navigationBars()).bottom
+                else
+                    it.systemWindowInsetBottom
+            } ?: 0
+        )
     }
 
     fun clearSearchResults() {

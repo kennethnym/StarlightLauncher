@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ActivityContext
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.databinding.QuickNotesLayoutBinding
 import kenneth.app.spotlightlauncher.databinding.QuickNotesListItemBinding
 import kenneth.app.spotlightlauncher.models.Note
@@ -34,6 +35,9 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
     @Inject
     lateinit var inputMethodManager: InputMethodManager
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     private val binding: QuickNotesLayoutBinding =
         QuickNotesLayoutBinding.inflate(LayoutInflater.from(context), this, true)
@@ -71,6 +75,8 @@ class QuickNotes(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                     .apply { data = it }
                     .also { it.notifyDataSetChanged() }
             }
+
+            quickNotesWidgetBg.blurWith(blurHandler)
         }
 
         toggleElementsVisibility()

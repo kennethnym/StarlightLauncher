@@ -1,7 +1,6 @@
 package kenneth.app.spotlightlauncher.widgets.unitconverter
 
 import android.content.Context
-import android.text.Editable
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.HANDLED
 import kenneth.app.spotlightlauncher.NOT_HANDLED
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.databinding.UnitConverterWidgetBinding
 import kenneth.app.spotlightlauncher.utils.ContextMenuCallback
 import kenneth.app.spotlightlauncher.utils.ContextMenuEntry
@@ -50,6 +50,9 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
     ContextMenuCallback {
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     private val binding =
         UnitConverterWidgetBinding.inflate(LayoutInflater.from(context), this, true)
@@ -139,6 +142,8 @@ class UnitConverterWidget(context: Context, attrs: AttributeSet) :
                     destUnit = this@UnitConverterWidget.selectedSrcUnit,
                 )
             }
+
+            unitConverterWidgetBg.blurWith(blurHandler)
         }
     }
 

@@ -1,8 +1,13 @@
-package kenneth.app.spotlightlauncher.api.view
+package kenneth.app.spotlightlauncher.api.utils
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.Build
+import android.util.Log
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.widget.ImageView
 import com.google.android.renderscript.Toolkit
 import kotlin.math.max
@@ -15,7 +20,7 @@ import kotlin.math.roundToInt
 private const val BLUR_SCALE = 0.2f
 
 /**
- * Handles bluring of wallpapers and views.
+ * Handles blurring of wallpapers and views.
  */
 class BlurHandler(context: Context) {
     private val resources = context.resources
@@ -37,6 +42,8 @@ class BlurHandler(context: Context) {
      * the blurred version of has not yet been created.
      */
     private var shouldBlurWallpaper = true
+
+    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     /**
      * Changes the wallpaper to be used for blur effect.
@@ -60,30 +67,46 @@ class BlurHandler(context: Context) {
         blurredWallpaper?.let {
             if (dest.width <= 0 || dest.height <= 0) return
 
+            // get window insets
+            val insets = getInsets(dest)
             val (viewX, viewY) = IntArray(2).run {
                 dest.getLocationOnScreen(this)
                 this
             }
+            // y coor of the bottom of the dest view
+            val viewBottomY = viewY + dest.height
 
-            val screenWidth = resources.displayMetrics.widthPixels
-            val screenHeight = resources.displayMetrics.heightPixels
+            val screenWidth = resources.displayMetrics.widthPixels + insets.left + insets.right
+            val screenHeight = resources.displayMetrics.heightPixels + insets.bottom + insets.top
 
+            // the x coor of the cutout of the blurred wallpaper
             val bitmapX = it.width * max(viewX, 0) / screenWidth
-
+            // the y coor of the cutout of the blurred wallpaper
             val bitmapY =
-                it.height * max(min(viewY, screenHeight), 0) / screenHeight
+                it.height * max(
+                    min(viewY, screenHeight),
+                    0
+                ) / screenHeight
 
+            // if the coordinates are outside of wallpaper, do nothing
             if (bitmapY >= it.height || bitmapX > it.width) return
 
+            // the width of the cutout
             val bgWidth = min(
                 it.width * dest.width / screenWidth, screenWidth
             )
-            val scaledHeight = it.height * dest.height / screenHeight
-            val bgHeight =
-                if (bitmapY + scaledHeight > it.height)
-                    it.height - bitmapY
+
+            // height of the visible part of the dest view
+            val destVisibleHeight =
+                // if top or bottom of dest view is outside of screen
+                if (viewBottomY > screenHeight || viewY < 0)
+                // visible height is the total height minus the height of invisible parts
+                    dest.height - max(viewBottomY - screenHeight, 0) + min(viewY, 0)
                 else
-                    scaledHeight
+                    dest.height
+
+            // the height of the cutout
+            val bgHeight = it.height * destVisibleHeight / screenHeight
 
             if (bgWidth > 0 && bgHeight > 0 && bitmapX + bgWidth <= it.width && bitmapY + bgHeight <= it.height) {
                 val bitmap = Bitmap.createBitmap(
@@ -97,6 +120,7 @@ class BlurHandler(context: Context) {
                 val destWidthFloat = dest.width.toFloat()
 
                 dest.imageMatrix = Matrix().apply {
+                    // if dest's top part is partially blocked, move the cutout down to the bottom
                     setTranslate(0f, if (viewY < 0) -viewY.toFloat() else 0f)
                     preScale(
                         destWidthFloat / bgWidth,
@@ -106,6 +130,23 @@ class BlurHandler(context: Context) {
 
                 dest.setImageBitmap(bitmap)
             }
+        }
+    }
+
+    private fun getInsets(dest: ImageView): Insets = dest.context.run {
+        if (dest.isAttachedToWindow && this is Activity) {
+            window.decorView.rootWindowInsets.let { windowInsets: WindowInsets ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Insets(windowInsets.getInsets(WindowInsets.Type.systemBars()))
+                } else {
+                    Insets(
+                        top = windowInsets.systemWindowInsetTop,
+                        bottom = windowInsets.systemWindowInsetBottom,
+                    )
+                }
+            }
+        } else {
+            Insets()
         }
     }
 

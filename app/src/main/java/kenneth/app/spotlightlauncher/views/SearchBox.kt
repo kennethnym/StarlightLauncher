@@ -18,6 +18,7 @@ import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.spotlightlauncher.AppState
 import kenneth.app.spotlightlauncher.R
+import kenneth.app.spotlightlauncher.api.utils.BlurHandler
 import kenneth.app.spotlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.spotlightlauncher.searching.Searcher
 import kenneth.app.spotlightlauncher.utils.BindingRegister
@@ -45,6 +46,9 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
 
     @Inject
     lateinit var inputMethodManager: InputMethodManager
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     @Inject
     lateinit var appState: AppState
@@ -81,6 +85,8 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             }
 
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
+
+            searchBoxBg.blurWith(blurHandler)
         }
     }
 

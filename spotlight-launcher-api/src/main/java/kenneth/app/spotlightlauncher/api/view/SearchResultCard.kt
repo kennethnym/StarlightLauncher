@@ -19,7 +19,7 @@ const val DEFAULT_CARD_TITLE = "Search result"
  * All default search modules like apps and files uses this to displays
  * their search results.
  */
-open class SearchResultCard(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
+class SearchResultCard(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
     private val binding =
         SearchResultCardLayoutBinding.inflate(LayoutInflater.from(context), this, true)
 

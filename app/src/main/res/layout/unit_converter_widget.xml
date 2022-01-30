@@ -17,10 +17,10 @@
     </data>
 
     <kenneth.app.spotlightlauncher.api.view.Plate
-        android:id="@+id/unit_converter_widget_blur_background"
+        android:id="@+id/unit_converter_widget_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_background">
+        android:background="@drawable/plate_background">
 
         <LinearLayout
             android:layout_width="match_parent"

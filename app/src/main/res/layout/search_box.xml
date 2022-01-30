@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <kenneth.app.spotlightlauncher.api.view.Plate
+        android:id="@+id/search_box_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:useRoundedCorners="false">
 
         <LinearLayout
             android:id="@+id/search_box_container"

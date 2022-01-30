@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kenneth.app.spotlightlauncher.api.view.SearchResultCard xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_search_result_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardTitle="@string/search_result_card_title">
