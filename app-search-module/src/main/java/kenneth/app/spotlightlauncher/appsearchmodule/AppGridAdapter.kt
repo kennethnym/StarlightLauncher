@@ -49,9 +49,16 @@ internal class AppGridAdapter(
                 appLabel.isVisible = false
             }
 
-            root.setOnLongClickListener {
-                selectedApp = app
-                showAppOptionMenu()
+            with(root) {
+                setOnLongClickListener {
+                    selectedApp = app
+                    showAppOptionMenu()
+                }
+
+                setOnClickListener {
+                    selectedApp = app
+                    openSelectedApp()
+                }
             }
         }
     }
@@ -61,6 +68,12 @@ internal class AppGridAdapter(
     private fun showAppOptionMenu(): Boolean {
         launcher.showOptionMenu(::createAppOptionMenu)
         return true
+    }
+
+    private fun openSelectedApp() {
+        launcher.context.startActivity(
+            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.activityInfo.packageName)
+        )
     }
 
     private fun createAppOptionMenu(menu: OptionMenu) {
