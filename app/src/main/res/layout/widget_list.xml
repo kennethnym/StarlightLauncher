@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!--    <kenneth.app.spotlightlauncher.widgets.PinnedAppsCard-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.widgets.PinnedAppsCard-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content" />-->
 
@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/widget_list_spacing" />
 
-    <kenneth.app.spotlightlauncher.widgets.quicknotes.QuickNotes
+    <kenneth.app.starlightlauncher.widgets.quicknotes.QuickNotes
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -20,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/widget_list_spacing" />
 
-    <kenneth.app.spotlightlauncher.widgets.unitconverter.UnitConverterWidget
+    <kenneth.app.starlightlauncher.widgets.unitconverter.UnitConverterWidget
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

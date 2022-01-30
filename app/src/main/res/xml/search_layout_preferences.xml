@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <kenneth.app.spotlightlauncher.prefs.searchlayout.SearchCategoryOrderPreference
+    <kenneth.app.starlightlauncher.prefs.searchlayout.SearchCategoryOrderPreference
         app:key="@string/search_category_order_pref_key"
         app:layout="@layout/search_category_order_preference_layout"
         app:selectable="false"

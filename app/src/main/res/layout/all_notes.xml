@@ -45,7 +45,7 @@
         android:background="@drawable/all_notes_add_note_btn_bg"
         android:paddingVertical="32dp">
 
-        <kenneth.app.spotlightlauncher.api.view.TextButton
+        <kenneth.app.starlightlauncher.api.view.TextButton
             android:id="@+id/add_note_button"
             style="@style/TextButton"
             android:layout_width="wrap_content"

@@ -6,7 +6,7 @@
         android:key="@string/file_search_enabled"
         android:title="Enable file search" />
 
-    <kenneth.app.spotlightlauncher.prefs.views.PreferenceCategoryWithSummary
+    <kenneth.app.starlightlauncher.prefs.views.PreferenceCategoryWithSummary
         app:key="@string/file_include_paths_category"
         app:summary="@string/file_include_paths_summary"
         app:title="@string/file_include_paths_category_header">
@@ -16,6 +16,6 @@
             app:key="@string/file_search_add_path"
             app:title="@string/file_add_path_title" />
 
-    </kenneth.app.spotlightlauncher.prefs.views.PreferenceCategoryWithSummary>
+    </kenneth.app.starlightlauncher.prefs.views.PreferenceCategoryWithSummary>
 
 </PreferenceScreen>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--    <kenneth.app.spotlightlauncher.searching.views.SuggestedResultCard-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.searching.views.SuggestedResultCard-->
     <!--        android:id="@+id/suggesed_result_card"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content"-->
@@ -14,7 +14,7 @@
     <!--        android:layout_width="0dp"-->
     <!--        android:layout_height="@dimen/section_card_space_between" />-->
 
-    <!--    <kenneth.app.spotlightlauncher.searching.views.AppsSectionCard-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.searching.views.AppsSectionCard-->
     <!--        android:id="@+id/apps_section_card"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content"-->
@@ -25,7 +25,7 @@
     <!--        android:layout_width="0dp"-->
     <!--        android:layout_height="@dimen/section_card_space_between" />-->
 
-    <!--    <kenneth.app.spotlightlauncher.searching.views.FilesSectionCard-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.searching.views.FilesSectionCard-->
     <!--        android:id="@+id/files_section_card"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content"-->

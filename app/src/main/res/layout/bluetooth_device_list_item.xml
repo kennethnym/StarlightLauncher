@@ -19,13 +19,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        <kenneth.app.starlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/active_device_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceSubtitle1" />
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        <kenneth.app.starlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/active_device_connection_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

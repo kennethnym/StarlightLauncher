@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <kenneth.app.spotlightlauncher.api.view.Plate
+    <kenneth.app.starlightlauncher.api.view.Plate
         android:id="@+id/search_box_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
                     android:textStyle="bold"
                     tools:ignore="Autofill" />
 
-                <kenneth.app.spotlightlauncher.api.view.IconButton
+                <kenneth.app.starlightlauncher.api.view.IconButton
                     android:id="@+id/search_box_right_side_btn"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -57,6 +57,6 @@
 
         </LinearLayout>
 
-    </kenneth.app.spotlightlauncher.api.view.Plate>
+    </kenneth.app.starlightlauncher.api.view.Plate>
 
 </layout>

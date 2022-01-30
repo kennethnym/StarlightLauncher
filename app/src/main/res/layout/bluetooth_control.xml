@@ -33,7 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="8dp" />
 
-    <kenneth.app.spotlightlauncher.api.view.TextButton
+    <kenneth.app.starlightlauncher.api.view.TextButton
         android:id="@+id/open_bluetooth_settings_button"
         style="@style/Style.SpotlightLauncher.TextButton"
         android:layout_width="wrap_content"

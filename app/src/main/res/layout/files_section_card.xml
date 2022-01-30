@@ -9,7 +9,7 @@
         android:fitsSystemWindows="false"
         android:nestedScrollingEnabled="false" />
 
-    <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+    <kenneth.app.starlightlauncher.views.AdaptiveColorTextView
         android:id="@+id/files_section_result_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:layout_marginBottom="8dp"
         android:textAlignment="center" />
 
-    <kenneth.app.spotlightlauncher.api.view.TextButton
+    <kenneth.app.starlightlauncher.api.view.TextButton
         android:id="@+id/open_settings_button"
         style="@style/Style.SpotlightLauncher.TextButton"
         android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
         android:text="@string/open_settings"
         android:visibility="gone" />
 
-    <kenneth.app.spotlightlauncher.api.view.TextButton
+    <kenneth.app.starlightlauncher.api.view.TextButton
         android:id="@+id/files_list_show_more_button"
         style="@style/Style.SpotlightLauncher.TextButton"
         android:layout_width="wrap_content"

@@ -12,17 +12,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <kenneth.app.spotlightlauncher.views.SearchBox
+        <kenneth.app.starlightlauncher.views.SearchBox
             android:id="@+id/search_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <kenneth.app.spotlightlauncher.views.WidgetList
+        <kenneth.app.starlightlauncher.views.WidgetList
             android:id="@+id/widget_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <kenneth.app.spotlightlauncher.searching.views.SearchResultView
+        <kenneth.app.starlightlauncher.searching.views.SearchResultView
             android:id="@+id/search_result_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
 
     </LinearLayout>
 
-    <kenneth.app.spotlightlauncher.views.widgetspanel.Overlay
+    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.api.view.SearchResultCard xmlns:android="http://schemas.android.com/apk/res/android"
+<kenneth.app.starlightlauncher.api.view.SearchResultCard xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_search_result_card"
     android:layout_width="match_parent"
@@ -22,7 +22,7 @@
         android:layout_marginHorizontal="16dp"
         android:text="@string/no_result" />
 
-    <kenneth.app.spotlightlauncher.api.view.TextButton
+    <kenneth.app.starlightlauncher.api.view.TextButton
         android:id="@+id/show_more_button"
         style="@style/Style.SpotlightLauncher.TextButton"
         android:layout_width="wrap_content"
@@ -30,4 +30,4 @@
         android:layout_marginTop="@dimen/search_result_card_padding"
         android:text="@string/show_more" />
 
-</kenneth.app.spotlightlauncher.api.view.SearchResultCard>
+</kenneth.app.starlightlauncher.api.view.SearchResultCard>

@@ -11,6 +11,8 @@
 
     <string name="search_enabled_modules_pref_key">search_enabled_modules_pref_key</string>
 
+    <string name="pref_category_search_behavior">pref_category_search_behavior</string>
+
     <string name="search_layout_pref_key">search_layout</string>
     <string name="search_category_order_pref_key">search_category_order_pref_key</string>
 

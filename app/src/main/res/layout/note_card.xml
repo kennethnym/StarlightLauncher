@@ -6,11 +6,11 @@
 
         <variable
             name="note"
-            type="kenneth.app.spotlightlauncher.models.Note" />
+            type="kenneth.app.starlightlauncher.models.Note" />
 
         <variable
             name="timeAgo"
-            type="kenneth.app.spotlightlauncher.utils.TimeAgo" />
+            type="kenneth.app.starlightlauncher.utils.TimeAgo" />
     </data>
 
     <FrameLayout
@@ -99,7 +99,7 @@
 
                 <!-- action bar that is shown normally -->
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_edit_button"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -113,7 +113,7 @@
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
 
                 <!-- action bar that is shown when user is editing this note -->
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_save_edit"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -150,7 +150,7 @@
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_cancel_edit"
                     style="@style/TextButton"
                     android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
 
         </LinearLayout>
 
-        <kenneth.app.spotlightlauncher.api.view.TextButton
+        <kenneth.app.starlightlauncher.api.view.TextButton
             android:id="@+id/delete_note_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

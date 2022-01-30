@@ -1,22 +1,24 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <Preference
-        app:fragment="kenneth.app.spotlightlauncher.prefs.appearance.AppearanceSettingsFragment"
+        app:fragment="kenneth.app.starlightlauncher.prefs.appearance.AppearanceSettingsFragment"
         app:icon="@drawable/ic_swatchbook"
         app:key="@string/appearance_pref_key"
         app:summary="@string/appearance_summary"
         app:title="@string/appearance_title" />
 
-    <PreferenceCategory app:title="@string/search_header">
+    <PreferenceCategory
+        app:key="@string/pref_category_search_behavior"
+        app:title="@string/search_header">
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.prefs.searchlayout.SearchLayoutSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.searchlayout.SearchLayoutSettingsFragment"
             app:icon="@drawable/ic_window_grid"
             app:key="@string/search_layout_pref_key"
             app:summary="@string/search_layout_summary"
             app:title="@string/search_layout_title" />
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.prefs.files.FileSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.files.FileSettingsFragment"
             app:icon="@drawable/ic_file_search_alt"
             app:key="@string/file_search_pref_key"
             app:summary="@string/file_search_summary"
@@ -27,21 +29,21 @@
     <PreferenceCategory app:title="@string/widgets_header">
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.prefs.datetime.DateTimeSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.datetime.DateTimeSettingsFragment"
             app:icon="@drawable/ic_clock"
             app:key="@string/date_time_pref_key"
             app:summary="@string/date_time_pref_summary"
             app:title="@string/date_time_pref_title" />
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.prefs.MediaControlSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.MediaControlSettingsFragment"
             app:icon="@drawable/ic_play_circle"
             app:key="@string/media_control_pref_key"
             app:summary="@string/media_control_summary"
             app:title="@string/media_control_title" />
 
         <Preference
-            app:fragment="kenneth.app.spotlightlauncher.prefs.notes.NotesSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.notes.NotesSettingsFragment"
             app:icon="@drawable/ic_notes"
             app:key="@string/quick_notes_pref_key"
             app:summary="@string/quick_notes_summary"

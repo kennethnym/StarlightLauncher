@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kenneth.app.spotlightlauncher.appsearchmodule">
+    package="kenneth.app.starlightlauncher.appsearchmodule">
 
     <application
         android:name=".MainApplication"
@@ -14,20 +14,34 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!-- This intent category has to be present in order for Spotlight Launcher to consider this application as a plugin -->
-                <category android:name="kenneth.app.spotlightlauncher.intent.category.EXTENSION" />
+                <category android:name="kenneth.app.starlightlauncher.intent.category.EXTENSION" />
             </intent-filter>
 
         </activity>
 
         <activity
-            android:name=".activity.SettingsActivity"
+            android:name=".activity.SearchSettingsActivity"
             android:exported="true"
-            android:theme="@style/Theme.SpotlightLauncher.SettingsTheme">
+            android:icon="@drawable/app_search_module_search_module_settings_icon"
+            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!-- This intent category lets Spotlight Launcher knows that this activity is for changing settings of this plugin. -->
-                <category android:name="kenneth.app.spotlightlauncher.SEARCH_MODULE_SETTINGS" />
+                <category android:name="kenneth.app.starlightlauncher.intent.category.SEARCH_MODULE_SETTINGS" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".activity.WidgetSettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- This intent category lets Spotlight Launcher knows that this activity is for changing settings of this plugin. -->
+                <category android:name="kenneth.app.starlightlauncher.intent.category.WIDGET_SETTINGS" />
             </intent-filter>
 
         </activity>

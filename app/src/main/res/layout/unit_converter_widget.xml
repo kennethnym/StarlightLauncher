@@ -5,18 +5,18 @@
 
         <variable
             name="selectedMeasurement"
-            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementType" />
+            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementType" />
 
         <variable
             name="selectedSrcUnit"
-            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementUnit" />
+            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementUnit" />
 
         <variable
             name="selectedDestUnit"
-            type="kenneth.app.spotlightlauncher.widgets.unitconverter.MeasurementUnit" />
+            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementUnit" />
     </data>
 
-    <kenneth.app.spotlightlauncher.api.view.Plate
+    <kenneth.app.starlightlauncher.api.view.Plate
         android:id="@+id/unit_converter_widget_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                     android:layout_width="@dimen/text_separator_spacing"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/measurement_selector_btn"
                     style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
                     android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/src_unit_selector_btn"
                     style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
@@ -124,7 +124,7 @@
                     android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
-                <kenneth.app.spotlightlauncher.api.view.TextButton
+                <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/dest_unit_selector_btn"
                     style="@style/Style.SpotlightLauncher.TextButton"
                     android:layout_width="wrap_content"
@@ -138,5 +138,5 @@
 
         </LinearLayout>
 
-    </kenneth.app.spotlightlauncher.api.view.Plate>
+    </kenneth.app.starlightlauncher.api.view.Plate>
 </layout>

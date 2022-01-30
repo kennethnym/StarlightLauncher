@@ -30,7 +30,7 @@
             android:layout_width="24dp"
             android:layout_height="0dp" />
 
-        <kenneth.app.spotlightlauncher.api.view.TextButton
+        <kenneth.app.starlightlauncher.api.view.TextButton
             android:id="@+id/quick_notes_list_item_delete_button"
             android:layout_width="24dp"
             android:layout_height="24dp"

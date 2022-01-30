@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kenneth.app.spotlightlauncher.api.view.Plate xmlns:android="http://schemas.android.com/apk/res/android"
+<kenneth.app.starlightlauncher.api.view.Plate xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/quick_notes_widget_bg"
@@ -45,7 +45,7 @@
                 android:layout_width="16dp"
                 android:layout_height="0dp" />
 
-            <kenneth.app.spotlightlauncher.api.view.TextButton
+            <kenneth.app.starlightlauncher.api.view.TextButton
                 android:id="@+id/add_note_button"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -62,7 +62,7 @@
             android:nestedScrollingEnabled="false"
             android:visibility="gone" />
 
-        <kenneth.app.spotlightlauncher.api.view.TextButton
+        <kenneth.app.starlightlauncher.api.view.TextButton
             android:id="@+id/show_all_notes_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,4 +73,4 @@
 
     </LinearLayout>
 
-</kenneth.app.spotlightlauncher.api.view.Plate>
+</kenneth.app.starlightlauncher.api.view.Plate>

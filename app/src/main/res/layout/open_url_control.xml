@@ -7,13 +7,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        <kenneth.app.starlightlauncher.views.AdaptiveColorTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/open_url_in_browser_label"
             android:textStyle="bold" />
 
-        <kenneth.app.spotlightlauncher.views.AdaptiveColorTextView
+        <kenneth.app.starlightlauncher.views.AdaptiveColorTextView
             android:id="@+id/url_opener_url_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    tools:context="kenneth.app.starlightlauncher.MainActivity">
 
     <ImageView
         android:id="@+id/wallpaper_image"
@@ -23,19 +23,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <kenneth.app.spotlightlauncher.views.DateTimeViewContainer
+        <kenneth.app.starlightlauncher.views.DateTimeViewContainer
             android:id="@+id/date_time_view_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <kenneth.app.spotlightlauncher.widgets.DateTimeView
+            <kenneth.app.starlightlauncher.widgets.DateTimeView
                 android:id="@+id/date_time_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <kenneth.app.spotlightlauncher.widgets.MediaControlCard
+            <kenneth.app.starlightlauncher.widgets.MediaControlCard
                 android:id="@+id/media_control_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                 android:layout_marginBottom="16dp"
                 android:visibility="invisible" />
 
-        </kenneth.app.spotlightlauncher.views.DateTimeViewContainer>
+        </kenneth.app.starlightlauncher.views.DateTimeViewContainer>
 
         <Space
             android:layout_width="match_parent"
@@ -53,26 +53,26 @@
 
     </LinearLayout>
 
-    <kenneth.app.spotlightlauncher.views.widgetspanel.WidgetsPanel
+    <kenneth.app.starlightlauncher.views.widgetspanel.WidgetsPanel
         android:id="@+id/widgets_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <kenneth.app.spotlightlauncher.api.view.OptionMenu
+    <kenneth.app.starlightlauncher.api.view.OptionMenu
         android:id="@+id/option_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!--    <kenneth.app.spotlightlauncher.views.AppOptionMenu-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.views.AppOptionMenu-->
     <!--        android:id="@+id/app_option_menu"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->
     <!--        android:layout_gravity="bottom"-->
     <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 
-    <!--    <kenneth.app.spotlightlauncher.views.LauncherOptionMenu-->
+    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.views.LauncherOptionMenu-->
     <!--        android:id="@+id/launcher_option_menu"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->

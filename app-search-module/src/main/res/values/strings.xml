@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_search_module_name">kenneth.app.spotlightlauncher</string>
+    <string name="app_search_module_name">kenneth.app.starlightlauncher.spotlightlauncher</string>
     <string name="app_search_module_display_name">Apps</string>
     <string name="app_search_module_description">Searches for apps on your phone.</string>
+
+    <string name="app_search_module_search_module_settings_title">Apps</string>
+    <string name="app_search_module_search_module_settings_description">
+        Adjusts how Starlight Launcher searches for apps.
+    </string>
 
     <string name="search_result_card_title">Apps</string>
     <string name="no_result">No result</string>

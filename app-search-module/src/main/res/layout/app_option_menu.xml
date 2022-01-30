@@ -31,7 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="16dp" />
 
-    <kenneth.app.spotlightlauncher.api.view.OptionMenuItem
+    <kenneth.app.starlightlauncher.api.view.OptionMenuItem
         android:id="@+id/pin_app_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:layout_width="0dp"
         android:layout_height="24dp" />
 
-    <kenneth.app.spotlightlauncher.api.view.OptionMenuItem
+    <kenneth.app.starlightlauncher.api.view.OptionMenuItem
         android:id="@+id/uninstall_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

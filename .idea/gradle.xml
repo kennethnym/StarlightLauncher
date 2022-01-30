@@ -14,7 +14,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/app-search-module" />
             <option value="$PROJECT_DIR$/file-search-module" />
-            <option value="$PROJECT_DIR$/spotlight-launcher-api" />
+            <option value="$PROJECT_DIR$/starlight-launcher-api" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
