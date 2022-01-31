@@ -93,14 +93,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
-
-        searcher.addSearchResultListener {
-            if (searcher.hasFinishedSearching) {
-                activity?.runOnUiThread {
-                    binding.searchBox.shouldShowLoadingIndicator = false
-                }
-            }
-        }
     }
 
     override fun onTouchEvent(ev: MotionEvent): Boolean =
@@ -115,7 +107,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         with(binding) {
             widgetList.isVisible = false
             searchResultView.isVisible = true
-            searchBox.shouldShowLoadingIndicator = true
         }
     }
 
@@ -123,7 +114,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         with(binding) {
             searchResultView.isVisible = false
             widgetList.isVisible = true
-            searchBox.shouldShowLoadingIndicator = false
         }
     }
 
