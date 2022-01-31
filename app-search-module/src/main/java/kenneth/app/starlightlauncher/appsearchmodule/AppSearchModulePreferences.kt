@@ -1,19 +1,41 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
-private const val DEFAULT_SHOW_APP_LABELS = true
+/**
+ * Manages preferences of [AppSearchModule]
+ */
+internal class AppSearchModulePreferences
+private constructor(private val context: Context) :
+    SharedPreferences.OnSharedPreferenceChangeListener {
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var instance: AppSearchModulePreferences? = null
 
-internal class AppSearchModulePreferences(
-    private val context: Context,
-) : SharedPreferences.OnSharedPreferenceChangeListener {
+        fun getInstance(context: Context) =
+            instance ?: AppSearchModulePreferences(context.applicationContext)
+                .also { instance = it }
+    }
+
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
+    /**
+     * Stores preferences keys used by these preferences.
+     */
     val keys = PrefKeys(context)
 
-    var shouldShowAppLabels = prefs.getBoolean(keys.showAppLabels, DEFAULT_SHOW_APP_LABELS)
+    /**
+     * Whether app labels should be visible.
+     *
+     * Key: `"pref_key_show_app_names"`
+     */
+    var shouldShowAppLabels = prefs.getBoolean(
+        keys.showAppLabels,
+        context.resources.getBoolean(R.bool.def_pref_show_app_names)
+    )
         private set
 
     init {
@@ -23,13 +45,19 @@ internal class AppSearchModulePreferences(
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
             keys.showAppLabels -> {
-                shouldShowAppLabels = sharedPreferences.getBoolean(key, DEFAULT_SHOW_APP_LABELS)
+                shouldShowAppLabels = sharedPreferences.getBoolean(
+                    key,
+                    context.resources.getBoolean(R.bool.def_pref_show_app_names)
+                )
             }
         }
     }
 }
 
 internal class PrefKeys(context: Context) {
+    /**
+     * Key: `"pref_key_show_app_names"`
+     */
     val showAppLabels by lazy {
         context.getString(R.string.pref_key_show_app_names)
     }

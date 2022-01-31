@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -16,7 +17,7 @@ import kotlin.math.min
 private const val INITIAL_ITEM_COUNT = 10
 
 class AppSearchResultAdapter(
-    private val module: AppSearchModule,
+    private val context: Context,
     private val launcher: SpotlightLauncherApi
 ) :
     SearchResultAdapter {
@@ -69,7 +70,7 @@ class AppSearchResultAdapter(
                         apps.clear()
                         apps.addAll(initialAppGridItems)
                     }
-                        ?: AppGridAdapter(module, initialAppGridItems, launcher).also {
+                        ?: AppGridAdapter(context, initialAppGridItems, launcher).also {
                             appGridAdapter = it
                         }
 

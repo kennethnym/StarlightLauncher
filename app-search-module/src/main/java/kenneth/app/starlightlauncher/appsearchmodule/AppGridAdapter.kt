@@ -1,11 +1,15 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.OptionMenu
@@ -14,11 +18,13 @@ import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBi
 
 
 internal class AppGridAdapter(
-    private val module: AppSearchModule,
+    context: Context,
     internal val apps: MutableList<ResolveInfo>,
     private val launcher: SpotlightLauncherApi
-) :
-    RecyclerView.Adapter<AppGridItem>() {
+) : RecyclerView.Adapter<AppGridItem>() {
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
+
     private lateinit var selectedApp: ResolveInfo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppGridItem {
@@ -37,7 +43,7 @@ internal class AppGridAdapter(
                 setImageBitmap(launcher.getIconPack().getIconOf(app))
             }
 
-            if (module.preferences.shouldShowAppLabels) {
+            if (appSearchModulePreferences.shouldShowAppLabels) {
                 appLabel.apply {
                     isVisible = true
                     text = appName
@@ -58,6 +64,8 @@ internal class AppGridAdapter(
                 }
             }
         }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(holder)
     }
 
     override fun getItemCount(): Int = apps.size
@@ -90,4 +98,15 @@ internal class AppGridAdapter(
 }
 
 internal class AppGridItem(internal val binding: AppGridItemBinding) :
-    RecyclerView.ViewHolder(binding.root)
+    RecyclerView.ViewHolder(binding.root),
+    SharedPreferences.OnSharedPreferenceChangeListener {
+    private val prefs = AppSearchModulePreferences.getInstance(itemView.context)
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            prefs.keys.showAppLabels -> {
+                binding.appLabel.isVisible = prefs.shouldShowAppLabels
+            }
+        }
+    }
+}

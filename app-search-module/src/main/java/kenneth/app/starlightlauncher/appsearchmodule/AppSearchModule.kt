@@ -35,8 +35,8 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
     override fun initialize(launcher: SpotlightLauncherApi) {
         launcherContext = launcher.context
         mainContext = launcherContext
-        searchResultAdapter = AppSearchResultAdapter(this, launcher)
-        preferences = AppSearchModulePreferences(context)
+        searchResultAdapter = AppSearchResultAdapter(mainContext, launcher)
+        preferences = AppSearchModulePreferences.getInstance(context)
 
         metadata = SearchModule.Metadata(
             extensionName = EXTENSION_NAME,
