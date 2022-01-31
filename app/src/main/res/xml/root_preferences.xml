@@ -17,13 +17,6 @@
             app:summary="@string/search_layout_summary"
             app:title="@string/search_layout_title" />
 
-        <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.files.FileSettingsFragment"
-            app:icon="@drawable/file_search_module_search_module_settings_icon"
-            app:key="@string/file_search_pref_key"
-            app:summary="@string/file_search_summary"
-            app:title="@string/file_search_title" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/widgets_header">
