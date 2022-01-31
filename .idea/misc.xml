@@ -78,6 +78,7 @@
         <entry key="spotlight-launcher-api/src/main/res/drawable/plate_background.xml" value="0.3703125" />
         <entry key="spotlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3736413043478261" />
         <entry key="spotlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3496376811594203" />
+        <entry key="starlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3170289855072464" />
       </map>
     </option>
   </component>

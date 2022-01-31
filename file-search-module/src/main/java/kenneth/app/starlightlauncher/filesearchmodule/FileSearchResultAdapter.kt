@@ -21,9 +21,10 @@ internal class FileSearchResultAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup): SearchResultAdapter.ViewHolder {
         val binding =
-            FileSearchResultCardBinding.inflate(LayoutInflater.from(parent.context)).apply {
-                searchResultCard.blurWith(launcher.blurHandler)
-            }
+            FileSearchResultCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                .apply {
+                    searchResultCard.blurWith(launcher.blurHandler)
+                }
         return FileSearchResultViewHolder(binding)
     }
 
@@ -40,6 +41,7 @@ internal class FileSearchResultAdapter(
         holder: FileSearchResultViewHolder,
         searchResult: FileSearchModule.Result,
     ) {
+        currentViewHolder = holder
         when {
             prefs.includedPaths.isEmpty() -> {
                 with(holder.binding) {
@@ -63,7 +65,9 @@ internal class FileSearchResultAdapter(
                     isNoFilesFoundMessageShown = false
 
                     fileList.apply {
-                        adapter = FileListAdapter(searchResult.files)
+                        adapter = FileListAdapter(context, searchResult.files).also {
+                            fileListAdapter = it
+                        }
                         layoutManager = LinearLayoutManager(context)
                     }
 

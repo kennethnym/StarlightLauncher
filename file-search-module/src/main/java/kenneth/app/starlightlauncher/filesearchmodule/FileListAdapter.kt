@@ -1,14 +1,18 @@
 package kenneth.app.starlightlauncher.filesearchmodule
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.filesearchmodule.databinding.FileListItemBinding
 import kotlin.math.min
 
 internal class FileListAdapter(
-    private val files: List<DocumentFile>
+    private val context: Context,
+    private val files: List<DocumentFile>,
 ) : RecyclerView.Adapter<FileListItem>() {
     private val visibleFiles = files.subList(0, INITIAL_LIST_ITEM_COUNT).toMutableList()
 
@@ -16,12 +20,17 @@ internal class FileListAdapter(
         get() = visibleFiles.size < files.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileListItem {
-        val binding = FileListItemBinding.inflate(LayoutInflater.from(parent.context))
+        val binding =
+            FileListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return FileListItem(binding)
     }
 
     override fun onBindViewHolder(holder: FileListItem, position: Int) {
-        val file = files[position]
+        val currentFile = files[position]
+        with(holder.binding) {
+            file = currentFile
+            root.setOnClickListener { openFile(currentFile) }
+        }
     }
 
     override fun getItemCount(): Int = visibleFiles.size
@@ -41,6 +50,12 @@ internal class FileListAdapter(
         )
 
         notifyItemRangeChanged(currentItemCount, addedItemsCount)
+    }
+
+    private fun openFile(documentFile: DocumentFile) {
+        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+            data = documentFile.uri
+        })
     }
 }
 

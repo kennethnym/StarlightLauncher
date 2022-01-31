@@ -28,7 +28,7 @@ class FileSearchModule : SearchModule {
 
     override fun initialize(launcher: SpotlightLauncherApi) {
         mainContext = launcher.context
-        preferences = FileSearchModulePreferences(mainContext)
+        preferences = FileSearchModulePreferences.getInstance(mainContext)
         metadata = SearchModule.Metadata(
             extensionName = mainContext.getString(R.string.file_search_module_name),
             displayName = mainContext.getString(R.string.file_search_module_display_name),
@@ -59,7 +59,7 @@ class FileSearchModule : SearchModule {
         paths.forEach { path ->
             DocumentFile.fromTreeUri(mainContext, Uri.parse(path))?.let {
                 CoroutineScope(Dispatchers.IO)
-                    .launch { collectAllFiles(it, regex) }
+                    .launch { files += collectAllFiles(it, regex) }
                     .also { jobs += it }
             }
         }

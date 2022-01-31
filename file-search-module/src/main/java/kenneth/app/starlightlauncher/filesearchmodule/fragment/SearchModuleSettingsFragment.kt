@@ -25,7 +25,9 @@ class SearchModuleSettingsFragment : PreferenceFragmentCompat() {
             ::handlePickedFolder
         )
 
-        context?.let { fileSearchModulePreferences = FileSearchModulePreferences(it) }
+        context?.let {
+            fileSearchModulePreferences = FileSearchModulePreferences.getInstance(it)
+        }
 
         findPreference<Preference>(getString(R.string.pref_key_add_path))?.apply {
             isEnabled = fileSearchModulePreferences != null
@@ -39,6 +41,14 @@ class SearchModuleSettingsFragment : PreferenceFragmentCompat() {
             ?.let {
                 pathPrefCategory = it
             }
+
+        loadIncludedPaths()
+    }
+
+    private fun loadIncludedPaths() {
+        fileSearchModulePreferences?.includedPaths?.forEach {
+            addPathPreference(Uri.parse(it))
+        }
     }
 
     private fun openFilePicker() {

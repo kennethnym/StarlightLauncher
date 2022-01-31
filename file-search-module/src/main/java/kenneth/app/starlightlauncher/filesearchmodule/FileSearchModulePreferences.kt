@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.filesearchmodule
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -7,7 +8,19 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
-internal class FileSearchModulePreferences(private val context: Context) {
+internal class FileSearchModulePreferences
+private constructor(private val context: Context) {
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var instance: FileSearchModulePreferences? = null
+
+        internal fun getInstance(context: Context) =
+            instance ?: run {
+                FileSearchModulePreferences(context.applicationContext)
+                    .also { instance = it }
+            }
+    }
+
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
     val keys = PrefKeys(context)
@@ -15,7 +28,8 @@ internal class FileSearchModulePreferences(private val context: Context) {
     private val _includedPaths =
         prefs.getStringSet(keys.includedPaths, mutableSetOf()) ?: mutableSetOf()
 
-    val includedPaths = _includedPaths.toList()
+    val includedPaths
+        get() = _includedPaths.toList()
 
     /**
      * Include a path and save it to SharedPreference.
@@ -65,12 +79,10 @@ internal class FileSearchModulePreferences(private val context: Context) {
                 )
             } catch (e: Exception) {
                 Log.e("FilePreferenceManager", "Error removing path", e)
-                return false
+            } finally {
+                _includedPaths.remove(uriString)
+                saveNewIncludedPaths()
             }
-
-            _includedPaths.remove(uriString)
-            saveNewIncludedPaths()
-
             return true
         }
 
