@@ -1,2 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="file_search_module_name">kenneth.app.starlightlauncher.filesearchmodule</string>
+    <string name="file_search_module_display_name">Files</string>
+    <string name="file_search_module_description">Searches for files on your phone.</string>
+
+    <string name="file_search_module_search_module_settings_title">Files</string>
+    <string name="file_search_module_search_module_settings_description">
+        Adjusts how Starlight Launcher searches for files.
+    </string>
+
+    <string name="file_search_result_card_title">Files</string>
+    <string name="file_search_result_card_no_included_paths_message">
+        No folders included for searching. You can add some in settings.
+    </string>
+    <string name="file_search_result_card_no_files_found_message">
+        No files found.
+    </string>
+    <string name="show_more_label">Show more</string>
+
+    <string name="settings_activity_title">Settings</string>
+    <string name="pref_category_included_paths_title">Included paths</string>
+    <string name="pref_category_included_paths_summary">
+        Add paths that you want Spotlight to search in. Spotlight will only search for files
+        in those paths.
+        To remove a path, simply tap on it.
+    </string>
+    <string name="add_path_label">Add path</string>
+    <string name="download_folder_name">Downloads</string>
+</resources>

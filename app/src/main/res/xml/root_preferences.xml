@@ -19,7 +19,7 @@
 
         <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.files.FileSettingsFragment"
-            app:icon="@drawable/ic_file_search_alt"
+            app:icon="@drawable/file_search_module_search_module_settings_icon"
             app:key="@string/file_search_pref_key"
             app:summary="@string/file_search_summary"
             app:title="@string/file_search_title" />

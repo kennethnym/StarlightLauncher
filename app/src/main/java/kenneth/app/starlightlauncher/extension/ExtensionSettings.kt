@@ -20,7 +20,7 @@ data class ExtensionSettings(
     /**
      * The icon for this settings
      */
-    val icon: Drawable?,
+    val icon: Drawable? = null,
 
     /**
      * An [Intent] to launch the settings activity.

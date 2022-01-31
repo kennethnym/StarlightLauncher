@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import kenneth.app.starlightlauncher.appsearchmodule.R
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SearchResultSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preference, rootKey)
     }

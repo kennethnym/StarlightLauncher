@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_key_included_paths">pref_key_included_paths</string>
+    <string name="pref_key_category_included_paths">pref_key_category_included_paths</string>
+    <string name="pref_key_add_path">pref_key_add_path</string>
+</resources>

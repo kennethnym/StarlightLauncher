@@ -12,6 +12,7 @@ import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.spotlightlauncher.R
 import java.lang.Exception
 import javax.inject.Inject
@@ -23,9 +24,13 @@ class ExtensionManager @Inject constructor(
     private val launcherApi: SpotlightLauncherApi,
 ) {
     private val extensions = mutableMapOf(
-        "kenneth.app.spotlightlauncher.appsearchmodule" to Extension(
-            name = "kenneth.app.spotlightlauncher.appsearchmodule",
+        "kenneth.app.starlightlauncher.appsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(),
+        ),
+        "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.filesearchmodule",
+            searchModule = FileSearchModule(),
         )
     )
 
@@ -36,23 +41,34 @@ class ExtensionManager @Inject constructor(
      * Maps categories of settings, to a map of extension names to the corresponding
      * [Intent] to open the settings activity of that category exported by the extension.
      */
-    private val extensionSettingsIntents =
-        mutableMapOf<String, MutableMap<String, ExtensionSettings>>(
-            StarlightLauncherIntent.CATEGORY_SEARCH_MODULE_SETTINGS to mutableMapOf(
-                "kenneth.app.starlightlauncher.appsearchmodule" to ExtensionSettings(
-                    title = context.getString(R.string.app_search_module_search_module_settings_title),
-                    description = context.getString(R.string.app_search_module_search_module_settings_description),
-                    icon = AppCompatResources.getDrawable(
-                        context,
-                        R.drawable.app_search_module_search_module_settings_icon
-                    ),
-                    intent = Intent(
-                        context,
-                        kenneth.app.starlightlauncher.appsearchmodule.activity.SearchSettingsActivity::class.java
-                    )
+    private val extensionSettingsIntents = mutableMapOf(
+        StarlightLauncherIntent.CATEGORY_SEARCH_MODULE_SETTINGS to mutableMapOf(
+            "kenneth.app.starlightlauncher.appsearchmodule" to ExtensionSettings(
+                title = context.getString(R.string.app_search_module_search_module_settings_title),
+                description = context.getString(R.string.app_search_module_search_module_settings_description),
+                icon = AppCompatResources.getDrawable(
+                    context,
+                    R.drawable.app_search_module_search_module_settings_icon
+                ),
+                intent = Intent(
+                    context,
+                    kenneth.app.starlightlauncher.appsearchmodule.activity.SearchSettingsActivity::class.java
+                )
+            ),
+            "kenneth.app.starlightlauncher.filesearchmodule" to ExtensionSettings(
+                title = context.getString(R.string.file_search_module_search_module_settings_title),
+                description = context.getString(R.string.file_search_module_search_module_settings_description),
+                icon = AppCompatResources.getDrawable(
+                    context,
+                    R.drawable.file_search_module_search_module_settings_icon
+                ),
+                intent = Intent(
+                    context,
+                    kenneth.app.starlightlauncher.filesearchmodule.activity.SearchModuleSettingsActivity::class.java
                 )
             )
         )
+    )
 
     val installedSearchModules = searchModules.values as Collection<SearchModule>
 

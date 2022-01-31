@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isNoIncludedPathsMessageShown"
+            type="Boolean" />
+
+        <variable
+            name="isNoFilesFoundMessageShown"
+            type="Boolean" />
+    </data>
+
+    <kenneth.app.starlightlauncher.api.view.SearchResultCard
+        android:id="@+id/search_result_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardTitle="@string/file_search_result_card_title">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/file_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="false"
+            android:nestedScrollingEnabled="false"
+            android:visibility="@{isNoIncludedPathsMessageShown || isNoFilesFoundMessageShown ? View.GONE : View.VISIBLE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/search_result_card_padding"
+            android:text="@string/file_search_result_card_no_included_paths_message"
+            android:textAlignment="center"
+            android:visibility="@{isNoIncludedPathsMessageShown ? View.VISIBLE : View.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/search_result_card_padding"
+            android:text="@string/file_search_result_card_no_files_found_message"
+            android:textAlignment="center"
+            android:visibility="@{isNoFilesFoundMessageShown ? View.VISIBLE : View.GONE}" />
+
+        <kenneth.app.starlightlauncher.api.view.TextButton
+            android:id="@+id/show_more_button"
+            style="@style/Style.SpotlightLauncher.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/show_more_label"
+            android:visibility="@{isNoIncludedPathsMessageShown || isNoFilesFoundMessageShown ? View.GONE : View.VISIBLE}" />
+
+    </kenneth.app.starlightlauncher.api.view.SearchResultCard>
+</layout>

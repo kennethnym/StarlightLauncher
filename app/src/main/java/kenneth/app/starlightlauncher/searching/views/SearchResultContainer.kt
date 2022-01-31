@@ -17,6 +17,11 @@ class SearchResultContainer(context: Context) : LinearLayout(context) {
             addView(vh?.rootView)
         }
 
+    /**
+     * The index at which this container should appear in the search result list
+     */
+    var order: Int = 0
+
     init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,

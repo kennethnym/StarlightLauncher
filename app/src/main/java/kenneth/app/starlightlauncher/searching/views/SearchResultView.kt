@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.WindowInsets
 import android.widget.LinearLayout
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +40,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
             .map { null }
             .toMutableList<SearchResultContainer?>()
 
-    private val containersInLayout = mutableSetOf<Int>()
+    private val containersInLayout = mutableMapOf<Int, SearchResultContainer>()
 
     init {
         fitsSystemWindows = false
@@ -89,28 +90,49 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
                 ?: run {
                     val container = createSearchResultContainer(searchModule, at = order)
                     searchModule.adapter.onBindSearchResult(container.viewHolder!!, result)
-                    onNewSearchResultContainerCreated()
+                    insertNewSearchResultContainer(container)
                     container.isVisible = true
                 }
         }
     }
 
-    private fun onNewSearchResultContainerCreated() {
-        searchResultContainers
-            .filterNotNull()
-            .forEach {
-                if (!containersInLayout.contains(it.id)) {
-                    addView(it)
-                    containersInLayout.add(it.id)
+    private fun insertNewSearchResultContainer(container: SearchResultContainer) {
+        if (!containersInLayout.contains(container.id)) {
+            containersInLayout[container.id] = container
+            if (childCount == 1) {
+                val other = containersInLayout[getChildAt(0).id]!!
+                when {
+                    other.order > container.order ->
+                        addView(container, 0)
+                    other.order < container.order ->
+                        addView(container)
                 }
+            } else {
+                for (i in 0 until childCount - 1) {
+                    val cur = containersInLayout[getChildAt(0).id]!!
+                    val next = containersInLayout[getChildAt(i + 1).id]!!
+                    when {
+                        container.order < cur.order && container.order < next.order -> {
+                            addView(container, cur.order)
+                            break
+                        }
+                        container.order > cur.order && container.order < next.order -> {
+                            addView(container, next.order)
+                            break
+                        }
+                    }
+                }
+                addView(container)
             }
+
+        }
     }
 
     private fun createSearchResultContainer(
         searchModule: SearchModule,
         at: Int
     ): SearchResultContainer {
-        val container = SearchResultContainer(context)
+        val container = SearchResultContainer(context).apply { order = at }
         val vh = searchModule.adapter.onCreateViewHolder(container)
         searchResultContainers[at] = container.apply {
             id = generateViewId()

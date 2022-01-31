@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.appsearchmodule.activity
+package kenneth.app.starlightlauncher.filesearchmodule.activity
 
 import android.os.Build
 import android.os.Bundle
@@ -9,10 +9,10 @@ import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
-import kenneth.app.starlightlauncher.appsearchmodule.R
-import kenneth.app.starlightlauncher.appsearchmodule.fragment.SearchResultSettingsFragment
+import kenneth.app.starlightlauncher.filesearchmodule.R
+import kenneth.app.starlightlauncher.filesearchmodule.fragment.SearchModuleSettingsFragment
 
-class SearchSettingsActivity : AppCompatActivity(),
+class SearchModuleSettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private lateinit var toolbar: MaterialToolbar
 
@@ -41,7 +41,7 @@ class SearchSettingsActivity : AppCompatActivity(),
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.settings_content, SearchResultSettingsFragment())
+                .replace(R.id.settings_content, SearchModuleSettingsFragment())
                 .commit()
         }
     }
