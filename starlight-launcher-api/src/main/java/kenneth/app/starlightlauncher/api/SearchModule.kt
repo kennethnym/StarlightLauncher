@@ -17,9 +17,9 @@ interface SearchModule {
     /**
      * Initializes this [SearchModule].
      *
-     * @param launcher An instance of [SpotlightLauncherApi] that allows you to interact with Spotlight Launcher.
+     * @param launcher An instance of [StarlightLauncherApi] that allows you to interact with Spotlight Launcher.
      */
-    fun initialize(launcher: SpotlightLauncherApi)
+    fun initialize(launcher: StarlightLauncherApi)
 
     /**
      * Called when this [SearchModule] is no longer needed.

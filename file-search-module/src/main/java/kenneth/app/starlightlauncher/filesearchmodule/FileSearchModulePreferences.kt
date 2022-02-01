@@ -21,9 +21,9 @@ private constructor(private val context: Context) {
             }
     }
 
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
     val keys = PrefKeys(context)
+
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val _includedPaths =
         prefs.getStringSet(keys.includedPaths, mutableSetOf()) ?: mutableSetOf()

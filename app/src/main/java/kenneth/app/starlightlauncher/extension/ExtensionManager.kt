@@ -7,11 +7,12 @@ import android.content.pm.ResolveInfo
 import androidx.appcompat.content.res.AppCompatResources
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.api.SearchModule
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.spotlightlauncher.R
 import java.lang.Exception
@@ -21,18 +22,21 @@ import javax.inject.Singleton
 @Singleton
 class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val launcherApi: SpotlightLauncherApi,
+    private val launcherApi: StarlightLauncherApi,
 ) {
     private val extensions = mutableMapOf(
         "kenneth.app.starlightlauncher.appsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(),
+            widget = PinnedAppsWidgetCreator(),
         ),
         "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.filesearchmodule",
             searchModule = FileSearchModule(),
         )
     )
+
+    private val widgets = mutableMapOf<String, WidgetCreator>()
 
     private val searchModules = mutableMapOf<String, SearchModule>()
 
@@ -72,10 +76,13 @@ class ExtensionManager @Inject constructor(
 
     val installedSearchModules = searchModules.values as Collection<SearchModule>
 
+    val installedWidgets = widgets.values as Collection<WidgetCreator>
+
     init {
         extensions.forEach { (name, ext) ->
             extensions[name] = ext
             ext.searchModule?.let { searchModules[name] = it }
+            ext.widget?.let { widgets[name] = it }
         }
     }
 

@@ -14,12 +14,8 @@ typealias ResultCallback = (SearchResult) -> Unit
 
 @Singleton
 class Searcher @Inject constructor(
-    private val searchModuleManager: SearchModuleManager,
     private val extensionManager: ExtensionManager,
 ) {
-    val hasFinishedSearching: Boolean
-        get() = numberOfLoadedModules == searchModuleManager.installedSearchModules.size
-
     private val resultCallbacks = mutableListOf<ResultCallback>()
 
     private val searchCoroutineScopes = mutableListOf<CoroutineScope>()

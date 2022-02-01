@@ -1,12 +1,11 @@
 package kenneth.app.starlightlauncher.filesearchmodule
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import kenneth.app.starlightlauncher.api.SearchResult
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.filesearchmodule.databinding.FileSearchResultCardBinding
 
@@ -14,7 +13,7 @@ internal const val INITIAL_LIST_ITEM_COUNT = 5
 
 internal class FileSearchResultAdapter(
     private val prefs: FileSearchModulePreferences,
-    private val launcher: SpotlightLauncherApi,
+    private val launcher: StarlightLauncherApi,
 ) : SearchResultAdapter {
     private lateinit var currentViewHolder: FileSearchResultViewHolder
     private var fileListAdapter: FileListAdapter? = null

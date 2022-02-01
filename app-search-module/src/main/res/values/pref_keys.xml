@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pref_key_show_app_names">pref_key_show_app_names</string>
+    <string name="pref_key_pinned_apps">pref_key_pinned_apps</string>
+    <string name="pref_key_pinned_apps_count">pref_key_pinned_apps_count</string>
 </resources>

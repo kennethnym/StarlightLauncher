@@ -23,7 +23,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.spotlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var permissionHandler: PermissionHandler
 
     @Inject
-    lateinit var launcherApi: SpotlightLauncherApi
+    lateinit var launcherApi: StarlightLauncherApi
 
     private lateinit var binding: ActivityMainBinding
 
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         setTheme(appState.themeStyleId)
 
         launcherApi.let {
-            if (it is SpotlightLauncherApiImpl) it.context = this
+            if (it is StarlightLauncherApiImpl) it.context = this
         }
 
         extensionManager.loadExtensions()

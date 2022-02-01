@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 /**
  * This interface defines methods that can be called to interact with Spotlight Launcher.
  */
-interface SpotlightLauncherApi {
+interface StarlightLauncherApi {
     /**
      * The context of the launcher
      */

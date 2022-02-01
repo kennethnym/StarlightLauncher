@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import kenneth.app.starlightlauncher.api.SearchResult
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
-import kotlin.math.min
 
 /**
  * Defines how many apps are shown when the app grid is displayed initially.
@@ -18,7 +17,7 @@ private const val INITIAL_ITEM_COUNT = 10
 
 class AppSearchResultAdapter(
     private val context: Context,
-    private val launcher: SpotlightLauncherApi
+    private val launcher: StarlightLauncherApi
 ) :
     SearchResultAdapter {
     private lateinit var appList: AppList
@@ -66,13 +65,8 @@ class AppSearchResultAdapter(
                         appList.toMutableList()
 
                 val appGridAdapter =
-                    this@AppSearchResultAdapter.appGridAdapter?.apply {
-                        apps.clear()
-                        apps.addAll(initialAppGridItems)
-                    }
-                        ?: AppGridAdapter(context, initialAppGridItems, launcher).also {
-                            appGridAdapter = it
-                        }
+                    AppGridAdapter(context, initialAppGridItems, launcher, 5)
+                        .also { appGridAdapter = it }
 
                 appGrid.apply {
                     adapter = appGridAdapter
@@ -92,26 +86,9 @@ class AppSearchResultAdapter(
 
     private fun showMoreApps() {
         appGridAdapter?.let {
-            // the total number of apps that can be displayed
-            val totalItemCount = appList.size
-            // the current number of items in the grid
-            val currentItemCount = it.itemCount
-            // the number of new apps to be added to the grid
-            val addedItemsCount = min(INITIAL_ITEM_COUNT, totalItemCount - currentItemCount)
-            // the total number of items after the items are added
-            val newItemCount = currentItemCount + addedItemsCount
-
-            it.apps.addAll(
-                appList.subList(
-                    currentItemCount,
-                    min(totalItemCount, newItemCount)
-                )
-            )
-
+            it.showMore()
             currentViewHolder.binding
-                .showMoreButton.isVisible = newItemCount < totalItemCount
-
-            it.notifyItemRangeInserted(currentItemCount, addedItemsCount)
+                .showMoreButton.isVisible = it.hasMore()
         }
     }
 }

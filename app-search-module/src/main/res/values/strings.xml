@@ -14,6 +14,7 @@
     <string name="show_more">Show more</string>
     <string name="app_icon_content_description">App icon for %1$s</string>
     <string name="app_option_menu_item_label_pin_app">Pin this app</string>
+    <string name="app_option_menu_item_label_unpin_app">Unpin this app</string>
     <string name="app_option_menu_item_label_uninstall">Uninstall</string>
 
     <string name="settings_activity_title">Settings</string>

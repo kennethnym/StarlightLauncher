@@ -6,13 +6,9 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kotlinx.coroutines.*
-import java.nio.file.Paths
-import kotlin.concurrent.thread
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.filesearchmodule"
 
@@ -26,7 +22,7 @@ class FileSearchModule : SearchModule {
     private lateinit var mainContext: Context
     private lateinit var preferences: FileSearchModulePreferences
 
-    override fun initialize(launcher: SpotlightLauncherApi) {
+    override fun initialize(launcher: StarlightLauncherApi) {
         mainContext = launcher.context
         preferences = FileSearchModulePreferences.getInstance(mainContext)
         metadata = SearchModule.Metadata(

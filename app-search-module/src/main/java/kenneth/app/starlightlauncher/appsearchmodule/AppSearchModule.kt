@@ -1,16 +1,17 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.content.*
+import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.utils.sortByRegex
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appsearchmodule"
 
-typealias AppList = List<ResolveInfo>
+typealias AppList = List<ActivityInfo>
 
 class AppSearchModule : BroadcastReceiver(), SearchModule {
     override lateinit var metadata: SearchModule.Metadata
@@ -23,16 +24,15 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
     private lateinit var mainContext: Context
     private lateinit var launcherContext: Context
 
-    private val currentAppList = mutableListOf<ResolveInfo>()
+    private val currentAppList = mutableListOf<ActivityInfo>()
     private val appLabels = mutableMapOf<String, String>()
 
-    internal lateinit var preferences: AppSearchModulePreferences
-        private set
+    private lateinit var preferences: AppSearchModulePreferences
 
     internal val context
         get() = mainContext
 
-    override fun initialize(launcher: SpotlightLauncherApi) {
+    override fun initialize(launcher: StarlightLauncherApi) {
         launcherContext = launcher.context
         mainContext = launcherContext
         searchResultAdapter = AppSearchResultAdapter(mainContext, launcher)
@@ -55,7 +55,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
                 val label =
                     it.activityInfo.applicationInfo.loadLabel(launcherContext.packageManager)
                         .toString()
-                currentAppList.add(it)
+                currentAppList.add(it.activityInfo)
                 appLabels[packageName] = label
             }
 
@@ -74,10 +74,10 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
         Result(
             query = keyword,
             apps = currentAppList
-                .filter { app -> appLabels[app.activityInfo.packageName]?.contains(keywordRegex) == true }
+                .filter { app -> appLabels[app.packageName]?.contains(keywordRegex) == true }
                 .sortedWith { app1, app2 ->
-                    val appName1 = appLabels[app1.activityInfo.packageName]!!
-                    val appName2 = appLabels[app2.activityInfo.packageName]!!
+                    val appName1 = appLabels[app1.packageName]!!
+                    val appName2 = appLabels[app2.packageName]!!
                     return@sortedWith sortByRegex(appName1, appName2, keywordRegex)
                 }
         )
@@ -88,7 +88,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
             Intent.ACTION_PACKAGE_REMOVED -> {
                 currentAppList.removeAt(
                     currentAppList.indexOfFirst {
-                        it.activityInfo.packageName == receivedPackageName
+                        it.packageName == receivedPackageName
                     }
                 )
             }
@@ -99,7 +99,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
                 }
                 context?.packageManager
                     ?.resolveActivity(packageLauncherIntent, 0)
-                    ?.let { currentAppList.add(it) }
+                    ?.let { currentAppList.add(it.activityInfo) }
             }
         }
     }

@@ -15,7 +15,7 @@ class OptionMenuItem @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
     private val binding = OptionMenuItemBinding.inflate(LayoutInflater.from(context), this)
 
-    var icon: Drawable
+    var itemIcon: Drawable?
         get() = binding.itemIcon.drawable
         /**
          * Sets the icon drawable ([Drawable]) of this menu item.
@@ -23,7 +23,7 @@ class OptionMenuItem @JvmOverloads constructor(
         set(drawable) = binding.itemIcon.setImageDrawable(drawable)
 
 
-    var label: String
+    var itemLabel: String
         get() = binding.itemLabel.text.toString()
         /**
          * Sets the label of this menu item.

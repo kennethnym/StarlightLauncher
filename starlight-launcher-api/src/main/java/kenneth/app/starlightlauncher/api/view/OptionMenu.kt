@@ -150,8 +150,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 )
             }
 
-            this.icon = icon
-            this.label = label
+            this.itemIcon = icon
+            this.itemLabel = label
 
             setOnClickListener(onClick)
         }

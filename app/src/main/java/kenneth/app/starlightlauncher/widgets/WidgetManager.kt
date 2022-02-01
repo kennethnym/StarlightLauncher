@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class WidgetManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val launcher: SpotlightLauncherApi,
+    private val launcher: StarlightLauncherApi,
 ) {
     /**
      * Maps package names of widgets to the corresponding instances of widgets.

@@ -1,31 +1,37 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ResolveInfo
-import android.net.Uri
+import android.content.pm.ActivityInfo
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
-import kenneth.app.starlightlauncher.api.SpotlightLauncherApi
-import kenneth.app.starlightlauncher.api.view.OptionMenu
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
-import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBinding
+import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
+import kotlin.math.min
 
 
 internal class AppGridAdapter(
-    context: Context,
-    internal val apps: MutableList<ResolveInfo>,
-    private val launcher: SpotlightLauncherApi
+    private val context: Context,
+    apps: AppList,
+    private val launcher: StarlightLauncherApi,
+    private val initialVisibleItemCount: Int = 0,
 ) : RecyclerView.Adapter<AppGridItem>() {
+    private val apps = apps.toMutableList()
+
+    private val visibleApps =
+        if (initialVisibleItemCount > 0)
+            apps.subList(0, initialVisibleItemCount).toMutableList()
+        else
+            apps.toMutableList()
+
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
 
-    private lateinit var selectedApp: ResolveInfo
+    private lateinit var selectedApp: ActivityInfo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppGridItem {
         val binding = AppGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -70,29 +76,48 @@ internal class AppGridAdapter(
 
     override fun getItemCount(): Int = apps.size
 
+    fun addAppToGrid(app: ActivityInfo, index: Int) {
+        apps += app
+        notifyItemInserted(index)
+    }
+
+    fun removeAppFromGrid(index: Int) {
+        apps.removeAt(index)
+        notifyItemRemoved(index)
+    }
+
+    fun showMore() {
+        if (hasMore()) {
+            // the total number of apps that can be displayed
+            val totalItemCount = apps.size
+            // the current number of items in the grid
+            val currentItemCount = visibleApps.size
+            // the number of new apps to be added to the grid
+            val addedItemsCount = min(initialVisibleItemCount, totalItemCount - currentItemCount)
+            // the total number of items after the items are added
+            val newItemCount = currentItemCount + addedItemsCount
+
+            visibleApps.addAll(
+                apps.subList(
+                    currentItemCount,
+                    min(totalItemCount, newItemCount)
+                )
+            )
+
+            notifyItemRangeInserted(currentItemCount, addedItemsCount)
+        }
+    }
+
+    fun hasMore() = visibleApps.size < apps.size
+
     private fun showAppOptionMenu(): Boolean {
-        launcher.showOptionMenu(::createAppOptionMenu)
+        launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
         return true
     }
 
     private fun openSelectedApp() {
         launcher.context.startActivity(
-            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.activityInfo.packageName)
-        )
-    }
-
-    private fun createAppOptionMenu(menu: OptionMenu) {
-        AppOptionMenuBinding.inflate(LayoutInflater.from(launcher.context), menu).also {
-            it.uninstallItem.setOnClickListener { uninstallApp() }
-        }
-    }
-
-    private fun uninstallApp() {
-        launcher.context.startActivity(
-            Intent(
-                Intent.ACTION_DELETE,
-                Uri.fromParts("package", selectedApp.activityInfo.packageName, null)
-            )
+            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.packageName)
         )
     }
 }

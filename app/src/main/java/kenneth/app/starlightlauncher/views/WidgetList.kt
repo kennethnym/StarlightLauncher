@@ -3,17 +3,33 @@ package kenneth.app.starlightlauncher.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.spotlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.WidgetHolder
+import kenneth.app.starlightlauncher.extension.ExtensionManager
+import javax.inject.Inject
 
 /**
  * Contains a list of widgets on the home screen.
  */
-class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+@AndroidEntryPoint
+class WidgetList(context: Context, attrs: AttributeSet) :
+    LinearLayout(context, attrs) {
+    @Inject
+    lateinit var extensionManager: ExtensionManager
+
+    @Inject
+    lateinit var launcherApi: StarlightLauncherApi
+
     private val animations: List<CardAnimation>
+    private val loadedWidgets = mutableListOf<WidgetHolder>()
 
     init {
         orientation = VERTICAL
@@ -22,8 +38,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal)
 
         setPadding(paddingHorizontal, 0, paddingHorizontal, 0)
-
         inflate(context, R.layout.widget_list, this)
+        loadWidgets()
 
         animations = generateAnimations()
     }
@@ -40,6 +56,20 @@ class WidgetList(context: Context, attrs: AttributeSet) : LinearLayout(context, 
      */
     fun hideWidgets() {
         animations.forEach { it.hideCard() }
+    }
+
+    private fun loadWidgets() {
+        extensionManager.installedWidgets.forEach { creator ->
+            val widget = creator.createWidget(this, launcherApi)
+            loadedWidgets += widget
+            widget.rootView.run {
+                layoutParams = ViewGroup.MarginLayoutParams(layoutParams).apply {
+                    bottomMargin =
+                        context.resources.getDimensionPixelSize(R.dimen.widget_list_spacing)
+                }
+                addView(this)
+            }
+        }
     }
 
     /**

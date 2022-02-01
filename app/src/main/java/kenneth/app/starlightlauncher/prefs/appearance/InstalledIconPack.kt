@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
@@ -104,9 +105,12 @@ class InstalledIconPack(context: Context, val packageName: String) : IconPack {
      * @return The icon for the [ResolveInfo], or the default icon if this icon pack
      * doesn't have an icon for it.
      */
-    override fun getIconOf(resolveInfo: ResolveInfo): Bitmap {
-        val default = resolveInfo.loadIcon(packageManager)
-        return getIconOf(resolveInfo.activityInfo.packageName, default.toBitmap())
+    override fun getIconOf(resolveInfo: ResolveInfo): Bitmap =
+        getIconOf(resolveInfo.activityInfo)
+
+    override fun getIconOf(activityInfo: ActivityInfo): Bitmap {
+        val default = activityInfo.loadIcon(packageManager)
+        return getIconOf(activityInfo.packageName, default.toBitmap())
     }
 
     /**
