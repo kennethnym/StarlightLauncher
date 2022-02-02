@@ -3,11 +3,9 @@ package kenneth.app.starlightlauncher.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.spotlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
@@ -63,7 +61,7 @@ class WidgetList(context: Context, attrs: AttributeSet) :
             val widget = creator.createWidget(this, launcherApi)
             loadedWidgets += widget
             widget.rootView.run {
-                layoutParams = ViewGroup.MarginLayoutParams(layoutParams).apply {
+                layoutParams = MarginLayoutParams(layoutParams).apply {
                     bottomMargin =
                         context.resources.getDimensionPixelSize(R.dimen.widget_list_spacing)
                 }
@@ -77,9 +75,6 @@ class WidgetList(context: Context, attrs: AttributeSet) :
      */
     private fun generateAnimations(): List<CardAnimation> =
         children.foldIndexed(mutableListOf()) { i, anims, child ->
-            if (child.isVisible) {
-                anims.add(CardAnimation(child, i * 20L))
-            }
-            anims
+            anims.apply { add(CardAnimation(child, i * 20L)) }
         }
 }

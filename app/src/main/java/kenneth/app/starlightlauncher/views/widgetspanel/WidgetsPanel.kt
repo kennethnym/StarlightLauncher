@@ -63,21 +63,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         targetView = this@WidgetsPanel
     }
 
-    private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-//            viewTreeObserver.removeOnGlobalLayoutListener(this)
-//            activity?.let {
-//                launcherOptionMenu = it.findViewById(R.id.launcher_option_menu)
-//            }
-        }
-    }
-
     private val binding: WidgetsPanelBinding
 
     init {
         translationY = appState.halfScreenHeight.toFloat()
-
-        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
             BindingRegister.widgetsPanelBinding = it
