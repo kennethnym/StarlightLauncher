@@ -3,13 +3,15 @@ package kenneth.app.starlightlauncher.filesearchmodule
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
+import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 
 internal class FileSearchModulePreferences
-private constructor(private val context: Context) {
+private constructor(private val context: Context) :
+    ObservablePreferences<FileSearchModulePreferences>(context) {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: FileSearchModulePreferences? = null
@@ -23,13 +25,13 @@ private constructor(private val context: Context) {
 
     val keys = PrefKeys(context)
 
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
     private val _includedPaths =
-        prefs.getStringSet(keys.includedPaths, mutableSetOf()) ?: mutableSetOf()
+        sharedPreferences.getStringSet(keys.includedPaths, mutableSetOf()) ?: mutableSetOf()
 
     val includedPaths
         get() = _includedPaths.toList()
+
+    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     /**
      * Include a path and save it to SharedPreference.
@@ -90,7 +92,7 @@ private constructor(private val context: Context) {
     }
 
     private fun saveNewIncludedPaths() {
-        prefs.edit(commit = true) {
+        sharedPreferences.edit(commit = true) {
             putStringSet(keys.includedPaths, _includedPaths)
         }
     }

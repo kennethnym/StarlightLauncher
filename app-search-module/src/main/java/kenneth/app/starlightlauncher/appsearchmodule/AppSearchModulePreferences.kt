@@ -78,7 +78,7 @@ private constructor(private val context: Context) :
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
+    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
             keys.showAppNames -> {
                 shouldShowAppNames = sharedPreferences.getBoolean(
@@ -93,7 +93,6 @@ private constructor(private val context: Context) :
                 )
             }
         }
-        super.onSharedPreferenceChanged(sharedPreferences, key)
     }
 
     fun isAppPinned(app: ActivityInfo) =

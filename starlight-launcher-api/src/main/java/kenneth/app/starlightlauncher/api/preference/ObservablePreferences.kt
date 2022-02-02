@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction2
 typealias ObservablePreferencesListener<T> = (preferences: T, key: String) -> Unit
 
 abstract class ObservablePreferences<T : ObservablePreferences<T>>(
-    private val context: Context
+    context: Context
 ) :
     SharedPreferences.OnSharedPreferenceChangeListener,
     Observable() {
@@ -24,9 +24,12 @@ abstract class ObservablePreferences<T : ObservablePreferences<T>>(
     /**
      * Overriding class overriding this method should call super *after* the overriding code.
      */
-    @CallSuper
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        if (key != null) {
+    final override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences?,
+        key: String?
+    ) {
+        if (key != null && sharedPreferences != null) {
+            updateValue(sharedPreferences, key)
             setChanged()
             notifyObservers(key)
         }
@@ -37,4 +40,6 @@ abstract class ObservablePreferences<T : ObservablePreferences<T>>(
             listener(o as T, arg as String)
         }
     }
+
+    protected abstract fun updateValue(sharedPreferences: SharedPreferences, key: String)
 }
