@@ -9,6 +9,8 @@
         Adjusts how Starlight Launcher searches for apps.
     </string>
 
+    <string name="app_search_module_widget_settings_title">Pinned apps</string>
+
     <string name="search_result_card_title">Apps</string>
     <string name="no_result">No result</string>
     <string name="show_more">Show more</string>
@@ -22,4 +24,7 @@
     <string name="appearance_preference_category_title">Appearance</string>
     <string name="appearance_show_app_names_title">Show app names</string>
     <string name="appearance_show_app_names_summary">Show the names of apps under their icons</string>
+
+    <string name="show_pinned_app_names_title">Show app names</string>
+    <string name="show_pinned_app_names_summary">Show the names of pinned apps under their icons</string>
 </resources>

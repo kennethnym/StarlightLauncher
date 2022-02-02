@@ -22,7 +22,13 @@ class AppSearchResultAdapter(
     SearchResultAdapter {
     private lateinit var appList: AppList
     private lateinit var currentViewHolder: AppSearchResultViewHolder
+
     private var appGridAdapter: AppGridAdapter? = null
+    private val prefs = AppSearchModulePreferences.getInstance(context)
+
+    init {
+        prefs.addPreferencesListener(::onPreferencesChanged)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup): AppSearchResultViewHolder {
         val binding =
@@ -39,6 +45,18 @@ class AppSearchResultAdapter(
     ) {
         if (holder is AppSearchResultViewHolder && searchResult is AppSearchModule.Result) {
             onBindSearchResult(holder, searchResult)
+        }
+    }
+
+    private fun onPreferencesChanged(preferences: AppSearchModulePreferences, key: String) {
+        when (key) {
+            preferences.keys.showAppNames -> {
+                if (preferences.shouldShowAppNames) {
+                    appGridAdapter?.showAppLabels()
+                } else {
+                    appGridAdapter?.hideAppLabels()
+                }
+            }
         }
     }
 
@@ -65,7 +83,12 @@ class AppSearchResultAdapter(
                         appList.toMutableList()
 
                 val appGridAdapter =
-                    AppGridAdapter(context, initialAppGridItems, launcher, 5)
+                    AppGridAdapter(
+                        context,
+                        initialAppGridItems,
+                        launcher,
+                        prefs.shouldShowAppNames
+                    )
                         .also { appGridAdapter = it }
 
                 appGrid.apply {

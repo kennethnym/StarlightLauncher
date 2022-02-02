@@ -12,7 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import kenneth.app.starlightlauncher.appsearchmodule.R
 import kenneth.app.starlightlauncher.appsearchmodule.fragment.SearchResultSettingsFragment
 
-class SearchSettingsActivity : AppCompatActivity(),
+class SearchModuleSettingsActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private lateinit var toolbar: MaterialToolbar
 
@@ -48,8 +48,24 @@ class SearchSettingsActivity : AppCompatActivity(),
 
     override fun onPreferenceStartFragment(
         caller: PreferenceFragmentCompat?,
-        pref: Preference?
+        pref: Preference
     ): Boolean {
+        // Instantiate the new Fragment
+        val args = pref.extras
+        val fragment = supportFragmentManager.fragmentFactory.instantiate(
+            classLoader,
+            pref.fragment
+        ).apply {
+            arguments = args
+            setTargetFragment(caller, 0)
+        }
+
+        // Replace the existing Fragment with the new Fragment
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.settings_content, fragment)
+            .addToBackStack(null)
+            .commit()
+
         return true
     }
 }

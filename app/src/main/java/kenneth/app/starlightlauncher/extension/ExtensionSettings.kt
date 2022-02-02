@@ -15,7 +15,7 @@ data class ExtensionSettings(
     /**
      * Description for what the settings adjust.
      */
-    val description: String,
+    val description: String = "",
 
     /**
      * The icon for this settings

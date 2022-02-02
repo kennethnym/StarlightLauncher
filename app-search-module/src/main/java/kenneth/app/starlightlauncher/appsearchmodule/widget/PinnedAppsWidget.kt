@@ -1,21 +1,20 @@
 package kenneth.app.starlightlauncher.appsearchmodule.widget
 
-import android.content.SharedPreferences
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
+import kenneth.app.starlightlauncher.api.preference.ObservablePreferencesListener
 import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
+import java.util.*
 
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
     private val launcher: StarlightLauncherApi
-) : WidgetHolder,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+) : WidgetHolder {
     override val rootView: View = binding.root
 
     private val context = rootView.context
@@ -23,8 +22,7 @@ internal class PinnedAppsWidget(
     private var appGridAdapter: AppGridAdapter? = null
 
     init {
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .registerOnSharedPreferenceChangeListener(this)
+        prefs.addPreferencesListener(::onPreferencesChanged)
 
         if (prefs.hasPinnedApps) {
             showWidget()
@@ -33,31 +31,42 @@ internal class PinnedAppsWidget(
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    private fun onPreferencesChanged(preferences: AppSearchModulePreferences, key: String) {
         when {
             // pinned apps are stored as individual pref keys
             // with prefs.keys.pinnedApps as prefix and their indices as the suffix
-            key?.matches(Regex("^${prefs.keys.pinnedApps}\\d")) == true -> {
+            key.matches(Regex("^${preferences.keys.pinnedApps}\\d")) -> {
                 when {
-                    sharedPreferences?.contains(key) == true -> {
+                    preferences.sharedPreferences.contains(key) -> {
                         if (!rootView.isVisible) {
                             showWidget()
                         } else {
-                            key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
+                            key.removePrefix(preferences.keys.pinnedApps).toIntOrNull()
                                 ?.let { index ->
-                                    appGridAdapter?.addAppToGrid(prefs.pinnedApps[index], index)
+                                    appGridAdapter?.addAppToGrid(
+                                        preferences.pinnedApps[index],
+                                        index
+                                    )
                                 }
                         }
                     }
 
-                    prefs.hasPinnedApps -> {
-                        key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
+                    preferences.hasPinnedApps -> {
+                        key.removePrefix(preferences.keys.pinnedApps).toIntOrNull()
                             ?.let { index ->
                                 appGridAdapter?.removeAppFromGrid(index)
                             }
                     }
 
                     else -> hideWidget()
+                }
+            }
+
+            key == preferences.keys.showPinnedAppNames -> {
+                if (preferences.shouldShowPinnedAppNames) {
+                    appGridAdapter?.showAppLabels()
+                } else {
+                    appGridAdapter?.hideAppLabels()
                 }
             }
         }
@@ -69,9 +78,20 @@ internal class PinnedAppsWidget(
 
             pinnedAppsGrid.apply {
                 adapter =
-                    AppGridAdapter(context, prefs.pinnedApps, launcher)
+                    AppGridAdapter(
+                        context,
+                        prefs.pinnedApps,
+                        launcher,
+                        prefs.shouldShowPinnedAppNames
+                    )
                         .also { appGridAdapter = it }
                 layoutManager = GridLayoutManager(context, 5)
+            }
+
+            if (prefs.shouldShowPinnedAppNames) {
+                appGridAdapter?.showAppLabels()
+            } else {
+                appGridAdapter?.hideAppLabels()
             }
 
             pinnedAppsWidget.blurWith(launcher.blurHandler)

@@ -56,7 +56,7 @@ class ExtensionManager @Inject constructor(
                 ),
                 intent = Intent(
                     context,
-                    kenneth.app.starlightlauncher.appsearchmodule.activity.SearchSettingsActivity::class.java
+                    kenneth.app.starlightlauncher.appsearchmodule.activity.SearchModuleSettingsActivity::class.java
                 )
             ),
             "kenneth.app.starlightlauncher.filesearchmodule" to ExtensionSettings(
@@ -69,6 +69,19 @@ class ExtensionManager @Inject constructor(
                 intent = Intent(
                     context,
                     kenneth.app.starlightlauncher.filesearchmodule.activity.SearchModuleSettingsActivity::class.java
+                )
+            )
+        ),
+        StarlightLauncherIntent.CATEGORY_WIDGET_SETTINGS to mutableMapOf(
+            "kenneth.app.starlightlauncher.appsearchmodule" to ExtensionSettings(
+                title = context.getString(R.string.app_search_module_widget_settings_title),
+                icon = AppCompatResources.getDrawable(
+                    context,
+                    R.drawable.app_search_module_widget_settings_icon,
+                ),
+                intent = Intent(
+                    context,
+                    kenneth.app.starlightlauncher.appsearchmodule.activity.WidgetSettingsActivity::class.java,
                 )
             )
         )

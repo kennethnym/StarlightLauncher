@@ -38,6 +38,15 @@ class RootSettingsFragment : PreferenceFragmentCompat() {
                     it.addPreference(createPreferenceForExtensionSettings(extSettings))
                 }
         }
+
+        findPreference<PreferenceCategory>(getString(R.string.pref_category_widgets))?.let {
+            // get all widget settings
+            extensionManager
+                .getIntentsForSettingsCategory(StarlightLauncherIntent.CATEGORY_WIDGET_SETTINGS)
+                .forEach { extSettings ->
+                    it.addPreference(createPreferenceForExtensionSettings(extSettings))
+                }
+        }
     }
 
     private fun createPreferenceForExtensionSettings(settings: ExtensionSettings) =

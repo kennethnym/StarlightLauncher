@@ -7,31 +7,51 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
 import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
 import kotlin.math.min
 
-
 internal class AppGridAdapter(
     private val context: Context,
     apps: AppList,
     private val launcher: StarlightLauncherApi,
-    private val initialVisibleItemCount: Int = 0,
-) : RecyclerView.Adapter<AppGridItem>() {
+    private var shouldShowAppNames: Boolean,
+) : RecyclerView.Adapter<AppGridItem>(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
     private val apps = apps.toMutableList()
 
-    private val visibleApps =
-        if (initialVisibleItemCount > 0)
-            apps.subList(0, initialVisibleItemCount).toMutableList()
-        else
-            apps.toMutableList()
+    private val visibleApps = mutableListOf<ActivityInfo>()
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
 
     private lateinit var selectedApp: ActivityInfo
+    private var recyclerView: RecyclerView? = null
+    private var gridSpanCount = 0
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        this.recyclerView = recyclerView
+        recyclerView.layoutManager.let {
+            if (it is GridLayoutManager) {
+                visibleApps +=
+                    if (apps.size <= it.spanCount) apps
+                    else apps.subList(0, it.spanCount)
+                gridSpanCount = it.spanCount
+            }
+        }
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        this.recyclerView = null
+        visibleApps.clear()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppGridItem {
         val binding = AppGridItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -49,7 +69,7 @@ internal class AppGridAdapter(
                 setImageBitmap(launcher.getIconPack().getIconOf(app))
             }
 
-            if (appSearchModulePreferences.shouldShowAppLabels) {
+            if (shouldShowAppNames) {
                 appLabel.apply {
                     isVisible = true
                     text = appName
@@ -70,8 +90,6 @@ internal class AppGridAdapter(
                 }
             }
         }
-
-        sharedPreferences.registerOnSharedPreferenceChangeListener(holder)
     }
 
     override fun getItemCount(): Int = apps.size
@@ -93,7 +111,7 @@ internal class AppGridAdapter(
             // the current number of items in the grid
             val currentItemCount = visibleApps.size
             // the number of new apps to be added to the grid
-            val addedItemsCount = min(initialVisibleItemCount, totalItemCount - currentItemCount)
+            val addedItemsCount = min(gridSpanCount, totalItemCount - currentItemCount)
             // the total number of items after the items are added
             val newItemCount = currentItemCount + addedItemsCount
 
@@ -110,6 +128,33 @@ internal class AppGridAdapter(
 
     fun hasMore() = visibleApps.size < apps.size
 
+    fun showAppLabels() {
+        recyclerView?.let {
+            for (i in 0 until it.childCount) {
+                it.getChildViewHolder(it.getChildAt(i)).run {
+                    if (this is AppGridItem)
+                        binding.appLabel.apply {
+                            text = apps[i].loadLabel(context.packageManager)
+                            isVisible = true
+                        }
+                }
+            }
+        }
+        shouldShowAppNames = true
+    }
+
+    fun hideAppLabels() {
+        recyclerView?.let {
+            for (i in 0 until it.childCount) {
+                it.getChildViewHolder(it.getChildAt(i)).run {
+                    if (this is AppGridItem)
+                        binding.appLabel.isVisible = false
+                }
+            }
+        }
+        shouldShowAppNames = false
+    }
+
     private fun showAppOptionMenu(): Boolean {
         launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
         return true
@@ -120,18 +165,21 @@ internal class AppGridAdapter(
             launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.packageName)
         )
     }
-}
-
-internal class AppGridItem(internal val binding: AppGridItemBinding) :
-    RecyclerView.ViewHolder(binding.root),
-    SharedPreferences.OnSharedPreferenceChangeListener {
-    private val prefs = AppSearchModulePreferences.getInstance(itemView.context)
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
-            prefs.keys.showAppLabels -> {
-                binding.appLabel.isVisible = prefs.shouldShowAppLabels
+            appSearchModulePreferences.keys.showAppNames -> {
+                if (appSearchModulePreferences.shouldShowAppNames) {
+                    showAppLabels()
+                } else {
+                    hideAppLabels()
+                }
             }
         }
     }
+}
+
+internal class AppGridItem(internal val binding: AppGridItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    private val prefs = AppSearchModulePreferences.getInstance(itemView.context)
 }

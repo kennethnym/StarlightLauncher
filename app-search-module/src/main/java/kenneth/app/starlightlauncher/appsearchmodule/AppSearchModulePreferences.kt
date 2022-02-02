@@ -5,21 +5,16 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
-import android.content.pm.ComponentInfo
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import com.esotericsoftware.kryo.Kryo
-import com.esotericsoftware.kryo.io.Input
-import com.esotericsoftware.kryo.io.Output
+import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 
 /**
  * Manages preferences of [AppSearchModule]
  */
 internal class AppSearchModulePreferences
 private constructor(private val context: Context) :
-    SharedPreferences.OnSharedPreferenceChangeListener {
+    ObservablePreferences<AppSearchModulePreferences>(context) {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: AppSearchModulePreferences? = null
@@ -34,13 +29,11 @@ private constructor(private val context: Context) :
      */
     val keys = PrefKeys(context)
 
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private var pinnedAppsCount = prefs.getInt(keys.pinnedAppsCount, 0)
+    private var pinnedAppsCount = sharedPreferences.getInt(keys.pinnedAppsCount, 0)
 
     private val _pinnedApps = (0 until pinnedAppsCount)
         .mapIndexedNotNull { i, _ ->
-            prefs.getString(keys.pinnedApps + i, null)
+            sharedPreferences.getString(keys.pinnedApps + i, null)
                 ?.let {
                     try {
                         ComponentName.unflattenFromString(it)?.run {
@@ -58,9 +51,20 @@ private constructor(private val context: Context) :
      *
      * Key: `"pref_key_show_app_names"`
      */
-    var shouldShowAppLabels = prefs.getBoolean(
-        keys.showAppLabels,
+    var shouldShowAppNames = sharedPreferences.getBoolean(
+        keys.showAppNames,
         context.resources.getBoolean(R.bool.def_pref_show_app_names)
+    )
+        private set
+
+    /**
+     * Whether app labels should be visible.
+     *
+     * Key: `"pref_key_show_pinned_app_names"`
+     */
+    var shouldShowPinnedAppNames = sharedPreferences.getBoolean(
+        keys.showPinnedAppNames,
+        context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
     )
         private set
 
@@ -71,18 +75,25 @@ private constructor(private val context: Context) :
         get() = pinnedApps.isNotEmpty()
 
     init {
-        prefs.registerOnSharedPreferenceChangeListener(this)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-            keys.showAppLabels -> {
-                shouldShowAppLabels = sharedPreferences.getBoolean(
+            keys.showAppNames -> {
+                shouldShowAppNames = sharedPreferences.getBoolean(
                     key,
                     context.resources.getBoolean(R.bool.def_pref_show_app_names)
                 )
             }
+            keys.showPinnedAppNames -> {
+                shouldShowPinnedAppNames = sharedPreferences.getBoolean(
+                    key,
+                    context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
+                )
+            }
         }
+        super.onSharedPreferenceChanged(sharedPreferences, key)
     }
 
     fun isAppPinned(app: ActivityInfo) =
@@ -91,7 +102,7 @@ private constructor(private val context: Context) :
     fun addPinnedApp(app: ActivityInfo) {
         _pinnedApps += app
         pinnedAppsCount += 1
-        prefs.edit(commit = true) {
+        sharedPreferences.edit(commit = true) {
             val componentName = ComponentName.createRelative(app.packageName, app.name)
             putString(keys.pinnedApps + (pinnedAppsCount - 1), componentName.flattenToString())
             putInt(keys.pinnedAppsCount, pinnedAppsCount)
@@ -103,8 +114,7 @@ private constructor(private val context: Context) :
             _pinnedApps.indexOfFirst { it.name == app.name }
         )
         pinnedAppsCount -= 1
-        prefs.edit(commit = true) {
-            val componentName = ComponentName.createRelative(app.packageName, app.name)
+        sharedPreferences.edit(commit = true) {
             remove(keys.pinnedApps + pinnedAppsCount)
             putInt(keys.pinnedAppsCount, pinnedAppsCount)
         }
@@ -115,8 +125,15 @@ internal class PrefKeys(context: Context) {
     /**
      * Key: `"pref_key_show_app_names"`
      */
-    val showAppLabels by lazy {
+    val showAppNames by lazy {
         context.getString(R.string.pref_key_show_app_names)
+    }
+
+    /**
+     * Key: `"pref_key_show_pinned_app_names"`
+     */
+    val showPinnedAppNames by lazy {
+        context.getString(R.string.pref_key_show_pinned_app_names)
     }
 
     /**
