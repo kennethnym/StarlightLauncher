@@ -8,13 +8,13 @@
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content" />-->
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="@dimen/widget_list_spacing" />
+    <!--    <Space-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="@dimen/widget_list_spacing" />-->
 
-    <kenneth.app.starlightlauncher.widgets.quicknotes.QuickNotes
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <!--    <kenneth.app.starlightlauncher.widgets.quicknotes.QuickNotes-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content" />-->
 
     <Space
         android:layout_width="0dp"

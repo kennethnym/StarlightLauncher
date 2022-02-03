@@ -10,8 +10,6 @@
 
     <dimen name="widget_margin_horizontal">16dp</dimen>
     <dimen name="widget_space_between">16dp</dimen>
-    <dimen name="widget_padding_vertical">16dp</dimen>
-    <dimen name="widget_padding_horizontal">24dp</dimen>
     <dimen name="widget_list_spacing">16dp</dimen>
 
     <dimen name="search_box_container_padding">24dp</dimen>

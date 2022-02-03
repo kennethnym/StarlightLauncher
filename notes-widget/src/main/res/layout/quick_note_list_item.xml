@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/quick_note_list_item_spacing">
+
+    <TextView
+        android:id="@+id/quick_notes_list_item_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="16sp" />
+
+    <Space
+        android:layout_width="24dp"
+        android:layout_height="0dp" />
+
+    <kenneth.app.starlightlauncher.api.view.TextButton
+        android:id="@+id/quick_notes_list_item_delete_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:drawableStart="@drawable/ic_trash_alt" />
+
+</LinearLayout>

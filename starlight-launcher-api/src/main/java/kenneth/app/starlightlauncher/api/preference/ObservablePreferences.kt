@@ -2,12 +2,20 @@ package kenneth.app.starlightlauncher.api.preference
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.CallSuper
 import androidx.preference.PreferenceManager
 import java.util.*
-import kotlin.reflect.KFunction2
 
-typealias ObservablePreferencesListener<T> = (preferences: T, key: String) -> Unit
+typealias ObservablePreferencesListener = (event: PreferencesChanged) -> Unit
+
+data class PreferencesChanged(
+    val status: Status,
+    val key: String,
+) {
+    enum class Status {
+        KEY_ADDED_OR_CHANGED,
+        KEY_REMOVED,
+    }
+}
 
 abstract class ObservablePreferences<T : ObservablePreferences<T>>(
     context: Context
@@ -31,13 +39,31 @@ abstract class ObservablePreferences<T : ObservablePreferences<T>>(
         if (key != null && sharedPreferences != null) {
             updateValue(sharedPreferences, key)
             setChanged()
-            notifyObservers(key)
+            notifyObservers(
+                PreferencesChanged(
+                    status = when {
+                        sharedPreferences.contains(key) -> PreferencesChanged.Status.KEY_ADDED_OR_CHANGED
+                        else -> PreferencesChanged.Status.KEY_REMOVED
+                    },
+                    key,
+                )
+            )
         }
     }
 
-    fun addPreferencesListener(listener: ObservablePreferencesListener<T>) {
+    fun addOnPreferenceChangedListener(listener: ObservablePreferencesListener) {
         addObserver { o, arg ->
-            listener(o as T, arg as String)
+            if (arg is PreferencesChanged && arg.status == PreferencesChanged.Status.KEY_ADDED_OR_CHANGED) {
+                listener(arg)
+            }
+        }
+    }
+
+    fun addOnPreferenceRemovedListener(listener: ObservablePreferencesListener) {
+        addObserver { o, arg ->
+            if (arg is PreferencesChanged && arg.status == PreferencesChanged.Status.KEY_REMOVED) {
+                listener(arg)
+            }
         }
     }
 

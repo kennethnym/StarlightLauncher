@@ -3,3 +3,4 @@ rootProject.name = "SpotlightLauncher"
 include ':starlight-launcher-api'
 include ':app-search-module'
 include ':file-search-module'
+include ':notes-widget'

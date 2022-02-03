@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.preference.PreferencesChanged
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
 
@@ -27,7 +28,7 @@ class AppSearchResultAdapter(
     private val prefs = AppSearchModulePreferences.getInstance(context)
 
     init {
-        prefs.addPreferencesListener(::onPreferencesChanged)
+        prefs.addOnPreferenceChangedListener(::onPreferencesChanged)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): AppSearchResultViewHolder {
@@ -48,10 +49,10 @@ class AppSearchResultAdapter(
         }
     }
 
-    private fun onPreferencesChanged(preferences: AppSearchModulePreferences, key: String) {
-        when (key) {
-            preferences.keys.showAppNames -> {
-                if (preferences.shouldShowAppNames) {
+    private fun onPreferencesChanged(event: PreferencesChanged) {
+        when (event.key) {
+            prefs.keys.showAppNames -> {
+                if (prefs.shouldShowAppNames) {
                     appGridAdapter?.showAppLabels()
                 } else {
                     appGridAdapter?.hideAppLabels()

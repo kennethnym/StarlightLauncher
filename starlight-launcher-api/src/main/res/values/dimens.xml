@@ -8,4 +8,7 @@
     <dimen name="option_menu_item_icon_margin_end">24dp</dimen>
     <!-- The spacing between option menu items -->
     <dimen name="option_menu_item_spacing">24dp</dimen>
+
+    <dimen name="widget_padding_horizontal">24dp</dimen>
+    <dimen name="widget_padding_vertical">16dp</dimen>
 </resources>

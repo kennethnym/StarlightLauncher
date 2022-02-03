@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_note_editor_text_hint">Add a quick note…</string>
+    <string name="show_all_notes_button_label">Show all -></string>
+</resources>
