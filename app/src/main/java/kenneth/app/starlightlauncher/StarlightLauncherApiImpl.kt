@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher
 
 import android.content.Context
+import android.view.View
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,9 +17,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class SpotlightLauncherApiModule {
+abstract class StarlightLauncherApiModule {
     @Binds
-    abstract fun bindSpotlightLauncherApi(
+    abstract fun bindStarlightLauncherApi(
         impl: StarlightLauncherApiImpl
     ): StarlightLauncherApi
 }
@@ -33,6 +34,10 @@ class StarlightLauncherApiImpl @Inject constructor(
 
     override fun showOptionMenu(builder: OptionMenuBuilder) {
         BindingRegister.activityMainBinding.optionMenu.show(builder)
+    }
+
+    override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
+        BindingRegister.activityMainBinding.widgetsPanel.showOverlayFrom(fromView, viewConstructor)
     }
 
     override fun getIconPack(): IconPack = appearancePreferenceManager.iconPack

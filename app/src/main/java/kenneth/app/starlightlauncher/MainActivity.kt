@@ -25,12 +25,12 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.ActivityMainBinding
+import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.calculateDominantColor
 import kenneth.app.starlightlauncher.utils.viewToBitmap

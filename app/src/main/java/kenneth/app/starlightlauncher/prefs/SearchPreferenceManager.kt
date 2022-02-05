@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import javax.inject.Inject

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="kenneth.app.starlightlauncher.spotlightlauncher">
+    package="kenneth.app.starlightlauncher">
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission
@@ -100,12 +100,12 @@
 
         <intent>
             <action android:name="android.intent.action.MAIN" />
-            <category android:name="kenneth.app.starlightlauncher.spotlightlauncher.SEARCH_MODULE" />
+            <category android:name="kenneth.app.starlightlauncher.SEARCH_MODULE" />
         </intent>
 
         <intent>
             <action android:name="android.intent.action.MAIN" />
-            <category android:name="kenneth.app.starlightlauncher.spotlightlauncher.SEARCH_MODULE_SETTINGS" />
+            <category android:name="kenneth.app.starlightlauncher.SEARCH_MODULE_SETTINGS" />
         </intent>
     </queries>
 

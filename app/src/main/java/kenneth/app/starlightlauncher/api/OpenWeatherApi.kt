@@ -1,6 +1,6 @@
 package kenneth.app.starlightlauncher.api
 
-import kenneth.app.starlightlauncher.spotlightlauncher.BuildConfig
+import kenneth.app.starlightlauncher.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName

@@ -47,7 +47,7 @@
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/measurement_selector_btn"
-                    style="@style/Style.SpotlightLauncher.TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
@@ -87,7 +87,7 @@
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/src_unit_selector_btn"
-                    style="@style/Style.SpotlightLauncher.TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
@@ -126,7 +126,7 @@
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/dest_unit_selector_btn"
-                    style="@style/Style.SpotlightLauncher.TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"

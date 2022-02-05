@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
 import javax.inject.Inject
 import javax.inject.Singleton

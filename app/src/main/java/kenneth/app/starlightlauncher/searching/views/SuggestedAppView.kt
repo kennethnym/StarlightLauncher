@@ -9,8 +9,8 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.spotlightlauncher.R
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.SuggestedAppViewBinding
+import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.databinding.SuggestedAppViewBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import javax.inject.Inject
 

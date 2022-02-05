@@ -57,7 +57,7 @@
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/skip_backward_button"
-                    style="@style/Style.SpotlightLauncher.TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:contentDescription="@string/skip_backward_button_description"
@@ -69,7 +69,7 @@
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/play_pause_button"
-                    style="@style/Style.SpotlightLauncher.TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="@dimen/media_control_button_size"
                     android:layout_height="@dimen/media_control_button_size"
                     android:drawableStart="@drawable/ic_play" />

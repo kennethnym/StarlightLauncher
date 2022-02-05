@@ -6,6 +6,7 @@ import android.view.View
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
+import java.lang.reflect.Constructor
 
 /**
  * This interface defines methods that can be called to interact with Spotlight Launcher.
@@ -38,6 +39,15 @@ interface StarlightLauncherApi {
      *     }
      */
     fun showOptionMenu(builder: OptionMenuBuilder)
+
+    /**
+     * Shows an overlay that shows the given [View], on top of everything else.
+     *
+     * @param fromView The [View] that the overlay will animate from.
+     * @param viewConstructor A method, or a constructor that will return a [View]. The returned
+     * [View] will be the content of the overlay
+     */
+    fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View)
 
     /**
      * Get the currently applied icon pack.

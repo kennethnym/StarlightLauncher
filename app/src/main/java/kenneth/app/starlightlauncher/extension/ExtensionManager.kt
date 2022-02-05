@@ -15,7 +15,7 @@ import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
 import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton

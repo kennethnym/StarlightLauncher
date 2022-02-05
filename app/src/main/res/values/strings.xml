@@ -34,9 +34,6 @@
     <string name="pause_button_description">Pause media</string>
     <string name="skip_forward_button_description">Skip forward</string>
 
-    <!-- All notes page -->
-    <string name="all_notes_add_note_label">Add note…</string>
-
     <!-- Note card -->
     <string name="note_card_delete_icon_description">Delete this note</string>
 
@@ -104,12 +101,6 @@
     <string name="related_topic_preview_description">Image preview for %1$s.</string>
 
     <string name="title_activity_settings">Settings</string>
-
-    <!-- notes widget -->
-    <string name="note_card_timestamp_placeholder">When this note is created on.</string>
-    <string name="note_card_content_placeholder">Note content</string>
-    <string name="note_card_reminder_icon">Icon for note reminder</string>
-    <string name="all_notes_page_title">Notes</string>
 
     <!-- unit converter widget -->
     <string name="unit_miles">Miles</string>

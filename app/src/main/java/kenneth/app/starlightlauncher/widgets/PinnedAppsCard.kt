@@ -13,12 +13,12 @@ package kenneth.app.starlightlauncher.widgets
 //import androidx.recyclerview.widget.RecyclerView
 //import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.qualifiers.ActivityContext
-//import kenneth.app.starlightlauncher.spotlightlauncher.databinding.AppsGridItemBinding
-//import kenneth.app.starlightlauncher.spotlightlauncher.databinding.PinnedAppsCardBinding
+//import kenneth.app.starlightlauncher.databinding.AppsGridItemBinding
+//import kenneth.app.starlightlauncher.databinding.PinnedAppsCardBinding
 //import kenneth.app.starlightlauncher.PinnedAppsPreferenceManager
 //import kenneth.app.starlightlauncher.AppearancePreferenceManager
 //import kenneth.app.starlightlauncher.AppManager
-//import kenneth.app.starlightlauncher.spotlightlauncher.searching.views.AppsGridItem
+//import kenneth.app.starlightlauncher.searching.views.AppsGridItem
 //import kenneth.app.starlightlauncher.RecyclerViewDataAdapter
 //import kenneth.app.starlightlauncher.getActivity
 //import javax.inject.Inject

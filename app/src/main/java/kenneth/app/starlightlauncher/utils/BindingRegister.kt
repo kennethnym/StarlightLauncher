@@ -1,8 +1,8 @@
 package kenneth.app.starlightlauncher.utils
 
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.ActivityMainBinding
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.SearchResultLayoutBinding
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.WidgetsPanelBinding
+import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
+import kenneth.app.starlightlauncher.databinding.SearchResultLayoutBinding
+import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.views.SearchResultView
 
 /**

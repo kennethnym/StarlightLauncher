@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("kenneth.app.starlightlauncher.spotlightlauncher.searchmodules.test", appContext.packageName)
+        assertEquals("kenneth.app.starlightlauncher.searchmodules.test", appContext.packageName)
     }
 }

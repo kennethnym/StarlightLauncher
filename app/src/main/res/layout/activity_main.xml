@@ -65,14 +65,14 @@
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.views.AppOptionMenu-->
+    <!--    <kenneth.app.starlightlauncher.views.AppOptionMenu-->
     <!--        android:id="@+id/app_option_menu"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->
     <!--        android:layout_gravity="bottom"-->
     <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 
-    <!--    <kenneth.app.starlightlauncher.spotlightlauncher.views.LauncherOptionMenu-->
+    <!--    <kenneth.app.starlightlauncher.views.LauncherOptionMenu-->
     <!--        android:id="@+id/launcher_option_menu"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->

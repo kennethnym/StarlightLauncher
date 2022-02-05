@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/card_title"
-        style="@style/Style.SpotlightLauncher.SearchResultCardTitle"
+        style="@style/Style.StarlightLauncher.SearchResultCardTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/search_result_card_title_margin" />

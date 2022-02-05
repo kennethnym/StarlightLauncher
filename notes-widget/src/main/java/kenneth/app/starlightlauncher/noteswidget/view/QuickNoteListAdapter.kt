@@ -46,7 +46,7 @@ internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<Qui
     private fun onNoteListChanged(event: NoteListChanged) {
         when (event.status) {
             NoteListChanged.Status.NOTE_REMOVED -> {
-                val index = notes.indexOf(event.note)
+                val index = notes.indexOfFirst { it.id == event.note.id }
                 notes.removeAt(index)
                 notifyItemRemoved(index)
                 hasPendingOperations = false
@@ -57,7 +57,7 @@ internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<Qui
                 hasPendingOperations = false
             }
             NoteListChanged.Status.NOTE_CHANGED -> {
-                val index = notes.indexOf(event.note)
+                val index = notes.indexOfFirst { it.id == event.note.id }
                 if (index >= 0) {
                     notes[index] = event.note
                     notifyItemChanged(index)

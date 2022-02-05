@@ -15,7 +15,7 @@
             android:orientation="vertical">
 
             <TextView
-                style="@style/PageHeader"
+                style="@style/Style.StarlightLauncher.PageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/card_padding"
@@ -47,12 +47,11 @@
 
         <kenneth.app.starlightlauncher.api.view.TextButton
             android:id="@+id/add_note_button"
-            style="@style/TextButton"
+            style="@style/Style.StarlightLauncher.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableStart="@drawable/ic_plus"
-            android:drawablePadding="@dimen/text_button_icon_spacing"
             android:text="@string/all_notes_add_note_label"
             app:color="@android:color/white" />
 

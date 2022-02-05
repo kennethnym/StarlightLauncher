@@ -10,7 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat.startActivity
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.BluetoothControlBinding
+import kenneth.app.starlightlauncher.databinding.BluetoothControlBinding
 
 class BluetoothControl(context: Context) : LinearLayout(context) {
     private val binding: BluetoothControlBinding

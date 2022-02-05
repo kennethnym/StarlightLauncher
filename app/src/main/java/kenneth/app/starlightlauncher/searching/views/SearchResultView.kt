@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.extension.ExtensionManager

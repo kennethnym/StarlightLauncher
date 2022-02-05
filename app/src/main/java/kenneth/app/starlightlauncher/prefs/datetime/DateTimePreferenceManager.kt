@@ -3,7 +3,7 @@ package kenneth.app.starlightlauncher.prefs.datetime
 import android.content.Context
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import javax.inject.Inject

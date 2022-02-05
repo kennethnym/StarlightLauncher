@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Style.SpotlightLauncher" parent="" />
+    <style name="Style.StarlightLauncher" parent="" />
 
-    <style name="Style.SpotlightLauncher.SearchResultCardTitle">
+    <style name="Style.StarlightLauncher.SearchResultCardTitle">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="Style.SpotlightLauncher.TextButton">
+    <style name="Style.StarlightLauncher.TextButton">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:padding">0dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text_button_color</item>
+        <item name="android:drawablePadding">16dp</item>
     </style>
 
-    <style name="Style.SpotlightLauncher.IconButton">
+    <style name="Style.StarlightLauncher.IconButton">
         <item name="android:layout_width">16dp</item>
         <item name="android:layout_height">16dp</item>
         <item name="android:tint">?android:textColor</item>
+    </style>
+
+    <style name="Style.StarlightLauncher.PageHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
     </style>
 
 </resources>

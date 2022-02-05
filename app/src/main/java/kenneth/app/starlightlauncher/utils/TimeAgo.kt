@@ -2,7 +2,7 @@ package kenneth.app.starlightlauncher.utils
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.prefs.datetime.DateTimePreferenceManager
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

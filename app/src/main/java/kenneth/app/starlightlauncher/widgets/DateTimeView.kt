@@ -18,10 +18,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.DateTimeViewBinding
+import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.starlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.utils.activity
 import kotlinx.coroutines.CoroutineScope

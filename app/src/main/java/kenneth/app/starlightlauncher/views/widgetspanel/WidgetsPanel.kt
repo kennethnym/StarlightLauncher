@@ -16,8 +16,9 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
-import kenneth.app.starlightlauncher.spotlightlauncher.*
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.WidgetsPanelBinding
+import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.*
+import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.api.utils.GestureMover
@@ -47,6 +48,9 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     @Inject
     lateinit var searcher: Searcher
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     private lateinit var velocityTracker: VelocityTracker
 
@@ -137,7 +141,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     fun showOverlayFrom(view: View, contentConstructor: (context: Context) -> View) {
-        binding.overlay.showFrom(view, withContent = contentConstructor(context))
+        binding.overlay.run {
+            blurWith(blurHandler)
+            showFrom(view, withContent = contentConstructor(context))
+        }
     }
 
     /**

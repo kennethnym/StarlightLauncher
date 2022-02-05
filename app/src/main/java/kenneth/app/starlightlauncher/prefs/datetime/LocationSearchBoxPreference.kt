@@ -8,7 +8,7 @@ import android.widget.ProgressBar
 import androidx.core.view.isInvisible
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 
 typealias OnRequestSearchListener = (query: String) -> Unit
 

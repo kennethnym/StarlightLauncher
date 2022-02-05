@@ -81,9 +81,8 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
         translationX = offsetRect.left.toFloat()
         translationY = offsetRect.top.toFloat()
 
-        val navBarInset = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+        val insets = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
             .getInsets(WindowInsetsCompat.Type.systemBars())
-            .bottom
 
         val xAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat(), 0f)
@@ -95,7 +94,12 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
 
         val widthAnimator = ObjectAnimator.ofInt(this, "width", view.width, appState.screenWidth)
         val heightAnimator =
-            ObjectAnimator.ofInt(this, "height", view.height, appState.screenHeight + navBarInset)
+            ObjectAnimator.ofInt(
+                this,
+                "height",
+                view.height,
+                appState.screenHeight + insets.top
+            )
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION

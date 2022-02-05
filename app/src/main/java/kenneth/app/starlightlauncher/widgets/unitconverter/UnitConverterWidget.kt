@@ -13,9 +13,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.UnitConverterWidgetBinding
+import kenneth.app.starlightlauncher.databinding.UnitConverterWidgetBinding
 import kenneth.app.starlightlauncher.utils.ContextMenuCallback
 import kenneth.app.starlightlauncher.utils.ContextMenuEntry
 import kenneth.app.starlightlauncher.utils.activity

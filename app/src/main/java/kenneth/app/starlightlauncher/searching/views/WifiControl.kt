@@ -20,8 +20,8 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.PermissionHandler
-import kenneth.app.starlightlauncher.spotlightlauncher.R
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.WifiControlBinding
+import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.databinding.WifiControlBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint

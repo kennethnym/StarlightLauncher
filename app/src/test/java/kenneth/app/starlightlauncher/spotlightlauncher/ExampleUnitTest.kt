@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.spotlightlauncher
+package kenneth.app.starlightlauncher
 
 import org.junit.Test
 

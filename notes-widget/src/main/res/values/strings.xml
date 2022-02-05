@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_edit">Edit</string>
+    <string name="action_archive">Archive</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
+
     <string name="add_note_editor_text_hint">Add a quick note…</string>
     <string name="show_all_notes_button_label">Show all -></string>
+    <string name="note_card_timestamp_placeholder">When this note is created on.</string>
+    <string name="note_card_content_placeholder">Note content</string>
+    <string name="note_card_reminder_icon">Icon for note reminder</string>
+    <string name="all_notes_page_title">Notes</string>
+    <string name="all_notes_add_note_label">Add note…</string>
 </resources>

@@ -21,8 +21,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.spotlightlauncher.R
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.MediaControlCardBinding
+import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.views.DateTimeViewContainer
 import kotlinx.coroutines.*

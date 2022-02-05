@@ -33,7 +33,7 @@
             app:title="@string/date_time_use_auto_location_check_frequency_title" />
 
         <Preference
-            app:fragment="kenneth.app.starlightlauncher.spotlightlauncher.prefs.datetime.WeatherLocationPickerFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.datetime.WeatherLocationPickerFragment"
             app:key="@string/date_time_location_picker"
             app:summary="@string/date_time_pick_location_summary"
             app:title="@string/date_time_pick_location_title" />

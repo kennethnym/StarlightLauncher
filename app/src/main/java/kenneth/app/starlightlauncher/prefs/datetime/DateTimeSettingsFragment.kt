@@ -11,7 +11,7 @@ import androidx.preference.SwitchPreference
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint

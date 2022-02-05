@@ -18,7 +18,7 @@ private const val OPACITY_CLICKED = 0.5f
 private const val OPACITY_DISABLED = 0.2f
 
 class IconButton(context: Context, attrs: AttributeSet?) :
-    AppCompatImageView(context, attrs, R.style.Style_SpotlightLauncher_IconButton) {
+    AppCompatImageView(context, attrs, R.style.Style_StarlightLauncher_IconButton) {
     /**
      * Whether this button should be disabled, thus not clickable.
      */

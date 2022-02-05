@@ -35,7 +35,7 @@
 
     <kenneth.app.starlightlauncher.api.view.TextButton
         android:id="@+id/open_bluetooth_settings_button"
-        style="@style/Style.SpotlightLauncher.TextButton"
+        style="@style/Style.StarlightLauncher.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_padding"

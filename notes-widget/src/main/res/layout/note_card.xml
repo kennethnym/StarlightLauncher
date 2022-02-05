@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
+        <import type="android.text.format.DateUtils" />
+
+        <import type="java.time.ZoneId" />
+
+        <import type="android.view.View" />
 
         <variable
             name="note"
             type="kenneth.app.starlightlauncher.noteswidget.Note" />
 
-<!--        <variable-->
-<!--            name="timeAgo"-->
-<!--            type="kenneth.app.starlightlauncher.utils.TimeAgo" />-->
+        <variable
+            name="inEditMode"
+            type="Boolean" />
+
+        <variable
+            name="areControlsEnabled"
+            type="Boolean" />
+
     </data>
 
     <FrameLayout
@@ -32,7 +42,7 @@
                 style="@style/NoteCard_TimestampLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="asdsad" />
+                android:text="@{DateUtils.getRelativeTimeSpanString(note.createdOn.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000)}" />
 
             <Space
                 android:layout_width="0dp"
@@ -44,7 +54,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@{note.content}" />
+                android:text="@{note.content}"
+                android:visibility="@{inEditMode ? View.GONE : View.VISIBLE}" />
 
             <EditText
                 android:id="@+id/note_content_edit_text"
@@ -52,10 +63,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
+                android:enabled="@{areControlsEnabled}"
                 android:hint="@string/note_card_content_placeholder"
                 android:importantForAutofill="no"
                 android:inputType="text|textAutoCorrect"
-                android:visibility="gone" />
+                android:text="@{note.content}"
+                android:visibility="@{inEditMode ? View.VISIBLE : View.GONE}" />
 
             <Space
                 android:layout_width="0dp"
@@ -95,33 +108,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end|center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{inEditMode ? View.GONE : View.VISIBLE}">
 
                 <!-- action bar that is shown normally -->
 
+                <!-- Edit button -->
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_edit_button"
-                    style="@style/TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_pen"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:enabled="@{areControlsEnabled}"
                     android:text="@string/action_edit"
-                    android:textColor="?colorPrimary" />
+                    android:textColor="@color/text_button_color_primary" />
 
                 <Space
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
+                <!-- Archive button -->
                 <kenneth.app.starlightlauncher.api.view.TextButton
-                    style="@style/TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_archive"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:enabled="@{areControlsEnabled}"
                     android:text="@string/action_archive"
-                    android:textColor="?colorPrimary"
-                    app:useCustomColor="true" />
+                    android:textColor="@color/text_button_color_primary" />
 
             </LinearLayout>
 
@@ -131,35 +146,35 @@
                 android:layout_height="wrap_content"
                 android:gravity="end|center_vertical"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="@{inEditMode ? View.VISIBLE : View.GONE}">
 
                 <!-- action bar that is shown when user is editing this note -->
 
+                <!-- Done button -->
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_save_edit"
-                    style="@style/TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_check"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:enabled="@{areControlsEnabled}"
                     android:text="@string/action_done"
-                    android:textColor="?colorPrimary"
-                    app:useCustomColor="true" />
+                    android:textColor="@color/text_button_color_primary" />
 
                 <Space
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
 
+                <!-- Cancel button -->
                 <kenneth.app.starlightlauncher.api.view.TextButton
                     android:id="@+id/note_card_cancel_edit"
-                    style="@style/TextButton"
+                    style="@style/Style.StarlightLauncher.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_times"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
+                    android:enabled="@{areControlsEnabled}"
                     android:text="@string/action_cancel"
-                    app:color="?colorPrimary"
-                    app:useCustomColor="true" />
+                    android:textColor="@color/text_button_color_primary" />
 
             </LinearLayout>
 
@@ -171,9 +186,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:layout_marginEnd="@dimen/card_padding"
-            android:contentDescription="@string/note_card_delete_icon_description"
             android:drawableStart="@drawable/ic_times"
             android:elevation="10dp"
+            android:enabled="@{areControlsEnabled}"
             android:padding="@dimen/card_padding" />
 
     </FrameLayout>

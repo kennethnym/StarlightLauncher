@@ -14,7 +14,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.prefs.intents.PreferenceChangedIntent
 import javax.inject.Inject
 

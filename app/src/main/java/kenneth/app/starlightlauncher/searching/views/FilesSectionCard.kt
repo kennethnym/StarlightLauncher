@@ -14,13 +14,13 @@ package kenneth.app.starlightlauncher.searching.views
 //import androidx.recyclerview.widget.RecyclerView
 //import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.qualifiers.ActivityContext
-//import kenneth.app.starlightlauncher.spotlightlauncher.R
-//import kenneth.app.starlightlauncher.spotlightlauncher.databinding.FileListItemBinding
-//import kenneth.app.starlightlauncher.spotlightlauncher.databinding.FilesSectionCardBinding
+//import kenneth.app.starlightlauncher.R
+//import kenneth.app.starlightlauncher.databinding.FileListItemBinding
+//import kenneth.app.starlightlauncher.databinding.FilesSectionCardBinding
 //import kenneth.app.starlightlauncher.SettingsActivity
 //import kenneth.app.starlightlauncher.RecyclerViewDataAdapter
 //import kenneth.app.starlightlauncher.getDp
-//import kenneth.app.starlightlauncher.spotlightlauncher.views.SectionCard
+//import kenneth.app.starlightlauncher.views.SectionCard
 //import javax.inject.Inject
 //import kotlin.math.min
 //

@@ -6,13 +6,13 @@ package kenneth.app.starlightlauncher.searching.views
 //import android.util.TypedValue
 //import android.view.LayoutInflater
 //import androidx.core.view.isVisible
-//import kenneth.app.starlightlauncher.spotlightlauncher.R
-//import kenneth.app.starlightlauncher.spotlightlauncher.databinding.SuggestedResultCardBinding
-////import kenneth.app.starlightlauncher.spotlightlauncher.searching.SearchResult
+//import kenneth.app.starlightlauncher.R
+//import kenneth.app.starlightlauncher.databinding.SuggestedResultCardBinding
+////import kenneth.app.starlightlauncher.searching.SearchResult
 //import kenneth.app.starlightlauncher.SmartSearcher
 //import kenneth.app.starlightlauncher.SuggestedResultType
-//import kenneth.app.starlightlauncher.spotlightlauncher.views.BlurView
-//import kenneth.app.starlightlauncher.spotlightlauncher.views.SectionCard
+//import kenneth.app.starlightlauncher.views.BlurView
+//import kenneth.app.starlightlauncher.views.SectionCard
 //
 ///**
 // * Displayed at the top of the search page to show the user suggested result from the launcher.

@@ -15,9 +15,9 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.SearchBoxBinding
+import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import javax.inject.Inject

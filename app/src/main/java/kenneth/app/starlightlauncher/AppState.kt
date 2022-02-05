@@ -1,7 +1,7 @@
 package kenneth.app.starlightlauncher
 
 import android.view.View
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.utils.ContextMenuCallback
 import javax.inject.Inject
 import javax.inject.Singleton

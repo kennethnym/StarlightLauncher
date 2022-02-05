@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pref_key_note_list">pref_key_note_list</string>
-    <string name="pref_key_notes_count">pref_key_notes_count</string>
 </resources>

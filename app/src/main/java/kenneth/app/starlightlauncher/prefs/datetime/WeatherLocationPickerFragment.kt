@@ -13,7 +13,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.NominatimApi
 import kotlinx.coroutines.CoroutineScope

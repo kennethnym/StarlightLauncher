@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ResolveInfo
 import androidx.preference.PreferenceManager
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 
 object PinnedAppsPreferenceManager {
     lateinit var pinnedApps: MutableList<String>

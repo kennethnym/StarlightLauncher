@@ -9,6 +9,7 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
 import kenneth.app.starlightlauncher.noteswidget.databinding.NotesWidgetBinding
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
+import kenneth.app.starlightlauncher.noteswidget.view.AllNotes
 import kenneth.app.starlightlauncher.noteswidget.view.QuickNoteListAdapter
 
 internal class NotesWidget(
@@ -30,7 +31,7 @@ internal class NotesWidget(
             }
 
             addNoteButton.setOnClickListener { addNote() }
-
+            showAllNotesButton.setOnClickListener { showAllNotes() }
             addNotesEditText.addTextChangedListener {
                 addNoteButton.isInvisible = it?.isBlank() == true
             }
@@ -46,5 +47,9 @@ internal class NotesWidget(
                 prefs.addNote(newNote)
             }
         }
+    }
+
+    private fun showAllNotes() {
+        launcher.showOverlay(rootView, ::AllNotes)
     }
 }

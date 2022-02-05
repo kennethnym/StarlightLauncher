@@ -11,7 +11,7 @@ import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.extension.ExtensionSettings
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint

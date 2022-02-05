@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.spotlightlauncher
+package kenneth.app.starlightlauncher
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

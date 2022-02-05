@@ -9,8 +9,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
-import kenneth.app.starlightlauncher.spotlightlauncher.R
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.OpenUrlControlBinding
+import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.databinding.OpenUrlControlBinding
 import kenneth.app.starlightlauncher.searching.SmartSearcher
 import kenneth.app.starlightlauncher.searching.SuggestedResultType
 

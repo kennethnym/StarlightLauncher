@@ -3,7 +3,7 @@ package kenneth.app.starlightlauncher.views
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.prefs.SettingsActivity
 

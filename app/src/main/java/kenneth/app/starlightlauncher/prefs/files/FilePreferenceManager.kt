@@ -6,7 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.spotlightlauncher.R
+import kenneth.app.starlightlauncher.R
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton

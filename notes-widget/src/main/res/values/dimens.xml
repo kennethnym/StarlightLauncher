@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="quick_note_list_item_spacing">8dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="note_card_list_vertical_spacing">16dp</dimen>
+    <dimen name="all_notes_overlay_padding_top">88dp</dimen>
 </resources>

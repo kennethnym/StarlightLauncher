@@ -3,9 +3,9 @@ package kenneth.app.starlightlauncher.searching.views
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import kenneth.app.starlightlauncher.spotlightlauncher.R
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.MathResultLayoutBinding
-//import kenneth.app.starlightlauncher.spotlightlauncher.searching.SearchResult
+import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.databinding.MathResultLayoutBinding
+//import kenneth.app.starlightlauncher.searching.SearchResult
 //import kenneth.app.starlightlauncher.SmartSearcher
 
 /**

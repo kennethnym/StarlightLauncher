@@ -80,9 +80,13 @@
         <entry key="file-search-module/src/main/res/layout/file_search_result_card.xml" value="0.3541666666666667" />
         <entry key="file-search-module/src/main/res/layout/settings_activity.xml" value="0.3541666666666667" />
         <entry key="file-search-module/src/main/res/xml/search_settings_root_preferences.xml" value="0.3541666666666667" />
+        <entry key="notes-widget/src/main/res/drawable/all_notes_add_note_btn_bg.xml" value="0.3703125" />
+        <entry key="notes-widget/src/main/res/drawable/ic_archive.xml" value="0.21481481481481482" />
         <entry key="notes-widget/src/main/res/drawable/ic_check.xml" value="0.3703125" />
         <entry key="notes-widget/src/main/res/drawable/ic_notes.xml" value="0.3703125" />
         <entry key="notes-widget/src/main/res/drawable/ic_trash_alt.xml" value="0.21302083333333333" />
+        <entry key="notes-widget/src/main/res/drawable/note_card_background.xml" value="0.3703125" />
+        <entry key="notes-widget/src/main/res/layout/all_notes.xml" value="0.3536458333333333" />
         <entry key="notes-widget/src/main/res/layout/note_card.xml" value="0.12222222222222222" />
         <entry key="notes-widget/src/main/res/layout/notes_widget.xml" value="0.3390625" />
         <entry key="notes-widget/src/main/res/layout/quick_note_list_item.xml" value="0.1259259259259259" />

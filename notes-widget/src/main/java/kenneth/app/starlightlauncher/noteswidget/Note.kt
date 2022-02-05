@@ -4,13 +4,14 @@ import kenneth.app.starlightlauncher.noteswidget.util.LocalDateTimeSerializer
 import java.time.LocalDateTime
 import java.util.*
 import kotlinx.serialization.Serializable
+import java.time.ZoneId
 
 /**
  * Represents a note created by the user.
  */
 @Serializable
 data class Note(
-    val content: String,
+    val content: String = "",
 
     val id: String = UUID.randomUUID().toString(),
 

@@ -15,7 +15,7 @@
             app:title="@string/appearance_show_app_names_in_search_result_title" />
         
         <Preference
-            app:fragment="kenneth.app.starlightlauncher.spotlightlauncher.prefs.appearance.IconPackSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.appearance.IconPackSettingsFragment"
             app:key="@string/appearance_icon_pack"
             app:summary="@string/appearance_change_icon_pack_summary"
             app:title="@string/appearance_change_icon_pack_title" />

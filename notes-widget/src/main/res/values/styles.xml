@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NoteCard_TimestampLabel" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:alpha">0.5</item>
+    </style>
+
+    <style name="NoteCard_Content" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="NoteCard_ReminderTimeLabel" parent="TextAppearance.AppCompat">
+        <item name="android:color">?colorOnSurface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:alpha">0.5</item>
+    </style>
+
+</resources>

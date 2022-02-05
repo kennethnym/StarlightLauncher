@@ -45,7 +45,7 @@
 
             <kenneth.app.starlightlauncher.api.view.TextButton
                 android:id="@+id/grant_location_permission_button"
-                style="@style/Style.SpotlightLauncher.TextButton"
+                style="@style/Style.StarlightLauncher.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/card_padding"

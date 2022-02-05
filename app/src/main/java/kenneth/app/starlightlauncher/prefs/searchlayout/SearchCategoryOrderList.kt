@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.spotlightlauncher.databinding.SearchCategoryOrderListItemBinding
+import kenneth.app.starlightlauncher.databinding.SearchCategoryOrderListItemBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.SearchPreferenceManager
 import kenneth.app.starlightlauncher.utils.RecyclerViewDataAdapter
