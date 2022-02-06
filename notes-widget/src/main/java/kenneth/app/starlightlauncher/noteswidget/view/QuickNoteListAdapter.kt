@@ -5,10 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kenneth.app.starlightlauncher.api.preference.PreferencesChanged
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.QuickNoteListItemBinding
-import kenneth.app.starlightlauncher.noteswidget.pref.NoteListChanged
+import kenneth.app.starlightlauncher.noteswidget.pref.NoteListModified
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
 
 internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<QuickNoteListItem>() {
@@ -21,7 +20,7 @@ internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<Qui
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         with(prefs) {
-            addNoteListChangedListener(::onNoteListChanged)
+            addNoteListModifiedListener(::onNoteListChanged)
         }
     }
 
@@ -43,26 +42,31 @@ internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<Qui
 
     override fun getItemCount(): Int = notes.size
 
-    private fun onNoteListChanged(event: NoteListChanged) {
-        when (event.status) {
-            NoteListChanged.Status.NOTE_REMOVED -> {
+    private fun onNoteListChanged(event: NoteListModified) {
+        when (event) {
+            is NoteListModified.NoteRemoved -> {
                 val index = notes.indexOfFirst { it.id == event.note.id }
                 notes.removeAt(index)
                 notifyItemRemoved(index)
                 hasPendingOperations = false
             }
-            NoteListChanged.Status.NOTE_ADDED -> {
+            is NoteListModified.NoteAdded -> {
                 notes.add(event.note)
                 notifyItemInserted(notes.size - 1)
                 hasPendingOperations = false
             }
-            NoteListChanged.Status.NOTE_CHANGED -> {
+            is NoteListModified.NoteChanged -> {
                 val index = notes.indexOfFirst { it.id == event.note.id }
                 if (index >= 0) {
                     notes[index] = event.note
                     notifyItemChanged(index)
                     hasPendingOperations = false
                 }
+            }
+            is NoteListModified.ListChanged -> {
+                notes.clear()
+                notes += event.notes
+                notifyItemRangeChanged(0, notes.size)
             }
         }
     }

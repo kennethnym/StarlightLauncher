@@ -12,17 +12,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal typealias NoteListListener = (event: NoteListChanged) -> Unit
+internal typealias NoteListListener = (event: NoteListModified) -> Unit
 
-internal data class NoteListChanged(
-    val status: Status,
-    val note: Note,
-) {
-    enum class Status {
-        NOTE_ADDED,
-        NOTE_CHANGED,
-        NOTE_REMOVED,
-    }
+sealed class NoteListModified {
+    data class ListChanged(val notes: List<Note>) : NoteListModified()
+    data class NoteAdded(val note: Note) : NoteListModified()
+    data class NoteChanged(val note: Note) : NoteListModified()
+    data class NoteRemoved(val note: Note) : NoteListModified()
 }
 
 internal class NotesWidgetPreferences
@@ -52,18 +48,14 @@ private constructor(context: Context) :
 
     internal fun addNote(note: Note) {
         noteList += note
-        sharedPreferences.edit(commit = true) {
-            putString(keys.noteList, Json.encodeToString(noteList))
-        }
+        saveNoteList()
         notifyNoteAdded(note)
     }
 
     internal fun editNote(note: Note) {
         val i = noteList.indexOfFirst { it.id == note.id }
         noteList[i] = note
-        sharedPreferences.edit(commit = true) {
-            putString(keys.noteList, Json.encodeToString(noteList))
-        }
+        saveNoteList()
         notifyNoteEdited(note)
     }
 
@@ -73,52 +65,55 @@ private constructor(context: Context) :
         val index = noteList.indexOf(note)
         noteList.removeAt(index)
         Log.d("Starlight", "Index $index")
-        sharedPreferences.edit(commit = true) {
-            putString(keys.noteList, Json.encodeToString(noteList))
-        }
+        saveNoteList()
         notifyNoteRemoved(note)
     }
 
-    internal fun addNoteListChangedListener(listener: NoteListListener) {
+    internal fun addNoteListModifiedListener(listener: NoteListListener) {
         addObserver { o, arg ->
-            if (arg is NoteListChanged) listener(arg)
+            if (arg is NoteListModified) listener(arg)
         }
+    }
+
+    internal fun exportNotesToJson(): String = Json.encodeToString(notes)
+
+    internal fun restoreNotesFromJson(json: String) {
+        noteList.clear()
+        noteList += Json.decodeFromString<List<Note>>(json)
+        saveNoteList()
+        notifyNoteListChanged()
+    }
+
+    private fun notifyNoteListChanged() {
+        setChanged()
+        notifyObservers(NoteListModified.ListChanged(notes))
     }
 
     private fun notifyNoteAdded(noteAdded: Note) {
         setChanged()
-        notifyObservers(
-            NoteListChanged(
-                status = NoteListChanged.Status.NOTE_ADDED,
-                note = noteAdded,
-            )
-        )
+        notifyObservers(NoteListModified.NoteAdded(noteAdded))
     }
 
     private fun notifyNoteRemoved(noteRemoved: Note) {
         setChanged()
-        notifyObservers(
-            NoteListChanged(
-                status = NoteListChanged.Status.NOTE_REMOVED,
-                note = noteRemoved
-            )
-        )
+        notifyObservers(NoteListModified.NoteRemoved(noteRemoved))
     }
 
     private fun notifyNoteEdited(noteEdited: Note) {
         setChanged()
-        notifyObservers(
-            NoteListChanged(
-                status = NoteListChanged.Status.NOTE_CHANGED,
-                note = noteEdited
-            )
-        )
+        notifyObservers(NoteListModified.NoteChanged(noteEdited))
     }
 
     private fun loadNotes() {
         sharedPreferences.getString(keys.noteList, null)?.let {
             val notes = Json.decodeFromString<List<Note>>(it)
             noteList += notes
+        }
+    }
+
+    private fun saveNoteList() {
+        sharedPreferences.edit(commit = true) {
+            putString(keys.noteList, Json.encodeToString(noteList))
         }
     }
 }

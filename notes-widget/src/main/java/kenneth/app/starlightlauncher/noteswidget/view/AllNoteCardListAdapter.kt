@@ -7,7 +7,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.NoteCardBinding
-import kenneth.app.starlightlauncher.noteswidget.pref.NoteListChanged
+import kenneth.app.starlightlauncher.noteswidget.pref.NoteListModified
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
 
 internal class AllNoteCardListAdapter(private val context: Context) :
@@ -23,7 +23,7 @@ internal class AllNoteCardListAdapter(private val context: Context) :
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        prefs.addNoteListChangedListener(::onNoteListChanged)
+        prefs.addNoteListModifiedListener(::onNoteListChanged)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {
@@ -67,25 +67,30 @@ internal class AllNoteCardListAdapter(private val context: Context) :
         prefs.addNote(emptyNote)
     }
 
-    private fun onNoteListChanged(event: NoteListChanged) {
-        when (event.status) {
-            NoteListChanged.Status.NOTE_ADDED -> {
+    private fun onNoteListChanged(event: NoteListModified) {
+        when (event) {
+            is NoteListModified.NoteAdded -> {
                 notes += event.note
                 notifyItemInserted(notes.size - 1)
             }
-            NoteListChanged.Status.NOTE_CHANGED -> {
+            is NoteListModified.NoteChanged -> {
                 val index = notes.indexOfFirst { it.id == event.note.id }
                 if (index >= 0) {
                     notes[index] = event.note
                     notifyItemChanged(index)
                 }
             }
-            NoteListChanged.Status.NOTE_REMOVED -> {
+            is NoteListModified.NoteRemoved -> {
                 val index = notes.indexOfFirst { it.id == event.note.id }
                 if (index >= 0) {
                     notes.removeAt(index)
                     notifyItemRemoved(index)
                 }
+            }
+            is NoteListModified.ListChanged -> {
+                notes.clear()
+                notes += event.notes
+                notifyItemRangeChanged(0, notes.size)
             }
         }
     }
