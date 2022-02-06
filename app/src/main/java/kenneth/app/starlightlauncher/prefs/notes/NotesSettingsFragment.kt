@@ -32,8 +32,8 @@ private const val BACKUP_FILE_MIME_TYPE = "*/*"
 
 @AndroidEntryPoint
 class NotesSettingsFragment : PreferenceFragmentCompat() {
-    @Inject
-    lateinit var notesPreferenceManager: NotesPreferenceManager
+//    @Inject
+//    lateinit var notesPreferenceManager: NotesPreferenceManager
 
     private val notesJSONFileTimestampFormat = SimpleDateFormat("Md_y_kms", Locale.getDefault())
 
@@ -48,7 +48,7 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
         registerForActivityResult(ActivityResultContracts.GetContent(), ::handlePickedBackupFile)
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.quick_notes_preferences, rootKey)
+//        setPreferencesFromResource(R.xml.quick_notes_preferences, rootKey)
         changeToolbarTitle()
 
         findPreference<Preference>(getString(R.string.quick_notes_export))
@@ -65,9 +65,9 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun exportNotes() {
-        if (notesPreferenceManager.notesJson != null) {
-            showFileNameDialog()
-        }
+//        if (notesPreferenceManager.notesJson != null) {
+//            showFileNameDialog()
+//        }
     }
 
     private fun startRestoreNoteProcess() {
@@ -80,8 +80,8 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun changeToolbarTitle() {
-        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
-            getString(R.string.quick_notes_title)
+//        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
+//            getString(R.string.quick_notes_title)
     }
 
     private fun showFileNameDialog() {
@@ -99,33 +99,33 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
                 setPadding(24.dp, 0, 24.dp, 0)
             }
 
-            AlertDialog.Builder(context).run {
-                setTitle(getString(R.string.quick_notes_file_name_dialog_title))
-                setMessage(
-                    getString(
-                        R.string.quick_notes_file_name_dialog_message,
-                        defaultFileName
-                    )
-                )
-                setView(fileNameEditTextLayout)
-
-                setPositiveButton(getString(R.string.quick_notes_file_name_dialog_positive_label)) { _, _ ->
-                    val inputtedName = fileNameEditText.text.toString()
-                    if (inputtedName.isNotBlank()) {
-                        fileNameEditText.error = null
-                        createJSONFile(fileName = inputtedName)
-                    } else {
-                        fileNameEditText.error =
-                            getString(R.string.quick_notes_file_name_dialog_empty_name_error)
-                    }
-                }
-
-                setNegativeButton(getString(R.string.quick_notes_file_name_dialog_negative_label)) { _, _ ->
-                    createJSONFile(defaultFileName)
-                }
-
-                show()
-            }
+//            AlertDialog.Builder(context).run {
+//                setTitle(getString(R.string.quick_notes_file_name_dialog_title))
+//                setMessage(
+//                    getString(
+//                        R.string.quick_notes_file_name_dialog_message,
+//                        defaultFileName
+//                    )
+//                )
+//                setView(fileNameEditTextLayout)
+//
+//                setPositiveButton(getString(R.string.quick_notes_file_name_dialog_positive_label)) { _, _ ->
+//                    val inputtedName = fileNameEditText.text.toString()
+//                    if (inputtedName.isNotBlank()) {
+//                        fileNameEditText.error = null
+//                        createJSONFile(fileName = inputtedName)
+//                    } else {
+//                        fileNameEditText.error =
+//                            getString(R.string.quick_notes_file_name_dialog_empty_name_error)
+//                    }
+//                }
+//
+//                setNegativeButton(getString(R.string.quick_notes_file_name_dialog_negative_label)) { _, _ ->
+//                    createJSONFile(defaultFileName)
+//                }
+//
+//                show()
+//            }
         }
     }
 
@@ -143,7 +143,7 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
      */
     private fun restoreNotes(backupJSON: String) {
         try {
-            notesPreferenceManager.restoreNotesFromJSON(backupJSON)
+//            notesPreferenceManager.restoreNotesFromJSON(backupJSON)
             showRestoreSuccessDialog()
         } catch (ex: SerializationException) {
             showInvalidBackupFileDialog()
@@ -151,34 +151,34 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showInvalidBackupFileDialog() {
-        AlertDialog.Builder(context).run {
-            setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
-            setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
-
-            setPositiveButton(getString(R.string.quick_notes_restore_failed_dialog_positive_btn_label)) { dialog, _ ->
-                startRestoreNoteProcess()
-                dialog.cancel()
-            }
-
-            setNegativeButton(getString(R.string.quick_notes_restore_failed_dialog_negative_btn_label)) { dialog, _ ->
-                dialog.cancel()
-            }
-
-            show()
-        }
+//        AlertDialog.Builder(context).run {
+//            setTitle(getString(R.string.quick_notes_restore_failed_dialog_title))
+//            setMessage(getString(R.string.quick_notes_restore_failed_dialog_message))
+//
+//            setPositiveButton(getString(R.string.quick_notes_restore_failed_dialog_positive_btn_label)) { dialog, _ ->
+//                startRestoreNoteProcess()
+//                dialog.cancel()
+//            }
+//
+//            setNegativeButton(getString(R.string.quick_notes_restore_failed_dialog_negative_btn_label)) { dialog, _ ->
+//                dialog.cancel()
+//            }
+//
+//            show()
+//        }
     }
 
     private fun showRestoreSuccessDialog() {
-        AlertDialog.Builder(context).run {
-            setTitle(getString(R.string.quick_notes_restore_success_dialog_title))
-            setMessage(getString(R.string.quick_notes_restore_success_dialog_message))
-
-            setPositiveButton(getString(R.string.action_ok)) { dialog, _ ->
-                dialog.cancel()
-            }
-
-            show()
-        }
+//        AlertDialog.Builder(context).run {
+//            setTitle(getString(R.string.quick_notes_restore_success_dialog_title))
+//            setMessage(getString(R.string.quick_notes_restore_success_dialog_message))
+//
+//            setPositiveButton(getString(R.string.action_ok)) { dialog, _ ->
+//                dialog.cancel()
+//            }
+//
+//            show()
+//        }
     }
 
     private fun createJSONFile(fileName: String) {
@@ -195,11 +195,11 @@ class NotesSettingsFragment : PreferenceFragmentCompat() {
         try {
             context?.contentResolver?.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { fileStream ->
-                    val notesJSON = notesPreferenceManager.notesJson
-
-                    if (notesJSON != null) {
-                        fileStream.write(notesJSON.toByteArray())
-                    }
+//                    val notesJSON = notesPreferenceManager.notesJson
+//
+//                    if (notesJSON != null) {
+//                        fileStream.write(notesJSON.toByteArray())
+//                    }
                 }
             }
         } catch (ex: Exception) {

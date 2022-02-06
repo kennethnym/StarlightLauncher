@@ -9,63 +9,11 @@ import androidx.core.view.updatePadding
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
+import kenneth.app.starlightlauncher.api.preference.SettingsActivity
 import kenneth.app.starlightlauncher.appsearchmodule.R
 import kenneth.app.starlightlauncher.appsearchmodule.fragment.SearchResultSettingsFragment
 
-class SearchModuleSettingsActivity : AppCompatActivity(),
+class SearchModuleSettingsActivity : SettingsActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
-    private lateinit var toolbar: MaterialToolbar
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.settings_activity)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        toolbar = findViewById<MaterialToolbar>(R.id.settings_toolbar).also {
-            it.setOnApplyWindowInsetsListener { view, insets ->
-                view.updatePadding(
-                    top =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                        insets.getInsets(WindowInsets.Type.systemBars())
-                            .top
-                    else insets.systemWindowInsetTop
-                )
-                insets
-            }
-        }
-
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.settings_content, SearchResultSettingsFragment())
-                .commit()
-        }
-    }
-
-    override fun onPreferenceStartFragment(
-        caller: PreferenceFragmentCompat?,
-        pref: Preference
-    ): Boolean {
-        // Instantiate the new Fragment
-        val args = pref.extras
-        val fragment = supportFragmentManager.fragmentFactory.instantiate(
-            classLoader,
-            pref.fragment
-        ).apply {
-            arguments = args
-            setTargetFragment(caller, 0)
-        }
-
-        // Replace the existing Fragment with the new Fragment
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.settings_content, fragment)
-            .addToBackStack(null)
-            .commit()
-
-        return true
-    }
+    override fun createPreferenceFragment() = SearchResultSettingsFragment()
 }

@@ -63,10 +63,10 @@
         </service>
 
         <activity
-            android:name="kenneth.app.starlightlauncher.prefs.SettingsActivity"
+            android:name="kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
 
         </activity>
 

@@ -37,13 +37,6 @@
             app:summary="@string/media_control_summary"
             app:title="@string/media_control_title" />
 
-        <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.notes.NotesSettingsFragment"
-            app:icon="@drawable/ic_notes"
-            app:key="@string/quick_notes_pref_key"
-            app:summary="@string/quick_notes_summary"
-            app:title="@string/quick_notes_title" />
-
     </PreferenceCategory>
 
 </PreferenceScreen>

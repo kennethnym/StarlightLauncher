@@ -2,9 +2,12 @@ package kenneth.app.starlightlauncher.prefs
 
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED

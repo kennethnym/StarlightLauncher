@@ -2,4 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kenneth.app.starlightlauncher.noteswidget">
 
+    <application>
+
+        <activity
+            android:name=".activity.WidgetSettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="kenneth.app.starlightlauncher.intent.category.WIDGET_SETTINGS" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
 </manifest>

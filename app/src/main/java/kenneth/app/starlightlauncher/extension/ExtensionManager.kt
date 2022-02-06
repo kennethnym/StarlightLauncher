@@ -88,6 +88,18 @@ class ExtensionManager @Inject constructor(
                     context,
                     kenneth.app.starlightlauncher.appsearchmodule.activity.WidgetSettingsActivity::class.java,
                 )
+            ),
+            "kenneth.app.starlightlauncher.noteswidget" to ExtensionSettings(
+                title = context.getString(R.string.notes_widget_settings_title),
+                description = context.getString(R.string.notes_widget_settings_description),
+                icon = AppCompatResources.getDrawable(
+                    context,
+                    R.drawable.notes_widget_settings_icon,
+                ),
+                intent = Intent(
+                    context,
+                    kenneth.app.starlightlauncher.noteswidget.activity.WidgetSettingsActivity::class.java,
+                )
             )
         )
     )

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/pref_category_title_backup_and_restore">
+
+        <Preference
+            app:icon="@drawable/ic_export"
+            app:key="@string/pref_key_export_to_json"
+            app:summary="@string/pref_summary_export_to_json"
+            app:title="@string/pref_title_export_to_json" />
+
+        <Preference
+            app:icon="@drawable/ic_history_alt"
+            app:key="@string/pref_key_restore_from_backup"
+            app:summary="@string/pref_summary_restore_from_backup"
+            app:title="@string/pref_title_restore_from_backup" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

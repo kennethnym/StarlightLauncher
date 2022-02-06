@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.view.OptionMenu
-import kenneth.app.starlightlauncher.prefs.SettingsActivity
+import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 
 fun buildLauncherOptionMenu(menu: OptionMenu, context: Context) {
     menu.addItem(
@@ -18,6 +18,6 @@ fun buildLauncherOptionMenu(menu: OptionMenu, context: Context) {
 
 private fun openSettingsActivity(context: Context) {
     context.startActivity(
-        Intent(context, SettingsActivity::class.java)
+        Intent(context, StarlightLauncherSettingsActivity::class.java)
     )
 }
