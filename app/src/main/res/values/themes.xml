@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LightLauncherTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="LightLauncherTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:fontFamily">@font/manrope</item>
@@ -14,12 +14,12 @@
         <item name="backgroundColorOnBlurView">#34FFFFFF</item>
         <item name="colorOnBackground">#80000000</item>
         <item name="hintTextColor">#4D000000</item>
-        <item name="cardCornerRadius">10dp</item>
+        <item name="cardCornerRadius">8dp</item>
 
         <item name="blurAmount">20</item>
     </style>
 
-    <style name="DarkLauncherTheme" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="DarkLauncherTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:fontFamily">@font/manrope</item>
@@ -32,7 +32,7 @@
         <item name="backgroundColorOnBlurView">#1A000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>
         <item name="hintTextColor">#80FFFFFF</item>
-        <item name="cardCornerRadius">10dp</item>
+        <item name="cardCornerRadius">8dp</item>
 
         <item name="blurAmount">20</item>
     </style>
