@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="selectedMeasurement"
-            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementType" />
+            type="kenneth.app.starlightlauncher.unitconverterwidget.MeasurementType" />
 
         <variable
             name="selectedSrcUnit"
-            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementUnit" />
+            type="kenneth.app.starlightlauncher.unitconverterwidget.MeasurementUnit" />
 
         <variable
             name="selectedDestUnit"
-            type="kenneth.app.starlightlauncher.widgets.unitconverter.MeasurementUnit" />
+            type="kenneth.app.starlightlauncher.unitconverterwidget.MeasurementUnit" />
     </data>
 
     <kenneth.app.starlightlauncher.api.view.Plate
@@ -37,12 +38,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/unit_converter_widget_measurement_label"
+                    android:text="@string/measurement_label"
                     android:textColor="?colorOnPlate"
                     android:textStyle="bold" />
 
                 <Space
-                    android:layout_width="@dimen/text_separator_spacing"
+                    android:layout_width="8dp"
                     android:layout_height="0dp" />
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
@@ -51,7 +52,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@{selectedMeasurement.label}"
                     android:textColor="@color/text_button_color_on_plate" />
 
@@ -71,18 +71,19 @@
                     android:id="@+id/src_unit_value_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/blur_view_edit_text_bg"
+                    android:background="@drawable/edit_text_on_plate_bg"
                     android:inputType="numberDecimal"
                     android:minWidth="16dp"
                     android:minEms="1"
-                    android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
+                    android:paddingHorizontal="@dimen/value_edit_text_padding_horizontal"
                     android:text="0"
                     android:textColor="?colorOnPlate"
-                    android:textSize="@dimen/unit_converter_widget_value_label_size"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/value_label_size"
+                    android:textStyle="bold"
+                    tools:ignore="Autofill" />
 
                 <Space
-                    android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
+                    android:layout_width="@dimen/value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
@@ -91,7 +92,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@{selectedSrcUnit.label}" />
 
             </LinearLayout>
@@ -110,18 +110,19 @@
                     android:id="@+id/dest_unit_value_edit_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/blur_view_edit_text_bg"
+                    android:background="@drawable/edit_text_on_plate_bg"
                     android:inputType="numberDecimal"
                     android:minWidth="16dp"
                     android:minEms="1"
-                    android:paddingHorizontal="@dimen/unit_converter_widget_value_edit_text_padding_horizontal"
+                    android:paddingHorizontal="@dimen/value_edit_text_padding_horizontal"
                     android:text="0"
                     android:textColor="?colorOnPlate"
-                    android:textSize="@dimen/unit_converter_widget_value_label_size"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/value_label_size"
+                    android:textStyle="bold"
+                    tools:ignore="Autofill" />
 
                 <Space
-                    android:layout_width="@dimen/unit_converter_widget_value_edit_text_margin_end"
+                    android:layout_width="@dimen/value_edit_text_margin_end"
                     android:layout_height="0dp" />
 
                 <kenneth.app.starlightlauncher.api.view.TextButton
@@ -130,7 +131,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_angle_down"
-                    android:drawablePadding="@dimen/text_button_icon_spacing"
                     android:text="@{selectedDestUnit.label}"
                     android:textColor="@color/text_button_color_on_plate" />
 

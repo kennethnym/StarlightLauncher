@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/file-search-module" />
             <option value="$PROJECT_DIR$/notes-widget" />
             <option value="$PROJECT_DIR$/starlight-launcher-api" />
+            <option value="$PROJECT_DIR$/unit-converter-widget" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

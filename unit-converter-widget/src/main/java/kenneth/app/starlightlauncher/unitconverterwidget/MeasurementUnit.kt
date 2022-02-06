@@ -1,14 +1,12 @@
-package kenneth.app.starlightlauncher.widgets.unitconverter
-
-import kenneth.app.starlightlauncher.utils.ContextMenuEntry
+package kenneth.app.starlightlauncher.unitconverterwidget
 
 /**
  * Defines units of measurements.
  */
 enum class MeasurementUnit(
-    override val id: Int,
-    override val label: String
-) : ContextMenuEntry {
+    val id: Int,
+    val label: String
+) {
     // Length units
     // ============
     // Imperial units

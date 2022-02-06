@@ -11,7 +11,7 @@
 
         <item name="plateColor">#80FFFFFF</item>
         <item name="colorOnPlate">#80000000</item>
-        <item name="backgroundColorOnBlurView">#34FFFFFF</item>
+        <item name="backgroundColorOnPlate">#34FFFFFF</item>
         <item name="colorOnBackground">#80000000</item>
         <item name="hintTextColor">#4D000000</item>
         <item name="cardCornerRadius">8dp</item>
@@ -29,7 +29,7 @@
 
         <item name="plateColor">#4D000000</item>
         <item name="colorOnPlate">#FFFFFFFF</item>
-        <item name="backgroundColorOnBlurView">#1A000000</item>
+        <item name="backgroundColorOnPlate">#1A000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>
         <item name="hintTextColor">#80FFFFFF</item>
         <item name="cardCornerRadius">8dp</item>

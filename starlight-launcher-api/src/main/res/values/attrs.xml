@@ -4,7 +4,7 @@
     <attr name="blurAmount" format="integer" />
 
     <!-- This attribute defines the background color that should be used for views drawn on top of BlurView -->
-    <attr name="backgroundColorOnBlurView" format="color" />
+    <attr name="backgroundColorOnPlate" format="color" />
 
     <attr name="plateColor" format="reference|color" />
     <attr name="colorOnPlate" format="reference|color" />

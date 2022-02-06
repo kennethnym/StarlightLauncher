@@ -1,14 +1,12 @@
-package kenneth.app.starlightlauncher.widgets.unitconverter
-
-import kenneth.app.starlightlauncher.utils.ContextMenuEntry
+package kenneth.app.starlightlauncher.unitconverterwidget
 
 /**
  * Supported measurements that [UnitConverterWidget] can provide conversions for.
  */
 enum class MeasurementType(
-    override val id: Int,
-    override val label: String
-) : ContextMenuEntry {
+    val id: Int,
+    val label: String
+) {
     LENGTH(0, "Length"),
     WEIGHT(1, "Weight");
 

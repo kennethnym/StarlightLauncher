@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.widgets.unitconverter
+package kenneth.app.starlightlauncher.unitconverterwidget
 
 val conversionFactors: Map<MeasurementUnit, Map<MeasurementUnit, Double>> = mapOf(
     // length

@@ -2,30 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <!--    <kenneth.app.starlightlauncher.widgets.PinnedAppsCard-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content" />-->
-
-    <!--    <Space-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="@dimen/widget_list_spacing" />-->
-
-    <!--    <kenneth.app.starlightlauncher.widgets.quicknotes.QuickNotes-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content" />-->
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="@dimen/widget_list_spacing" />
-
-    <kenneth.app.starlightlauncher.widgets.unitconverter.UnitConverterWidget
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="@dimen/widget_list_spacing" />
+    android:orientation="vertical"
+    android:paddingTop="@dimen/widget_list_spacing">
 
 </LinearLayout>

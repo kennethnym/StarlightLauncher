@@ -103,11 +103,16 @@
         <entry key="spotlight-launcher-api/src/main/res/drawable/plate_background.xml" value="0.3703125" />
         <entry key="spotlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3736413043478261" />
         <entry key="spotlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3496376811594203" />
+        <entry key="starlight-launcher-api/src/main/res/drawable/edit_text_on_plate_bg.xml" value="0.159" />
         <entry key="starlight-launcher-api/src/main/res/drawable/plate_background.xml" value="0.3703125" />
         <entry key="starlight-launcher-api/src/main/res/layout/file_name_dialog_content.xml" value="0.335" />
         <entry key="starlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3536458333333333" />
         <entry key="starlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3170289855072464" />
         <entry key="starlight-launcher-api/src/main/res/layout/settings_activity.xml" value="0.19630192502532928" />
+        <entry key="unit-converter-widget/src/main/res/drawable/blur_view_edit_text_bg.xml" value="0.159" />
+        <entry key="unit-converter-widget/src/main/res/drawable/ic_angle_down.xml" value="0.159" />
+        <entry key="unit-converter-widget/src/main/res/drawable/ic_check.xml" value="0.2295" />
+        <entry key="unit-converter-widget/src/main/res/layout/unit_converter_widget.xml" value="0.19630192502532928" />
       </map>
     </option>
   </component>

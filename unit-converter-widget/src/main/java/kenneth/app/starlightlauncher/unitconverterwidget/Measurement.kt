@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.widgets.unitconverter
+package kenneth.app.starlightlauncher.unitconverterwidget
 
 /**
  * Describes the value and the unit of a measurement.

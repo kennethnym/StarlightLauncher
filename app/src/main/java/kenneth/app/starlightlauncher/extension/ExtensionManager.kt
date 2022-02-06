@@ -16,6 +16,7 @@ import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCrea
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,6 +39,10 @@ class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
             widget = NotesWidgetCreator()
+        ),
+        "kenneth.app.starlightlauncher.unitconverterwidget" to Extension(
+            name = "kenneth.app.starlightlauncher.unitconverterwidget",
+            widget = UnitConverterWidgetCreator()
         )
     )
 
