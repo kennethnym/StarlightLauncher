@@ -92,7 +92,7 @@ internal class AppGridAdapter(
         }
     }
 
-    override fun getItemCount(): Int = apps.size
+    override fun getItemCount(): Int = visibleApps.size
 
     fun addAppToGrid(app: ActivityInfo, index: Int) {
         apps += app

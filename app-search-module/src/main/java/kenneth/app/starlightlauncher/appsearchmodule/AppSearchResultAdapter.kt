@@ -93,8 +93,8 @@ class AppSearchResultAdapter(
                         .also { appGridAdapter = it }
 
                 appGrid.apply {
-                    adapter = appGridAdapter
                     layoutManager = GridLayoutManager(context, 5)
+                    adapter = appGridAdapter
                 }
 
                 showMoreButton.apply {
