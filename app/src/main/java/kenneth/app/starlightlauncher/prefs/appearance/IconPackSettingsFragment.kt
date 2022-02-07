@@ -140,6 +140,7 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
                 installedIconPacks.forEach { iconPackEntry ->
                     if (selectedIconPack is InstalledIconPack &&
                         iconPackEntry.key != selectedIconPack.packageName
+                        || selectedIconPack is DefaultIconPack
                     ) {
                         it.addPreference(
                             iconPackPreference(iconPackEntry.value).also { pref ->
@@ -150,10 +151,6 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
                             }
                         )
                     }
-                }
-
-                if (it.preferenceCount == 0) {
-                    it.addPreference(noSupportedIconPacksPreference)
                 }
             } else {
                 it.addPreference(noSupportedIconPacksPreference)

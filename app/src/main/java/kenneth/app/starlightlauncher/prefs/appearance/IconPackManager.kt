@@ -35,10 +35,10 @@ class IconPackManager @Inject constructor(
         .flatMap {
             packageManager.queryIntentActivities(it, PackageManager.GET_META_DATA)
         }
-        .fold(mutableMapOf(), { iconPacks, resolveInfo ->
+        .fold(mutableMapOf()) { iconPacks, resolveInfo ->
             val packageName = resolveInfo.activityInfo.packageName
             iconPacks.apply {
                 put(packageName, InstalledIconPack(context, packageName))
             }
-        })
+        }
 }
