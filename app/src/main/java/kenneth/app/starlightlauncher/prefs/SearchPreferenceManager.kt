@@ -1,32 +1,37 @@
 package kenneth.app.starlightlauncher.prefs
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
+import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val CATEGORY_ORDER_LIST_SEPARATOR = ";"
 
+sealed class SearchPreferenceChanged {
+    data class SearchCategoryOrderChanged(
+        val fromIndex: Int,
+        val toIndex: Int
+    ) :
+        SearchPreferenceChanged()
+}
+
+typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
+
 @Singleton
 class SearchPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val extensionManager: ExtensionManager,
-) {
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private val enabledSearchModulesPrefKey =
-        context.getString(R.string.search_enabled_modules_pref_key)
-
-    private val searchCategoryOrderPrefKey =
-        context.getString(R.string.search_category_order_pref_key)
+) : ObservablePreferences<SearchPreferenceManager>(context) {
+    val keys = SearchPreferencesPrefKeys(context)
 
     private val _enabledSearchModules =
-        sharedPreferences.getStringSet(enabledSearchModulesPrefKey, null)
+        sharedPreferences.getStringSet(keys.enabledSearchModules, null)
             ?.toMutableSet()
             ?: mutableSetOf<String>().apply {
                 extensionManager.installedSearchModules.forEach {
@@ -39,10 +44,12 @@ class SearchPreferenceManager @Inject constructor(
      * in an array of names of the search modules.
      */
     var categoryOrder =
-        sharedPreferences.getString(searchCategoryOrderPrefKey, null)
+        sharedPreferences.getString(keys.searchCategoryOrder, null)
             ?.split(CATEGORY_ORDER_LIST_SEPARATOR)
             ?: extensionManager.installedSearchModules.map { it.metadata.extensionName }
         private set
+
+    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     /**
      * Returns the order the search module should appear on the search result list.
@@ -51,13 +58,29 @@ class SearchPreferenceManager @Inject constructor(
      */
     fun orderOf(searchModuleName: String) = categoryOrder.indexOf(searchModuleName)
 
-    fun changeSearchCategoryOrder(newOrder: List<String>) {
-        sharedPreferences.edit {
+    fun changeSearchCategoryOrder(fromIndex: Int, toIndex: Int, newOrder: List<String>) {
+        categoryOrder = newOrder
+        sharedPreferences.edit(commit = true) {
             putString(
-                searchCategoryOrderPrefKey,
+                keys.searchCategoryOrder,
                 newOrder.joinToString(CATEGORY_ORDER_LIST_SEPARATOR)
             )
-            apply()
+        }
+        setChanged()
+        notifyObservers(SearchPreferenceChanged.SearchCategoryOrderChanged(fromIndex, toIndex))
+    }
+
+    fun addOnSearchPreferencesChangedListener(listener: SearchPreferenceChangedListener) {
+        addObserver { o, arg ->
+            if (arg is SearchPreferenceChanged) {
+                listener(arg)
+            }
         }
     }
+}
+
+class SearchPreferencesPrefKeys(context: Context) {
+    val searchCategoryOrder by lazy { context.getString(R.string.search_category_order_pref_key) }
+
+    val enabledSearchModules by lazy { context.getString(R.string.search_enabled_modules_pref_key) }
 }

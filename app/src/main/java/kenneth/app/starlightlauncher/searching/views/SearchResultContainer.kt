@@ -18,6 +18,11 @@ class SearchResultContainer(context: Context) : LinearLayout(context) {
         }
 
     /**
+     * The name of the extension that is providing the search result.
+     */
+    lateinit var extensionName: String
+
+    /**
      * The index at which this container should appear in the search result list
      */
     var order: Int = 0

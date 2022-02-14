@@ -126,6 +126,13 @@ class ExtensionManager @Inject constructor(
         queryExtensionSettings()
     }
 
+    /**
+     * Determines whether an extension provides a [SearchModule].
+     *
+     * @param extName The name of the extension.
+     */
+    fun hasSearchModule(extName: String) = lookupSearchModule(extName) != null
+
     fun lookupSearchModule(extName: String) = extensions[extName]?.searchModule
 
     fun getSettingsActivityIntentForExtension(extName: String, category: String) =

@@ -50,8 +50,8 @@
 
     </LinearLayout>
 
-    <kenneth.app.starlightlauncher.prefs.searchlayout.SearchCategoryOrderList
-        android:id="@+id/search_category_order_list"
+    <kenneth.app.starlightlauncher.views.ReorderableList
+        android:id="@+id/order_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -55,6 +55,8 @@
         <entry key="app/src/main/res/layout/pinned_apps_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/quick_notes_layout.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/quick_notes_list_item.xml" value="0.22509057971014493" />
+        <entry key="app/src/main/res/layout/reorderable_preference_item.xml" value="0.36594202898550726" />
+        <entry key="app/src/main/res/layout/reorderable_preference_layout.xml" value="0.36594202898550726" />
         <entry key="app/src/main/res/layout/search_box.xml" value="0.25" />
         <entry key="app/src/main/res/layout/search_category_order_list_item.xml" value="0.3496376811594203" />
         <entry key="app/src/main/res/layout/search_category_order_preference_layout.xml" value="0.45" />
