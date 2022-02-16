@@ -59,9 +59,6 @@ class ReorderableList(context: Context, attrs: AttributeSet?) :
             ): Boolean {
                 val from = viewHolder.adapterPosition
                 val to = target.adapterPosition
-//                data[from] = data[to].also {
-//                    data[to] = data[from]
-//                }
                 recyclerView.adapter?.notifyItemMoved(from, to)
                 orderObservable.notifyOrderChanged(from, to)
                 return true

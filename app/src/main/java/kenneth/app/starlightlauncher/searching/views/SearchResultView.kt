@@ -15,17 +15,21 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
+import kenneth.app.starlightlauncher.api.utils.dp
 import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.SearchPreferenceChanged
 import kenneth.app.starlightlauncher.prefs.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
+import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class SearchResultView(context: Context, attrs: AttributeSet) :
+    OrderedInsertionLinearLayout(context, attrs) {
     @Inject
     lateinit var extensionManager: ExtensionManager
 
@@ -38,12 +42,14 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
     @Inject
     lateinit var appState: AppState
 
-    private val searchResultContainers =
+    override val allContainers: MutableList<Container?> =
         extensionManager.installedSearchModules
             .map { null }
-            .toMutableList<SearchResultContainer?>()
+            .toMutableList()
 
-    private val containersInLayout = mutableMapOf<Int, SearchResultContainer>()
+    private val viewHolders = extensionManager.installedSearchModules
+        .map { null }
+        .toMutableList<SearchResultAdapter.ViewHolder?>()
 
     init {
         fitsSystemWindows = false
@@ -85,7 +91,7 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
     }
 
     fun clearSearchResults() {
-        searchResultContainers.forEach { it?.isVisible = false }
+        allContainers.forEach { it?.isVisible = false }
     }
 
     private fun showSearchResult(result: SearchResult) {
@@ -93,102 +99,32 @@ class SearchResultView(context: Context, attrs: AttributeSet) : LinearLayout(con
         extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
             val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
 
-            searchResultContainers[order]
+            containerAt(order)
                 ?.let {
-                    searchModule.adapter.onBindSearchResult(it.viewHolder!!, result)
+                    searchModule.adapter.onBindSearchResult(viewHolders[order]!!, result)
                     it.isVisible = true
                 }
-                ?: run {
-                    val container = createSearchResultContainer(searchModule, at = order)
-                    searchModule.adapter.onBindSearchResult(container.viewHolder!!, result)
-                    insertNewSearchResultContainer(container)
-                    container.isVisible = true
-                }
-        }
-    }
-
-    private fun insertNewSearchResultContainer(container: SearchResultContainer) {
-        if (!containersInLayout.contains(container.id)) {
-            containersInLayout[container.id] = container
-            if (childCount == 1) {
-                val other = containersInLayout[getChildAt(0).id]!!
-                when {
-                    other.order > container.order ->
-                        addView(container, 0)
-                    other.order < container.order ->
-                        addView(container)
-                }
-            } else {
-                for (i in 0 until childCount - 1) {
-                    val cur = containersInLayout[getChildAt(0).id]!!
-                    val next = containersInLayout[getChildAt(i + 1).id]!!
-                    when {
-                        container.order < cur.order && container.order < next.order -> {
-                            addView(container, cur.order)
-                            break
+                ?: createContainerAt(order)
+                    .apply {
+                        layoutParams = LayoutParams(
+                            LayoutParams.MATCH_PARENT,
+                            LayoutParams.WRAP_CONTENT,
+                        ).apply {
+                            setMargins(0, 0, 0, 16.dp)
                         }
-                        container.order > cur.order && container.order < next.order -> {
-                            addView(container, next.order)
-                            break
-                        }
+                        orientation = VERTICAL
+                    }.also {
+                        val vh = searchModule.adapter.onCreateViewHolder(it)
+                        viewHolders[order] = vh
+                        searchModule.adapter.onBindSearchResult(vh, result)
+                        it.addView(vh.rootView)
+                        it.isVisible = true
                     }
-                }
-                addView(container)
-            }
         }
-    }
-
-    private fun createSearchResultContainer(
-        searchModule: SearchModule,
-        at: Int
-    ): SearchResultContainer {
-        val container = SearchResultContainer(context).apply {
-            order = at
-            extensionName = searchModule.metadata.extensionName
-        }
-        val vh = searchModule.adapter.onCreateViewHolder(container)
-        searchResultContainers[at] = container.apply {
-            id = generateViewId()
-            viewHolder = vh
-        }
-        return container
     }
 
     private fun onSearchCategoryOrderChanged(fromIndex: Int, toIndex: Int) {
-        val fromContainer = searchResultContainers[fromIndex]
-        val toContainer = searchResultContainers[toIndex]
-        when {
-            fromContainer != null && toContainer != null -> {
-                fromContainer.order = toIndex
-                toContainer.order = fromIndex
-                val fromContainerChildIndex = indexOfChild(fromContainer)
-                val toContainerChildIndex = indexOfChild(toContainer)
-
-                searchResultContainers.swap(fromIndex, toIndex)
-                containersInLayout.swap(fromContainer.id, toContainer.id)
-                removeViewAt(fromContainerChildIndex)
-                removeViewAt(toContainerChildIndex)
-                addView(fromContainer, toIndex)
-                addView(toContainer, fromIndex)
-            }
-            fromContainer != null && toContainer == null -> {
-                fromContainer.order = toIndex
-                searchResultContainers[toIndex] = fromContainer
-                searchResultContainers[fromIndex] = null
-
-                val originalPosition = indexOfChild(fromContainer)
-                removeViewAt(originalPosition)
-                insertNewSearchResultContainer(fromContainer)
-            }
-            fromContainer == null && toContainer != null -> {
-                toContainer.order = fromIndex
-                searchResultContainers[fromIndex] = toContainer
-                searchResultContainers[toIndex] = null
-
-                val originalPosition = indexOfChild(toContainer)
-                removeViewAt(originalPosition)
-                insertNewSearchResultContainer(toContainer)
-            }
-        }
+        swapContainers(fromIndex, toIndex)
+        viewHolders.swap(fromIndex, toIndex)
     }
 }
