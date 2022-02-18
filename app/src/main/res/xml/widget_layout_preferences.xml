@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <kenneth.app.starlightlauncher.prefs.views.ReorderablePreference
+        app:key="@string/pref_key_widget_order"
+        app:selectable="false"
+        app:summary="@string/widget_order_summary"
+        app:title="@string/widget_order_title" />
+
+</PreferenceScreen>

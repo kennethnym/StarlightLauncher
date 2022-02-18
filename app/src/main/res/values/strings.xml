@@ -149,6 +149,14 @@
         by long pressing then dragging them.
     </string>
 
+    <!-- Widget layout preferences -->
+    <string name="widget_layout_title">Layout</string>
+    <string name="widget_layout_summary">Adjust the layout of widgets</string>
+    <string name="widget_order_title">Widgets order</string>
+    <string name="widget_order_summary">
+        Rearrange widgets in the order that you want them to show up on the home screen.
+    </string>
+
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
     <string name="file_search_summary">Adjust how Spotlight searches your files.</string>

@@ -12,7 +12,7 @@ import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidge
 
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
-    private val launcher: StarlightLauncherApi
+    private val launcher: StarlightLauncherApi,
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
@@ -79,6 +79,7 @@ internal class PinnedAppsWidget(
             rootView.isVisible = true
 
             pinnedAppsGrid.apply {
+                layoutManager = GridLayoutManager(context, 5)
                 adapter =
                     AppGridAdapter(
                         context,
@@ -87,7 +88,6 @@ internal class PinnedAppsWidget(
                         prefs.shouldShowPinnedAppNames
                     )
                         .also { appGridAdapter = it }
-                layoutManager = GridLayoutManager(context, 5)
             }
 
             if (prefs.shouldShowPinnedAppNames) {

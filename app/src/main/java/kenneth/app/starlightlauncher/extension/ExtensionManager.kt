@@ -48,6 +48,24 @@ class ExtensionManager @Inject constructor(
 
     private val widgets = mutableMapOf<String, WidgetCreator>()
 
+    private val widgetMetadata = mutableMapOf<String, WidgetMetadata>(
+        "kenneth.app.starlightlauncher.appsearchmodule" to WidgetMetadata(
+            extensionName = "kenneth.app.starlightlauncher.appsearchmodule",
+            displayName = context.getString(R.string.pinned_apps_widget_display_name),
+            description = context.getString(R.string.pinned_apps_widget_description),
+        ),
+        "kenneth.app.starlightlauncher.noteswidget" to WidgetMetadata(
+            extensionName = "kenneth.app.starlightlauncher.noteswidget",
+            displayName = context.getString(R.string.notes_widget_display_name),
+            description = context.getString(R.string.notes_widget_settings_description)
+        ),
+        "kenneth.app.starlightlauncher.unitconverterwidget" to WidgetMetadata(
+            extensionName = "kenneth.app.starlightlauncher.unitconverterwidget",
+            displayName = context.getString(R.string.unit_converter_widget_display_name),
+            description = context.getString(R.string.unit_converter_widget_description),
+        )
+    )
+
     private val searchModules = mutableMapOf<String, SearchModule>()
 
     /**
@@ -109,6 +127,9 @@ class ExtensionManager @Inject constructor(
         )
     )
 
+    val installedExtensions
+        get() = extensions.values as Collection<Extension>
+
     val installedSearchModules = searchModules.values as Collection<SearchModule>
 
     val installedWidgets = widgets.values as Collection<WidgetCreator>
@@ -133,7 +154,11 @@ class ExtensionManager @Inject constructor(
      */
     fun hasSearchModule(extName: String) = lookupSearchModule(extName) != null
 
+    fun lookupWidget(extName: String) = extensions[extName]?.widget
+
     fun lookupSearchModule(extName: String) = extensions[extName]?.searchModule
+
+    fun getWidgetMetadata(extName: String) = widgetMetadata[extName]
 
     fun getSettingsActivityIntentForExtension(extName: String, category: String) =
         extensionSettingsIntents[category]?.let { it[extName] }
@@ -257,9 +282,9 @@ class ExtensionManager @Inject constructor(
 
             if (
                 (searchModuleClass != null
-                    && SearchModule::class.java.isAssignableFrom(searchModuleClass)) ||
+                        && SearchModule::class.java.isAssignableFrom(searchModuleClass)) ||
                 (widgetClass != null
-                    && WidgetCreator::class.java.isAssignableFrom(widgetClass))
+                        && WidgetCreator::class.java.isAssignableFrom(widgetClass))
             ) {
                 extensions[packageName] = Extension(
                     packageName,

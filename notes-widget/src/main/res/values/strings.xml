@@ -5,6 +5,9 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_done">Done</string>
 
+    <string name="notes_widget_display_name">Quick Notes</string>
+    <string name="notes_widget_description">Take notes right from the home screen.</string>
+
     <string name="notes_widget_settings_title">Quick notes</string>
     <string name="notes_widget_settings_description">Customize the quick notes widget; notes backups</string>
 

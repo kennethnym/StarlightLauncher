@@ -17,6 +17,9 @@
     <string name="search_layout_pref_key">search_layout</string>
     <string name="search_category_order_pref_key">search_category_order_pref_key</string>
 
+    <string name="pref_key_widget_layout">widget_layout</string>
+    <string name="pref_key_widget_order">pref_key_widget_order</string>
+
     <string name="file_search_pref_key">file_search</string>
     <string name="file_search_enabled">file_search_enabled</string>
     <string name="file_include_paths_category">file_search_paths_category</string>

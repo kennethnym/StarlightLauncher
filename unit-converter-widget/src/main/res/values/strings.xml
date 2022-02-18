@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="unit_converter_widget_display_name">Unit converter</string>
+    <string name="unit_converter_widget_description">A convenient unit converter on your home screen.</string>
+
     <string name="measurement_label">Measurement:</string>
 </resources>

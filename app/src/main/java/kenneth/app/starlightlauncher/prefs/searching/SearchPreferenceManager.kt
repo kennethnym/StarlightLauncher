@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.prefs
+package kenneth.app.starlightlauncher.prefs.searching
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -34,8 +34,8 @@ class SearchPreferenceManager @Inject constructor(
         sharedPreferences.getStringSet(keys.enabledSearchModules, null)
             ?.toMutableSet()
             ?: mutableSetOf<String>().apply {
-                extensionManager.installedSearchModules.forEach {
-                    add(it.metadata.extensionName)
+                extensionManager.installedExtensions.forEach { ext ->
+                    if (ext.searchModule != null) add(ext.name)
                 }
             }
 
