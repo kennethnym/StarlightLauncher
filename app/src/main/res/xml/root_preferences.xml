@@ -11,7 +11,7 @@
         app:title="@string/search_header">
 
         <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.searchlayout.SearchLayoutSettingsFragment"
+            app:fragment="kenneth.app.starlightlauncher.prefs.searching.SearchLayoutSettingsFragment"
             app:icon="@drawable/ic_window_grid"
             app:key="@string/search_layout_pref_key"
             app:summary="@string/search_layout_summary"

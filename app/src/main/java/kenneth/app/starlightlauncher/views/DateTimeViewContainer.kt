@@ -30,18 +30,9 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
 
     private val choreographer = Choreographer.getInstance()
 
-    var layoutWeight: Float
-        get() = (layoutParams as LayoutParams).weight
-        set(newWeight) {
-            val newLayoutParams = (layoutParams as LayoutParams).apply {
-                weight = newWeight
-            }
-            layoutParams = newLayoutParams
-        }
-
     init {
         setOnLongClickListener {
-            launcher.showOptionMenu { buildLauncherOptionMenu(it, context) }
+            launcher.showOptionMenu { LauncherOptionMenu(context, it) }
             HANDLED
         }
     }

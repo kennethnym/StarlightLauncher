@@ -7,17 +7,25 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 
-fun buildLauncherOptionMenu(menu: OptionMenu, context: Context) {
-    menu.addItem(
-        ContextCompat.getDrawable(context, R.drawable.ic_setting)!!,
-        context.getString(R.string.launcher_settings_label),
-    ) {
-        openSettingsActivity(context)
+class LauncherOptionMenu(
+    private val context: Context,
+    private val menu: OptionMenu,
+) {
+    init {
+        with(menu) {
+            addItem(
+                ContextCompat.getDrawable(context, R.drawable.ic_setting)!!,
+                context.getString(R.string.launcher_settings_label),
+            ) {
+                openSettingsActivity(context)
+            }
+        }
+    }
+
+    private fun openSettingsActivity(context: Context) {
+        context.startActivity(
+            Intent(context, StarlightLauncherSettingsActivity::class.java)
+        )
     }
 }
 
-private fun openSettingsActivity(context: Context) {
-    context.startActivity(
-        Intent(context, StarlightLauncherSettingsActivity::class.java)
-    )
-}
