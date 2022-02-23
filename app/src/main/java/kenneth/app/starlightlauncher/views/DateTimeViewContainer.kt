@@ -32,7 +32,7 @@ class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayou
 
     init {
         setOnLongClickListener {
-            launcher.showOptionMenu { LauncherOptionMenu(context, it) }
+            launcher.showOptionMenu { LauncherOptionMenu(context, launcher, it) }
             HANDLED
         }
     }

@@ -37,7 +37,7 @@ class StarlightLauncherApiImpl @Inject constructor(
     }
 
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
-        BindingRegister.activityMainBinding.widgetsPanel.showOverlayFrom(fromView, viewConstructor)
+        BindingRegister.activityMainBinding.overlay.showFrom(fromView, viewConstructor(context))
     }
 
     override fun getIconPack(): IconPack = appearancePreferenceManager.iconPack

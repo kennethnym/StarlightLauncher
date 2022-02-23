@@ -58,24 +58,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <kenneth.app.starlightlauncher.api.view.OptionMenu
         android:id="@+id/option_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent" />
-
-    <!--    <kenneth.app.starlightlauncher.views.AppOptionMenu-->
-    <!--        android:id="@+id/app_option_menu"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_gravity="bottom"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
-
-    <!--    <kenneth.app.starlightlauncher.views.LauncherOptionMenu-->
-    <!--        android:id="@+id/launcher_option_menu"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

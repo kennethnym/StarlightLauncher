@@ -42,4 +42,10 @@
     <dimen name="overlay_padding_top">88dp</dimen>
 
     <dimen name="note_card_list_vertical_spacing">16dp</dimen>
+
+    <dimen name="available_widgets_list_group_indicator_size">32dp</dimen>
+    <dimen name="available_widgets_list_group_item_padding">16dp</dimen>
+    <dimen name="available_widgets_list_app_icon_size">40dp</dimen>
+    <dimen name="available_widgets_list_app_icon_padding_end">16dp</dimen>
+    <dimen name="available_widgets_list_preview_padding_bottom">16dp</dimen>
 </resources>

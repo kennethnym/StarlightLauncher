@@ -77,7 +77,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
 
         activity?.addBackPressedCallback {
-            if (!binding.overlay.isVisible && isExpanded && !binding.searchBox.hasQueryText) {
+            if (isExpanded && !binding.searchBox.hasQueryText) {
                 retract()
                 HANDLED
             } else NOT_HANDLED
@@ -140,12 +140,12 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         gestureMover.reset()
     }
 
-    fun showOverlayFrom(view: View, contentConstructor: (context: Context) -> View) {
-        binding.overlay.run {
-            blurWith(blurHandler)
-            showFrom(view, withContent = contentConstructor(context))
-        }
-    }
+//    fun showOverlayFrom(view: View, contentConstructor: (context: Context) -> View) {
+//        binding.overlay.run {
+//            blurWith(blurHandler)
+//            showFrom(view, withContent = contentConstructor(context))
+//        }
+//    }
 
     /**
      * Sets the currently focused view so that [WidgetsPanel]

@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.api
 
 import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 
@@ -27,4 +28,6 @@ interface IconPack {
      * Retrieves the icon of the given [ActivityInfo]
      */
     fun getIconOf(activityInfo: ActivityInfo): Bitmap
+
+    fun getIconOf(applicationInfo: ApplicationInfo): Bitmap
 }

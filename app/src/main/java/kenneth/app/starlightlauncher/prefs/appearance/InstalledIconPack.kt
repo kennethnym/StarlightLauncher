@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
@@ -111,6 +112,11 @@ class InstalledIconPack(context: Context, val packageName: String) : IconPack {
     override fun getIconOf(activityInfo: ActivityInfo): Bitmap {
         val default = activityInfo.loadIcon(packageManager)
         return getIconOf(activityInfo.packageName, default.toBitmap())
+    }
+
+    override fun getIconOf(applicationInfo: ApplicationInfo): Bitmap {
+        val default = applicationInfo.loadIcon(packageManager)
+        return getIconOf(applicationInfo.packageName, default.toBitmap())
     }
 
     /**

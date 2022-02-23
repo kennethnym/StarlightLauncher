@@ -9,6 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:itemIcon="@drawable/ic_setting"
-        app:itemLabel="@string/launcher_settings_label" />
+        app:itemLabel="@string/launcher_option_menu_launcher_settings_label" />
 
 </merge>

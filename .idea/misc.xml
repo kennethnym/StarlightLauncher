@@ -26,6 +26,7 @@
         <entry key="app/src/main/res/drawable/bottom_option_menu_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/card_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/edit_text_in_widget_bg.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_angle_down.xml" value="0.2745" />
         <entry key="app/src/main/res/drawable/ic_angle_up.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_clock.xml" value="0.36354166666666665" />
         <entry key="app/src/main/res/drawable/ic_draggabledots.xml" value="0.4197916666666667" />
@@ -37,6 +38,7 @@
         <entry key="app/src/main/res/drawable/ic_notes.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_twotone_computer_24.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_twotone_watch_24.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_vector_square.xml" value="0.193" />
         <entry key="app/src/main/res/drawable/ic_window_grid.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/note_card_background.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/require_location_perm_bg.xml" value="0.4197916666666667" />
@@ -45,8 +47,13 @@
         <entry key="app/src/main/res/layout/all_notes.xml" value="0.21965579710144928" />
         <entry key="app/src/main/res/layout/apps_grid_item.xml" value="0.22327898550724637" />
         <entry key="app/src/main/res/layout/apps_section_card.xml" value="0.2391304347826087" />
+        <entry key="app/src/main/res/layout/available_widget_list_header.xml" value="0.20471014492753623" />
+        <entry key="app/src/main/res/layout/available_widgets_list_widget_preview.xml" value="0.3541666666666667" />
+        <entry key="app/src/main/res/layout/available_widgets_list_widget_provider_item.xml" value="0.3541666666666667" />
+        <entry key="app/src/main/res/layout/available_widgets_page.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/bluetooth_control.xml" value="0.21965579710144928" />
         <entry key="app/src/main/res/layout/bottom_option_menu_item.xml" value="0.23550724637681159" />
+        <entry key="app/src/main/res/layout/date_time_view.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/file_list_item.xml" value="0.22509057971014493" />
         <entry key="app/src/main/res/layout/files_section_card.xml" value="0.21965579710144928" />
         <entry key="app/src/main/res/layout/launcher_option_menu.xml" value="0.22146739130434784" />
@@ -66,7 +73,9 @@
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/web_result_card.xml" value="0.17685185185185184" />
         <entry key="app/src/main/res/layout/web_result_related_topic_item.xml" value="0.196875" />
+        <entry key="app/src/main/res/layout/widget_category_header.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/widget_list.xml" value="0.2821557971014493" />
+        <entry key="app/src/main/res/layout/widgets_page.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
         <entry key="app/src/main/res/layout/wifi_control.xml" value="0.2269021739130435" />
         <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.335" />

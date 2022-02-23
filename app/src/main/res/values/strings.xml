@@ -62,7 +62,11 @@
     <string name="uninstall_label">Uninstall</string>
 
     <!-- Launcher option menu -->
-    <string name="launcher_settings_label">Launcher settings</string>
+    <string name="launcher_option_menu_launcher_settings_label">Launcher settings</string>
+    <string name="launcher_option_menu_widgets_label">Widgets</string>
+
+    <!-- Available widgets page -->
+    <string name="available_widgets_page_header">Widgets</string>
 
     <!-- Wifi controls -->
     <string name="wifi_connected_to_label">WiFi connected to</string>

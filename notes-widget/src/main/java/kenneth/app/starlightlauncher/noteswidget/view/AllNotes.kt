@@ -17,8 +17,8 @@ class AllNotes(context: Context) : FrameLayout(context) {
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT,
         )
-        val topPadding = resources.getDimensionPixelOffset(R.dimen.all_notes_overlay_padding_top)
 
+        val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
         setPadding(0, topPadding, 0, 0)
 
         with(binding) {

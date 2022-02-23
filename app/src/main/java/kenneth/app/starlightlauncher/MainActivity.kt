@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -280,7 +281,7 @@ class MainActivity : AppCompatActivity() {
         } else
             binding.root.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     }
 
     /**

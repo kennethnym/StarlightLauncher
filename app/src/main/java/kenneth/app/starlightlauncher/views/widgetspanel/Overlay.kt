@@ -16,6 +16,7 @@ import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.animations.DimensionAnimatable
 import kenneth.app.starlightlauncher.animations.DimensionAnimator
+import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.mainActivity
@@ -34,10 +35,12 @@ private val SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR =
  * Widgets can use this to display additional info.
  */
 @AndroidEntryPoint
-class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
-    DimensionAnimatable by DimensionAnimator() {
+class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     /**
      * The [View] that this [Overlay] expanded from.
@@ -55,13 +58,19 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
     private var content: View? = null
 
     init {
-        targetView = this
         mainActivity?.addBackPressListener {
             if (isVisible && !isClosing) {
                 close()
                 HANDLED
             } else NOT_HANDLED
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+//        val insets = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
+//            .getInsets(WindowInsetsCompat.Type.systemBars())
+//        setPadding(0, 0, 0, insets.bottom)
     }
 
     /**
@@ -72,39 +81,29 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
         originalView = view
         content = withContent
 
-        val offsetRect = Rect().apply {
-            view.getDrawingRect(this)
-            BindingRegister.activityMainBinding.widgetsPanel
-                .offsetDescendantRectToMyCoords(view, this)
-        }
+        blurWith(blurHandler)
 
-        translationX = offsetRect.left.toFloat()
-        translationY = offsetRect.top.toFloat()
-
-        val insets = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
-            .getInsets(WindowInsetsCompat.Type.systemBars())
-
-        val xAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat(), 0f)
+        translationY = appState.screenHeight.toFloat()
 
         val yAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, offsetRect.top.toFloat(), 0f)
+            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, appState.screenHeight.toFloat(), 0f)
 
         val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 1f)
 
-        val widthAnimator = ObjectAnimator.ofInt(this, "width", view.width, appState.screenWidth)
-        val heightAnimator =
-            ObjectAnimator.ofInt(
-                this,
-                "height",
-                view.height,
-                appState.screenHeight + insets.top
-            )
+//        val widthAnimator = ObjectAnimator.ofInt(this, "width", view.width, appState.screenWidth)
+//        val heightAnimator =
+//            ObjectAnimator.ofInt(
+//                this,
+//                "height",
+//                view.height,
+//                appState.screenHeight + insets.top
+//            )
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
-            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
+            playTogether(yAnimator, opacityAnimator)
+//            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             start()
         }
 
@@ -121,24 +120,19 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs),
     private fun close() {
         isClosing = true
 
-        val offsetRect = Rect().apply {
-            originalView.getDrawingRect(this)
-            BindingRegister.activityMainBinding.widgetsPanel
-                .offsetDescendantRectToMyCoords(originalView, this)
-        }
-
-        val xAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat())
-        val yAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, offsetRect.top.toFloat())
+//        val xAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat())
+        val yAnimator =
+            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, appState.screenHeight.toFloat())
         val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 0f)
 
-        val widthAnimator = ObjectAnimator.ofInt(this, "width", originalView.width)
-        val heightAnimator = ObjectAnimator.ofInt(this, "height", originalView.height)
+//        val widthAnimator = ObjectAnimator.ofInt(this, "width", originalView.width)
+//        val heightAnimator = ObjectAnimator.ofInt(this, "height", originalView.height)
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
 
-            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
+            playTogether(yAnimator, opacityAnimator)
             addListener({
                 isVisible = false
                 isClosing = false
