@@ -30,12 +30,12 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <kenneth.app.starlightlauncher.widgets.DateTimeView
+            <kenneth.app.starlightlauncher.views.DateTimeView
                 android:id="@+id/date_time_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <kenneth.app.starlightlauncher.widgets.MediaControlCard
+            <kenneth.app.starlightlauncher.views.MediaControlCard
                 android:id="@+id/media_control_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

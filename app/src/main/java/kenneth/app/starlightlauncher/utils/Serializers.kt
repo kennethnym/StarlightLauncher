@@ -1,8 +1,10 @@
 package kenneth.app.starlightlauncher.utils
 
+import android.content.ComponentName
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.time.Instant
@@ -20,4 +22,17 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
 
     override fun serialize(encoder: Encoder, value: LocalDateTime) =
         encoder.encodeLong(value.atZone(ZoneId.systemDefault()).toEpochSecond())
+}
+
+/**
+ * A [KSerializer] that serializes [ComponentName]
+ */
+object ComponentNameSerializer : KSerializer<ComponentName> {
+    override val descriptor = PrimitiveSerialDescriptor("Flattened", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): ComponentName =
+        ComponentName.unflattenFromString(decoder.decodeString())!!
+
+    override fun serialize(encoder: Encoder, value: ComponentName) =
+        encoder.encodeString(value.flattenToString())
 }

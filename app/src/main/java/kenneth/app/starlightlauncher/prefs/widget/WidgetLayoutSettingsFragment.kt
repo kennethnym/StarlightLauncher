@@ -7,6 +7,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.utils.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.views.ReorderablePreference
+import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import javax.inject.Inject
 
 @AndroidEntryPoint

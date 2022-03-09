@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.widgets
+package kenneth.app.starlightlauncher.views
 
 import android.content.ComponentName
 import android.content.Context
@@ -24,7 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.utils.activity
-import kenneth.app.starlightlauncher.views.DateTimeViewContainer
 import kotlinx.coroutines.*
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.widgets
+package kenneth.app.starlightlauncher.views
 
 import android.Manifest
 import android.content.*

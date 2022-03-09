@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher
 
+import android.appwidget.AppWidgetHost
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -85,4 +86,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBlurHandler(@ApplicationContext context: Context) = BlurHandler(context)
+
+    @Provides
+    @Singleton
+    fun provideAppWidgetHost(@ApplicationContext context: Context) =
+        AppWidgetHost(context, R.id.app_widget_host_id)
 }
