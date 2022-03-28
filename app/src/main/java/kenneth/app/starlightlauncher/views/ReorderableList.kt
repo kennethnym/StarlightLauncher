@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-typealias ListOrderChangedListener = (fromIndex: Int, toIndex: Int) -> Unit
+typealias ListOrderChangedListener = (fromPosition: Int, toPosition: Int) -> Unit
 
-class ReorderableList(context: Context, attrs: AttributeSet?) :
+open class ReorderableList(context: Context, attrs: AttributeSet?) :
     RecyclerView(context, attrs) {
     private val orderObservable = object : Observable() {
         fun notifyOrderChanged(from: Int, to: Int) {

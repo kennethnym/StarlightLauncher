@@ -1,15 +1,14 @@
 package kenneth.app.starlightlauncher.widgets
 
-import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
-import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
+import kenneth.app.starlightlauncher.api.utils.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -43,17 +42,7 @@ class WidgetPreferenceManager @Inject constructor(
 
     val keys = WidgetPrefKeys(context)
 
-    var widgetOrder =
-        sharedPreferences.getString(keys.widgetOrder, null)
-            ?.split(WIDGET_ORDER_LIST_SEPARATOR)
-            ?: mutableSetOf<String>().apply {
-                extensionManager.installedExtensions.forEach { ext ->
-                    if (ext.widget != null) add(ext.name)
-                }
-            }
-        private set
-
-    var addedWidgets =
+    private var _addedWidgets =
         sharedPreferences.getString(keys.addedWidgets, null)
             ?.let {
                 Json.decodeFromString<List<AddedWidget>>(it)
@@ -65,18 +54,14 @@ class WidgetPreferenceManager @Inject constructor(
                 }
             }
 
+    val addedWidgets
+        get() = _addedWidgets.toList()
+
     override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
-    fun orderOf(extensionName: String) = widgetOrder.indexOf(extensionName)
-
-    fun changeWidgetOrder(fromPosition: Int, toPosition: Int, newOrder: List<String>) {
-        widgetOrder = newOrder
-        sharedPreferences.edit(commit = true) {
-            putString(
-                keys.widgetOrder,
-                newOrder.joinToString(WIDGET_ORDER_LIST_SEPARATOR)
-            )
-        }
+    fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
+        _addedWidgets.swap(fromPosition, toPosition)
+        saveAddedWidgets()
         setChanged()
         notifyObservers(WidgetPreferenceChanged.WidgetOrderChanged(fromPosition, toPosition))
     }
@@ -85,7 +70,7 @@ class WidgetPreferenceManager @Inject constructor(
         val newWidget = AddedWidget.AndroidWidget(
             appWidgetProviderInfo.provider,
         )
-        addedWidgets += newWidget
+        _addedWidgets += newWidget
         saveAddedWidgets()
         setChanged()
         notifyObservers(
@@ -97,7 +82,7 @@ class WidgetPreferenceManager @Inject constructor(
     }
 
     fun removeAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
-        addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
+        _addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
         saveAddedWidgets()
     }
 
@@ -113,7 +98,7 @@ class WidgetPreferenceManager @Inject constructor(
         sharedPreferences.edit(commit = true) {
             putString(
                 keys.addedWidgets,
-                Json.encodeToString(addedWidgets)
+                Json.encodeToString(_addedWidgets)
             )
         }
     }

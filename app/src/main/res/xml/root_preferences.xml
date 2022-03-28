@@ -24,13 +24,6 @@
         app:title="@string/widgets_header">
 
         <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.widget.WidgetLayoutSettingsFragment"
-            app:icon="@drawable/ic_window_grid"
-            app:key="@string/pref_key_widget_layout"
-            app:summary="@string/widget_layout_summary"
-            app:title="@string/widget_layout_title" />
-
-        <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.datetime.DateTimeSettingsFragment"
             app:icon="@drawable/ic_clock"
             app:key="@string/date_time_pref_key"

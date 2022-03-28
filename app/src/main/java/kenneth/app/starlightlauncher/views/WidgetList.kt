@@ -9,12 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
@@ -34,7 +32,7 @@ private const val ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET =
  * Contains a list of widgets on the home screen.
  */
 @AndroidEntryPoint
-class WidgetList(context: Context, attrs: AttributeSet) : RecyclerView(context, attrs) {
+class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(context, attrs) {
     @Inject
     lateinit var widgetPreferenceManager: WidgetPreferenceManager
 
@@ -71,7 +69,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : RecyclerView(context, 
             LayoutParams.WRAP_CONTENT,
         )
         animations = generateAnimations()
-        addedWidgets = widgetPreferenceManager.addedWidgets
+        addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList()
         requestBindWidgetLauncher = activity?.activityResultRegistry?.register(
             ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET,
             ActivityResultContracts.StartActivityForResult(),
@@ -92,14 +90,16 @@ class WidgetList(context: Context, attrs: AttributeSet) : RecyclerView(context, 
 
         widgetPreferenceManager.addOnWidgetPreferenceChangedListener {
             when (it) {
-                is WidgetPreferenceChanged.WidgetOrderChanged -> {
-//                    onWidgetOrderChanged(it.fromPosition, it.toPosition)
-                }
                 is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
                     onAndroidWidgetAdded(it.addedWidget, it.appWidgetProviderInfo)
                 }
+
+                else -> {
+                }
             }
         }
+
+        addOnOrderChangedListener(::onWidgetOrderChanged)
     }
 
     /**
@@ -225,10 +225,15 @@ class WidgetList(context: Context, attrs: AttributeSet) : RecyclerView(context, 
         widget: AddedWidget.AndroidWidget,
         appWidgetProviderInfo: AppWidgetProviderInfo
     ) {
+        addedWidgets += widget
         val index = addedWidgets.size - 1
         widgetIndices[widget.provider.flattenToString()] = index
         widgetListAdapter.addAndroidWidget(widget)
         bindWidget(appWidgetProviderInfo, configure = true)
+    }
+
+    private fun onWidgetOrderChanged(fromPosition: Int, toPosition: Int) {
+        widgetPreferenceManager.changeWidgetOrder(fromPosition, toPosition)
     }
 
     /**
