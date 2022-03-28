@@ -90,5 +90,5 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppWidgetHost(@ApplicationContext context: Context) =
-        AppWidgetHost(context, R.id.app_widget_host_id)
+        AppWidgetHost(context.applicationContext, R.id.app_widget_host_id)
 }

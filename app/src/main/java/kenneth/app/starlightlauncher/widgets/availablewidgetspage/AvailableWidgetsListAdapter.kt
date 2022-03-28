@@ -1,8 +1,13 @@
 package kenneth.app.starlightlauncher.widgets.availablewidgetspage
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.appwidget.AppWidgetHost
+import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
@@ -11,18 +16,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
-import javax.inject.Inject
+import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 
-class AvailableWidgetsListAdapter @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val appearancePreferenceManager: AppearancePreferenceManager
+private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
+    "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+private interface AvailableWidgetListAdapterEntryPoint {
+    fun appearancePreferenceManager(): AppearancePreferenceManager
+
+    fun widgetPreferenceManager(): WidgetPreferenceManager
+}
+
+/**
+ * Shows available widgets on the phone to an expandable list.
+ * Also handles initial creation/configuration of widgets.
+ */
+class AvailableWidgetsListAdapter(
+    private val context: Context,
+    private val activityResultRegistry: ActivityResultRegistry,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()
     private var providers: Map<String, List<AppWidgetProviderInfo>> = emptyMap()
@@ -33,6 +59,9 @@ class AvailableWidgetsListAdapter @Inject constructor(
     // some drawables for list items
     private val groupIndicatorExpanded: Drawable?
     private val groupIndicatorEmpty: Drawable?
+
+    private val appearancePreferenceManager: AppearancePreferenceManager
+    private val widgetPreferenceManager: WidgetPreferenceManager
 
     init {
         val groupIndicatorSize =
@@ -56,6 +85,14 @@ class AvailableWidgetsListAdapter @Inject constructor(
                     setTint(indicatorColor)
                     setBounds(0, 0, groupIndicatorSize, groupIndicatorSize)
                 }
+
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            AvailableWidgetListAdapterEntryPoint::class.java
+        ).run {
+            appearancePreferenceManager = appearancePreferenceManager()
+            widgetPreferenceManager = widgetPreferenceManager()
+        }
     }
 
     override fun getGroupCount(): Int = providers.size
@@ -102,33 +139,22 @@ class AvailableWidgetsListAdapter @Inject constructor(
 
         return if (convertView == null || convertView !is TextView)
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.available_widgets_list_widget_category_header, null).apply {
-                    findViewById<TextView>(R.id.widget_provider_app_label).apply {
-                        text = label
-                        setCompoundDrawablesRelative(
-                            icon.toDrawable(context.resources).apply {
-                                setBounds(0, 0, iconSize, iconSize)
-                            },
-                            null,
-                            indicator,
-                            null
-                        )
-                        compoundDrawablePadding = iconPaddingEnd
-                    }
+                .inflate(R.layout.available_widgets_list_widget_category_header, null).run {
+                    findViewById(R.id.widget_provider_app_label)
                 }
         else {
-            convertView.apply {
-                text = label
-                setCompoundDrawablesRelative(
-                    icon.toDrawable(context.resources).apply {
-                        setBounds(0, 0, iconSize, iconSize)
-                    },
-                    null,
-                    indicator,
-                    null
-                )
-                compoundDrawablePadding = iconPaddingEnd
-            }
+            convertView
+        }.apply {
+            text = label
+            setCompoundDrawablesRelative(
+                icon.toDrawable(context.resources).apply {
+                    setBounds(0, 0, iconSize, iconSize)
+                },
+                null,
+                indicator,
+                null
+            )
+            compoundDrawablePadding = iconPaddingEnd
         }
     }
 
@@ -141,6 +167,7 @@ class AvailableWidgetsListAdapter @Inject constructor(
     ): View {
         val packageName = providerPackageNames[groupPosition]
         val appWidgetProviderInfo = providers[packageName]!![childPosition]
+        // TODO: can be 0 or unavailable
         val widgetPreview = ResourcesCompat.getDrawableForDensity(
             context.packageManager.getResourcesForApplication(packageName),
             appWidgetProviderInfo.previewImage,
@@ -149,31 +176,26 @@ class AvailableWidgetsListAdapter @Inject constructor(
         )
         val widgetPreviewSpacing =
             context.resources.getDimensionPixelSize(R.dimen.available_widgets_list_preview_padding_bottom)
+
         return if (convertView == null || convertView !is TextView) {
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.available_widgets_list_widget_provider_item, null).apply {
-                    findViewById<TextView>(R.id.widget_provider_name).apply {
-                        text = appWidgetProviderInfo.loadLabel(context.packageManager)
-                        setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            null,
-                            widgetPreview,
-                            null,
-                            null,
-                        )
-                        compoundDrawablePadding = widgetPreviewSpacing
-                    }
+                .inflate(R.layout.available_widgets_list_widget_provider_item, null).run {
+                    findViewById(R.id.widget_provider_name)
                 }
         } else {
-            convertView.apply {
-                text = appWidgetProviderInfo.loadLabel(context.packageManager)
-                setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    null,
-                    widgetPreview,
-                    null,
-                    null,
-                )
-                compoundDrawablePadding = widgetPreviewSpacing
-            }
+            convertView
+        }.apply {
+            text = appWidgetProviderInfo.loadLabel(context.packageManager)
+            isClickable = true
+            isFocusable = true
+            setCompoundDrawablesRelativeWithIntrinsicBounds(
+                null,
+                widgetPreview,
+                null,
+                null,
+            )
+            compoundDrawablePadding = widgetPreviewSpacing
+            setOnClickListener { addSelectedWidget(appWidgetProviderInfo) }
         }
     }
 
@@ -186,15 +208,17 @@ class AvailableWidgetsListAdapter @Inject constructor(
         labels: Map<String, String>,
         icons: Map<String, Drawable>
     ) {
-        this.providers = providers.also {
-            it.forEach { (packageName, _) ->
-                providerPackageNames += packageName
-            }
+        this.providers = providers.onEach { (packageName, _) ->
+            providerPackageNames += packageName
         }
         appInfos = infos
         appLabels = labels
         appIcons = icons
         notifyDataSetChanged()
+    }
+
+    private fun addSelectedWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
+        widgetPreferenceManager.addAndroidWidget(appWidgetProviderInfo)
     }
 }
 

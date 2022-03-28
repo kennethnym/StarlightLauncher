@@ -40,6 +40,9 @@
         android:name="android.permission.READ_CONTACTS"
         android:required="false" />
 
+    <!-- Permission to bind and show widgets in Starlight Launcher -->
+    <uses-permission android:name="android.permission.BIND_APPWIDGET" />
+
     <application
         android:name="kenneth.app.starlightlauncher.MainApplication"
         android:allowBackup="true"
