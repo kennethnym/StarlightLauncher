@@ -36,13 +36,17 @@
         <entry key="app/src/main/res/drawable/ic_file_search_alt.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_history_alt.xml" value="0.2815" />
         <entry key="app/src/main/res/drawable/ic_notes.xml" value="0.3703125" />
+        <entry key="app/src/main/res/drawable/ic_play.xml" value="0.2825" />
         <entry key="app/src/main/res/drawable/ic_twotone_computer_24.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_twotone_watch_24.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_vector_square.xml" value="0.193" />
         <entry key="app/src/main/res/drawable/ic_window_grid.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/note_card_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/remove_widget_btn_bg.xml" value="0.296" />
         <entry key="app/src/main/res/drawable/require_location_perm_bg.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/rounded_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/widget_resize_frame.xml" value="0.296" />
+        <entry key="app/src/main/res/drawable/widget_resize_handle.xml" value="0.2825" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/all_notes.xml" value="0.21965579710144928" />
         <entry key="app/src/main/res/layout/apps_grid_item.xml" value="0.22327898550724637" />

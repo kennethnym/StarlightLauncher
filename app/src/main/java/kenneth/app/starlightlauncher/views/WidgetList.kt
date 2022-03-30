@@ -8,6 +8,8 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,11 +18,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlinx.coroutines.delay
+import java.lang.Exception
+import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
@@ -38,6 +45,9 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     @Inject
     lateinit var appWidgetHost: AppWidgetHost
+
+    @Inject
+    lateinit var launcher: StarlightLauncherApi
 
     private val animations: List<CardAnimation>
 
@@ -63,6 +73,11 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     private val widgetListAdapter: WidgetListAdapter
 
+    /**
+     * The widget view holder currently in edit mode.
+     */
+    private var widgetViewHolderInEditMode: WidgetListAdapterItem? = null
+
     init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -84,10 +99,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         layoutManager = LinearLayoutManager(context)
         adapter = WidgetListAdapter(context, addedWidgets).also { widgetListAdapter = it }
 
-        val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal)
-        setPadding(paddingHorizontal, paddingHorizontal, paddingHorizontal, 0)
-        loadWidgets()
-
         widgetPreferenceManager.addOnWidgetPreferenceChangedListener {
             when (it) {
                 is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
@@ -100,6 +111,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         }
 
         addOnOrderChangedListener(::onWidgetOrderChanged)
+        addOnSelectionChangedListener(::onWidgetLongPressed)
     }
 
     /**
@@ -114,6 +126,11 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
      */
     fun hideWidgets() {
         hideAnimator.start()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        loadWidgets()
     }
 
     private fun onRequestBindWidgetResult(result: ActivityResult?) {
@@ -234,6 +251,16 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     private fun onWidgetOrderChanged(fromPosition: Int, toPosition: Int) {
         widgetPreferenceManager.changeWidgetOrder(fromPosition, toPosition)
+    }
+
+    private fun onWidgetLongPressed(viewHolder: ViewHolder?) {
+        if (viewHolder is WidgetListAdapterItem) {
+            // unselect currently selected widget
+            widgetViewHolderInEditMode?.binding?.isEditing = false
+            // enable editing of the newly selected widget
+            viewHolder.binding.isEditing = true
+            widgetViewHolderInEditMode = viewHolder
+        }
     }
 
     /**

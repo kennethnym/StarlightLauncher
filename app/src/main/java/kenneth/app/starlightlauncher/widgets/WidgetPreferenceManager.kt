@@ -38,8 +38,6 @@ class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val extensionManager: ExtensionManager,
 ) : ObservablePreferences<WidgetPreferenceManager>(context) {
-    private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
-
     val keys = WidgetPrefKeys(context)
 
     private var _addedWidgets =
@@ -83,6 +81,11 @@ class WidgetPreferenceManager @Inject constructor(
 
     fun removeAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
         _addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
+        saveAddedWidgets()
+    }
+
+    fun removeStarlightWidget(extensionName: String) {
+        _addedWidgets.removeIf { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
         saveAddedWidgets()
     }
 
