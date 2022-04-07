@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
 import androidx.preference.PreferenceManager
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +21,7 @@ import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.prefs.PinnedAppsPreferenceManager
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import java.security.SecureRandom
 import java.util.*
 import javax.inject.Singleton
 
@@ -91,4 +93,15 @@ object AppModule {
     @Singleton
     fun provideAppWidgetHost(@ApplicationContext context: Context) =
         AppWidgetHost(context.applicationContext, R.id.app_widget_host_id)
+
+    @Provides
+    @Singleton
+    fun provideSecureRandom() = SecureRandom()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RandomProvider {
+    @Binds
+    abstract fun bindRandom(impl: SecureRandom): Random
 }

@@ -8,26 +8,20 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import android.util.Log
-import android.view.MotionEvent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import kotlinx.coroutines.delay
-import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
-import kotlin.concurrent.schedule
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
@@ -67,6 +61,11 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
     private val addedWidgets: MutableList<AddedWidget>
 
     /**
+     * Maps app widget IDs to the corresponding [AddedWidget.AndroidWidget]
+     */
+    private val appWidgetIdMap = mutableMapOf<Int, AddedWidget.AndroidWidget>()
+
+    /**
      * Maps names of providers of app widgets to their index in this widget list.
      */
     private val widgetIndices = mutableMapOf<String, Int>()
@@ -84,7 +83,11 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
             LayoutParams.WRAP_CONTENT,
         )
         animations = generateAnimations()
-        addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList()
+        addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList().onEach {
+            if (it is AddedWidget.AndroidWidget) {
+                appWidgetIdMap[it.appWidgetId] = it
+            }
+        }
         requestBindWidgetLauncher = activity?.activityResultRegistry?.register(
             ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET,
             ActivityResultContracts.StartActivityForResult(),
@@ -128,11 +131,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         hideAnimator.start()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        loadWidgets()
-    }
-
     private fun onRequestBindWidgetResult(result: ActivityResult?) {
         val data = result?.data ?: return
         val extras = data.extras
@@ -142,9 +140,12 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
         when (result.resultCode) {
             Activity.RESULT_OK -> {
-                configureWidget(appWidgetProviderInfo, appWidgetId)
+                appWidgetIdMap[appWidgetId]?.let {
+                    configureWidget(it, appWidgetProviderInfo)
+                }
             }
             Activity.RESULT_CANCELED -> {
+                appWidgetIdMap.remove(appWidgetId)
                 appWidgetHost.deleteAppWidgetId(appWidgetId)
                 widgetPreferenceManager.removeAndroidWidget(appWidgetProviderInfo)
             }
@@ -159,8 +160,9 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
         when (result.resultCode) {
             Activity.RESULT_OK -> {
-                val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-                showWidget(appWidgetProviderInfo, appWidgetId)
+                appWidgetIdMap[appWidgetId]?.let {
+                    addAndroidWidget(it)
+                }
             }
             Activity.RESULT_CANCELED -> {
                 appWidgetHost.deleteAppWidgetId(appWidgetId)
@@ -168,64 +170,40 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         }
     }
 
-    private fun loadWidgets() {
-        val appWidgetProviders = appWidgetManager.installedProviders
-            .fold(mutableMapOf<String, AppWidgetProviderInfo>()) { m, info ->
-                m.apply {
-                    put(info.provider.flattenToString(), info)
-                }
-            }
-
-        addedWidgets.forEachIndexed { i, it ->
-            if (it is AddedWidget.AndroidWidget) {
-                val providerName = it.provider.flattenToString()
-                widgetIndices[providerName] = i
-                appWidgetProviders[providerName]?.let { info ->
-                    bindWidget(info)
-                }
-            }
-        }
-    }
-
     private fun bindWidget(
+        widget: AddedWidget.AndroidWidget,
         appWidgetProviderInfo: AppWidgetProviderInfo,
-        configure: Boolean = false
     ) {
-        val appWidgetId = appWidgetHost.allocateAppWidgetId()
-        when {
-            !appWidgetManager.bindAppWidgetIdIfAllowed(
-                appWidgetId,
-                appWidgetProviderInfo.provider
-            ) -> {
-                requestBindWidgetPermission(appWidgetProviderInfo, appWidgetId)
-            }
+        val bindAllowed = appWidgetManager.bindAppWidgetIdIfAllowed(
+            widget.appWidgetId,
+            appWidgetProviderInfo.provider
+        )
 
-            configure -> {
-                configureWidget(appWidgetProviderInfo, appWidgetId)
-            }
-
-            else -> showWidget(appWidgetProviderInfo, appWidgetId)
+        if (bindAllowed) {
+            configureWidget(widget, appWidgetProviderInfo)
+        } else {
+            requestBindWidgetPermission(appWidgetProviderInfo, widget.appWidgetId)
         }
     }
 
-    private fun configureWidget(appWidgetProviderInfo: AppWidgetProviderInfo, appWidgetId: Int) {
+    private fun configureWidget(
+        widget: AddedWidget.AndroidWidget,
+        appWidgetProviderInfo: AppWidgetProviderInfo
+    ) {
         if (appWidgetProviderInfo.configure != null) {
             Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).run {
                 component = appWidgetProviderInfo.configure
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
 
                 configureWidgetActivityLauncher?.launch(this)
             }
         } else {
-            showWidget(appWidgetProviderInfo, appWidgetId)
+            addAndroidWidget(widget)
         }
     }
 
-    private fun showWidget(appWidgetProviderInfo: AppWidgetProviderInfo, appWidgetId: Int) {
-        val providerName = appWidgetProviderInfo.provider.flattenToString()
-        widgetIndices[providerName]?.let {
-            widgetListAdapter.showAndroidWidgetAt(it, appWidgetId)
-        }
+    private fun addAndroidWidget(widget: AddedWidget.AndroidWidget) {
+        widgetListAdapter.addAndroidWidget(widget)
     }
 
     private fun requestBindWidgetPermission(
@@ -245,8 +223,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         addedWidgets += widget
         val index = addedWidgets.size - 1
         widgetIndices[widget.provider.flattenToString()] = index
-        widgetListAdapter.addAndroidWidget(widget)
-        bindWidget(appWidgetProviderInfo, configure = true)
+        appWidgetIdMap[widget.appWidgetId] = widget
+        bindWidget(widget, appWidgetProviderInfo)
     }
 
     private fun onWidgetOrderChanged(fromPosition: Int, toPosition: Int) {

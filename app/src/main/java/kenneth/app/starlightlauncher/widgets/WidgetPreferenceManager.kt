@@ -10,9 +10,12 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.api.utils.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.utils.px
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.security.SecureRandom
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,6 +40,7 @@ typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
 class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val extensionManager: ExtensionManager,
+    private val random: Random,
 ) : ObservablePreferences<WidgetPreferenceManager>(context) {
     val keys = WidgetPrefKeys(context)
 
@@ -48,9 +52,27 @@ class WidgetPreferenceManager @Inject constructor(
             ?.toMutableList()
             ?: mutableListOf<AddedWidget>().apply {
                 extensionManager.installedExtensions.forEach { ext ->
-                    if (ext.widget != null) add(AddedWidget.StarlightWidget(ext.name))
+                    if (ext.widget != null) add(
+                        AddedWidget.StarlightWidget(
+                            random.nextInt(),
+                            ext.name,
+                        )
+                    )
                 }
             }
+
+    /**
+     * Maps internal IDs of added widgets to their corresponding position in the widget list.
+     */
+    private var addedWidgetPositions =
+        _addedWidgets.foldIndexed(mutableMapOf<Int, Int>()) { i, m, widget ->
+            m.apply { put(widget.id, i) }
+        }
+
+    private var addedWidgetsMap =
+        _addedWidgets.fold(mutableMapOf<Int, AddedWidget>()) { m, widget ->
+            m.apply { put(widget.id, widget) }
+        }
 
     val addedWidgets
         get() = _addedWidgets.toList()
@@ -58,17 +80,25 @@ class WidgetPreferenceManager @Inject constructor(
     override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
+        val fromWidget = _addedWidgets[fromPosition]
+        val toWidget = _addedWidgets[toPosition]
         _addedWidgets.swap(fromPosition, toPosition)
+        addedWidgetPositions.swap(fromWidget.id, toWidget.id)
         saveAddedWidgets()
         setChanged()
         notifyObservers(WidgetPreferenceChanged.WidgetOrderChanged(fromPosition, toPosition))
     }
 
-    fun addAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
+    fun addAndroidWidget(appWidgetId: Int, appWidgetProviderInfo: AppWidgetProviderInfo) {
+        val internalId = random.nextInt()
         val newWidget = AddedWidget.AndroidWidget(
+            internalId,
             appWidgetProviderInfo.provider,
+            appWidgetId,
+            appWidgetProviderInfo.minHeight,
         )
         _addedWidgets += newWidget
+        addedWidgetsMap[internalId] = newWidget
         saveAddedWidgets()
         setChanged()
         notifyObservers(
@@ -77,6 +107,19 @@ class WidgetPreferenceManager @Inject constructor(
                 appWidgetProviderInfo
             )
         )
+    }
+
+    /**
+     * Change the height of [addedWidget]. [newHeight] must be specified in dp.
+     */
+    fun changeWidgetHeight(addedWidget: AddedWidget, newHeight: Int) {
+        if (addedWidget is AddedWidget.AndroidWidget) {
+            addedWidgetPositions[addedWidget.id]?.let {
+                val updated = addedWidget.copy(height = newHeight)
+                _addedWidgets[it] = updated
+                saveAddedWidgets()
+            }
+        }
     }
 
     fun removeAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {

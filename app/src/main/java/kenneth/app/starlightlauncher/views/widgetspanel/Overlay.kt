@@ -110,23 +110,12 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
         displayContent(withContent)
     }
 
-    private fun displayContent(content: View) {
-        if (childCount > 1) {
-            removeViewAt(1)
-        }
-        addView(content)
-    }
-
-    private fun close() {
+    fun close() {
         isClosing = true
 
-//        val xAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, offsetRect.left.toFloat())
         val yAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, appState.screenHeight.toFloat())
         val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 0f)
-
-//        val widthAnimator = ObjectAnimator.ofInt(this, "width", originalView.width)
-//        val heightAnimator = ObjectAnimator.ofInt(this, "height", originalView.height)
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
@@ -140,5 +129,12 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
 
             start()
         }
+    }
+
+    private fun displayContent(content: View) {
+        if (childCount > 1) {
+            removeViewAt(1)
+        }
+        addView(content)
     }
 }

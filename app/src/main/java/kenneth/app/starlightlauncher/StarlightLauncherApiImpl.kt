@@ -40,5 +40,9 @@ class StarlightLauncherApiImpl @Inject constructor(
         BindingRegister.activityMainBinding.overlay.showFrom(fromView, viewConstructor(context))
     }
 
+    override fun closeOverlay() {
+        BindingRegister.activityMainBinding.overlay.close()
+    }
+
     override fun getIconPack(): IconPack = appearancePreferenceManager.iconPack
 }

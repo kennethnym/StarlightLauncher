@@ -30,7 +30,7 @@ class AvailableWidgetsPage(context: Context) : LinearLayout(context) {
         activity?.let {
             binding.availableWidgetList.apply {
                 clipToPadding = false
-                setAdapter(AvailableWidgetsListAdapter(context, it.activityResultRegistry).also {
+                setAdapter(AvailableWidgetsListAdapter(context).also {
                     availableWidgetsListAdapter = it
                 })
                 setGroupIndicator(null)

@@ -50,6 +50,11 @@ interface StarlightLauncherApi {
     fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View)
 
     /**
+     * Hides the current overlay.
+     */
+    fun closeOverlay()
+
+    /**
      * Get the currently applied icon pack.
      */
     fun getIconPack(): IconPack

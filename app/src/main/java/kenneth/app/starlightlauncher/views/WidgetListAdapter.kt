@@ -19,6 +19,8 @@ import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.utils.dp
+import kenneth.app.starlightlauncher.utils.px
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlin.math.max
@@ -53,13 +55,6 @@ class WidgetListAdapter(
 
     private var widgetList: WidgetList? = null
 
-    private val appWidgetProviders = appWidgetManager.installedProviders
-        .fold(mutableMapOf<String, AppWidgetProviderInfo>()) { m, info ->
-            m.apply {
-                put(info.provider.flattenToString(), info)
-            }
-        }
-
     private val appWidgetIds: MutableList<Int?> =
         addedWidgets
             .map { null }
@@ -82,7 +77,7 @@ class WidgetListAdapter(
             WidgetFrameBinding.inflate(LayoutInflater.from(parent.context), parent, false).apply {
                 isEditing = false
             }
-        return WidgetListAdapterItem(binding, widgetList)
+        return WidgetListAdapterItem(context, binding, widgetList)
     }
 
     override fun onBindViewHolder(holder: WidgetListAdapterItem, position: Int) {
@@ -91,9 +86,7 @@ class WidgetListAdapter(
                 showStarlightWidget(addedWidget, holder, position)
             }
             is AddedWidget.AndroidWidget -> {
-                appWidgetIds[position]?.let {
-                    showAndroidWidget(it, holder, position)
-                }
+                showAndroidWidget(addedWidget, holder, position)
             }
         }
     }
@@ -113,17 +106,7 @@ class WidgetListAdapter(
     }
 
     /**
-     * Shows the [AddedWidget.AndroidWidget] added by [addAndroidWidget] at [position].
-     * The widget must be bound previously with [appWidgetId].
-     */
-    fun showAndroidWidgetAt(position: Int, appWidgetId: Int) {
-        appWidgetIds[position] = appWidgetId
-        notifyItemChanged(position)
-    }
-
-    /**
-     * Adds the given [AddedWidget.AndroidWidget] to the end of this list. It will not be shown
-     * until [showAndroidWidgetAt] is called.
+     * Adds the given [AddedWidget.AndroidWidget] to the end of this list.
      */
     fun addAndroidWidget(widget: AddedWidget.AndroidWidget) {
         val widgetIndex = addedWidgets.size
@@ -133,16 +116,24 @@ class WidgetListAdapter(
     }
 
     private fun showAndroidWidget(
-        appWidgetId: Int,
+        addedWidget: AddedWidget.AndroidWidget,
         holder: WidgetListAdapterItem,
         position: Int,
     ) {
-        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(addedWidget.appWidgetId)
 
-        holder.appWidgetProviderInfo = appWidgetProviderInfo
-        appWidgetHost.createView(context.applicationContext, appWidgetId, appWidgetProviderInfo)
+        holder.addedWidget = addedWidget
+        appWidgetHost.createView(
+            context.applicationContext,
+            addedWidget.appWidgetId,
+            appWidgetProviderInfo
+        )
             .run {
                 setAppWidget(appWidgetId, appWidgetInfo)
+                holder.binding.widgetFrameContainer.layoutParams =
+                    holder.binding.widgetFrameContainer.layoutParams.apply {
+                        height = addedWidget.height.px
+                    }
                 holder.binding.widgetFrame.addView(this)
             }
 
@@ -180,18 +171,42 @@ class WidgetListAdapter(
     }
 }
 
-class WidgetListAdapterItem(val binding: WidgetFrameBinding, private val widgetList: WidgetList?) :
+class WidgetListAdapterItem(
+    context: Context,
+    val binding: WidgetFrameBinding,
+    private val widgetList: WidgetList?
+) :
     RecyclerView.ViewHolder(binding.root), View.OnTouchListener {
     private var lastY = 0f
 
-    var appWidgetProviderInfo: AppWidgetProviderInfo? = null
+    private var appWidgetProviderInfo: AppWidgetProviderInfo? = null
+
+    private val widgetPreferenceManager: WidgetPreferenceManager
+
+    private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
+
+    var addedWidget: AddedWidget? = null
+        set(value) {
+            field = value
+            if (value is AddedWidget.AndroidWidget) {
+                appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(value.appWidgetId)
+            }
+        }
 
     init {
         with(binding) {
             widgetResizeHandle.setOnTouchListener(this@WidgetListAdapterItem)
             cancelBtn.setOnClickListener {
+                saveWidgetHeight()
                 isEditing = false
             }
+        }
+
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            WidgetListAdapterEntryPoint::class.java
+        ).run {
+            widgetPreferenceManager = widgetPreferenceManager()
         }
     }
 
@@ -219,8 +234,10 @@ class WidgetListAdapterItem(val binding: WidgetFrameBinding, private val widgetL
                 binding.widgetFrameContainer.layoutParams =
                     binding.widgetFrameContainer.layoutParams.apply {
                         val newHeight = currentHeight + delta.toInt()
-                        Log.d("starlight", "newHeight $newHeight")
-                        height = max(newHeight, appWidgetProviderInfo?.minHeight ?: newHeight)
+                        height =
+                            if (addedWidget is AddedWidget.AndroidWidget)
+                                max(newHeight, appWidgetProviderInfo?.minHeight ?: newHeight)
+                            else newHeight
                     }
 
                 lastY = currentY
@@ -239,6 +256,14 @@ class WidgetListAdapterItem(val binding: WidgetFrameBinding, private val widgetL
                 NOT_HANDLED
             }
         }
+    }
 
+    private fun saveWidgetHeight() {
+        addedWidget?.let {
+            widgetPreferenceManager.changeWidgetHeight(
+                it,
+                binding.widgetFrameContainer.height.dp
+            )
+        }
     }
 }

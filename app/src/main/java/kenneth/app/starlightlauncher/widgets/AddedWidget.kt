@@ -7,13 +7,19 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-sealed class AddedWidget {
+sealed class AddedWidget(val id: Int) {
     @Serializable
-    data class StarlightWidget(val extensionName: String) : AddedWidget()
+    data class StarlightWidget(
+        val internalId: Int,
+        val extensionName: String
+    ) : AddedWidget(internalId)
 
     @Serializable
     data class AndroidWidget(
+        val internalId: Int,
         @Serializable(with = ComponentNameSerializer::class)
         val provider: ComponentName,
-    ) : AddedWidget()
+        val appWidgetId: Int,
+        val height: Int,
+    ) : AddedWidget(internalId)
 }

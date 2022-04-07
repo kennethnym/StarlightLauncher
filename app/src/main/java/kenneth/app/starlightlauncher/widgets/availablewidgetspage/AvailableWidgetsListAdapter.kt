@@ -27,6 +27,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
@@ -40,6 +41,10 @@ private interface AvailableWidgetListAdapterEntryPoint {
     fun appearancePreferenceManager(): AppearancePreferenceManager
 
     fun widgetPreferenceManager(): WidgetPreferenceManager
+
+    fun appWidgetHost(): AppWidgetHost
+
+    fun launcherApi(): StarlightLauncherApi
 }
 
 /**
@@ -48,7 +53,6 @@ private interface AvailableWidgetListAdapterEntryPoint {
  */
 class AvailableWidgetsListAdapter(
     private val context: Context,
-    private val activityResultRegistry: ActivityResultRegistry,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()
     private var providers: Map<String, List<AppWidgetProviderInfo>> = emptyMap()
@@ -62,6 +66,8 @@ class AvailableWidgetsListAdapter(
 
     private val appearancePreferenceManager: AppearancePreferenceManager
     private val widgetPreferenceManager: WidgetPreferenceManager
+    private val launcher: StarlightLauncherApi
+    private val appWidgetHost: AppWidgetHost
 
     init {
         val groupIndicatorSize =
@@ -92,6 +98,8 @@ class AvailableWidgetsListAdapter(
         ).run {
             appearancePreferenceManager = appearancePreferenceManager()
             widgetPreferenceManager = widgetPreferenceManager()
+            launcher = launcherApi()
+            appWidgetHost = appWidgetHost()
         }
     }
 
@@ -218,7 +226,11 @@ class AvailableWidgetsListAdapter(
     }
 
     private fun addSelectedWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
-        widgetPreferenceManager.addAndroidWidget(appWidgetProviderInfo)
+        widgetPreferenceManager.addAndroidWidget(
+            appWidgetHost.allocateAppWidgetId(),
+            appWidgetProviderInfo
+        )
+        launcher.closeOverlay()
     }
 }
 
