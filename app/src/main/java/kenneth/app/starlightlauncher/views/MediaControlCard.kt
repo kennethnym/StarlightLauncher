@@ -22,6 +22,7 @@ import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.utils.activity
 import kotlinx.coroutines.*
@@ -39,6 +40,9 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var mediaSessionManager: MediaSessionManager
+
+    @Inject
+    lateinit var blurHandler: BlurHandler
 
     /**
      * The ComponentName of the notification listener stub
@@ -137,6 +141,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         }
 
         activity?.lifecycle?.addObserver(this)
+        binding.mediaControlBlurBackground.blurWith(blurHandler)
     }
 
     override fun onAttachedToWindow() {
@@ -251,7 +256,7 @@ class MediaControlCard(context: Context, attrs: AttributeSet) :
         activeMediaSession?.unregisterCallback(activeMediaSessionListener)
         activeMediaSession = null
         dateTimeViewContainer?.gravity = Gravity.CENTER
-//        binding.mediaControlBlurBackground.pauseBlur()
+//        binding.mediaControlBlurBackgr ound.pauseBlur()
     }
 
     /**

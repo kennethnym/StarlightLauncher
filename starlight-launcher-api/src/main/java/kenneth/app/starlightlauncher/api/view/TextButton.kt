@@ -15,7 +15,7 @@ class TextButton(
     AppCompatButton(context, attrs, R.style.Style_StarlightLauncher_TextButton) {
     var icon: Drawable?
         get() = compoundDrawables[0]
-        set(icon) = setCompoundDrawablesRelative(icon, null, null, null)
+        set(icon) = setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
 
     init {
         gravity = Gravity.CENTER_VERTICAL
