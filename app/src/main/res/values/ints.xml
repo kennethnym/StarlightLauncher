@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="text_shadow_radius_date_time_view">4</integer>
+    <integer name="text_shadow_opacity_date_time_view">0xCC</integer>
+    <integer name="text_shadow_dx_date_time_view">0</integer>
+    <integer name="text_shadow_dy_date_time_view">0</integer>
+</resources>

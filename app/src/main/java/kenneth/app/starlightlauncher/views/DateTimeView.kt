@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.views
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
@@ -100,6 +101,7 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
 
         updateTime()
         showWeather()
+        applyTextShadow()
         activity?.lifecycle?.addObserver(this)
         sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferencesChanged)
     }
@@ -123,6 +125,28 @@ class DateTimeView(context: Context, attrs: AttributeSet) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         registerTimeTickListener()
+    }
+
+    private fun applyTextShadow() {
+        val textColor = binding.clock.currentTextColor
+        val shadowColor = Color.argb(
+            resources.getInteger(R.integer.text_shadow_opacity_date_time_view),
+            255 - Color.red(textColor),
+            255 - Color.green(textColor),
+            255 - Color.blue(textColor),
+        )
+
+        with(binding) {
+            val radius =
+                resources.getInteger(R.integer.text_shadow_radius_date_time_view).toFloat()
+            val dx = resources.getInteger(R.integer.text_shadow_dx_date_time_view).toFloat()
+            val dy = resources.getInteger(R.integer.text_shadow_dy_date_time_view).toFloat()
+
+            clock.setShadowLayer(radius, dx, dy, shadowColor)
+            date.setShadowLayer(radius, dx, dy, shadowColor)
+            dateTimeWeatherSeparator.setShadowLayer(radius, dx, dy, shadowColor)
+            temp.setShadowLayer(radius, dx, dy, shadowColor)
+        }
     }
 
     private fun onResume() {
