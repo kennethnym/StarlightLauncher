@@ -1,9 +1,9 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.content.*
-import android.content.pm.ActivityInfo
-import android.content.pm.ApplicationInfo
-import android.content.pm.ResolveInfo
+import android.content.pm.*
+import android.os.Process
+import android.os.UserHandle
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -11,9 +11,9 @@ import kenneth.app.starlightlauncher.api.utils.sortByRegex
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appsearchmodule"
 
-typealias AppList = List<ActivityInfo>
+typealias AppList = List<LauncherActivityInfo>
 
-class AppSearchModule : BroadcastReceiver(), SearchModule {
+class AppSearchModule : LauncherApps.Callback(), SearchModule {
     override lateinit var metadata: SearchModule.Metadata
         private set
 
@@ -23,11 +23,11 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
     private lateinit var searchResultAdapter: AppSearchResultAdapter
     private lateinit var mainContext: Context
     private lateinit var launcherContext: Context
-
-    private val currentAppList = mutableListOf<ActivityInfo>()
-    private val appLabels = mutableMapOf<String, String>()
-
     private lateinit var preferences: AppSearchModulePreferences
+    private lateinit var launcherApps: LauncherApps
+
+    private val currentAppList = mutableListOf<LauncherActivityInfo>()
+    private val appLabels = mutableMapOf<String, String>()
 
     internal val context
         get() = mainContext
@@ -35,6 +35,7 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
     override fun initialize(launcher: StarlightLauncherApi) {
         launcherContext = launcher.context
         mainContext = launcherContext
+        launcherApps = mainContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
         searchResultAdapter = AppSearchResultAdapter(mainContext, launcher)
         preferences = AppSearchModulePreferences.getInstance(context)
 
@@ -44,65 +45,55 @@ class AppSearchModule : BroadcastReceiver(), SearchModule {
             description = mainContext.getString(R.string.app_search_module_description),
         )
 
-        val mainIntent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_LAUNCHER)
-        }
-
-        launcherContext.packageManager.queryIntentActivities(mainIntent, 0)
-            .filter { (it.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1 }
+        launcherApps.getActivityList(null, Process.myUserHandle())
             .forEach {
-                val packageName = it.activityInfo.packageName
-                val label =
-                    it.activityInfo.applicationInfo.loadLabel(launcherContext.packageManager)
-                        .toString()
-                currentAppList.add(it.activityInfo)
-                appLabels[packageName] = label
+                val packageName = it.applicationInfo.packageName
+                currentAppList.add(it)
+                appLabels[packageName] = it.label.toString()
             }
-
-        launcherContext.registerReceiver(this, IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_ADDED)
-            addAction(Intent.ACTION_PACKAGE_REMOVED)
-            addDataScheme("package")
-        })
     }
 
-    override fun cleanup() {
-        launcherContext.unregisterReceiver(this)
-    }
+    override fun cleanup() {}
 
     override suspend fun search(keyword: String, keywordRegex: Regex): Result =
         Result(
             query = keyword,
             apps = currentAppList
-                .filter { app -> appLabels[app.packageName]?.contains(keywordRegex) == true }
+                .filter { app -> appLabels[app.applicationInfo.packageName]?.contains(keywordRegex) == true }
                 .sortedWith { app1, app2 ->
-                    val appName1 = appLabels[app1.packageName]!!
-                    val appName2 = appLabels[app2.packageName]!!
+                    val appName1 = appLabels[app1.applicationInfo.packageName]!!
+                    val appName2 = appLabels[app2.applicationInfo.packageName]!!
                     return@sortedWith sortByRegex(appName1, appName2, keywordRegex)
                 }
         )
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val receivedPackageName = intent?.data?.schemeSpecificPart
-        when (intent?.action) {
-            Intent.ACTION_PACKAGE_REMOVED -> {
-                currentAppList.removeAt(
-                    currentAppList.indexOfFirst {
-                        it.packageName == receivedPackageName
-                    }
-                )
-            }
-            Intent.ACTION_PACKAGE_ADDED -> {
-                val packageLauncherIntent = Intent().apply {
-                    `package` = receivedPackageName
-                    addCategory(Intent.CATEGORY_LAUNCHER)
-                }
-                context?.packageManager
-                    ?.resolveActivity(packageLauncherIntent, 0)
-                    ?.let { currentAppList.add(it.activityInfo) }
-            }
-        }
+    class Result(query: String, val apps: AppList) : SearchResult(query, EXTENSION_NAME)
+
+    override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+        if (packageName == null || user == null) return
+
+        currentAppList.removeAll { it.applicationInfo.packageName == packageName }
     }
 
-    class Result(query: String, val apps: AppList) : SearchResult(query, EXTENSION_NAME)
+    override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+        if (packageName == null || user == null) return
+
+        currentAppList += launcherApps.getActivityList(packageName, user)
+    }
+
+    override fun onPackageChanged(packageName: String?, user: UserHandle?) {}
+
+    override fun onPackagesAvailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean
+    ) {
+    }
+
+    override fun onPackagesUnavailable(
+        packageNames: Array<out String>?,
+        user: UserHandle?,
+        replacing: Boolean
+    ) {
+    }
 }

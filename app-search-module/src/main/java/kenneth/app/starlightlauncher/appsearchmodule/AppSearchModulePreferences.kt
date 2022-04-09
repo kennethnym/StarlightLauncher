@@ -1,20 +1,55 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.annotation.SuppressLint
+import android.app.appsearch.exceptions.AppSearchException
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageManager
 import androidx.core.content.edit
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.util.*
+import java.util.prefs.Preferences
+
+sealed class AppSearchModulePreferenceChanged {
+    /**
+     * A pinned app is added by the user.
+     */
+    data class PinnedAppAdded(val app: LauncherActivityInfo) : AppSearchModulePreferenceChanged()
+
+    /**
+     * A pinned app is removed by the user.
+     */
+    data class PinnedAppRemoved(val app: LauncherActivityInfo, val position: Int) :
+        AppSearchModulePreferenceChanged()
+
+    /**
+     * User has changed the visibility of labels of apps in search result.
+     */
+    data class AppLabelVisibilityChanged(val isVisible: Boolean) :
+        AppSearchModulePreferenceChanged()
+
+    /**
+     * User has changed the visibility of labels of pinned apps.
+     */
+    data class PinnedAppLabelVisibilityChanged(val isVisible: Boolean) :
+        AppSearchModulePreferenceChanged()
+}
+
+typealias AppSearchModulePreferenceListener = (event: AppSearchModulePreferenceChanged) -> Unit
 
 /**
  * Manages preferences of [AppSearchModule]
  */
 internal class AppSearchModulePreferences
-private constructor(private val context: Context) :
-    ObservablePreferences<AppSearchModulePreferences>(context) {
+private constructor(private val context: Context) : Observable() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: AppSearchModulePreferences? = null
@@ -29,22 +64,9 @@ private constructor(private val context: Context) :
      */
     val keys = PrefKeys(context)
 
-    private var pinnedAppsCount = sharedPreferences.getInt(keys.pinnedAppsCount, 0)
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val _pinnedApps = (0 until pinnedAppsCount)
-        .mapIndexedNotNull { i, _ ->
-            sharedPreferences.getString(keys.pinnedApps + i, null)
-                ?.let {
-                    try {
-                        ComponentName.unflattenFromString(it)?.run {
-                            context.packageManager.getActivityInfo(this, 0)
-                        }
-                    } catch (ex: PackageManager.NameNotFoundException) {
-                        null
-                    }
-                }
-        }
-        .toMutableList()
+    private val _pinnedApps = mutableListOf<ComponentName>()
 
     /**
      * Whether app labels should be visible.
@@ -75,47 +97,93 @@ private constructor(private val context: Context) :
         get() = pinnedApps.isNotEmpty()
 
     init {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(::updateValue)
+        loadPinnedApps()
     }
 
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {
+    fun addOnPreferenceChangedListener(listener: AppSearchModulePreferenceListener) {
+        addObserver { o, arg ->
+            if (arg is AppSearchModulePreferenceChanged) {
+                listener(arg)
+            }
+        }
+    }
+
+    fun isAppPinned(app: LauncherActivityInfo) =
+        _pinnedApps.find { it == app.componentName } != null
+
+    fun addPinnedApp(app: LauncherActivityInfo) {
+        _pinnedApps += app.componentName
+        savePinnedApps()
+        setChanged()
+        notifyObservers(AppSearchModulePreferenceChanged.PinnedAppAdded(app))
+    }
+
+    fun removePinnedApp(app: LauncherActivityInfo) {
+        val position = _pinnedApps.indexOfFirst { it == app.componentName }
+        _pinnedApps.removeAt(position)
+        savePinnedApps()
+        setChanged()
+        notifyObservers(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
+    }
+
+    private fun updateValue(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
             keys.showAppNames -> {
                 shouldShowAppNames = sharedPreferences.getBoolean(
                     key,
                     context.resources.getBoolean(R.bool.def_pref_show_app_names)
-                )
+                ).also {
+                    setChanged()
+                    notifyObservers(AppSearchModulePreferenceChanged.AppLabelVisibilityChanged(it))
+                }
             }
             keys.showPinnedAppNames -> {
                 shouldShowPinnedAppNames = sharedPreferences.getBoolean(
                     key,
                     context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
-                )
+                ).also {
+                    setChanged()
+                    notifyObservers(
+                        AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged(it)
+                    )
+                }
             }
         }
     }
 
-    fun isAppPinned(app: ActivityInfo) =
-        _pinnedApps.find { it.name == app.name } != null
+    /**
+     * Loads pinned apps from storage and checks if they are still installed.
+     * If not, update the list.
+     */
+    private fun loadPinnedApps() {
+        var needsUpdate = false
 
-    fun addPinnedApp(app: ActivityInfo) {
-        _pinnedApps += app
-        pinnedAppsCount += 1
-        sharedPreferences.edit(commit = true) {
-            val componentName = ComponentName.createRelative(app.packageName, app.name)
-            putString(keys.pinnedApps + (pinnedAppsCount - 1), componentName.flattenToString())
-            putInt(keys.pinnedAppsCount, pinnedAppsCount)
-        }
+        sharedPreferences.getString(keys.pinnedApps, null)
+            ?.let { Json.decodeFromString<List<String>>(it) }
+            ?.forEach {
+                needsUpdate = ComponentName.unflattenFromString(it)
+                    ?.let { componentName ->
+                        try {
+                            context.packageManager.getPackageInfo(componentName.packageName, 0)
+                            _pinnedApps += componentName
+                            false
+                        } catch (ex: PackageManager.NameNotFoundException) {
+                            true
+                        }
+                    }
+                    ?: true
+            }
+
+        if (needsUpdate) savePinnedApps()
     }
 
-    fun removePinnedApp(app: ActivityInfo) {
-        _pinnedApps.removeAt(
-            _pinnedApps.indexOfFirst { it.name == app.name }
-        )
-        pinnedAppsCount -= 1
+    private fun savePinnedApps() {
         sharedPreferences.edit(commit = true) {
-            remove(keys.pinnedApps + pinnedAppsCount)
-            putInt(keys.pinnedAppsCount, pinnedAppsCount)
+            putString(
+                keys.pinnedApps,
+                Json.encodeToString(_pinnedApps.map { it.flattenToString() })
+            )
         }
     }
 }

@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.appsearchmodule.view
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.LauncherActivityInfo
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.view.LayoutInflater
@@ -12,7 +13,7 @@ import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBi
 
 internal class AppOptionMenu(
     private val context: Context,
-    private val app: ActivityInfo,
+    private val app: LauncherActivityInfo,
     private val menu: OptionMenu
 ) {
     private val binding = AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true)
@@ -30,7 +31,7 @@ internal class AppOptionMenu(
         context.startActivity(
             Intent(
                 Intent.ACTION_DELETE,
-                Uri.fromParts("package", app.packageName, null)
+                Uri.fromParts("package", app.applicationInfo.packageName, null)
             )
         )
         menu.hide()

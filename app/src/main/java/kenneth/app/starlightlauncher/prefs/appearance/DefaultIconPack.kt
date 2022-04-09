@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.prefs.appearance
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
+import android.content.pm.LauncherActivityInfo
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
@@ -26,6 +27,9 @@ class DefaultIconPack(context: Context) : IconPack {
 
     override fun getIconOf(activityInfo: ActivityInfo): Bitmap =
         activityInfo.loadIcon(packageManager).toBitmap()
+
+    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap =
+        launcherActivityInfo.getIcon(0).toBitmap()
 
     override fun getIconOf(applicationInfo: ApplicationInfo): Bitmap =
         applicationInfo.loadIcon(packageManager).toBitmap()

@@ -49,15 +49,16 @@ class AppSearchResultAdapter(
         }
     }
 
-    private fun onPreferencesChanged(event: PreferencesChanged) {
-        when (event.key) {
-            prefs.keys.showAppNames -> {
-                if (prefs.shouldShowAppNames) {
+    private fun onPreferencesChanged(event: AppSearchModulePreferenceChanged) {
+        when (event) {
+            is AppSearchModulePreferenceChanged.AppLabelVisibilityChanged -> {
+                if (event.isVisible) {
                     appGridAdapter?.showAppLabels()
                 } else {
                     appGridAdapter?.hideAppLabels()
                 }
             }
+            else -> {}
         }
     }
 

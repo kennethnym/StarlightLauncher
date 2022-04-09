@@ -1,15 +1,13 @@
 package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
-import android.content.pm.ActivityInfo
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
+import android.content.pm.*
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import hilt_aggregated_deps._kenneth_app_starlightlauncher_RandomProvider
 import kenneth.app.starlightlauncher.api.IconPack
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -113,6 +111,12 @@ class InstalledIconPack(context: Context, val packageName: String) : IconPack {
         val default = activityInfo.loadIcon(packageManager)
         return getIconOf(activityInfo.packageName, default.toBitmap())
     }
+
+    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap =
+        getIconOf(
+            launcherActivityInfo.applicationInfo.packageName,
+            launcherActivityInfo.getIcon(0).toBitmap()
+        )
 
     override fun getIconOf(applicationInfo: ApplicationInfo): Bitmap {
         val default = applicationInfo.loadIcon(packageManager)

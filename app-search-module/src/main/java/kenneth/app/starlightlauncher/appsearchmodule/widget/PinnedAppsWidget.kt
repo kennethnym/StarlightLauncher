@@ -1,12 +1,15 @@
 package kenneth.app.starlightlauncher.appsearchmodule.widget
 
+import android.content.Context
+import android.content.pm.LauncherApps
+import android.os.Process
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
-import kenneth.app.starlightlauncher.api.preference.PreferencesChanged
 import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
+import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferenceChanged
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
 
@@ -18,13 +21,12 @@ internal class PinnedAppsWidget(
 
     private val context = rootView.context
     private val prefs = AppSearchModulePreferences.getInstance(context)
+    private val launcherApps =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
     private var appGridAdapter: AppGridAdapter? = null
 
     init {
-        with(prefs) {
-            addOnPreferenceChangedListener(::onPreferencesChanged)
-            addOnPreferenceRemovedListener(::onPreferencesRemoved)
-        }
+        prefs.addOnPreferenceChangedListener(::onPreferenceChanged)
 
         if (prefs.hasPinnedApps) {
             showWidget()
@@ -33,44 +35,67 @@ internal class PinnedAppsWidget(
         }
     }
 
-    private fun onPreferencesChanged(event: PreferencesChanged) {
-        when {
-            // pinned apps are stored as individual pref keys
-            // with prefs.keys.pinnedApps as prefix and their indices as the suffix
-            event.key.matches(Regex("^${prefs.keys.pinnedApps}\\d")) -> {
+//    private fun onPreferencesChanged(event: PreferencesChanged) {
+//        when (event) {
+//            is AppSearchModulePreferenceChanged.PinnedAppAdded -> {
+//
+//            }
+//        }
+//        when {
+//            // pinned apps are stored as individual pref keys
+//            // with prefs.keys.pinnedApps as prefix and their indices as the suffix
+//            event.key.matches(Regex("^${prefs.keys.pinnedApps}\\d")) -> {
+//                if (!rootView.isVisible) {
+//                    showWidget()
+//                } else {
+//                    event.key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
+//                        ?.let { index ->
+//                            appGridAdapter?.addAppToGrid(
+//                                prefs.pinnedApps[index],
+//                                index
+//                            )
+//                        }
+//                }
+//            }
+//
+//            event.key == prefs.keys.showPinnedAppNames -> {
+//                if (prefs.shouldShowPinnedAppNames) {
+//                    appGridAdapter?.showAppLabels()
+//                } else {
+//                    appGridAdapter?.hideAppLabels()
+//                }
+//            }
+//        }
+//    }
+
+    private fun onPreferenceChanged(event: AppSearchModulePreferenceChanged) {
+        when (event) {
+            is AppSearchModulePreferenceChanged.PinnedAppAdded -> {
                 if (!rootView.isVisible) {
                     showWidget()
                 } else {
-                    event.key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
-                        ?.let { index ->
-                            appGridAdapter?.addAppToGrid(
-                                prefs.pinnedApps[index],
-                                index
-                            )
-                        }
+                    appGridAdapter?.addAppToGrid(event.app)
                 }
             }
 
-            event.key == prefs.keys.showPinnedAppNames -> {
-                if (prefs.shouldShowPinnedAppNames) {
+            is AppSearchModulePreferenceChanged.PinnedAppRemoved -> {
+                if (prefs.hasPinnedApps) {
+                    appGridAdapter?.removeAppFromGrid(event.position)
+                } else {
+                    // no more pinned apps, hide the widget
+                    hideWidget()
+                }
+            }
+
+            is AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged -> {
+                if (event.isVisible) {
                     appGridAdapter?.showAppLabels()
                 } else {
                     appGridAdapter?.hideAppLabels()
                 }
             }
-        }
-    }
 
-    private fun onPreferencesRemoved(event: PreferencesChanged) {
-        if (event.key.matches(Regex("^${prefs.keys.pinnedApps}\\d"))) {
-            if (prefs.hasPinnedApps) {
-                event.key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
-                    ?.let { index ->
-                        appGridAdapter?.removeAppFromGrid(index)
-                    }
-            } else {
-                hideWidget()
-            }
+            else -> {}
         }
     }
 
@@ -78,12 +103,17 @@ internal class PinnedAppsWidget(
         with(binding) {
             rootView.isVisible = true
 
+            val pinnedApps = prefs.pinnedApps.mapNotNull { pinnedAppName ->
+                launcherApps.getActivityList(pinnedAppName.packageName, Process.myUserHandle())
+                    .find { it.componentName == pinnedAppName }
+            }
+
             pinnedAppsGrid.apply {
                 layoutManager = GridLayoutManager(context, 5)
                 adapter =
                     AppGridAdapter(
                         context,
-                        prefs.pinnedApps,
+                        pinnedApps,
                         launcher,
                         prefs.shouldShowPinnedAppNames
                     )

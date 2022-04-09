@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.appsearchmodule
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.LauncherActivityInfo
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -23,12 +24,12 @@ internal class AppGridAdapter(
     SharedPreferences.OnSharedPreferenceChangeListener {
     private val apps = apps.toMutableList()
 
-    private val visibleApps = mutableListOf<ActivityInfo>()
+    private val visibleApps = mutableListOf<LauncherActivityInfo>()
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
 
-    private lateinit var selectedApp: ActivityInfo
+    private lateinit var selectedApp: LauncherActivityInfo
     private var recyclerView: RecyclerView? = null
     private var gridSpanCount = 0
 
@@ -60,7 +61,7 @@ internal class AppGridAdapter(
 
     override fun onBindViewHolder(holder: AppGridItem, position: Int) {
         val app = apps[position]
-        val appName = app.loadLabel(launcher.context.packageManager)
+        val appName = app.label
 
         with(holder.binding) {
             appIcon.apply {
@@ -94,9 +95,9 @@ internal class AppGridAdapter(
 
     override fun getItemCount(): Int = visibleApps.size
 
-    fun addAppToGrid(app: ActivityInfo, index: Int) {
+    fun addAppToGrid(app: LauncherActivityInfo) {
         apps += app
-        notifyItemInserted(index)
+        notifyItemInserted(itemCount)
     }
 
     fun removeAppFromGrid(index: Int) {
@@ -134,7 +135,7 @@ internal class AppGridAdapter(
                 it.getChildViewHolder(it.getChildAt(i)).run {
                     if (this is AppGridItem)
                         binding.appLabel.apply {
-                            text = apps[i].loadLabel(context.packageManager)
+                            text = apps[i].label
                             isVisible = true
                         }
                 }
@@ -162,7 +163,7 @@ internal class AppGridAdapter(
 
     private fun openSelectedApp() {
         launcher.context.startActivity(
-            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.packageName)
+            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.applicationInfo.packageName)
         )
     }
 
