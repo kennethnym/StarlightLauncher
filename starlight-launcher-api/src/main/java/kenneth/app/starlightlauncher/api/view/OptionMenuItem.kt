@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.api.view
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -20,8 +21,14 @@ class OptionMenuItem @JvmOverloads constructor(
         /**
          * Sets the icon drawable ([Drawable]) of this menu item.
          */
-        set(drawable) = binding.itemIcon.setImageDrawable(drawable)
-
+        set(drawable) {
+            binding.itemIcon.apply {
+                setImageDrawable(drawable)
+                if (applyColorTint) {
+                    applyItemIconColor()
+                }
+            }
+        }
 
     var itemLabel: String
         get() = binding.itemLabel.text.toString()
@@ -30,6 +37,16 @@ class OptionMenuItem @JvmOverloads constructor(
          */
         set(label) {
             binding.itemLabel.text = label
+        }
+
+    var applyColorTint: Boolean = true
+        get() = field
+        set(value) {
+            field = value
+            if (value)
+                applyItemIconColor()
+            else
+                removeItemIconColor()
         }
 
     init {
@@ -45,6 +62,7 @@ class OptionMenuItem @JvmOverloads constructor(
                 binding.apply {
                     itemLabel.text = label
                     itemIcon.setImageDrawable(icon)
+                    applyItemIconColor()
                 }
             } finally {
                 recycle()
@@ -76,6 +94,17 @@ class OptionMenuItem @JvmOverloads constructor(
             }
             else -> false
         }
+    }
+
+    private fun applyItemIconColor() {
+        binding.itemIcon.setColorFilter(
+            context.getColor(android.R.color.white),
+            PorterDuff.Mode.SRC_ATOP
+        )
+    }
+
+    private fun removeItemIconColor() {
+        binding.itemIcon.clearColorFilter()
     }
 
     private fun showClickedEffect() {

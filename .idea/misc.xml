@@ -10,6 +10,7 @@
         <entry key="app-search-module/src/main/res/drawable/app_search_module_widget_settings_icon.xml" value="0.3703125" />
         <entry key="app-search-module/src/main/res/drawable/ic_apps.xml" value="0.3703125" />
         <entry key="app-search-module/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
+        <entry key="app-search-module/src/main/res/drawable/ic_trash_alt.xml" value="0.2905" />
         <entry key="app-search-module/src/main/res/layout/app_grid_item.xml" value="0.37681159420289856" />
         <entry key="app-search-module/src/main/res/layout/app_option_menu.xml" value="0.3496376811594203" />
         <entry key="app-search-module/src/main/res/layout/app_search_result_card.xml" value="0.37681159420289856" />

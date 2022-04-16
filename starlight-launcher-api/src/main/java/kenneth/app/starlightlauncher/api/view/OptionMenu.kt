@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.*
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
@@ -17,11 +18,17 @@ import kenneth.app.starlightlauncher.api.R
 import kenneth.app.starlightlauncher.api.utils.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.api.utils.GestureMover
 import kenneth.app.starlightlauncher.api.utils.dp
+import kotlin.math.max
 
 /**
  * A function that adds content to [OptionMenu], for example adding items to the menu.
  */
 typealias OptionMenuBuilder = (menu: OptionMenu) -> Unit
+
+/**
+ * A function that is called whenever [OptionMenuItem] is clicked.
+ */
+typealias OptionMenuItemOnClickListener = (item: OptionMenuItem) -> Unit
 
 /**
  * An option menu on the home screen.
@@ -46,10 +53,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 }
             }
 
-    private val gestureMover = GestureMover().apply {
-        targetView = this@OptionMenu
-        minY = 0f
-    }
+    private val gestureMover = GestureMover().apply { targetView = this@OptionMenu }
 
     private val onGlobalLinearLayout = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
@@ -97,8 +101,6 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
             insets
         }
-
-        setOnClickListener { hide() }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -135,8 +137,16 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
      *
      * @param icon The icon of this item. It will be placed at the start of the item.
      * @param label The label of this item. It will be placed next to the item.
+     * @param applyIconTint Whether a color tint that matches text color should be applied to [icon].
+     *                      Defaults to true.
+     * @param onClick The function that is called when this item is clicked.
      */
-    fun addItem(icon: Drawable?, label: String, onClick: OnClickListener) {
+    fun addItem(
+        icon: Drawable?,
+        label: String,
+        applyIconTint: Boolean = true,
+        onClick: OptionMenuItemOnClickListener
+    ) {
         val item = OptionMenuItem(context).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -150,10 +160,11 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 )
             }
 
-            this.itemIcon = icon
-            this.itemLabel = label
+            itemIcon = icon
+            itemLabel = label
+            applyColorTint = applyIconTint
 
-            setOnClickListener(onClick)
+            setOnClickListener { onClick(this) }
         }
         addView(item)
     }
@@ -177,6 +188,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     fun show(builder: OptionMenuBuilder) {
         builder(this)
         isVisible = true
+        gestureMover.minY =
+            -max(0, height - context.resources.displayMetrics.heightPixels).toFloat()
         showAnimation.start()
     }
 

@@ -181,6 +181,4 @@ internal class AppGridAdapter(
 }
 
 internal class AppGridItem(internal val binding: AppGridItemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
-    private val prefs = AppSearchModulePreferences.getInstance(itemView.context)
-}
+    RecyclerView.ViewHolder(binding.root)

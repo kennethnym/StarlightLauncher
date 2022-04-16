@@ -1,5 +1,5 @@
 include ':app'
-rootProject.name = "SpotlightLauncher"
+rootProject.name = "StarlightLauncher"
 include ':starlight-launcher-api'
 include ':app-search-module'
 include ':file-search-module'

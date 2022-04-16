@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The maximum number of app shortcuts shown -->
+    <integer name="max_app_shortcuts_shown">6</integer>
+</resources>
