@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
@@ -49,7 +50,8 @@ typealias AppSearchModulePreferenceListener = (event: AppSearchModulePreferenceC
  * Manages preferences of [AppSearchModule]
  */
 internal class AppSearchModulePreferences
-private constructor(private val context: Context) : Observable() {
+private constructor(private val context: Context) : Observable(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: AppSearchModulePreferences? = null
@@ -97,7 +99,7 @@ private constructor(private val context: Context) : Observable() {
         get() = pinnedApps.isNotEmpty()
 
     init {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(::updateValue)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         loadPinnedApps()
     }
 
@@ -127,7 +129,9 @@ private constructor(private val context: Context) : Observable() {
         notifyObservers(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
     }
 
-    private fun updateValue(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (sharedPreferences == null) return
+
         when (key) {
             keys.showAppNames -> {
                 shouldShowAppNames = sharedPreferences.getBoolean(

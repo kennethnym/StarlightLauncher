@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.prefs
+ package kenneth.app.starlightlauncher.prefs
 
 import android.os.Bundle
 import android.util.TypedValue

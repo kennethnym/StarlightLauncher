@@ -35,39 +35,6 @@ internal class PinnedAppsWidget(
         }
     }
 
-//    private fun onPreferencesChanged(event: PreferencesChanged) {
-//        when (event) {
-//            is AppSearchModulePreferenceChanged.PinnedAppAdded -> {
-//
-//            }
-//        }
-//        when {
-//            // pinned apps are stored as individual pref keys
-//            // with prefs.keys.pinnedApps as prefix and their indices as the suffix
-//            event.key.matches(Regex("^${prefs.keys.pinnedApps}\\d")) -> {
-//                if (!rootView.isVisible) {
-//                    showWidget()
-//                } else {
-//                    event.key.removePrefix(prefs.keys.pinnedApps).toIntOrNull()
-//                        ?.let { index ->
-//                            appGridAdapter?.addAppToGrid(
-//                                prefs.pinnedApps[index],
-//                                index
-//                            )
-//                        }
-//                }
-//            }
-//
-//            event.key == prefs.keys.showPinnedAppNames -> {
-//                if (prefs.shouldShowPinnedAppNames) {
-//                    appGridAdapter?.showAppLabels()
-//                } else {
-//                    appGridAdapter?.hideAppLabels()
-//                }
-//            }
-//        }
-//    }
-
     private fun onPreferenceChanged(event: AppSearchModulePreferenceChanged) {
         when (event) {
             is AppSearchModulePreferenceChanged.PinnedAppAdded -> {
@@ -115,7 +82,8 @@ internal class PinnedAppsWidget(
                         context,
                         pinnedApps,
                         launcher,
-                        prefs.shouldShowPinnedAppNames
+                        prefs.shouldShowPinnedAppNames,
+                        showAllApps = true,
                     )
                         .also { appGridAdapter = it }
             }

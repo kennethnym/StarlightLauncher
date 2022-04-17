@@ -20,6 +20,10 @@ internal class AppGridAdapter(
     apps: AppList,
     private val launcher: StarlightLauncherApi,
     private var shouldShowAppNames: Boolean,
+    /**
+     * Whether all apps should be shown at once. Defaults to false.
+     */
+    private val showAllApps: Boolean = false,
 ) : RecyclerView.Adapter<AppGridItem>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     private val apps = apps.toMutableList()
@@ -40,8 +44,10 @@ internal class AppGridAdapter(
         recyclerView.layoutManager.let {
             if (it is GridLayoutManager) {
                 visibleApps +=
-                    if (apps.size <= it.spanCount) apps
-                    else apps.subList(0, it.spanCount)
+                    when {
+                        showAllApps || apps.size <= it.spanCount -> apps
+                        else -> apps.subList(0, it.spanCount)
+                    }
                 gridSpanCount = it.spanCount
             }
         }
@@ -97,11 +103,17 @@ internal class AppGridAdapter(
 
     fun addAppToGrid(app: LauncherActivityInfo) {
         apps += app
-        notifyItemInserted(itemCount)
+        if (showAllApps) {
+            visibleApps += app
+        }
+        notifyItemInserted(itemCount - 1)
     }
 
     fun removeAppFromGrid(index: Int) {
         apps.removeAt(index)
+        if (index < visibleApps.size) {
+            visibleApps.removeAt(index)
+        }
         notifyItemRemoved(index)
     }
 
