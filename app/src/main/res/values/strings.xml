@@ -65,6 +65,8 @@
     <!-- Launcher option menu -->
     <string name="launcher_option_menu_launcher_settings_label">Launcher settings</string>
     <string name="launcher_option_menu_widgets_label">Widgets</string>
+    <string name="launcher_option_menu_lock_widgets_label">Lock widgets</string>
+    <string name="launcher_option_menu_unlock_widgets_label">Unlock widgets</string>
 
     <!-- Available widgets page -->
     <string name="available_widgets_page_header">Widgets</string>

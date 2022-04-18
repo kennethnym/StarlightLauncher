@@ -36,6 +36,10 @@ class StarlightLauncherApiImpl @Inject constructor(
         BindingRegister.activityMainBinding.optionMenu.show(builder)
     }
 
+    override fun closeOptionMenu() {
+        BindingRegister.activityMainBinding.optionMenu.hide()
+    }
+
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
         BindingRegister.activityMainBinding.overlay.showFrom(fromView, viewConstructor(context))
     }

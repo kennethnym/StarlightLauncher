@@ -24,6 +24,10 @@ internal class AppGridAdapter(
      * Whether all apps should be shown at once. Defaults to false.
      */
     private val showAllApps: Boolean = false,
+    /**
+     * Whether an option menu should be shown when an item is long pressed. Defaults to true.
+     */
+    private val enableLongPressMenu: Boolean = true,
 ) : RecyclerView.Adapter<AppGridItem>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     private val apps = apps.toMutableList()
@@ -86,9 +90,11 @@ internal class AppGridAdapter(
             }
 
             with(root) {
-                setOnLongClickListener {
-                    selectedApp = app
-                    showAppOptionMenu()
+                if (enableLongPressMenu) {
+                    setOnLongClickListener {
+                        selectedApp = app
+                        showAppOptionMenu()
+                    }
                 }
 
                 setOnClickListener {
@@ -168,6 +174,16 @@ internal class AppGridAdapter(
         shouldShowAppNames = false
     }
 
+    /**
+     * Shows an option menu for the app at the given [position].
+     */
+    fun showAppOptionMenuAtPosition(position: Int) {
+        recyclerView?.findViewHolderForAdapterPosition(position)?.let {
+            selectedApp = apps[position]
+            showAppOptionMenu()
+        }
+    }
+
     private fun showAppOptionMenu(): Boolean {
         launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
         return true
@@ -193,4 +209,6 @@ internal class AppGridAdapter(
 }
 
 internal class AppGridItem(internal val binding: AppGridItemBinding) :
-    RecyclerView.ViewHolder(binding.root)
+    RecyclerView.ViewHolder(binding.root) {
+
+}

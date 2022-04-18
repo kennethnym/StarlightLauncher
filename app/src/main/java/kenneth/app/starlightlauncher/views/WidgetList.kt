@@ -29,6 +29,8 @@ private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
 private const val ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET"
 
+private const val DEFAULT_LOCK_WIDGETS = true
+
 /**
  * Contains a list of widgets on the home screen.
  */
@@ -42,6 +44,9 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     @Inject
     lateinit var launcher: StarlightLauncherApi
+
+    var areWidgetsLocked: Boolean = DEFAULT_LOCK_WIDGETS
+        private set
 
     private val animations: List<CardAnimation>
 
@@ -115,6 +120,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
         addOnOrderChangedListener(::onWidgetOrderChanged)
         addOnSelectionChangedListener(::onWidgetLongPressed)
+
+        if (areWidgetsLocked) disableDragAndDrop()
     }
 
     /**
@@ -129,6 +136,22 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
      */
     fun hideWidgets() {
         hideAnimator.start()
+    }
+
+    /**
+     * Locks widgets in place. They cannot be reordered when locked.
+     */
+    fun lockWidgets() {
+        areWidgetsLocked = true
+        disableDragAndDrop()
+    }
+
+    /**
+     * Unlocks widgets. They can now be reordered.
+     */
+    fun unlockWidgets() {
+        areWidgetsLocked = false
+        enableDragAndDrop()
     }
 
     private fun onRequestBindWidgetResult(result: ActivityResult?) {

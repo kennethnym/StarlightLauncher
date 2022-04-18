@@ -13,6 +13,7 @@ import androidx.core.content.edit
 import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
+import kenneth.app.starlightlauncher.api.utils.swap
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -127,6 +128,11 @@ private constructor(private val context: Context) : Observable(),
         savePinnedApps()
         setChanged()
         notifyObservers(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
+    }
+
+    fun swapPinnedApps(fromPosition: Int, toPosition: Int) {
+        _pinnedApps.swap(fromPosition, toPosition)
+        savePinnedApps()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {

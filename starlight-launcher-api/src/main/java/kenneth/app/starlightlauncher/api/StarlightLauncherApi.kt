@@ -41,6 +41,11 @@ interface StarlightLauncherApi {
     fun showOptionMenu(builder: OptionMenuBuilder)
 
     /**
+     * Closes the currenly shown option menu.
+     */
+    fun closeOptionMenu()
+
+    /**
      * Shows an overlay that shows the given [View], on top of everything else.
      *
      * @param fromView The [View] that the overlay will animate from.
