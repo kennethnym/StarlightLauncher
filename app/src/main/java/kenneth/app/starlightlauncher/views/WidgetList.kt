@@ -8,14 +8,19 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
@@ -77,10 +82,19 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     private val widgetListAdapter: WidgetListAdapter
 
+    private var initialY: Float? = null
+
     /**
      * The widget view holder currently in edit mode.
      */
     private var widgetViewHolderInEditMode: WidgetListAdapterItem? = null
+
+    private var scrollListener = object : OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            Log.d("starlight", "scrolled $dx $dy")
+        }
+    }
 
     init {
         layoutParams = LayoutParams(
@@ -120,6 +134,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
         addOnOrderChangedListener(::onWidgetOrderChanged)
         addOnSelectionChangedListener(::onWidgetLongPressed)
+        addOnScrollListener(scrollListener)
 
         if (areWidgetsLocked) disableDragAndDrop()
     }
@@ -152,6 +167,55 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
     fun unlockWidgets() {
         areWidgetsLocked = false
         enableDragAndDrop()
+    }
+
+    override fun onTouchEvent(e: MotionEvent?): Boolean {
+        val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
+        val scrollY = widgetsPanel.scrollY
+
+        return if (widgetsPanel.isExpanded)
+            when (e?.actionMasked) {
+                MotionEvent.ACTION_DOWN ->
+                    when (scrollY) {
+                        0 -> {
+                            Log.d("starlight", "action down ${e.y}")
+                            initialY = e.y
+                            HANDLED
+                        }
+                        else -> super.onTouchEvent(e)
+                    }
+
+                MotionEvent.ACTION_MOVE ->
+                    when {
+                        scrollY == 0 && initialY == null -> {
+                            initialY = e.y
+                            HANDLED
+                        }
+
+                        scrollY == 0 && e.y - initialY!! > 0 -> {
+                            BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
+                        }
+
+                        else -> super.onTouchEvent(e)
+                    }
+
+                MotionEvent.ACTION_CANCEL,
+                MotionEvent.ACTION_UP -> {
+                    Log.d("starlight", "ACTION_UP $scrollY")
+                    initialY = null
+                    if (scrollY == 0)
+                        BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
+                    else {
+                        Log.d("starlight", "super")
+                        super.onTouchEvent(e)
+                    }
+                }
+
+                MotionEvent.ACTION_BUTTON_PRESS -> performClick()
+
+                else -> super.onTouchEvent(e)
+            }
+        else widgetsPanel.onTouchEvent(e)
     }
 
     private fun onRequestBindWidgetResult(result: ActivityResult?) {

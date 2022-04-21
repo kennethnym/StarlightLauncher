@@ -57,6 +57,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     private var isPanelDragged = false
 
+    private var ongoingAnimation: WidgetPanelAnimation? = null
+
     private val gestureMover = GestureMover().apply {
         targetView = this@WidgetsPanel
     }
@@ -81,10 +83,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
     }
-
-    override fun onTouchEvent(ev: MotionEvent): Boolean =
-        if (canBeSwiped) handleWidgetPanelGesture(ev)
-        else super.onTouchEvent(ev)
 
     fun unfocusSearchBox() {
         binding.searchBox.unfocus()
@@ -114,23 +112,33 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     fun expand() {
         isExpanded = true
-        WidgetPanelAnimation(0f).start()
+
+        WidgetPanelAnimation(0f)
+            .also { ongoingAnimation = it }
+            .start()
+
         with(binding.searchBox) {
             showTopPadding()
             showRetractWidgetPanelButton()
         }
+
         gestureMover.reset()
     }
 
     fun retract() {
         val screenHeight = context.resources.displayMetrics.heightPixels
         isExpanded = false
-        WidgetPanelAnimation(screenHeight / 2f).start()
+
+        WidgetPanelAnimation(screenHeight / 2f)
+            .also { ongoingAnimation = it }
+            .start()
+
         with(binding.searchBox) {
             removeTopPadding()
             clearFocus()
             showExpandWidgetPanelButton()
         }
+
         gestureMover.reset()
     }
 
@@ -153,31 +161,35 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
     }
 
-    private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean {
-        return when (ev?.actionMasked) {
-            null -> NOT_HANDLED
+    override fun onTouchEvent(ev: MotionEvent?): Boolean =
+        if (canBeSwiped) handleWidgetPanelGesture(ev)
+        else super.onTouchEvent(ev)
 
-            MotionEvent.ACTION_UP -> handleGestureEnd(ev)
+    private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean =
+        when (ev?.actionMasked) {
+            MotionEvent.ACTION_BUTTON_PRESS -> performClick()
 
             MotionEvent.ACTION_DOWN -> {
                 initiateGesture(ev)
                 HANDLED
             }
 
-            MotionEvent.ACTION_MOVE ->
+            MotionEvent.ACTION_MOVE -> {
                 if (gestureMover.isGestureActive) {
                     handleDragGesture(ev)
                 } else {
                     initiateGesture(ev)
                     HANDLED
                 }
+            }
+
+            MotionEvent.ACTION_UP -> handleGestureEnd(ev)
 
             else -> NOT_HANDLED
         }
-    }
 
-    private fun handleDragGesture(ev: MotionEvent): Boolean {
-        return if (
+    private fun handleDragGesture(ev: MotionEvent): Boolean =
+        if (
             isPanelDragged ||
             !isExpanded ||
             !isScrolling && ev.y - gestureMover.initialY >= 0 && scrollY == 0
@@ -194,12 +206,12 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             isScrolling = true
             // let user scroll the content
             super.onTouchEvent(ev)
+            HANDLED
         }
-    }
 
     private fun handleGestureEnd(ev: MotionEvent): Boolean {
         if (isScrolling) {
-            Log.d("hub", "no logner scrolling")
+            gestureMover.reset()
             isScrolling = false
             return super.onTouchEvent(ev)
         }
@@ -233,6 +245,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     private fun initiateGesture(ev: MotionEvent) {
+        ongoingAnimation?.cancel()
         gestureMover.recordInitialEvent(ev)
         obtainVelocityTracker().also {
             it.addMovement(ev)
@@ -248,6 +261,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     private inner class WidgetPanelAnimation(private val finalPosition: Float) {
         private val springDamping = SpringForce.DAMPING_RATIO_LOW_BOUNCY
         private val springStiffness = SpringForce.STIFFNESS_MEDIUM
+
+        private var anim: SpringAnimation? = null
 
         fun start() {
             if (this@WidgetsPanel.translationY != finalPosition) {
@@ -268,9 +283,15 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
                         setStartVelocity(1f)
                     }
 
+                    anim = this
+
                     start()
                 }
             }
+        }
+
+        fun cancel() {
+            anim?.cancel()
         }
     }
 }

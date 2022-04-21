@@ -31,6 +31,7 @@ class GestureMover {
      * The initial y position of the active gesture
      */
     var initialY = 0f
+        private set
 
     private var viewInitialY = 0f
 
@@ -64,9 +65,6 @@ class GestureMover {
      * Records the final [MotionEvent] of the gesture
      */
     fun addMotionUpEvent(event: MotionEvent) {
-        if (event.actionMasked != MotionEvent.ACTION_UP)
-            throw IllegalArgumentException("The given motion event must be ACTION_UP")
-
         gestureDelta = targetView.y - viewInitialY
         isGestureActive = false
     }
@@ -81,5 +79,4 @@ class GestureMover {
         gestureDelta = 0f
         minY = null
     }
-
 }
