@@ -27,6 +27,7 @@ import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.abs
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
@@ -35,6 +36,8 @@ private const val ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET"
 
 private const val DEFAULT_LOCK_WIDGETS = true
+
+private const val SCROLL_THRESHOLD = 10
 
 /**
  * Contains a list of widgets on the home screen.
@@ -83,6 +86,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
     private val widgetListAdapter: WidgetListAdapter
 
     private var initialY: Float? = null
+
+    private var isClick = false
 
     /**
      * The widget view holder currently in edit mode.
@@ -173,49 +178,65 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
         val scrollY = widgetsPanel.scrollY
 
-        return if (widgetsPanel.isExpanded)
+        Log.d("starlight", "y ${e?.y}")
+
+        initialY?.let {
+            Log.d(
+                "starlight", "${
+                    abs((e?.y ?: -10000000000000f) - it) > SCROLL_THRESHOLD
+                }"
+            )
+        }
+
+        return if (scrollY == 0)
             when (e?.actionMasked) {
-                MotionEvent.ACTION_DOWN ->
-                    when (scrollY) {
-                        0 -> {
-                            Log.d("starlight", "action down ${e.y}")
-                            initialY = e.y
-                            HANDLED
-                        }
-                        else -> super.onTouchEvent(e)
-                    }
+                MotionEvent.ACTION_DOWN -> {
+                    Log.d("starlight", "action down ${e.y}")
+                    initialY = e.y
+                    isClick = true
+                    HANDLED
+                }
 
                 MotionEvent.ACTION_MOVE ->
                     when {
-                        scrollY == 0 && initialY == null -> {
+                        initialY == null -> {
+                            Log.d("starlight", "initial y null")
                             initialY = e.y
+                            isClick = true
                             HANDLED
                         }
 
-                        scrollY == 0 && e.y - initialY!! > 0 -> {
+                        isClick && abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
+                                ((widgetsPanel.isExpanded && e.y - initialY!! > 0) || !widgetsPanel.isExpanded) -> {
+                            Log.d("starlight", "delegate")
+                            isClick = false
                             BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
                         }
 
-                        else -> super.onTouchEvent(e)
+                        else -> {
+                            Log.d("starlight", "super")
+                            super.onTouchEvent(e)
+                        }
                     }
 
                 MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> {
-                    Log.d("starlight", "ACTION_UP $scrollY")
-                    initialY = null
-                    if (scrollY == 0)
-                        BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
-                    else {
-                        Log.d("starlight", "super")
+                    if (isClick) {
                         super.onTouchEvent(e)
+                    } else {
+                        initialY = null
+                        BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
                     }
                 }
 
-                MotionEvent.ACTION_BUTTON_PRESS -> performClick()
+                MotionEvent.ACTION_BUTTON_PRESS -> {
+                    Log.d("starlight", "button press")
+                    performClick()
+                }
 
                 else -> super.onTouchEvent(e)
             }
-        else widgetsPanel.onTouchEvent(e)
+        else super.onTouchEvent(e)
     }
 
     private fun onRequestBindWidgetResult(result: ActivityResult?) {

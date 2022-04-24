@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="java.math.RoundingMode" />
+
+        <variable
+            name="expression"
+            type="String" />
+
+        <variable
+            name="value"
+            type="java.math.BigDecimal" />
+    </data>
+
+    <kenneth.app.starlightlauncher.api.view.Plate
+        android:id="@+id/math_search_result_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@{@string/expression_format(expression)}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{value.setScale(3, RoundingMode.HALF_UP).toString()}"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </kenneth.app.starlightlauncher.api.view.Plate>
+</layout>

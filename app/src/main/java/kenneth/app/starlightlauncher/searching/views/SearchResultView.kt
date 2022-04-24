@@ -91,31 +91,36 @@ class SearchResultView(context: Context, attrs: AttributeSet) :
     }
 
     private fun showSearchResult(result: SearchResult) {
-        BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
-        extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
-            val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
+        if (result is SearchResult.None) {
+            val order = searchPreferenceManager.orderOf(result.extensionName)
+            allContainers[order]?.isVisible = false
+        } else {
+            BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
+            extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
+                val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
 
-            containerAt(order)
-                ?.let {
-                    searchModule.adapter.onBindSearchResult(viewHolders[order]!!, result)
-                    it.isVisible = true
-                }
-                ?: createContainerAt(order)
-                    .apply {
-                        layoutParams = LayoutParams(
-                            LayoutParams.MATCH_PARENT,
-                            LayoutParams.WRAP_CONTENT,
-                        ).apply {
-                            setMargins(0, 0, 0, 16.dp)
-                        }
-                        orientation = VERTICAL
-                    }.also {
-                        val vh = searchModule.adapter.onCreateViewHolder(it)
-                        viewHolders[order] = vh
-                        searchModule.adapter.onBindSearchResult(vh, result)
-                        it.addView(vh.rootView)
+                containerAt(order)
+                    ?.let {
+                        searchModule.adapter.onBindSearchResult(viewHolders[order]!!, result)
                         it.isVisible = true
                     }
+                    ?: createContainerAt(order)
+                        .apply {
+                            layoutParams = LayoutParams(
+                                LayoutParams.MATCH_PARENT,
+                                LayoutParams.WRAP_CONTENT,
+                            ).apply {
+                                setMargins(0, 0, 0, 16.dp)
+                            }
+                            orientation = VERTICAL
+                        }.also {
+                            val vh = searchModule.adapter.onCreateViewHolder(it)
+                            viewHolders[order] = vh
+                            searchModule.adapter.onBindSearchResult(vh, result)
+                            it.addView(vh.rootView)
+                            it.isVisible = true
+                        }
+            }
         }
     }
 

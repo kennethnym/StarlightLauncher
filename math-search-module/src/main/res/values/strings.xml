@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="math_search_module_name">kenneth.app.starlightlauncher.mathsearchmodule</string>
+    <string name="math_search_module_display_name">Simple Math</string>
+    <string name="math_search_module_description">Calculates simple math expressions.</string>
+
+    <string name="expression_format">%s =</string>
+</resources>

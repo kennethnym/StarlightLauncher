@@ -55,7 +55,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     private var isScrolling = false
 
-    private var isPanelDragged = false
+    private var isDraggingPanel = false
 
     private var ongoingAnimation: WidgetPanelAnimation? = null
 
@@ -161,9 +161,11 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
     }
 
-    override fun onTouchEvent(ev: MotionEvent?): Boolean =
-        if (canBeSwiped) handleWidgetPanelGesture(ev)
+    override fun onTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("starlight", "panel on touch event")
+        return if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
+    }
 
     private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean =
         when (ev?.actionMasked) {
@@ -179,8 +181,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
                     handleDragGesture(ev)
                 } else {
                     initiateGesture(ev)
-                    HANDLED
                 }
+                HANDLED
             }
 
             MotionEvent.ACTION_UP -> handleGestureEnd(ev)
@@ -188,35 +190,37 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             else -> NOT_HANDLED
         }
 
-    private fun handleDragGesture(ev: MotionEvent): Boolean =
+    private fun handleDragGesture(ev: MotionEvent) {
         if (
-            isPanelDragged ||
+            isDraggingPanel ||
             !isExpanded ||
             !isScrolling && ev.y - gestureMover.initialY >= 0 && scrollY == 0
         ) {
+            Log.d("starlight", "start drag")
             // scroll view is at the top and user wants to swipe down
             // i.e. retract widget panel
             // therefore we let user move the widget panel
-            isPanelDragged = true
+            isDraggingPanel = true
             gestureMover.addMotionMoveEvent(ev)
             velocityTracker.addMovement(ev)
-
-            HANDLED
         } else {
+            Log.d("starlight", "start scroll")
+            isDraggingPanel = false
             isScrolling = true
             // let user scroll the content
             super.onTouchEvent(ev)
-            HANDLED
         }
+    }
 
     private fun handleGestureEnd(ev: MotionEvent): Boolean {
         if (isScrolling) {
+            Log.d("starlight", "reset after scrolling")
             gestureMover.reset()
             isScrolling = false
             return super.onTouchEvent(ev)
         }
 
-        isPanelDragged = false
+        isDraggingPanel = false
 
         with(velocityTracker) {
             addMovement(ev)
@@ -226,6 +230,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         gestureMover.addMotionUpEvent(ev)
 
         val gestureDistance = gestureMover.gestureDelta
+        Log.d("starlight", "gesture distance $gestureDistance, isExpanded $isExpanded")
 
         when {
             gestureDistance < -GESTURE_ACTION_THRESHOLD -> {
@@ -239,12 +244,14 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
             !isExpanded -> retract()
         }
 
+        Log.d("starlight", "reset")
         gestureMover.reset()
 
         return HANDLED
     }
 
     private fun initiateGesture(ev: MotionEvent) {
+        Log.d("starlight", "initiate ${ev.y}")
         ongoingAnimation?.cancel()
         gestureMover.recordInitialEvent(ev)
         obtainVelocityTracker().also {

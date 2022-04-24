@@ -35,11 +35,14 @@ class GestureMover {
 
     private var viewInitialY = 0f
 
+    private var lastY = 0f
+
     /**
      * Records the initial motion event of the gesture
      */
     fun recordInitialEvent(event: MotionEvent) {
-        initialY = event.y
+        initialY = event.rawY
+        lastY = initialY
         isGestureActive = true
         viewInitialY = targetView.y
     }
@@ -51,7 +54,7 @@ class GestureMover {
         if (event.actionMasked != MotionEvent.ACTION_MOVE)
             throw IllegalArgumentException("The given motion event must be ACTION_MOVE")
 
-        val delta = event.y - initialY
+        val delta = event.rawY - lastY
         val minY = this.minY
 
         if (minY != null) {
@@ -59,6 +62,8 @@ class GestureMover {
         } else {
             targetView.translationY += delta
         }
+
+        lastY = event.rawY
     }
 
     /**

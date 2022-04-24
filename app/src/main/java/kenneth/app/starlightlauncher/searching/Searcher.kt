@@ -63,9 +63,7 @@ class Searcher @Inject constructor(
             CoroutineScope(Dispatchers.IO)
                 .also { searchCoroutineScopes.add(it) }
                 .launch {
-                    val result = withContext(coroutineContext) {
-                        module.search(keyword, searchRegex)
-                    }
+                    val result = module.search(keyword, searchRegex)
                     numberOfLoadedModules++
                     resultCallbacks.forEach { cb -> cb(result) }
                 }

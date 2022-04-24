@@ -101,6 +101,7 @@
         <entry key="file-search-module/src/main/res/layout/file_search_result_card.xml" value="0.3541666666666667" />
         <entry key="file-search-module/src/main/res/layout/settings_activity.xml" value="0.3541666666666667" />
         <entry key="file-search-module/src/main/res/xml/search_settings_root_preferences.xml" value="0.3541666666666667" />
+        <entry key="math-search-module/src/main/res/layout/math_search_result_card.xml" value="0.3125" />
         <entry key="notes-widget/src/main/res/drawable/all_notes_add_note_btn_bg.xml" value="0.3703125" />
         <entry key="notes-widget/src/main/res/drawable/ic_archive.xml" value="0.21481481481481482" />
         <entry key="notes-widget/src/main/res/drawable/ic_check.xml" value="0.3703125" />

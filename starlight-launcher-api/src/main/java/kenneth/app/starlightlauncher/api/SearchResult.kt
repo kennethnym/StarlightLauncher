@@ -14,4 +14,10 @@ abstract class SearchResult(
      * that produced this [SearchResult]
      */
     val extensionName: String,
-)
+) {
+    /**
+     * Defines an empty search result. Use this when your [SearchModule] cannot provide
+     * any search result for the given [query].
+     */
+    class None(query: String, extensionName: String) : SearchResult(query, extensionName)
+}
