@@ -55,17 +55,22 @@ class AppSearchModule : LauncherApps.Callback(), SearchModule {
 
     override fun cleanup() {}
 
-    override suspend fun search(keyword: String, keywordRegex: Regex): Result =
-        Result(
-            query = keyword,
-            apps = currentAppList
-                .filter { app -> appLabels[app.applicationInfo.packageName]?.contains(keywordRegex) == true }
-                .sortedWith { app1, app2 ->
-                    val appName1 = appLabels[app1.applicationInfo.packageName]!!
-                    val appName2 = appLabels[app2.applicationInfo.packageName]!!
-                    return@sortedWith sortByRegex(appName1, appName2, keywordRegex)
-                }
-        )
+    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
+        currentAppList
+            .filter { app -> appLabels[app.applicationInfo.packageName]?.contains(keywordRegex) == true }
+            .let {
+                if (it.isEmpty())
+                    SearchResult.None(keyword, EXTENSION_NAME)
+                else
+                    Result(
+                        query = keyword,
+                        apps = it.sortedWith { app1, app2 ->
+                            val appName1 = appLabels[app1.applicationInfo.packageName]!!
+                            val appName2 = appLabels[app2.applicationInfo.packageName]!!
+                            return@sortedWith sortByRegex(appName1, appName2, keywordRegex)
+                        }
+                    )
+            }
 
     class Result(query: String, val apps: AppList) : SearchResult(query, EXTENSION_NAME)
 
