@@ -18,6 +18,7 @@ import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
+import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,14 +42,18 @@ class ExtensionManager @Inject constructor(
             name = "kenneth.app.starlightlauncher.mathsearchmodule",
             searchModule = MathSearchModule(),
         ),
+        "kenneth.app.starlightlauncher.wificontrolmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.wificontrolmodule",
+            searchModule = WifiControlModule(),
+        ),
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
-            widget = NotesWidgetCreator()
+            widget = NotesWidgetCreator(),
         ),
         "kenneth.app.starlightlauncher.unitconverterwidget" to Extension(
             name = "kenneth.app.starlightlauncher.unitconverterwidget",
-            widget = UnitConverterWidgetCreator()
-        )
+            widget = UnitConverterWidgetCreator(),
+        ),
     )
 
     private val widgets = mutableMapOf<String, WidgetCreator>()

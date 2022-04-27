@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="hasAllPermissions"
+            type="Boolean" />
+
+        <variable
+            name="hasLocationPermission"
+            type="Boolean" />
+
+        <variable
+            name="hasNetworkStatePermission"
+            type="Boolean" />
+
+        <variable
+            name="wifiSsid"
+            type="String" />
+
+        <variable
+            name="isWifiEnabled"
+            type="Boolean" />
+    </data>
+
+    <kenneth.app.starlightlauncher.api.view.Plate
+        android:id="@+id/wifi_control_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/search_result_card_padding">
+
+            <LinearLayout
+                android:id="@+id/location_perm_notification_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/require_location_perm_bg"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="@{hasAllPermissions ? View.GONE : View.VISIBLE}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/permission_required"
+                    android:textAppearance="?attr/textAppearanceOverline"
+                    android:textColor="?colorOnBackground" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:text="@{hasNetworkStatePermission ? @string/fine_location_perm_required_description : @string/permissions_required_description}"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?colorOnBackground" />
+
+                <kenneth.app.starlightlauncher.api.view.TextButton
+                    android:id="@+id/grant_permissions_button"
+                    style="@style/Style.StarlightLauncher.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/search_result_card_padding"
+                    android:text="@string/grant_permission_label"
+                    android:textColor="?attr/colorOnBackground" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/search_result_card_padding"
+                android:layout_marginTop="@dimen/search_result_card_padding"
+                android:visibility="@{hasLocationPermission || hasNetworkStatePermission ? View.VISIBLE : View.GONE}">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="@{hasLocationPermission ? View.VISIBLE : View.GONE}">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/wifi_connected_to_label"
+                        android:textAppearance="?attr/textAppearanceOverline" />
+
+                    <TextView
+                        android:id="@+id/wifi_network_name_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{isWifiEnabled ? wifiSsid : @string/wifi_not_connected}"
+                        android:textAppearance="?attr/textAppearanceBody1" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WiFi"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="@{hasLocationPermission ? View.GONE : View.VISIBLE}" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/wifi_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{isWifiEnabled}" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="8dp" />
+
+            <kenneth.app.starlightlauncher.api.view.TextButton
+                android:id="@+id/open_wifi_settings_button"
+                style="@style/Style.StarlightLauncher.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="@dimen/search_result_card_padding"
+                android:text="@string/open_wifi_settings_label" />
+
+        </LinearLayout>
+
+    </kenneth.app.starlightlauncher.api.view.Plate>
+</layout>

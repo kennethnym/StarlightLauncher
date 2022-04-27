@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wifi_control_module_name">kenneth.app.starlightlauncher.wificontrolmodule</string>
+    <string name="wifi_control_module_display_name">Wifi Control</string>
+    <string name="wifi_control_module_description">Control WiFi by typing "wifi"</string>
+
+    <string name="wifi_connected_to_label">WiFi connected to</string>
+    <string name="wifi_no_network_label">No network</string>
+    <string name="permission_required">Permission required</string>
+    <string name="permissions_required_description">
+        Fine location and accessing network state are required by Android to access
+        the current WiFi state and name. Your location will not actually be accessed.
+    </string>
+    <string name="fine_location_perm_required_description">
+        Fine location is required by Android to access the names of Wifi networks.
+        Your location will not actually be accessed.
+    </string>
+    <string name="unknown_wifi_network_label">Unknown</string>
+    <string name="wifi_not_connected">Not connected</string>
+    <string name="open_wifi_settings_label">Open Wifi Settings</string>
+    <string name="grant_permission_label">Grant Permission</string>
+</resources>

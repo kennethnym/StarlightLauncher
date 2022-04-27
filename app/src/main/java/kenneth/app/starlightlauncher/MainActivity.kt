@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -100,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         setTheme(appState.themeStyleId)
 
         launcherApi.let {
-            if (it is StarlightLauncherApiImpl) it.context = this
+            if (it is StarlightLauncherApiImpl) it.setContext(this)
         }
 
         extensionManager.loadExtensions()
@@ -114,7 +115,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater).also {
-            BindingRegister.activityMainBinding = it
+            BindingRegister.apply {
+                activityMainBinding = it
+                mainActivity = this@MainActivity
+            }
         }
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
@@ -178,7 +182,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cleanup() {
-//        searchResultAdapter.cleanup()
+        BindingRegister.mainActivity = null
     }
 
     /**

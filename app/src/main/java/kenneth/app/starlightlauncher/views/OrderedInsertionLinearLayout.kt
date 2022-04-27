@@ -101,11 +101,11 @@ abstract class OrderedInsertionLinearLayout(context: Context, attrs: AttributeSe
                     when {
                         container.position < cur.position && container.position < next.position -> {
                             addView(container, cur.position)
-                            break
+                            return
                         }
                         container.position > cur.position && container.position < next.position -> {
                             addView(container, next.position)
-                            break
+                            return
                         }
                     }
                 }

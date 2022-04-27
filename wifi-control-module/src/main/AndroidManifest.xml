@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kenneth.app.starlightlauncher.wificontrolmodule">
+    <!-- This permission is required in order to obtain the current state of wifi. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- This permission is required in order to obtain the current state of wifi. -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- This permission is required to obtain the current name of the wifi. The name is only for display purpose and is optional -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- This permission is required to obtain the current name of the wifi. The name is only for display purpose and is optional -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>

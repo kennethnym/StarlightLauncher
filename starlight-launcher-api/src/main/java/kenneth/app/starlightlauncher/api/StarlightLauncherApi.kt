@@ -3,10 +3,20 @@ package kenneth.app.starlightlauncher.api
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.ActivityResultCallback
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import java.lang.reflect.Constructor
+
+typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
+
+/**
+ * The function that is called after requesting multiple permissions.
+ * Whether each permission is granted is stored in a map, where the keys are the permissions
+ * and the values are whether they are granted.
+ */
+typealias MultiplePermissionRequestCallback = (results: Map<String, Boolean>) -> Unit
 
 /**
  * This interface defines methods that can be called to interact with Spotlight Launcher.
@@ -63,4 +73,14 @@ interface StarlightLauncherApi {
      * Get the currently applied icon pack.
      */
     fun getIconPack(): IconPack
+
+    /**
+     * Request [permission] to be granted. The result is passed to the given [callback].
+     */
+    fun requestPermission(permission: String, callback: PermissionRequestCallback)
+
+    /**
+     * Requests the given [permissions] to be granted. The results are passed to the given [callback].
+     */
+    fun requestPermissions(vararg permissions: String, callback: MultiplePermissionRequestCallback)
 }
