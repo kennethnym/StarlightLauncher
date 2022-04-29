@@ -111,6 +111,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     fun expand() {
+        Log.d("starlight", "expand")
+
         isExpanded = true
 
         WidgetPanelAnimation(0f)

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.text.Editable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.animation.PathInterpolator
 import android.view.inputmethod.EditorInfo
@@ -94,15 +95,11 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     }
 
     fun showTopPadding() {
-        if (binding.searchBoxContainer.paddingTop <= 0) {
-            createPaddingAnimation(showTopPadding = true).start()
-        }
+        createPaddingAnimation(showTopPadding = true).start()
     }
 
     fun removeTopPadding() {
-        if (binding.searchBoxContainer.paddingTop > 0) {
-            createPaddingAnimation(showTopPadding = false).start()
-        }
+        createPaddingAnimation(showTopPadding = false).start()
     }
 
     fun showClearSearchBoxButton() {
