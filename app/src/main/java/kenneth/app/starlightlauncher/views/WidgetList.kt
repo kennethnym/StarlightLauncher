@@ -7,16 +7,21 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
+import android.view.WindowInsets
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -106,6 +111,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT,
         )
+        clipToPadding = false
+
         animations = generateAnimations()
         addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList().onEach {
             if (it is AddedWidget.AndroidWidget) {
@@ -142,6 +149,17 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         addOnScrollListener(scrollListener)
 
         if (areWidgetsLocked) disableDragAndDrop()
+
+        setOnApplyWindowInsetsListener { _, insets ->
+            updatePadding(
+                bottom =
+                (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    insets.getInsets(WindowInsets.Type.systemBars()).bottom
+                else
+                    insets.systemWindowInsetBottom) + 40
+            )
+            insets
+        }
     }
 
     /**
@@ -224,6 +242,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
                 MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> {
                     if (isClick) {
+                        Log.d("starlight", "is click")
                         super.onTouchEvent(e)
                     } else {
                         initialY = null
