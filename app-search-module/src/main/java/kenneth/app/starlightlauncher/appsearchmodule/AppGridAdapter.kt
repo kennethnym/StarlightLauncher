@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.LauncherApps
+import android.graphics.Rect
+import android.os.Process
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
@@ -36,6 +40,8 @@ internal class AppGridAdapter(
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
+    private val launcherApps =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
     private lateinit var selectedApp: LauncherActivityInfo
     private var recyclerView: RecyclerView? = null
@@ -99,7 +105,7 @@ internal class AppGridAdapter(
 
                 setOnClickListener {
                     selectedApp = app
-                    openSelectedApp()
+                    openSelectedApp(holder.binding.appIcon)
                 }
             }
         }
@@ -189,9 +195,17 @@ internal class AppGridAdapter(
         return true
     }
 
-    private fun openSelectedApp() {
-        launcher.context.startActivity(
-            launcher.context.packageManager.getLaunchIntentForPackage(selectedApp.applicationInfo.packageName)
+    private fun openSelectedApp(sourceIconView: View) {
+        val sourceBounds = Rect().run {
+            sourceIconView.getGlobalVisibleRect(this)
+            this
+        }
+
+        launcherApps.startMainActivity(
+            selectedApp.componentName,
+            Process.myUserHandle(),
+            sourceBounds,
+            null
         )
     }
 

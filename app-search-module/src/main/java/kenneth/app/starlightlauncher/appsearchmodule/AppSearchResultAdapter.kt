@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.content.Context
+import android.content.pm.LauncherApps
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible

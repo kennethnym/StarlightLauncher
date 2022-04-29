@@ -3,7 +3,6 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -15,7 +14,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat

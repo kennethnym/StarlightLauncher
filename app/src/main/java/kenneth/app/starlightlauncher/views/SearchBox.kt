@@ -79,21 +79,10 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-//        binding.searchBoxBlurBackground.startBlur()
-//        binding.searchBoxEditText.setHintTextColor(
-//            ColorUtils.setAlphaComponent(
-//                appState.adaptiveTheme.adaptiveTextColor,
-//                0x88
-//            )
-//        )
-    }
-
     override fun clearFocus() {
         super.clearFocus()
         binding.searchBoxEditText.clearFocus()
-//        inputMethodManager.hideSoftInputFromWindow(binding.searchBoxBlurBackground.windowToken, 0)
+        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
     override fun isFocused(): Boolean {

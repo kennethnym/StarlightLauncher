@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_shortcut_search_module_name">kenneth.app.starlightlauncher.appshortcutsearchmodule</string>
+    <string name="app_shortcut_search_module_display_name">App Shortcuts</string>
+    <string name="app_shortcut_search_module_description">Searches for app shortcuts.</string>
+</resources>

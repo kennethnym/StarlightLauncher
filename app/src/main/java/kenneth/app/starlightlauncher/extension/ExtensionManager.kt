@@ -12,6 +12,7 @@ import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.appshortcutsearchmodule.AppShortcutSearchModule
 import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
@@ -33,6 +34,10 @@ class ExtensionManager @Inject constructor(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(),
             widget = PinnedAppsWidgetCreator(),
+        ),
+        "kenneth.app.starlightlauncher.appshortcutsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.appshortcutsearchmodule",
+            searchModule = AppShortcutSearchModule(),
         ),
         "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.filesearchmodule",
