@@ -194,7 +194,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         if (
             isDraggingPanel ||
             !isExpanded ||
-            !isScrolling && ev.y - gestureMover.initialY >= 0 && scrollY == 0
+            !isScrolling && ev.rawY - gestureMover.initialY >= 0 && scrollY == 0
         ) {
             Log.d("starlight", "start drag")
             // scroll view is at the top and user wants to swipe down
@@ -251,7 +251,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     private fun initiateGesture(ev: MotionEvent) {
-        Log.d("starlight", "initiate ${ev.y}")
         ongoingAnimation?.cancel()
         gestureMover.recordInitialEvent(ev)
         obtainVelocityTracker().also {

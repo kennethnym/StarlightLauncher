@@ -183,7 +183,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         initialY?.let {
             Log.d(
                 "starlight", "${
-                    abs((e?.y ?: -10000000000000f) - it) > SCROLL_THRESHOLD
+                    (widgetsPanel.isExpanded && (e?.y ?: -100000f) - initialY!! > 0) || !widgetsPanel.isExpanded
                 }"
             )
         }
@@ -206,12 +206,14 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
                             HANDLED
                         }
 
-                        isClick && abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
+                        abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
                                 ((widgetsPanel.isExpanded && e.y - initialY!! > 0) || !widgetsPanel.isExpanded) -> {
                             Log.d("starlight", "delegate")
                             isClick = false
                             BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
                         }
+
+                        !widgetsPanel.isExpanded -> false
 
                         else -> {
                             Log.d("starlight", "super")
