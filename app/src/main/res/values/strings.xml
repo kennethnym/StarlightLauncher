@@ -26,6 +26,9 @@
     <string name="date_time_temperature_format">%1$.1f %2$s</string>
     <string name="weather_image_description">Icon of the current weather</string>
 
+    <!-- Widgets panel -->
+    <string name="widgets_panel_edit_mode_header">Long press a widget to edit it.</string>
+
     <!-- Media control -->
     <string name="album_art_description">Album art of the currently playing music</string>
     <string name="no_album_title_label">No title</string>
@@ -64,7 +67,7 @@
     <string name="launcher_option_menu_launcher_settings_label">Launcher settings</string>
     <string name="launcher_option_menu_widgets_label">Widgets</string>
     <string name="launcher_option_menu_lock_widgets_label">Lock widgets</string>
-    <string name="launcher_option_menu_unlock_widgets_label">Unlock widgets</string>
+    <string name="launcher_option_menu_edit_widgets_label">Edit widgets</string>
 
     <!-- Available widgets page -->
     <string name="available_widgets_page_header">Widgets</string>

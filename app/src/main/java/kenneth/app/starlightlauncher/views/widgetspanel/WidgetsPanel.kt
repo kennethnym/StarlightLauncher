@@ -40,6 +40,12 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     var isExpanded = false
         private set
 
+    /**
+     * Whether widget edit mode is enabled.
+     */
+    var isEditModeEnabled = false
+        private set
+
     @Inject
     lateinit var appState: AppState
 
@@ -73,7 +79,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
 
         activity?.addBackPressedCallback {
-            if (isExpanded && !binding.searchBox.hasQueryText) {
+            if (isExpanded && !isEditModeEnabled && !binding.searchBox.hasQueryText) {
                 retract()
                 HANDLED
             } else NOT_HANDLED
@@ -82,6 +88,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
+
+        binding.exitEditModeButton.setOnClickListener { exitEditMode() }
     }
 
     fun unfocusSearchBox() {
@@ -163,10 +171,27 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
     }
 
+    /**
+     * Enable widget editing. Users can reorder and remove widgets.
+     */
+    fun editWidgets() {
+        canBeSwiped = false
+        isEditModeEnabled = true
+        expand()
+        binding.isInEditMode = true
+        binding.widgetList.enableDragAndDrop()
+    }
+
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        Log.d("starlight", "panel on touch event")
         return if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
+    }
+
+    private fun exitEditMode() {
+        canBeSwiped = true
+        isEditModeEnabled = false
+        binding.isInEditMode = false
+        binding.widgetList.disableDragAndDrop()
     }
 
     private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean =

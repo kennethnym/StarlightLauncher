@@ -1,40 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:id="@+id/widgets_panel_layout"
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isInEditMode"
+            type="Boolean" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <kenneth.app.starlightlauncher.views.SearchBox
-            android:id="@+id/search_box"
+        <LinearLayout
+            android:id="@+id/widgets_panel_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <kenneth.app.starlightlauncher.views.WidgetList
-            android:id="@+id/widget_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <kenneth.app.starlightlauncher.searching.views.SearchResultView
-            android:id="@+id/search_result_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+                <kenneth.app.starlightlauncher.views.SearchBox
+                    android:id="@+id/search_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{isInEditMode ? View.GONE : View.VISIBLE}" />
 
-    </LinearLayout>
+                <!-- edit mode header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/search_box_container_padding"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}">
 
-    <!--    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay-->
-    <!--        android:id="@+id/overlay"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:visibility="gone" />-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/widgets_panel_edit_mode_header" />
 
-</FrameLayout>
+                    <kenneth.app.starlightlauncher.api.view.IconButton
+                        android:id="@+id/exit_edit_mode_button"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="end|center"
+                        android:src="@drawable/ic_check"
+                        android:tint="?colorOnPlate" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <kenneth.app.starlightlauncher.views.WidgetList
+                android:id="@+id/widget_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false" />
+
+            <kenneth.app.starlightlauncher.searching.views.SearchResultView
+                android:id="@+id/search_result_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!--    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay-->
+        <!--        android:id="@+id/overlay"-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:visibility="gone" />-->
+
+    </FrameLayout>
+</layout>

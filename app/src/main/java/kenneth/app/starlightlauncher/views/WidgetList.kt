@@ -15,13 +15,11 @@ import android.view.WindowInsets
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -30,7 +28,6 @@ import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -39,8 +36,6 @@ private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_CONFIGURE_WIDGET"
-
-private const val DEFAULT_LOCK_WIDGETS = true
 
 private const val SCROLL_THRESHOLD = 10
 
@@ -57,9 +52,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     @Inject
     lateinit var launcher: StarlightLauncherApi
-
-    var areWidgetsLocked: Boolean = DEFAULT_LOCK_WIDGETS
-        private set
 
     private val animations: List<CardAnimation>
 
@@ -148,8 +140,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         addOnSelectionChangedListener(::onWidgetLongPressed)
         addOnScrollListener(scrollListener)
 
-        if (areWidgetsLocked) disableDragAndDrop()
-
         setOnApplyWindowInsetsListener { _, insets ->
             updatePadding(
                 bottom =
@@ -160,6 +150,8 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
             )
             insets
         }
+
+        disableDragAndDrop()
     }
 
     /**
@@ -176,37 +168,11 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         hideAnimator.start()
     }
 
-    /**
-     * Locks widgets in place. They cannot be reordered when locked.
-     */
-    fun lockWidgets() {
-        areWidgetsLocked = true
-        disableDragAndDrop()
-    }
-
-    /**
-     * Unlocks widgets. They can now be reordered.
-     */
-    fun unlockWidgets() {
-        areWidgetsLocked = false
-        enableDragAndDrop()
-    }
-
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
         val scrollY = widgetsPanel.scrollY
 
-        Log.d("starlight", "y ${e?.y}")
-
-        initialY?.let {
-            Log.d(
-                "starlight", "${
-                    (widgetsPanel.isExpanded && (e?.y ?: -100000f) - initialY!! > 0) || !widgetsPanel.isExpanded
-                }"
-            )
-        }
-
-        return if (scrollY == 0)
+        return if (scrollY == 0 && !widgetsPanel.isEditModeEnabled)
             when (e?.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     Log.d("starlight", "action down ${e.y}")

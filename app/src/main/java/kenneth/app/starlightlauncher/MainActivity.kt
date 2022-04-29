@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         updateAdaptiveColors()
-        setTheme(appState.themeStyleId)
+//        setTheme(appState.themeStyleId)
 
         launcherApi.let {
             if (it is StarlightLauncherApiImpl) it.setContext(this)
@@ -149,7 +149,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val isHandled = backPressedCallbacks.fold(false) { _, cb -> cb() }
-        Log.d("hub", "is handled? $isHandled")
         if (!isHandled) {
             super.onBackPressed()
         }
@@ -230,6 +229,11 @@ class MainActivity : AppCompatActivity() {
                 val adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
                 val white = getColor(android.R.color.white)
                 val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
+
+                Log.d(
+                    "starlight",
+                    "contrast ${ColorUtils.calculateContrast(white, adaptiveBackgroundColor)}"
+                )
 
                 setTheme(
                     if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)

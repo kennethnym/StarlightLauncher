@@ -34,10 +34,11 @@ class LauncherOptionMenu(
             }
 
             addItem(
-                ContextCompat.getDrawable(context, R.drawable.ic_unlock_alt),
-                context.getString(R.string.launcher_option_menu_unlock_widgets_label),
+                ContextCompat.getDrawable(context, R.drawable.ic_pen),
+                context.getString(R.string.launcher_option_menu_edit_widgets_label),
             ) {
-                toggleWidgetLock(it)
+                enableWidgetEditMode()
+                menu.hide()
             }
         }
     }
@@ -48,25 +49,7 @@ class LauncherOptionMenu(
         )
     }
 
-    /**
-     * Toggle widget lock. If widgets are locked, unlock them, vice versa.
-     */
-    private fun toggleWidgetLock(menuItem: OptionMenuItem) {
-        with(BindingRegister.widgetsPanelBinding.widgetList) {
-            if (areWidgetsLocked) {
-                unlockWidgets()
-                menuItem.apply {
-                    itemLabel = context.getString(R.string.launcher_option_menu_lock_widgets_label)
-                    itemIcon = ContextCompat.getDrawable(context, R.drawable.ic_lock_alt)
-                }
-            } else {
-                lockWidgets()
-                menuItem.apply {
-                    itemLabel =
-                        context.getString(R.string.launcher_option_menu_unlock_widgets_label)
-                    itemIcon = ContextCompat.getDrawable(context, R.drawable.ic_unlock_alt)
-                }
-            }
-        }
+    private fun enableWidgetEditMode() {
+        BindingRegister.activityMainBinding.widgetsPanel.editWidgets()
     }
 }
