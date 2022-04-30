@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -17,13 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <FrameLayout
+        <kenneth.app.starlightlauncher.widgets.WidgetFrame
             android:id="@+id/widget_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            android:paddingHorizontal="@dimen/widget_list_spacing"
-            android:paddingVertical="@dimen/widget_space_between" />
+            android:nestedScrollingEnabled="true" />
 
         <ImageView
             android:layout_width="match_parent"

@@ -3,22 +3,17 @@ package kenneth.app.starlightlauncher.views.widgetspanel
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.core.animation.addListener
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
-import kenneth.app.starlightlauncher.animations.DimensionAnimatable
-import kenneth.app.starlightlauncher.animations.DimensionAnimator
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
-import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.mainActivity
 import javax.inject.Inject
 

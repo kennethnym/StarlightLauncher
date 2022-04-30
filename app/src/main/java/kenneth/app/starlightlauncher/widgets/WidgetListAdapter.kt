@@ -22,6 +22,7 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.utils.dp
 import kenneth.app.starlightlauncher.utils.px
 import kenneth.app.starlightlauncher.widgets.AddedWidget
+import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlin.math.max
 

@@ -60,7 +60,7 @@
 
             </FrameLayout>
 
-            <kenneth.app.starlightlauncher.views.WidgetList
+            <kenneth.app.starlightlauncher.widgets.WidgetList
                 android:id="@+id/widget_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

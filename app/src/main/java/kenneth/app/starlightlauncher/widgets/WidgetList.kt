@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.views
+package kenneth.app.starlightlauncher.widgets
 
 import android.animation.ObjectAnimator
 import android.app.Activity
@@ -25,9 +25,9 @@ import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
-import kenneth.app.starlightlauncher.widgets.AddedWidget
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kenneth.app.starlightlauncher.views.ReorderableList
+import kenneth.app.starlightlauncher.views.WidgetListAdapter
+import kenneth.app.starlightlauncher.views.WidgetListAdapterItem
 import javax.inject.Inject
 import kotlin.math.abs
 

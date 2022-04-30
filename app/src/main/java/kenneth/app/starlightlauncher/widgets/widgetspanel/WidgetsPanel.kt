@@ -63,6 +63,8 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     private var isDraggingPanel = false
 
+    private var isClick = false
+
     private var ongoingAnimation: WidgetPanelAnimation? = null
 
     private val gestureMover = GestureMover().apply {
@@ -218,6 +220,10 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
 
     private fun handleDragGesture(ev: MotionEvent) {
+        Log.d("starlight", "==========")
+        Log.d("starlight", "isDraggingPanel $isDraggingPanel")
+        Log.d("starlight", "isExpanded $isExpanded")
+        Log.d("starlight", "isScrolling $isScrolling")
         if (
             isDraggingPanel ||
             !isExpanded ||
