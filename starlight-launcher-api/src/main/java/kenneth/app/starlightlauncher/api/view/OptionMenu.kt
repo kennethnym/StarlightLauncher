@@ -188,8 +188,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     fun show(builder: OptionMenuBuilder) {
         builder(this)
         isVisible = true
-        gestureMover.minY =
-            -max(0, height - context.resources.displayMetrics.heightPixels).toFloat()
+        gestureMover.minY = 0f
         showAnimation.start()
     }
 
