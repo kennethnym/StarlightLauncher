@@ -4,12 +4,10 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.EntryPoint
@@ -22,8 +20,8 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kenneth.app.starlightlauncher.utils.dp
-import kenneth.app.starlightlauncher.utils.px
+import kenneth.app.starlightlauncher.utils.toDp
+import kenneth.app.starlightlauncher.utils.toPx
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
@@ -134,17 +132,18 @@ class WidgetListAdapter(
         )
             .run {
                 setAppWidget(appWidgetId, appWidgetInfo)
+
                 holder.binding.widgetFrameContainer.layoutParams =
                     holder.binding.widgetFrameContainer.layoutParams.apply {
-                        height = addedWidget.height.px
+                        height = addedWidget.height.toPx()
                     }
-                holder.binding.widgetFrame.apply {
-                    updatePadding(
-                        top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between),
-                        bottom = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between)
-                    )
-                    addView(this)
-                }
+
+                holder.binding.widgetFrame.updatePadding(
+                    top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between),
+                    bottom = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between)
+                )
+
+                holder.binding.widgetFrame.addView(this)
             }
 
         holder.binding.removeWidgetBtn.setOnClickListener {
@@ -272,7 +271,7 @@ class WidgetListAdapterItem(
         addedWidget?.let {
             widgetPreferenceManager.changeWidgetHeight(
                 it,
-                binding.widgetFrameContainer.height.dp
+                binding.widgetFrameContainer.height.toDp()
             )
         }
     }

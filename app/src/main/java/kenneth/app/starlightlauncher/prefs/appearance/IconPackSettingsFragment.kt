@@ -11,7 +11,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.utils.dp
+import kenneth.app.starlightlauncher.utils.toDp
+import kenneth.app.starlightlauncher.utils.toPx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,7 +73,7 @@ class IconPackSettingsFragment : PreferenceFragmentCompat() {
         Preference(context).apply {
             key = iconPack.packageName
             title = iconPack.name
-            icon = Bitmap.createScaledBitmap(iconPack.icon, 48.dp, 48.dp, false)
+            icon = Bitmap.createScaledBitmap(iconPack.icon, 48.toPx(), 48.toPx(), false)
                 .toDrawable(resources)
         }
 

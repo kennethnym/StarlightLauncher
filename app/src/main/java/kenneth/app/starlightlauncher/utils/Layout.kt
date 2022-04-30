@@ -5,11 +5,9 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowInsets
 
-val Int.dp: Int
-    get() = this / Resources.getSystem().displayMetrics.density.toInt()
+fun Int.toDp() = this / Resources.getSystem().displayMetrics.density.toInt()
 
-val Int.px: Int
-    get() = this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
+fun Int.toPx() = this * Resources.getSystem().displayMetrics.density.toInt()
 
 val WindowInsets.navBarHeight: Int
     get() =
