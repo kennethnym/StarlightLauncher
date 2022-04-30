@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.api.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Choreographer
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -26,7 +27,7 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT,
             )
-            scaleType = ImageView.ScaleType.MATRIX
+            scaleType = ImageView.ScaleType.FIT_XY
             clipToOutline = true
         }.also { addView(it) }
 
@@ -78,6 +79,7 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
     }
 
     fun blurWith(blurHandler: BlurHandler) {
+        shouldBlur = true
         this.blurHandler = blurHandler
     }
 

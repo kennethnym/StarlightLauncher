@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.appsearchmodule.widget
 import android.content.Context
 import android.content.pm.LauncherApps
 import android.os.Process
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -159,11 +160,13 @@ internal class PinnedAppsWidget(
                 appGridAdapter?.hideAppLabels()
             }
 
+            Log.d("starlight", "start blur")
             pinnedAppsWidget.blurWith(launcher.blurHandler)
         }
     }
 
     private fun hideWidget() {
+        Log.d("starlight", "hide widget")
         rootView.isVisible = false
         appGridAdapter = null
     }

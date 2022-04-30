@@ -33,30 +33,10 @@
                     android:layout_height="wrap_content"
                     android:visibility="@{isInEditMode ? View.GONE : View.VISIBLE}" />
 
-                <!-- edit mode header -->
-                <LinearLayout
+                <kenneth.app.starlightlauncher.widgets.widgetspanel.EditModeHeader
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/search_box_container_padding"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/widgets_panel_edit_mode_header" />
-
-                    <kenneth.app.starlightlauncher.api.view.IconButton
-                        android:id="@+id/exit_edit_mode_button"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="end|center"
-                        android:src="@drawable/ic_check"
-                        android:tint="?colorOnPlate" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}" />
 
             </FrameLayout>
 

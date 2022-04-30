@@ -5,6 +5,7 @@
     android:id="@+id/notes_widget"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/widget_list_space_between"
     android:background="@drawable/plate_background">
 
     <LinearLayout

@@ -8,9 +8,7 @@
     <!-- Defines how much space there should be between two separate text elements. -->
     <dimen name="text_separator_spacing">8dp</dimen>
 
-    <dimen name="widget_margin_horizontal">16dp</dimen>
-    <dimen name="widget_space_between">8dp</dimen>
-    <dimen name="widget_list_spacing">16dp</dimen>
+    <dimen name="widget_list_padding">16dp</dimen>
     <dimen name="widget_resize_handle_size">24dp</dimen>
     <dimen name="remove_widget_btn_padding">8dp</dimen>
 

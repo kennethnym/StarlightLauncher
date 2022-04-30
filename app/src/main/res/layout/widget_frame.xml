@@ -16,16 +16,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <kenneth.app.starlightlauncher.widgets.WidgetFrame
+        <FrameLayout
             android:id="@+id/widget_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/widget_list_padding"
             android:nestedScrollingEnabled="true" />
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/widget_space_between"
+            android:layout_marginHorizontal="@dimen/widget_list_space_between"
             android:src="@drawable/widget_resize_frame"
             android:visibility="@{isEditing ? View.VISIBLE : View.GONE}" />
 
@@ -34,9 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
             android:layout_marginTop="8dp"
-
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="@{isEditing ? View.VISIBLE : View.GONE}">
 
             <TextView
                 android:id="@+id/remove_widget_btn"

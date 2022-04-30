@@ -16,6 +16,8 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
@@ -51,6 +53,9 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     @Inject
     lateinit var searcher: Searcher
+
+    @Inject
+    lateinit var launcher: StarlightLauncherApi
 
     private lateinit var velocityTracker: VelocityTracker
 
@@ -90,8 +95,6 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setWindowInsetsAnimationCallback(keyboardAnimation)
         }
-
-        binding.exitEditModeButton.setOnClickListener { exitEditMode() }
     }
 
     fun unfocusSearchBox() {
@@ -174,7 +177,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     /**
-     * Enable widget editing. Users can reorder and remove widgets.
+     * Enables widget editing. Users can reorder and remove widgets.
      */
     fun editWidgets() {
         canBeSwiped = false
@@ -184,16 +187,19 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         binding.widgetList.enableDragAndDrop()
     }
 
-    override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        return if (canBeSwiped) handleWidgetPanelGesture(ev)
-        else super.onTouchEvent(ev)
-    }
-
-    private fun exitEditMode() {
+    /**
+     * Disables widget editing.
+     */
+    fun exitEditMode() {
         canBeSwiped = true
         isEditModeEnabled = false
         binding.isInEditMode = false
         binding.widgetList.disableDragAndDrop()
+    }
+
+    override fun onTouchEvent(ev: MotionEvent?): Boolean {
+        return if (canBeSwiped) handleWidgetPanelGesture(ev)
+        else super.onTouchEvent(ev)
     }
 
     private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean =

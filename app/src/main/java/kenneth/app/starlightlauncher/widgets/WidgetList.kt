@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.BindingRegister
@@ -104,6 +105,7 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
             LayoutParams.WRAP_CONTENT,
         )
         clipToPadding = false
+        updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between))
 
         animations = generateAnimations()
         addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList().onEach {

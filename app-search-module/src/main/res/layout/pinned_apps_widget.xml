@@ -3,24 +3,19 @@
     android:id="@+id/pinned_apps_widget"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/widget_list_space_between"
     android:background="@drawable/plate_background">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pinned_apps_grid"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pinned_apps_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginBottom="8dp"
-            android:fitsSystemWindows="false"
-            android:nestedScrollingEnabled="false"
-            android:paddingHorizontal="8dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
+        android:fitsSystemWindows="false"
+        android:nestedScrollingEnabled="false"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp" />
 
 </kenneth.app.starlightlauncher.api.view.Plate>

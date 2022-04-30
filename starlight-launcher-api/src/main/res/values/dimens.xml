@@ -11,6 +11,8 @@
 
     <dimen name="widget_padding_horizontal">24dp</dimen>
     <dimen name="widget_padding_vertical">16dp</dimen>
+    <!-- Defines the vertical margin that widgets should have in the list. -->
+    <dimen name="widget_list_space_between">8dp</dimen>
 
     <dimen name="dialog_padding_horizontal">24dp</dimen>
 

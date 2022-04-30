@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_mode_header_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/search_box_container_padding"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/widgets_panel_edit_mode_header" />
+
+    <kenneth.app.starlightlauncher.api.view.IconButton
+        android:id="@+id/exit_edit_mode_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="end|center"
+        android:src="@drawable/ic_check"
+        android:tint="?colorOnPlate" />
+
+</LinearLayout>

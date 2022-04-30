@@ -52,8 +52,8 @@ class SearchResultView(context: Context, attrs: AttributeSet) :
         orientation = VERTICAL
         gravity = Gravity.START
 
-        val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_margin_horizontal)
-        val paddingTop = resources.getDimensionPixelSize(R.dimen.widget_space_between)
+        val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_list_padding)
+        val paddingTop = resources.getDimensionPixelSize(R.dimen.widget_list_space_between)
 
         setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
 

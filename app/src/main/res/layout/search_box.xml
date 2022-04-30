@@ -41,7 +41,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="end|center"
-                    android:layout_marginEnd="@dimen/widget_margin_horizontal"
+                    android:layout_marginEnd="@dimen/widget_list_padding"
                     android:src="@drawable/ic_angle_up"
                     android:tint="?colorOnPlate" />
 

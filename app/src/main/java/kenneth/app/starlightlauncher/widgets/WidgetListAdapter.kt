@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -16,6 +18,7 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
@@ -135,7 +138,13 @@ class WidgetListAdapter(
                     holder.binding.widgetFrameContainer.layoutParams.apply {
                         height = addedWidget.height.px
                     }
-                holder.binding.widgetFrame.addView(this)
+                holder.binding.widgetFrame.apply {
+                    updatePadding(
+                        top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between),
+                        bottom = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between)
+                    )
+                    addView(this)
+                }
             }
 
         holder.binding.removeWidgetBtn.setOnClickListener {
