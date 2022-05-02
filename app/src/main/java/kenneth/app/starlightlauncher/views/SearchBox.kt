@@ -179,9 +179,9 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    private fun createPaddingAnimation(showTopPadding: Boolean): ValueAnimator {
-        return ValueAnimator.ofInt(
-            if (showTopPadding) 0 else appState.statusBarHeight,
+    private fun createPaddingAnimation(showTopPadding: Boolean): ValueAnimator =
+        ValueAnimator.ofInt(
+            paddingTop,
             if (showTopPadding) appState.statusBarHeight else 0,
         ).apply {
             interpolator = searchBoxAnimationInterpolator
@@ -193,7 +193,7 @@ class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                 )
             }
         }
-    }
+
 
     private fun isQueryEmpty(query: Editable?) = query == null || query.isBlank()
 }

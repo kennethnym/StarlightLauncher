@@ -25,6 +25,7 @@ import kenneth.app.starlightlauncher.api.utils.GestureMover
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.utils.addBackPressedCallback
 import javax.inject.Inject
+import kotlin.math.abs
 
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
@@ -198,6 +199,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("starlight", "on touch event")
         return if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
     }
@@ -226,28 +228,25 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
         }
 
     private fun handleDragGesture(ev: MotionEvent) {
-        Log.d("starlight", "==========")
-        Log.d("starlight", "isDraggingPanel $isDraggingPanel")
-        Log.d("starlight", "isExpanded $isExpanded")
-        Log.d("starlight", "isScrolling $isScrolling")
-        if (
-            isDraggingPanel ||
-            !isExpanded ||
-            !isScrolling && ev.rawY - gestureMover.initialY >= 0 && scrollY == 0
-        ) {
-            Log.d("starlight", "start drag")
-            // scroll view is at the top and user wants to swipe down
-            // i.e. retract widget panel
-            // therefore we let user move the widget panel
-            isDraggingPanel = true
-            gestureMover.addMotionMoveEvent(ev)
-            velocityTracker.addMovement(ev)
-        } else {
-            Log.d("starlight", "start scroll")
-            isDraggingPanel = false
-            isScrolling = true
-            // let user scroll the content
-            super.onTouchEvent(ev)
+        when {
+            isDraggingPanel || !isExpanded ||
+                    !isScrolling && ev.rawY - gestureMover.initialY >= 0 && scrollY == 0 -> {
+                Log.d("starlight", "start drag")
+                // scroll view is at the top and user wants to swipe down
+                // i.e. retract widget panel
+                // therefore we let user move the widget panel
+                isDraggingPanel = true
+                gestureMover.addMotionMoveEvent(ev)
+                velocityTracker.addMovement(ev)
+            }
+
+            else -> {
+                Log.d("starlight", "start scroll")
+                isDraggingPanel = false
+                isScrolling = true
+                // let user scroll the content
+                super.onTouchEvent(ev)
+            }
         }
     }
 
@@ -290,6 +289,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
     }
 
     private fun initiateGesture(ev: MotionEvent) {
+        isClick = true
         ongoingAnimation?.cancel()
         gestureMover.recordInitialEvent(ev)
         obtainVelocityTracker().also {
