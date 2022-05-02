@@ -37,6 +37,7 @@ internal class PinnedAppsWidget(
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                appGridAdapter?.isDraggingAndDropping = true
                 viewHolder?.itemView
                     ?.animate()
                     ?.scaleX(1.1f)
@@ -53,6 +54,7 @@ internal class PinnedAppsWidget(
                 .scaleY(1f)
                 .setDuration(200)
 
+            appGridAdapter?.isDraggingAndDropping = false
             if (!hasItemMoved) {
                 appGridAdapter?.showAppOptionMenuAtPosition(viewHolder.adapterPosition)
             } else {

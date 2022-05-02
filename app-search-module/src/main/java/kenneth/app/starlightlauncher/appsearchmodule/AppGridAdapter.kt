@@ -34,6 +34,11 @@ internal class AppGridAdapter(
     private val enableLongPressMenu: Boolean = true,
 ) : RecyclerView.Adapter<AppGridItem>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
+    /**
+     * Whether the grid is in dnd mode.
+     */
+    var isDraggingAndDropping = false
+
     private val apps = apps.toMutableList()
 
     private val visibleApps = mutableListOf<LauncherActivityInfo>()
@@ -196,17 +201,19 @@ internal class AppGridAdapter(
     }
 
     private fun openSelectedApp(sourceIconView: View) {
-        val sourceBounds = Rect().run {
-            sourceIconView.getGlobalVisibleRect(this)
-            this
-        }
+        if (!isDraggingAndDropping) {
+            val sourceBounds = Rect().run {
+                sourceIconView.getGlobalVisibleRect(this)
+                this
+            }
 
-        launcherApps.startMainActivity(
-            selectedApp.componentName,
-            Process.myUserHandle(),
-            sourceBounds,
-            null
-        )
+            launcherApps.startMainActivity(
+                selectedApp.componentName,
+                Process.myUserHandle(),
+                sourceBounds,
+                null
+            )
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
