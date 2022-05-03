@@ -5,9 +5,9 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -30,11 +30,10 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.calculateDominantColor
-import kenneth.app.starlightlauncher.utils.viewToBitmap
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 /**
  * Called when back button is pressed.
@@ -84,9 +83,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private var currentWallpaper: Bitmap? = null
+
     private var backPressedCallbacks = mutableListOf<BackPressHandler>()
 
     private var isDarkModeActive = false
+
+    private var isUpdatingColor = false
+
+    init {
+        Log.d("starlight", "init")
+    }
 
     fun addBackPressListener(handler: BackPressHandler) {
         backPressedCallbacks.add(handler)
@@ -95,8 +102,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        getCurrentWallpaper()
         updateAdaptiveColors()
-//        setTheme(appState.themeStyleId)
 
         launcherApi.let {
             if (it is StarlightLauncherApiImpl) it.setContext(this)
@@ -125,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                 resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         setContentView(binding.root)
+        setWallpaper()
         appearancePreferenceManager.iconPack.let {
             if (it is InstalledIconPack) it.load()
         }
@@ -156,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateWallpaper()
+        checkWallpaper()
     }
 
     override fun onStop() {
@@ -205,15 +213,6 @@ class MainActivity : AppCompatActivity() {
 
                 insets
             }
-
-            viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        updateWallpaper()
-                    }
-                }
-            )
         }
     }
 
@@ -221,19 +220,13 @@ class MainActivity : AppCompatActivity() {
      * Update the current adaptive color scheme by finding the dominant color of the current wallpaper.
      */
     private fun updateAdaptiveColors() {
+        val currentWallpaper = this.currentWallpaper ?: return
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            val wallpaperBitmap = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
             appState.apply {
-                val adaptiveBackgroundColor = wallpaperBitmap.calculateDominantColor()
+                val adaptiveBackgroundColor = currentWallpaper.calculateDominantColor()
                 val white = getColor(android.R.color.white)
-                val black = ColorUtils.setAlphaComponent(getColor(android.R.color.black), 0x80)
-
-                Log.d(
-                    "starlight",
-                    "contrast ${ColorUtils.calculateContrast(white, adaptiveBackgroundColor)}"
-                )
 
                 setTheme(
                     if (ColorUtils.calculateContrast(white, adaptiveBackgroundColor) > 1.5f)
@@ -242,23 +235,7 @@ class MainActivity : AppCompatActivity() {
                         R.style.LightLauncherTheme
                 )
             }
-
-            if (appState.isInitialStart) {
-                appState.isInitialStart = false
-            } else {
-                // restart activity after changing theme
-                restartActivity()
-            }
         }
-    }
-
-    /**
-     * Restarts the current activity.
-     * Credit to [this gist](https://gist.github.com/alphamu/f2469c28e17b24114fe5)
-     */
-    private fun restartActivity() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
     }
 
     @SuppressLint("InlinedApi")
@@ -291,18 +268,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Gets the current wallpaper and renders it to binding.wallpaperImage
+     * Checks if the wallpaper is updated. If it is, recreate activity.
      */
-    private fun updateWallpaper() {
+    private fun checkWallpaper() {
+        val currentWallpaper = this.currentWallpaper ?: return
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            thread(start = true) {
+                val wallpaper = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
+                if (!wallpaper.sameAs(currentWallpaper)) {
+                    runOnUiThread { recreate() }
+                }
+            }
+        }
+    }
+
+    private fun getCurrentWallpaper() {
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            val wallpaper = WallpaperManager.getInstance(this).fastDrawable
-            binding.wallpaperImage.setImageDrawable(wallpaper)
+            currentWallpaper = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
+        }
+    }
 
-            if (binding.wallpaperImage.width > 0 && binding.wallpaperImage.height > 0) {
-                blurHandler.changeWallpaper(viewToBitmap(binding.wallpaperImage))
-            }
+    private fun setWallpaper() {
+        currentWallpaper?.let {
+            binding.wallpaperImage.setImageBitmap(it)
+            blurHandler.changeWallpaper(it)
         }
     }
 }
