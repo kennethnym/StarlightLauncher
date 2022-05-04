@@ -69,6 +69,7 @@
         <entry key="app/src/main/res/layout/math_result_layout.xml" value="0.19630192502532928" />
         <entry key="app/src/main/res/layout/media_control_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/note_card.xml" value="0.2821557971014493" />
+        <entry key="app/src/main/res/layout/open_url_control.xml" value="0.19630192502532928" />
         <entry key="app/src/main/res/layout/pinned_apps_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/quick_notes_layout.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/quick_notes_list_item.xml" value="0.22509057971014493" />
@@ -137,6 +138,8 @@
         <entry key="unit-converter-widget/src/main/res/drawable/ic_angle_down.xml" value="0.159" />
         <entry key="unit-converter-widget/src/main/res/drawable/ic_check.xml" value="0.2295" />
         <entry key="unit-converter-widget/src/main/res/layout/unit_converter_widget.xml" value="0.19630192502532928" />
+        <entry key="url-opener/src/main/res/drawable/ic_angle_right_b.xml" value="0.2045" />
+        <entry key="url-opener/src/main/res/layout/open_url.xml" value="0.19630192502532928" />
         <entry key="wifi-control-module/src/main/res/drawable/require_location_perm_bg.xml" value="0.2085" />
         <entry key="wifi-control-module/src/main/res/layout/wifi_control.xml" value="0.3125" />
       </map>

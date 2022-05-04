@@ -19,6 +19,7 @@ import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
+import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
 import java.lang.Exception
 import javax.inject.Inject
@@ -56,6 +57,10 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.wificontrolmodule" to Extension(
             name = "kenneth.app.starlightlauncher.wificontrolmodule",
             searchModule = WifiControlModule(),
+        ),
+        "kenneth.app.starlightlauncher.urlopener" to Extension(
+            name = "kenneth.app.starlightlauncher.urlopener",
+            searchModule = UrlOpener(),
         ),
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
