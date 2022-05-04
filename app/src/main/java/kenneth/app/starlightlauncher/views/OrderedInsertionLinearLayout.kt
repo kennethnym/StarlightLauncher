@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.LinearLayout
 import kenneth.app.starlightlauncher.api.utils.swap
 
@@ -49,13 +50,11 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
             fromContainer != null && toContainer != null -> {
                 fromContainer.position = toPosition
                 toContainer.position = fromPosition
-                val fromContainerChildIndex = indexOfChild(fromContainer)
-                val toContainerChildIndex = indexOfChild(toContainer)
 
                 allContainers.swap(fromPosition, toPosition)
                 containersInLayout.swap(fromContainer.id, toContainer.id)
-                removeViewAt(fromContainerChildIndex)
-                removeViewAt(toContainerChildIndex)
+                removeView(fromContainer)
+                removeView(toContainer)
                 addView(fromContainer, toPosition)
                 addView(toContainer, fromPosition)
             }
@@ -64,18 +63,16 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 allContainers[toPosition] = fromContainer
                 allContainers[fromPosition] = null
 
-                val originalPosition = indexOfChild(fromContainer)
-                removeViewAt(originalPosition)
-                insertContainer(fromContainer)
+                removeView(fromContainer)
+                addView(fromContainer, toPosition)
             }
             fromContainer == null && toContainer != null -> {
                 toContainer.position = fromPosition
                 allContainers[fromPosition] = toContainer
                 allContainers[toPosition] = null
 
-                val originalPosition = indexOfChild(toContainer)
-                removeViewAt(originalPosition)
-                insertContainer(toContainer)
+                removeView(toContainer)
+                addView(toContainer, fromPosition)
             }
         }
     }
@@ -96,15 +93,15 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 }
             } else {
                 for (i in 0 until childCount - 1) {
-                    val cur = containersInLayout[getChildAt(0).id]!!
+                    val cur = containersInLayout[getChildAt(i).id]!!
                     val next = containersInLayout[getChildAt(i + 1).id]!!
                     when {
                         container.position < cur.position && container.position < next.position -> {
-                            addView(container, cur.position)
+                            addView(container, i)
                             return
                         }
                         container.position > cur.position && container.position < next.position -> {
-                            addView(container, next.position)
+                            addView(container, i + 1)
                             return
                         }
                     }
