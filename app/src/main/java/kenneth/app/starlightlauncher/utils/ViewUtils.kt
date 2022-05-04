@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kenneth.app.starlightlauncher.MainActivity
 
-val View.activity: AppCompatActivity?
+internal val View.activity: AppCompatActivity?
     get() {
         var ctx = context
         while (ctx is ContextWrapper) {
@@ -15,7 +15,7 @@ val View.activity: AppCompatActivity?
         return null
     }
 
-val View.mainActivity: MainActivity?
+internal val View.mainActivity: MainActivity?
     get() {
         var ctx = context
         while (ctx is ContextWrapper) {

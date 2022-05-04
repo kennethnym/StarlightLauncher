@@ -58,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay
+    <kenneth.app.starlightlauncher.widgets.widgetspanel.Overlay
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

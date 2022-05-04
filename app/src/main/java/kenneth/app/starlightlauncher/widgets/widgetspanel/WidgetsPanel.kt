@@ -31,7 +31,7 @@ import kotlin.math.abs
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
  */
 @AndroidEntryPoint
-class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
+internal class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
     /**
      * Determines whether [WidgetsPanel] can be expanded/retracted with swipes.
      */
@@ -60,7 +60,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
 
     private lateinit var velocityTracker: VelocityTracker
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.R)
     private val keyboardAnimation = KeyboardAnimation(this, appState)
 
     private var isVelocityTrackerObtained = false
@@ -163,7 +163,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
      * can move appropriately to avoid the onscreen keyboard from blocking the view.
      */
     fun avoidView(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             keyboardAnimation.avoidView(view)
         }
     }
@@ -172,7 +172,7 @@ class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(con
      * Opposite of [avoidView]. [WidgetsPanel] will not move to avoid the keyboard.
      */
     fun stopAvoidingView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             keyboardAnimation.stopAvoidingView()
         }
     }

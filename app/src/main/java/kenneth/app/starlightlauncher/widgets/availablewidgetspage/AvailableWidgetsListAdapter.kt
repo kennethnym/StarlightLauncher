@@ -51,7 +51,7 @@ private interface AvailableWidgetListAdapterEntryPoint {
  * Shows available widgets on the phone to an expandable list.
  * Also handles initial creation/configuration of widgets.
  */
-class AvailableWidgetsListAdapter(
+internal class AvailableWidgetsListAdapter(
     private val context: Context,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()
@@ -234,7 +234,7 @@ class AvailableWidgetsListAdapter(
     }
 }
 
-sealed class AvailableWidgetListItem(rootView: View) : RecyclerView.ViewHolder(rootView)
+internal sealed class AvailableWidgetListItem(rootView: View) : RecyclerView.ViewHolder(rootView)
 
 private class ListHeader(binding: AvailableWidgetsListHeaderBinding) :
     AvailableWidgetListItem(binding.root)

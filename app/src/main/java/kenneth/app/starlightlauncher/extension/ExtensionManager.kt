@@ -24,11 +24,17 @@ import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Loads and manages Starlight Launcher extensions.
+ */
 @Singleton
-class ExtensionManager @Inject constructor(
+internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val launcherApi: StarlightLauncherApi,
 ) {
+    /**
+     * A map of extensions loaded into memory.
+     */
     private val extensions = mutableMapOf(
         "kenneth.app.starlightlauncher.appsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
@@ -172,11 +178,6 @@ class ExtensionManager @Inject constructor(
     fun lookupWidget(extName: String) = extensions[extName]?.widget
 
     fun lookupSearchModule(extName: String) = extensions[extName]?.searchModule
-
-    fun getWidgetMetadata(extName: String) = widgetMetadata[extName]
-
-    fun getSettingsActivityIntentForExtension(extName: String, category: String) =
-        extensionSettingsIntents[category]?.let { it[extName] }
 
     fun getIntentsForSettingsCategory(category: String) =
         extensionSettingsIntents[category]?.values?.toList() ?: listOf()

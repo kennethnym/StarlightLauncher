@@ -24,7 +24,7 @@ sealed class SearchPreferenceChanged {
 typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
 
 @Singleton
-class SearchPreferenceManager @Inject constructor(
+internal class SearchPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val extensionManager: ExtensionManager,
 ) : ObservablePreferences<SearchPreferenceManager>(context) {

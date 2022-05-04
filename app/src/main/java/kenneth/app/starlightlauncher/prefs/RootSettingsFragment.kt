@@ -18,7 +18,7 @@ import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RootSettingsFragment : PreferenceFragmentCompat() {
+internal class RootSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var extensionManager: ExtensionManager
 

@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class IconPackSettingsFragment : PreferenceFragmentCompat() {
+internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
 

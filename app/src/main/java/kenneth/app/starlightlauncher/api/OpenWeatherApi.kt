@@ -23,6 +23,9 @@ enum class TemperatureUnit(val code: String, val symbol: String) {
 private const val API_URL = "https://api.openweathermap.org/data/2.5"
 private const val WEATHER_ICON_URL = "https://openweathermap.org/img/wn"
 
+/**
+ * An api wrapper for OpenWeatherApi.
+ */
 class OpenWeatherApi @Inject constructor(
     private val json: Json,
     private val httpClient: OkHttpClient

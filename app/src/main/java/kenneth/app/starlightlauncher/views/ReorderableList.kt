@@ -12,7 +12,7 @@ typealias SelectionChangedListener = (viewHolder: RecyclerView.ViewHolder?) -> U
 /**
  * A [RecyclerView] that allows reordering of items through drag-and-drop.
  */
-open class ReorderableList(context: Context, attrs: AttributeSet?) :
+internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
     RecyclerView(context, attrs) {
     private val orderObservable = object : Observable() {
         fun notifyOrderChanged(from: Int, to: Int) {

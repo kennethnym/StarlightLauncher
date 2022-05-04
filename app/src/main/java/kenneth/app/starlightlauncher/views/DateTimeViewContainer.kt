@@ -21,7 +21,7 @@ import kotlin.math.max
  * Contains a layoutWeight getter/setter to enable ObjectAnimator animation.
  */
 @AndroidEntryPoint
-class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class DateTimeViewContainer(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     @Inject
     lateinit var appState: AppState
 

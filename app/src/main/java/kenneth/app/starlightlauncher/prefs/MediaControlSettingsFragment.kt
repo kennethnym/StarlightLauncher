@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.prefs
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.preference.Preference
@@ -19,10 +18,7 @@ class MediaControlSettingsFragment : PreferenceFragmentCompat() {
     lateinit var sharedPreferences: SharedPreferences
 
     private val notificationListenerSettingsIntent = Intent(
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-        else
-            "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
+        Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
     )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

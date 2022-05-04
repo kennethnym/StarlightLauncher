@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.prefs.views.ReorderablePreference
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SearchLayoutSettingsFragment : PreferenceFragmentCompat() {
+internal class SearchLayoutSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var searchPreferenceManager: SearchPreferenceManager
 

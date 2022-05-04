@@ -13,7 +13,7 @@ typealias PermissionRequestResultCallback = (Boolean) -> Unit
  * Handles permission logic for a given [Activity]
  */
 @ActivityScoped
-class PermissionHandler @Inject constructor() {
+internal class PermissionHandler @Inject constructor() {
     /**
      * A map that corresponds [PermissionRequestResultCallback] to the permission that they are
      * interested in.

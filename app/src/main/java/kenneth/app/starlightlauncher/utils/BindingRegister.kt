@@ -9,7 +9,7 @@ import kenneth.app.starlightlauncher.searching.views.SearchResultView
 /**
  * A class that stores references of view bindings of different views/activities
  */
-object BindingRegister {
+internal object BindingRegister {
     var mainActivity: MainActivity? = null
 
     /**

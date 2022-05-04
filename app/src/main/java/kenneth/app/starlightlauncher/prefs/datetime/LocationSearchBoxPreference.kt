@@ -12,7 +12,7 @@ import kenneth.app.starlightlauncher.R
 
 typealias OnRequestSearchListener = (query: String) -> Unit
 
-class LocationSearchBoxPreference(context: Context, attrs: AttributeSet) :
+internal class LocationSearchBoxPreference(context: Context, attrs: AttributeSet) :
     Preference(context, attrs) {
     /**
      * Determines whether the progress bar is visible.

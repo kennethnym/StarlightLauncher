@@ -9,7 +9,7 @@ import kenneth.app.starlightlauncher.AppState
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdaptiveColorTextView(context: Context, attrs: AttributeSet?) :
+internal class AdaptiveColorTextView(context: Context, attrs: AttributeSet?) :
     AppCompatTextView(context, attrs), LifecycleObserver {
     constructor(context: Context) : this(context, null)
 

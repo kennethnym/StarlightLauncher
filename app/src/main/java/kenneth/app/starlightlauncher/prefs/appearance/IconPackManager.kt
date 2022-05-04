@@ -10,10 +10,10 @@ import javax.inject.Singleton
 private const val NOVA_LAUNCHER_INTENT_CATEGORY = "com.teslacoilsw.launcher.THEME"
 private const val NOVA_LAUNCHER_INTENT_ACTION = "com.novalauncher.THEME"
 
-typealias InstalledIconPacks = Map<String, InstalledIconPack>
+internal typealias InstalledIconPacks = Map<String, InstalledIconPack>
 
 @Singleton
-class IconPackManager @Inject constructor(
+internal class IconPackManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val packageManager = context.packageManager

@@ -29,7 +29,7 @@ import kotlin.math.max
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
-interface WidgetListAdapterEntryPoint {
+internal interface WidgetListAdapterEntryPoint {
     fun launcherApi(): StarlightLauncherApi
 
     fun extensionManager(): ExtensionManager
@@ -39,7 +39,7 @@ interface WidgetListAdapterEntryPoint {
     fun widgetPreferenceManager(): WidgetPreferenceManager
 }
 
-class WidgetListAdapter(
+internal class WidgetListAdapter(
     private val context: Context,
     val widgets: List<AddedWidget>,
 ) : RecyclerView.Adapter<WidgetListAdapterItem>() {
@@ -180,7 +180,7 @@ class WidgetListAdapter(
     }
 }
 
-class WidgetListAdapterItem(
+internal class WidgetListAdapterItem(
     context: Context,
     val binding: WidgetFrameBinding,
     private val widgetList: WidgetList?

@@ -11,7 +11,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.core.graphics.ColorUtils
@@ -43,7 +42,7 @@ typealias BackPressHandler = () -> Boolean
 
 @Module
 @InstallIn(ActivityComponent::class)
-object MainActivityModule {
+internal object MainActivityModule {
     @Provides
     fun provideMainActivity(@ActivityContext context: Context): MainActivity? {
         var ctx = context
@@ -58,28 +57,28 @@ object MainActivityModule {
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
-    lateinit var searcher: Searcher
+    internal lateinit var searcher: Searcher
 
     @Inject
-    lateinit var extensionManager: ExtensionManager
+    internal lateinit var extensionManager: ExtensionManager
 
     @Inject
-    lateinit var blurHandler: BlurHandler
+    internal lateinit var blurHandler: BlurHandler
 
     @Inject
-    lateinit var appState: AppState
+    internal lateinit var appState: AppState
 
     @Inject
-    lateinit var appearancePreferenceManager: AppearancePreferenceManager
+    internal lateinit var appearancePreferenceManager: AppearancePreferenceManager
 
     @Inject
-    lateinit var inputMethodManager: InputMethodManager
+    internal lateinit var inputMethodManager: InputMethodManager
 
     @Inject
-    lateinit var permissionHandler: PermissionHandler
+    internal lateinit var permissionHandler: PermissionHandler
 
     @Inject
-    lateinit var launcherApi: StarlightLauncherApi
+    internal lateinit var launcherApi: StarlightLauncherApi
 
     private lateinit var binding: ActivityMainBinding
 
@@ -89,13 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     private var isDarkModeActive = false
 
-    private var isUpdatingColor = false
-
-    init {
-        Log.d("starlight", "init")
-    }
-
-    fun addBackPressListener(handler: BackPressHandler) {
+    internal fun addBackPressListener(handler: BackPressHandler) {
         backPressedCallbacks.add(handler)
     }
 
@@ -175,15 +168,6 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         cleanup()
         super.onPause()
-    }
-
-    override fun onContextItemSelected(item: MenuItem): Boolean =
-        appState.contextMenuCallbackForView?.onContextItemSelected(item)
-            ?: super.onContextItemSelected(item)
-
-    override fun onContextMenuClosed(menu: Menu) {
-        appState.contextMenuCallbackForView?.onContextMenuClosed()
-            ?: super.onContextMenuClosed(menu)
     }
 
     private fun cleanup() {

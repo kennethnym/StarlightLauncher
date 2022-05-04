@@ -14,7 +14,7 @@ import java.time.ZoneId
 /**
  * A [KSerializer] that serializes [LocalDateTime]
  */
-object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
+internal object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     override val descriptor = PrimitiveSerialDescriptor("Instant", PrimitiveKind.LONG)
 
     override fun deserialize(decoder: Decoder): LocalDateTime =
@@ -27,7 +27,7 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
 /**
  * A [KSerializer] that serializes [ComponentName]
  */
-object ComponentNameSerializer : KSerializer<ComponentName> {
+internal object ComponentNameSerializer : KSerializer<ComponentName> {
     override val descriptor = PrimitiveSerialDescriptor("Flattened", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): ComponentName =

@@ -18,7 +18,7 @@ private object DefaultValue {
 }
 
 @Singleton
-class DateTimePreferenceManager @Inject constructor(
+internal class DateTimePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     val shouldUse24HrClock: Boolean

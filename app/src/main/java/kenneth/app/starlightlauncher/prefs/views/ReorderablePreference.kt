@@ -13,10 +13,8 @@ import kenneth.app.starlightlauncher.databinding.ReorderablePreferenceItemBindin
 import kenneth.app.starlightlauncher.views.ListOrderChangedListener
 import kenneth.app.starlightlauncher.views.ReorderableList
 
-class ReorderablePreference(context: Context, attrs: AttributeSet?) :
+internal class ReorderablePreference(context: Context, attrs: AttributeSet?) :
     PreferenceCategory(context, attrs) {
-    private lateinit var orderList: ReorderableList
-
     private var orderListener: ListOrderChangedListener? = null
 
     var items: List<Item> = emptyList()

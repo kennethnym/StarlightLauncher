@@ -11,7 +11,7 @@ import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsPage
 
-class LauncherOptionMenu(
+internal class LauncherOptionMenu(
     private val context: Context,
     private val launcher: StarlightLauncherApi,
     private val menu: OptionMenu,

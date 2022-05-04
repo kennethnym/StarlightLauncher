@@ -18,7 +18,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
-import kenneth.app.starlightlauncher.prefs.PinnedAppsPreferenceManager
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
@@ -27,7 +26,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+internal object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient() = OkHttpClient()
@@ -71,10 +70,6 @@ object AppModule {
     fun provideLocationManager(@ApplicationContext context: Context) =
         context.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    @Provides
-    @Singleton
-    fun providePinnedAppsPreferenceManager(@ApplicationContext context: Context) =
-        PinnedAppsPreferenceManager.getInstance(context)
 
     @Provides
     fun provideLocale() = Locale.getDefault()

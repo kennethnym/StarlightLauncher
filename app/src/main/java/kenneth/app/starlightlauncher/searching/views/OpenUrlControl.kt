@@ -11,8 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.OpenUrlControlBinding
-import kenneth.app.starlightlauncher.searching.SmartSearcher
-import kenneth.app.starlightlauncher.searching.SuggestedResultType
 
 /**
  * Renders a view that lets user open the copied link in the browser when

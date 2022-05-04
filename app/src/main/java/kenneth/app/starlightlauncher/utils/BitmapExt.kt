@@ -18,7 +18,7 @@ private fun Bitmap.downscale(): Bitmap {
     )
 }
 
-fun Bitmap.calculateBrightness(): Int {
+internal fun Bitmap.calculateBrightness(): Int {
     val downscaledBitmap = downscale()
     val downscaledWidth = downscaledBitmap.width
     val downscaledHeight = downscaledBitmap.height
@@ -50,7 +50,7 @@ fun Bitmap.calculateBrightness(): Int {
     return (r + g + b) / (n * 3)
 }
 
-fun Bitmap.calculateDominantColor(): Int {
+internal fun Bitmap.calculateDominantColor(): Int {
     val downscaledBitmap = downscale()
     val downscaledWidth = downscaledBitmap.width
     val downscaledHeight = downscaledBitmap.height

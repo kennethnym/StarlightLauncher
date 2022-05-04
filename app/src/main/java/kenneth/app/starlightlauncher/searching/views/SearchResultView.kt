@@ -24,7 +24,7 @@ import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SearchResultView(context: Context, attrs: AttributeSet) :
+internal class SearchResultView(context: Context, attrs: AttributeSet) :
     OrderedInsertionLinearLayout(context, attrs) {
     @Inject
     lateinit var extensionManager: ExtensionManager

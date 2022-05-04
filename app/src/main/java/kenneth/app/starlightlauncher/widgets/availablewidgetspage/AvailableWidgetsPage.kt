@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AvailableWidgetsPage(context: Context) : LinearLayout(context) {
+internal class AvailableWidgetsPage(context: Context) : LinearLayout(context) {
     private val binding = AvailableWidgetsPageBinding.inflate(LayoutInflater.from(context), this)
 
     private val appLabels = mutableMapOf<String, String>()

@@ -26,7 +26,7 @@ class StarlightLauncherSettingsActivity : SettingsActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
     SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
-    lateinit var extensionManager: ExtensionManager
+    internal lateinit var extensionManager: ExtensionManager
 
     override fun createPreferenceFragment(): PreferenceFragmentCompat = RootSettingsFragment()
 

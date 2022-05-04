@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.views.widgetspanel
+package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -30,7 +30,7 @@ private val SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR =
  * Widgets can use this to display additional info.
  */
 @AndroidEntryPoint
-class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
+internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
     @Inject
     lateinit var appState: AppState
 
@@ -61,13 +61,6 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-//        val insets = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets)
-//            .getInsets(WindowInsetsCompat.Type.systemBars())
-//        setPadding(0, 0, 0, insets.bottom)
-    }
-
     /**
      * Shows this [Overlay] by animating from [view]
      */
@@ -85,20 +78,10 @@ class Overlay(context: Context, attrs: AttributeSet) : Plate(context, attrs) {
 
         val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 1f)
 
-//        val widthAnimator = ObjectAnimator.ofInt(this, "width", view.width, appState.screenWidth)
-//        val heightAnimator =
-//            ObjectAnimator.ofInt(
-//                this,
-//                "height",
-//                view.height,
-//                appState.screenHeight + insets.top
-//            )
-
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
             playTogether(yAnimator, opacityAnimator)
-//            playTogether(widthAnimator, heightAnimator, xAnimator, yAnimator, opacityAnimator)
             start()
         }
 

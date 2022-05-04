@@ -8,8 +8,8 @@ import androidx.annotation.RequiresApi
 import kenneth.app.starlightlauncher.AppState
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.Q)
-class KeyboardAnimation @Inject constructor(
+@RequiresApi(Build.VERSION_CODES.R)
+internal class KeyboardAnimation @Inject constructor(
     private val widgetsPanel: WidgetsPanel,
     private val appState: AppState,
 ) :

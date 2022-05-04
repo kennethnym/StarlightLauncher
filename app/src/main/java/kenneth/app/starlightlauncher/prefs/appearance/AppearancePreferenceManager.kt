@@ -15,7 +15,7 @@ private object DefaultValue {
 }
 
 @Singleton
-class AppearancePreferenceManager @Inject constructor(
+internal class AppearancePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val defaultIconPack = DefaultIconPack(context)

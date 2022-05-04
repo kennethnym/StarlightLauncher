@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
+internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var nominatimApi: NominatimApi
 

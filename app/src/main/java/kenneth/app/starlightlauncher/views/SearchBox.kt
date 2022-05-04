@@ -24,7 +24,7 @@ import kenneth.app.starlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     /**
      * Whether [SearchBox] contains search query.
      */

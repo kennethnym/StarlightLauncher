@@ -1,6 +1,5 @@
 package kenneth.app.starlightlauncher
 
-import android.app.Activity
 import android.content.Context
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
@@ -18,13 +17,12 @@ import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.utils.BindingRegister
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class StarlightLauncherApiModule {
+internal abstract class StarlightLauncherApiModule {
     @Binds
     abstract fun bindStarlightLauncherApi(
         impl: StarlightLauncherApiImpl
@@ -32,7 +30,7 @@ abstract class StarlightLauncherApiModule {
 }
 
 @Singleton
-class StarlightLauncherApiImpl @Inject constructor(
+internal class StarlightLauncherApiImpl @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,
     override val blurHandler: BlurHandler
 ) : StarlightLauncherApi {

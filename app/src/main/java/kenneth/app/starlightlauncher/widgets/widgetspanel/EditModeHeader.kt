@@ -14,7 +14,7 @@ import kenneth.app.starlightlauncher.utils.BindingRegister
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditModeHeader(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
+internal class EditModeHeader(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
     @Inject
     lateinit var launcher: StarlightLauncherApi
 

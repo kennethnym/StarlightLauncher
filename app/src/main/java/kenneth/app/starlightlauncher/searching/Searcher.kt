@@ -13,7 +13,7 @@ private const val SEARCH_DELAY: Long = 500
 typealias ResultCallback = (SearchResult) -> Unit
 
 @Singleton
-class Searcher @Inject constructor(
+internal class Searcher @Inject constructor(
     private val extensionManager: ExtensionManager,
 ) {
     private val resultCallbacks = mutableListOf<ResultCallback>()

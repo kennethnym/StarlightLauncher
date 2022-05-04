@@ -1,8 +1,5 @@
 package kenneth.app.starlightlauncher
 
-import android.view.View
-import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.utils.ContextMenuCallback
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -10,7 +7,7 @@ import javax.inject.Singleton
  * Holds the current state of the launcher.
  */
 @Singleton
-class AppState @Inject constructor() {
+internal class AppState @Inject constructor() {
     enum class Theme {
         LIGHT, DARK
     }
@@ -44,14 +41,4 @@ class AppState @Inject constructor() {
 //    var adaptiveTheme = AdaptiveTheme()
 
     var statusBarHeight = 0
-
-    /**
-     * The [ContextMenuCallback] that [MainActivity] should call after
-     * an item in the current floating menu is selected.
-     *
-     * If a [View] want to be notified of what item is selected after a floating context menu
-     * is shown for it, implement [ContextMenuCallback], then set this field when
-     * [View.onCreateContextMenu] is called.
-     */
-    var contextMenuCallbackForView: ContextMenuCallback? = null
 }

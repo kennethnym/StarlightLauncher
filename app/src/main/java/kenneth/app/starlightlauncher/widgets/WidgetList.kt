@@ -15,14 +15,12 @@ import android.view.WindowInsets
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.children
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.animations.CardAnimation
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
@@ -44,7 +42,7 @@ private const val SCROLL_THRESHOLD = 10
  * Contains a list of widgets on the home screen.
  */
 @AndroidEntryPoint
-class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(context, attrs) {
+internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(context, attrs) {
     @Inject
     lateinit var widgetPreferenceManager: WidgetPreferenceManager
 
@@ -53,8 +51,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
 
     @Inject
     lateinit var launcher: StarlightLauncherApi
-
-    private val animations: List<CardAnimation>
 
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
@@ -107,7 +103,6 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
         clipToPadding = false
         updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between))
 
-        animations = generateAnimations()
         addedWidgets = widgetPreferenceManager.addedWidgets.toMutableList().onEach {
             if (it is AddedWidget.AndroidWidget) {
                 appWidgetIdMap[it.appWidgetId] = it
@@ -337,12 +332,4 @@ class WidgetList(context: Context, attrs: AttributeSet) : ReorderableList(contex
             widgetViewHolderInEditMode = viewHolder
         }
     }
-
-    /**
-     * Generates card animations for every widget.
-     */
-    private fun generateAnimations(): List<CardAnimation> =
-        children.foldIndexed(mutableListOf()) { i, anims, child ->
-            anims.apply { add(CardAnimation(child, i * 20L)) }
-        }
 }

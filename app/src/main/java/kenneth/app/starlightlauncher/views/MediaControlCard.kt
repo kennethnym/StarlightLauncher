@@ -33,7 +33,7 @@ import javax.inject.Inject
  * Requires notification listener access in order to function properly.
  */
 @AndroidEntryPoint
-class MediaControlCard(context: Context, attrs: AttributeSet) :
+internal class MediaControlCard(context: Context, attrs: AttributeSet) :
     LinearLayout(context, attrs), LifecycleEventObserver {
     @Inject
     lateinit var sharedPreferences: SharedPreferences

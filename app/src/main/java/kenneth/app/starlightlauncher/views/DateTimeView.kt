@@ -34,7 +34,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DateTimeView(context: Context, attrs: AttributeSet) :
+internal class DateTimeView(context: Context, attrs: AttributeSet) :
     LinearLayout(context, attrs), LifecycleEventObserver {
     @Inject
     lateinit var locale: Locale

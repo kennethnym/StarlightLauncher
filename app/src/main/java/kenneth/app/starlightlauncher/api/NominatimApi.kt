@@ -63,6 +63,9 @@ class NominatimApi @Inject constructor(
     }
 }
 
+/**
+ * Describes a place returned by Nominatim's api.
+ */
 @Serializable
 data class Place(
     @SerialName("display_name")

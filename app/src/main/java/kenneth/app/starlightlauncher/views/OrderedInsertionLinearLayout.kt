@@ -8,7 +8,7 @@ import kenneth.app.starlightlauncher.api.utils.swap
 /**
  * A [LinearLayout] that provides methods for inserting children in a given order.
  */
-abstract class OrderedInsertionLinearLayout(context: Context, attrs: AttributeSet?) :
+internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: AttributeSet?) :
     LinearLayout(context, attrs) {
     /**
      * A list of all containers that may or may not be shown in [OrderedInsertionLinearLayout].

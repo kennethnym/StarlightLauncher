@@ -1,6 +1,5 @@
 package kenneth.app.starlightlauncher.widgets
 
-import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.SharedPreferences
@@ -13,14 +12,11 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.security.SecureRandom
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val WIDGET_ORDER_LIST_SEPARATOR = ";"
-
-sealed class WidgetPreferenceChanged {
+internal sealed class WidgetPreferenceChanged {
     data class WidgetOrderChanged(
         val fromPosition: Int,
         val toPosition: Int,
@@ -33,10 +29,10 @@ sealed class WidgetPreferenceChanged {
     ) : WidgetPreferenceChanged()
 }
 
-typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
+internal typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
 
 @Singleton
-class WidgetPreferenceManager @Inject constructor(
+internal class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val extensionManager: ExtensionManager,
     private val random: Random,

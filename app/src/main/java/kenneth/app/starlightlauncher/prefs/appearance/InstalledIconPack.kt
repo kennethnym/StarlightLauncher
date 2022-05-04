@@ -20,13 +20,13 @@ private const val RES_TYPE_XML = "xml"
 /**
  * Represents an icon pack installed on the device.
  */
-class InstalledIconPack(context: Context, val packageName: String) : IconPack {
+internal class InstalledIconPack(context: Context, val packageName: String) : IconPack {
     private val packageInfo by lazy {
         packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
     }
 
     /**
-     * Get the bitmap of the icon of this icon pack. Meta.
+     * Get the bitmap of the icon of this icon pack.
      */
     override val icon: Bitmap by lazy {
         packageInfo

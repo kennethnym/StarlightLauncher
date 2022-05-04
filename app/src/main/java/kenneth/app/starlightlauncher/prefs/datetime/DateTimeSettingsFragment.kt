@@ -15,7 +15,7 @@ import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DateTimeSettingsFragment : PreferenceFragmentCompat(),
+internal class DateTimeSettingsFragment : PreferenceFragmentCompat(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     @Inject
     lateinit var dateTimePreferenceManager: DateTimePreferenceManager

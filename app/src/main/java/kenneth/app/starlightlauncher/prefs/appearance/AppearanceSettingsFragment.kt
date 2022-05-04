@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppearanceSettingsFragment : PreferenceFragmentCompat(),
+internal class AppearanceSettingsFragment : PreferenceFragmentCompat(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
