@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.appshortcutsearchmodule
 
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.graphics.Rect
 import android.os.Build
@@ -61,13 +62,16 @@ class AppShortcutSearchResultAdapter(
                 true
             )
                 .apply {
+                    appIcon = it.app?.getIcon(context.resources.displayMetrics.densityDpi)
+                    appLabel = it.app?.label?.toString()
                     appShortcutIcon = launcherApps.getShortcutIconDrawable(
-                        it,
+                        it.info,
                         context.resources.displayMetrics.densityDpi
                     )
-                    appShortcutLabel = it.longLabel?.toString() ?: it.shortLabel.toString()
+                    appShortcutLabel =
+                        it.info.longLabel?.toString() ?: it.info.shortLabel.toString()
 
-                    root.setOnClickListener { _ -> openAppShortcut(this, it) }
+                    root.setOnClickListener { _ -> openAppShortcut(this, it.info) }
                 }
         }
     }
@@ -75,7 +79,7 @@ class AppShortcutSearchResultAdapter(
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun openAppShortcut(itemBinding: AppShortcutListItemBinding, shortcut: ShortcutInfo) {
         val sourceBound = Rect().apply {
-            itemBinding.iconView.getGlobalVisibleRect(this)
+            itemBinding.shortcutIconView.getGlobalVisibleRect(this)
         }
 
         launcherApps.startShortcut(

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="app_shortcut_icon_size">32dp</dimen>
+    <dimen name="app_icon_size">16dp</dimen>
+    <dimen name="app_label_size">12sp</dimen>
 </resources>

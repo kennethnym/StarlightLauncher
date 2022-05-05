@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="appIcon"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="appLabel"
+            type="String" />
 
         <variable
             name="appShortcutIcon"
@@ -16,21 +27,53 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:padding="@dimen/search_result_card_padding"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
-            android:id="@+id/icon_view"
-            android:layout_width="@dimen/app_shortcut_icon_size"
-            android:layout_height="@dimen/app_shortcut_icon_size"
-            android:layout_margin="@dimen/search_result_card_padding"
-            android:src="@{appShortcutIcon}" />
-
-        <TextView
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{appShortcutLabel}" />
+            android:layout_marginEnd="@dimen/search_result_card_padding">
+
+            <ImageView
+                android:id="@+id/shortcut_icon_view"
+                android:layout_width="@dimen/app_shortcut_icon_size"
+                android:layout_height="@dimen/app_shortcut_icon_size"
+                android:src="@{appShortcutIcon}" />
+
+            <ImageView
+                android:layout_width="@dimen/app_icon_size"
+                android:layout_height="@dimen/app_icon_size"
+                android:layout_gravity="end|bottom"
+                android:src="@{appIcon}" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{appShortcutLabel}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{appLabel}"
+                android:textSize="@dimen/app_label_size"
+                android:textStyle="bold"
+                android:visibility="@{appLabel == null ? View.GONE : View.VISIBLE}" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

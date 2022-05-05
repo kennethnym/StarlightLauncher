@@ -28,7 +28,7 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
      */
     private val shortcutsIndexed = mutableMapOf<String, MutableMap<String, ShortcutInfo>>()
 
-    private val shortcutList = mutableListOf<ShortcutInfo>()
+    private val shortcutList = mutableListOf<AppShortcut>()
 
     private lateinit var launcherApps: LauncherApps
 
@@ -58,9 +58,15 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
                         },
                         Process.myUserHandle()
                     )
-                        ?.let {
-                            shortcutList += it
-                            it.forEach { shortcut ->
+                        ?.let { shortcuts ->
+                            shortcutList += shortcuts.map { info ->
+                                AppShortcut(
+                                    info,
+                                    app = getActivityList(info.`package`, Process.myUserHandle())
+                                        .find { it.componentName == info.activity }
+                                )
+                            }
+                            shortcuts.forEach { shortcut ->
                                 if (shortcutsIndexed.contains(shortcut.`package`)) {
                                     shortcutsIndexed[shortcut.`package`]?.set(shortcut.id, shortcut)
                                 } else {
@@ -92,8 +98,8 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
                 query = keyword,
                 shortcuts = shortcutList
                     .sortedWith { shortcut1, shortcut2 ->
-                        val name1 = shortcut1.longLabel ?: shortcut1.shortLabel ?: ""
-                        val name2 = shortcut2.longLabel ?: shortcut2.shortLabel ?: ""
+                        val name1 = shortcut1.info.longLabel ?: shortcut1.info.shortLabel ?: ""
+                        val name2 = shortcut2.info.longLabel ?: shortcut2.info.shortLabel ?: ""
                         return@sortedWith sortByRegex(
                             name1.toString(),
                             name2.toString(),
@@ -176,6 +182,6 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
         addedShortcuts.forEach { currentShortcuts[it.id] = it }
     }
 
-    internal class Result(query: String, internal val shortcuts: List<ShortcutInfo>) :
+    internal class Result(query: String, internal val shortcuts: List<AppShortcut>) :
         SearchResult(query, EXTENSION_NAME)
 }
