@@ -53,7 +53,7 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
         gravity = Gravity.START
 
         val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.widget_list_padding)
-        val paddingTop = resources.getDimensionPixelSize(R.dimen.widget_list_space_between)
+        val paddingTop = resources.getDimensionPixelSize(R.dimen.widget_list_space_between) * 2
 
         setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
 
@@ -98,7 +98,6 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
             BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
             extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
                 val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
-
                 containerAt(order)
                     ?.let {
                         searchModule.adapter.onBindSearchResult(viewHolders[order]!!, result)
