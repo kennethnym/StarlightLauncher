@@ -55,8 +55,8 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 containersInLayout.swap(fromContainer.id, toContainer.id)
                 removeView(fromContainer)
                 removeView(toContainer)
-                addView(fromContainer, toPosition)
-                addView(toContainer, fromPosition)
+                insertContainer(fromContainer)
+                insertContainer(toContainer)
             }
             fromContainer != null && toContainer == null -> {
                 fromContainer.position = toPosition
@@ -64,7 +64,7 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 allContainers[fromPosition] = null
 
                 removeView(fromContainer)
-                addView(fromContainer, toPosition)
+                insertContainer(fromContainer)
             }
             fromContainer == null && toContainer != null -> {
                 toContainer.position = fromPosition
@@ -72,7 +72,7 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 allContainers[toPosition] = null
 
                 removeView(toContainer)
-                addView(toContainer, fromPosition)
+                insertContainer(toContainer)
             }
         }
     }
