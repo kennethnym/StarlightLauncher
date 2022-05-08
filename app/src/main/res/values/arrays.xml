@@ -16,6 +16,7 @@
         <item>Imperial</item>
     </string-array>
 
+    <!-- Has to be upper case in order to be able to convert the value to Kotlin enum -->
     <string-array name="weather_unit_values">
         <item>STANDARD</item>
         <item>METRIC</item>
@@ -64,6 +65,7 @@
         <item>1 Day</item>
     </string-array>
 
+    <!-- Defined as strings because for some reason ListPreference doesn't support integer-array -->
     <string-array name="date_time_auto_weather_check_frequency_values">
         <item>300000</item>
         <item>900000</item>

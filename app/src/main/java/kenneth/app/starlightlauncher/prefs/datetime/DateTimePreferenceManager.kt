@@ -9,20 +9,15 @@ import kenneth.app.starlightlauncher.api.TemperatureUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private object DefaultValue {
-    const val SHOULD_SHOW_WEATHER = true
-    const val SHOULD_USE_24HR_CLOCK = false
-    const val SHOULD_USE_AUTO_WEATHER_LOCATION = false
-    const val AUTO_WEATHER_LOCATION_CHECK_FREQUENCY = 3600000L
-    val WEATHER_UNIT = TemperatureUnit.METRIC.name
-}
-
 @Singleton
 internal class DateTimePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     val shouldUse24HrClock: Boolean
-        get() = sharedPreference.getBoolean(use24HrClockPrefKey, DefaultValue.SHOULD_USE_24HR_CLOCK)
+        get() = sharedPreference.getBoolean(
+            use24HrClockPrefKey,
+            context.resources.getBoolean(R.bool.default_use_24hr_clock)
+        )
 
     /**
      * The pair of latitude and longitude that describes the location where the user wants
@@ -43,26 +38,27 @@ internal class DateTimePreferenceManager @Inject constructor(
         ) ?: ""
 
     val shouldShowWeather: Boolean
-        get() = sharedPreference.getBoolean(showWeatherPrefKey, DefaultValue.SHOULD_SHOW_WEATHER)
+        get() = sharedPreference.getBoolean(
+            showWeatherPrefKey,
+            context.resources.getBoolean(R.bool.default_show_weather)
+        )
 
     val weatherUnit: TemperatureUnit
         get() = TemperatureUnit.valueOf(
-            sharedPreference.getString(
-                weatherUnitPrefKey,
-                DefaultValue.WEATHER_UNIT
-            ) ?: DefaultValue.WEATHER_UNIT
+            sharedPreference.getString(weatherUnitPrefKey, null)
+                ?: context.getString(R.string.default_weather_unit)
         )
 
     val shouldUseAutoWeatherLocation: Boolean
         get() = sharedPreference.getBoolean(
             useAutoWeatherLocationKey,
-            DefaultValue.SHOULD_USE_AUTO_WEATHER_LOCATION
+            context.resources.getBoolean(R.bool.default_use_auto_weather_location)
         )
 
     val autoWeatherLocationCheckFrequency: Long
         get() = sharedPreference.getString(autoWeatherLocationCheckFrequencyKey, null)
             ?.toLong()
-            ?: DefaultValue.AUTO_WEATHER_LOCATION_CHECK_FREQUENCY
+            ?: context.getString(R.string.default_check_weather_frequency).toLong()
 
     private val sharedPreference by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 

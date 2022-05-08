@@ -4,16 +4,6 @@
 
     <PreferenceCategory app:title="@string/appearance_icon_category_title">
 
-        <SwitchPreferenceCompat
-            app:key="@string/appearance_show_pinned_apps_labels"
-            app:summary="@string/appearance_show_pinned_apps_labels_summary"
-            app:title="@string/appearance_show_pinned_apps_labels_title" />
-
-        <SwitchPreferenceCompat
-            app:key="@string/appearance_show_app_names_in_search_result"
-            app:summary="@string/appearance_show_app_names_in_search_result_summary"
-            app:title="@string/appearance_show_app_names_in_search_result_title" />
-        
         <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.appearance.IconPackSettingsFragment"
             app:key="@string/appearance_icon_pack"

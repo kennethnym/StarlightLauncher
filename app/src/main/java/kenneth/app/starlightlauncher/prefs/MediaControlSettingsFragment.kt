@@ -13,7 +13,7 @@ import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MediaControlSettingsFragment : PreferenceFragmentCompat() {
+internal class MediaControlSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 

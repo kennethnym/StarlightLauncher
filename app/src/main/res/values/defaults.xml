@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Defines default settings/values for Starlight Launcher -->
+
+    <bool name="default_show_weather">false</bool>
+    <bool name="default_use_24hr_clock">false</bool>
+    <bool name="default_use_auto_weather_location">false</bool>
+    <string name="default_check_weather_frequency">3600000</string>
+    <string name="default_weather_unit">CELSIUS</string>
+</resources>

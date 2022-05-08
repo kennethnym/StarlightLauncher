@@ -56,8 +56,7 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
                         ?.animate()
                         ?.scaleX(1.1f)
                         ?.scaleY(1.1f)
-                        ?.alpha(0.5f)
-                        ?.setDuration(200)
+                        ?.alpha(0.5f)?.duration = 200
                     selectionObservable.notifySelectionChanged(viewHolder)
                 }
             }
@@ -68,8 +67,7 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
                     .animate()
                     .scaleX(1f)
                     .scaleY(1f)
-                    .alpha(1f)
-                    .setDuration(200)
+                    .alpha(1f).duration = 200
             }
 
             override fun onMove(

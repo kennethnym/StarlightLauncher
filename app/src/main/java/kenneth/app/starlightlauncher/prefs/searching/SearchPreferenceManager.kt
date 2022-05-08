@@ -9,13 +9,12 @@ import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.extension.DEFAULT_EXTENSIONS
 import kenneth.app.starlightlauncher.extension.DEFAULT_EXTENSION_NAMES
-import kenneth.app.starlightlauncher.extension.ExtensionManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val CATEGORY_ORDER_LIST_SEPARATOR = ";"
 
-sealed class SearchPreferenceChanged {
+internal sealed class SearchPreferenceChanged {
     data class SearchCategoryOrderChanged(
         val fromIndex: Int,
         val toIndex: Int
@@ -23,7 +22,7 @@ sealed class SearchPreferenceChanged {
         SearchPreferenceChanged()
 }
 
-typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
+internal typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
 
 @Singleton
 internal class SearchPreferenceManager @Inject constructor(

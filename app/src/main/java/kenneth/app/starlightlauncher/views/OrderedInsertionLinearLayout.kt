@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.LinearLayout
 import kenneth.app.starlightlauncher.api.utils.swap
 

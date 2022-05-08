@@ -7,14 +7,13 @@ import android.content.pm.ResolveInfo
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 

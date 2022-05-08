@@ -11,7 +11,6 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.utils.toDp
 import kenneth.app.starlightlauncher.utils.toPx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

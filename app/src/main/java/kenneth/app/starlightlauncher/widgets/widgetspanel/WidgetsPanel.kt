@@ -4,7 +4,10 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
@@ -17,21 +20,20 @@ import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.utils.GestureMover
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
-import kenneth.app.starlightlauncher.api.utils.GestureMover
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.utils.addBackPressedCallback
 import javax.inject.Inject
-import kotlin.math.abs
 
 /**
  * Main NestedScrollView on the home screen. Handles home screen scrolling logic.
  */
 @AndroidEntryPoint
-internal class WidgetsPanel(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs) {
+internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
+    NestedScrollView(context, attrs) {
     /**
      * Determines whether [WidgetsPanel] can be expanded/retracted with swipes.
      */

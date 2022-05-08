@@ -8,7 +8,6 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import kenneth.app.starlightlauncher.api.IconPack
-import java.lang.UnsupportedOperationException
 
 /**
  * An [IconPack] representing the default icon pack.

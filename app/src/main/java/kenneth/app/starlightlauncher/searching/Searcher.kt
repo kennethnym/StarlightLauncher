@@ -2,7 +2,10 @@ package kenneth.app.starlightlauncher.searching
 
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton

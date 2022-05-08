@@ -3,7 +3,6 @@ package kenneth.app.starlightlauncher.prefs.appearance
 import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
@@ -17,12 +16,6 @@ internal class AppearanceSettingsFragment : PreferenceFragmentCompat(),
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.appearance_preferences, rootKey)
-
-        findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_pinned_apps_labels))
-            ?.isChecked = appearancePreferenceManager.areNamesOfPinnedAppsShown
-
-        findPreference<SwitchPreferenceCompat>(getString(R.string.appearance_show_app_names_in_search_result))
-            ?.isChecked = appearancePreferenceManager.areAppNamesInSearchResult
 
         changeToolbarTitle()
     }
