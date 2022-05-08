@@ -28,7 +28,7 @@ internal class SearchLayoutSettingsFragment : PreferenceFragmentCompat() {
             )
         }
 
-        findPreference<ReorderablePreference>(getString(R.string.search_category_order_pref_key))
+        findPreference<ReorderablePreference>(getString(R.string.pref_key_search_category_order))
             ?.apply {
                 items = searchModuleOrder.mapNotNull { extName ->
                     extensionManager.lookupSearchModule(extName)?.metadata?.let {

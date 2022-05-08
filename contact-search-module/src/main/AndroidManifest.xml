@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kenneth.app.starlightlauncher.contactsearchmodule">
+    <!-- Required to retrieve a list of contacts so that this module can search through them
+     and provide relevant results. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+</manifest>

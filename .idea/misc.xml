@@ -99,6 +99,9 @@
         <entry key="app/src/main/res/xml/search_layout_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
         <entry key="app/src/main/res/xml/widget_layout_preferences.xml" value="0.30570652173913043" />
+        <entry key="contact-search-module/src/main/res/drawable/action_button_background.xml" value="0.2075" />
+        <entry key="contact-search-module/src/main/res/layout/contact_list_item.xml" value="0.30932971014492755" />
+        <entry key="contact-search-module/src/main/res/layout/contact_search_result_card.xml" value="0.30932971014492755" />
         <entry key="file-search-module/src/main/res/drawable/file_search_module_search_module_settings_icon.xml" value="0.3703125" />
         <entry key="file-search-module/src/main/res/drawable/ic_file_search_alt.xml" value="0.3703125" />
         <entry key="file-search-module/src/main/res/layout/file_list_item.xml" value="0.3541666666666667" />

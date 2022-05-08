@@ -15,7 +15,7 @@
     <string name="pref_category_widgets">pref_category_widgets</string>
 
     <string name="search_layout_pref_key">search_layout</string>
-    <string name="search_category_order_pref_key">search_category_order_pref_key</string>
+    <string name="pref_key_search_category_order">search_category_order_pref_key</string>
 
     <string name="pref_key_widget_layout">widget_layout</string>
     <string name="pref_key_widget_order">pref_key_widget_order</string>

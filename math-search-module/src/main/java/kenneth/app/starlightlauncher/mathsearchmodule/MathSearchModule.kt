@@ -39,7 +39,7 @@ class MathSearchModule : SearchModule {
                 query = keyword,
                 value = Expressions().eval(keyword),
             )
-        } catch (ex: ExpressionException) {
+        } catch (ex: Exception) {
             SearchResult.None(keyword, EXTENSION_NAME)
         }
 

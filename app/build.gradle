@@ -60,6 +60,7 @@ dependencies {
     implementation project(path: ':wifi-control-module')
     implementation project(path: ':app-shortcut-search-module')
     implementation project(path: ':url-opener')
+    implementation project(path: ':contact-search-module')
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
 
     implementation fileTree(dir: "libs", include: ["*.jar"])

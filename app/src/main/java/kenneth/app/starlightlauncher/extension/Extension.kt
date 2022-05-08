@@ -9,7 +9,7 @@ import kenneth.app.starlightlauncher.api.WidgetCreator
 data class Extension(
     /**
      * A unique name that identifies this extension. This should be the full name
-     * of the package that exports extension points.
+     * of the package that exports the extension points, i.e. search module and widget.
      */
     val name: String,
 

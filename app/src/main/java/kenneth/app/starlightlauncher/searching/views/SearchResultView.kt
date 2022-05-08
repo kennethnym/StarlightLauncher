@@ -98,6 +98,15 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
             BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
             extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
                 val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
+
+                if (order < 0) {
+                    // this search module cannot be found for some reason
+                    // we ignore it to avoid crash.
+                    //
+                    // if this happens the launcher is probably in a weird/corrupted state.
+                    return
+                }
+
                 containerAt(order)
                     ?.let {
                         searchModule.adapter.onBindSearchResult(viewHolders[order]!!, result)
