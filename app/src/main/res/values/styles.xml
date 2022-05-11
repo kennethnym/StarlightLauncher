@@ -8,17 +8,23 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="SettingsTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
     <style name="SearchResultSectionHeader" parent="TextAppearance.AppCompat">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="SetupStepHeader">
+        <item name="android:layout_marginTop">@dimen/setup_activity_padding</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="SetupStepDescription">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginStart">@dimen/screen_padding</item>
+        <item name="android:layout_marginEnd">@dimen/screen_padding</item>
+        <item name="android:layout_marginBottom">32dp</item>
     </style>
 
     <style name="TextButton">

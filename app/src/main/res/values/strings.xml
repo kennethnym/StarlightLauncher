@@ -1,6 +1,32 @@
 <resources>
     <string name="wallpaper_image_description">The wallpaper of your phone.</string>
 
+    <string name="starlight_launcher_name">Starlight Launcher</string>
+
+    <!-- Launcher setup -->
+    <string name="setup_activity_label">Starlight Launcher Setup</string>
+    <string name="welcome_label">Welcome to</string>
+    <string name="starlight_launcher_tagline">Home screen reimagined.</string>
+    <string name="continue_btn_label">Continue -></string>
+    <string name="setup_feature_header">Features</string>
+    <string name="setup_feature_description">Choose features you want to enable</string>
+    <string name="setup_permission_header">Permissions</string>
+    <string name="setup_permission_description">
+        Some launcher features require permissions to work. They are optional, but some features will not work if the permissions are not granted.
+    </string>
+    <!-- Available features -->
+    <string name="feature_name_media_control">Media control</string>
+    <string name="feature_description_media_control">Control your music right on your home screen.</string>
+    <string name="feature_name_note_widget">Note widget</string>
+    <string name="feature_description_note_widget">Make simple notes quickly.</string>
+    <string name="feature_name_unit_converter">Unit converter</string>
+    <string name="feature_description_unit_converter">Quickly make unit conversions</string>
+    <!-- Permissions -->
+    <string name="permission_name_external_storage">External storage access</string>
+    <string name="permission_description_external_storage">Required to provide blur effect and file searching</string>
+    <string name="permission_name_notification_access">Notification access</string>
+    <string name="permission_description_notification_access">Required to access currently playing media. Starlight Launcher will not read any notification.</string>
+
     <string name="app_name">Hub Launcher</string>
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>

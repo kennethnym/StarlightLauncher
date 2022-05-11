@@ -2,6 +2,11 @@
 <resources>
     <dimen name="text_button_icon_spacing">4dp</dimen>
 
+    <!-- Setup activity -->
+    <dimen name="setup_activity_padding">64dp</dimen>
+
+    <dimen name="screen_padding">16dp</dimen>
+
     <dimen name="default_icon_size">24dp</dimen>
     <dimen name="default_app_icon_size">48dp</dimen>
 

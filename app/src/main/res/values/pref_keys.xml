@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pref_key_setup_finished">setup_finished</string>
+
+    <string name="pref_key_media_control_enabled">media_control_enabled</string>
+    <string name="pref_key_note_widget_enabled">note_widget_enabled</string>
+    <string name="pref_key_unit_converter_enabled">unit_converted_enabled</string>
+
     <string name="appearance_pref_key">appearance</string>
     <string name="appearance_pref_screen">appearance_pref_screen</string>
     <string name="appearance_show_pinned_apps_labels">appearance_show_pinned_apps_labels</string>

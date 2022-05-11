@@ -3,42 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="kenneth.app.starlightlauncher">
 
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-
-    <!-- Permission to access coarse location, required only if the user wishes to allow the launcher to
-    use their phone location to provide relevant weather info -->
-    <uses-permission
-        android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:required="false" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- Permission to access current wifi state to allow users to control wifi through the launcher -->
-    <uses-permission
-        android:name="android.permission.ACCESS_WIFI_STATE"
-        android:required="false" />
-
-    <!--  -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:required="false" />
 
     <!-- Permission to read storage, required to retrieve the current wallpaper to provide blur effect  -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
-
-    <!-- Permission to uninstall apps through the launcher.  -->
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-
-    <!-- Permission to read contacts so that the launcher can provide relevant contacts when searching. -->
-    <uses-permission
-        android:name="android.permission.READ_CONTACTS"
-        android:required="false" />
 
     <!-- Permission to bind and show widgets in Starlight Launcher -->
     <uses-permission android:name="android.permission.BIND_APPWIDGET" />
@@ -66,18 +39,10 @@
         </service>
 
         <activity
-            android:name="kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
-
-        </activity>
-
-        <activity
-            android:name="kenneth.app.starlightlauncher.MainActivity"
-            android:configChanges="uiMode"
+            android:name=".LoadingActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:label="@string/starlight_launcher_name"
+            android:theme="@android:style/Theme.NoDisplay">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -86,6 +51,26 @@
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".setup.SetupActivity"
+            android:exported="false"
+            android:label="@string/setup_activity_label"
+            android:theme="@style/DarkLauncherTheme" />
+
+        <activity
+            android:name="kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.StarlightLauncher.SettingsTheme" />
+
+        <activity
+            android:name="kenneth.app.starlightlauncher.MainActivity"
+            android:configChanges="uiMode"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
