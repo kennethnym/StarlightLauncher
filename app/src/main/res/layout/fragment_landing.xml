@@ -5,6 +5,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/starlight_launcher_icon_description"
+        android:src="@mipmap/ic_launcher_foreground" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

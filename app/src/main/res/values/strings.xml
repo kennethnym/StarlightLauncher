@@ -2,6 +2,7 @@
     <string name="wallpaper_image_description">The wallpaper of your phone.</string>
 
     <string name="starlight_launcher_name">Starlight Launcher</string>
+    <string name="starlight_launcher_icon_description">Icon of Starlight Launcher</string>
 
     <!-- Launcher setup -->
     <string name="setup_activity_label">Starlight Launcher Setup</string>
@@ -38,6 +39,7 @@
     <string name="action_done">Done</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_remove">Remove</string>
+    <string name="action_finish">Finish</string>
 
     <!-- Time ago -->
     <string name="time_ago_today">Today %1$s</string>

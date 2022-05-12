@@ -38,6 +38,7 @@
         <entry key="app/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_file_search_alt.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_history_alt.xml" value="0.2815" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.218" />
         <entry key="app/src/main/res/drawable/ic_notes.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_play.xml" value="0.2825" />
         <entry key="app/src/main/res/drawable/ic_step_backward_alt.xml" value="0.317" />
@@ -68,7 +69,7 @@
         <entry key="app/src/main/res/layout/file_list_item.xml" value="0.22509057971014493" />
         <entry key="app/src/main/res/layout/files_section_card.xml" value="0.21965579710144928" />
         <entry key="app/src/main/res/layout/fragment_feature.xml" value="0.30932971014492755" />
-        <entry key="app/src/main/res/layout/fragment_landing.xml" value="0.30932971014492755" />
+        <entry key="app/src/main/res/layout/fragment_landing.xml" value="0.700286865234375" />
         <entry key="app/src/main/res/layout/fragment_setup_feature.xml" value="0.30932971014492755" />
         <entry key="app/src/main/res/layout/fragment_setup_permission.xml" value="0.30932971014492755" />
         <entry key="app/src/main/res/layout/launcher_option_menu.xml" value="0.22146739130434784" />
@@ -97,6 +98,8 @@
         <entry key="app/src/main/res/layout/widgets_page.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/widgets_panel.xml" value="0.2694746376811594" />
         <entry key="app/src/main/res/layout/wifi_control.xml" value="0.2269021739130435" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.218" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.218" />
         <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.335" />
         <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.1" />
         <entry key="app/src/main/res/xml/file_search_preferences.xml" value="0.2368659420289855" />
