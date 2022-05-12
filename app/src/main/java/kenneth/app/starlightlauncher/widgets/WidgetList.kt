@@ -165,6 +165,10 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
         hideAnimator.start()
     }
 
+    fun exitEditMode() {
+        widgetViewHolderInEditMode?.binding?.isEditing = false
+    }
+
     override fun onTouchEvent(e: MotionEvent?): Boolean {
         val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
         val scrollY = widgetsPanel.scrollY
@@ -239,7 +243,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
             Activity.RESULT_CANCELED -> {
                 appWidgetIdMap.remove(appWidgetId)
                 appWidgetHost.deleteAppWidgetId(appWidgetId)
-                widgetPreferenceManager.removeAndroidWidget(appWidgetProviderInfo)
+                widgetPreferenceManager.removeAndroidWidget(appWidgetId)
             }
         }
     }

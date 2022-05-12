@@ -147,7 +147,7 @@ internal class WidgetListAdapter(
             }
 
         holder.binding.removeWidgetBtn.setOnClickListener {
-            removeAndroidWidget(appWidgetProviderInfo, position)
+            removeAndroidWidget(addedWidget.appWidgetId)
         }
     }
 
@@ -166,11 +166,12 @@ internal class WidgetListAdapter(
         }
     }
 
-    private fun removeAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo, position: Int) {
-        widgetPreferenceManager.removeAndroidWidget(appWidgetProviderInfo)
-        addedWidgets.removeAt(position)
-        appWidgetIds.removeAt(position)
-        notifyItemRemoved(position)
+    private fun removeAndroidWidget(appWidgetId: Int) {
+        widgetPreferenceManager.removeAndroidWidget(appWidgetId)?.let {
+            addedWidgets.removeAt(it)
+            appWidgetIds.removeAt(it)
+            notifyItemRemoved(it)
+        }
     }
 
     private fun removeStarlightWidget(extensionName: String, position: Int) {

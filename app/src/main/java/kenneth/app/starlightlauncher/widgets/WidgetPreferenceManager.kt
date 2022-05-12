@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.widgets
 
+import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.SharedPreferences
@@ -37,6 +38,8 @@ internal class WidgetPreferenceManager @Inject constructor(
     private val extensionManager: ExtensionManager,
     private val random: Random,
 ) : ObservablePreferences<WidgetPreferenceManager>(context) {
+    private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
+
     val keys = WidgetPrefKeys(context)
 
     private var _addedWidgets =
@@ -85,15 +88,14 @@ internal class WidgetPreferenceManager @Inject constructor(
     }
 
     fun addAndroidWidget(appWidgetId: Int, appWidgetProviderInfo: AppWidgetProviderInfo) {
-        val internalId = random.nextInt()
         val newWidget = AddedWidget.AndroidWidget(
-            internalId,
             appWidgetProviderInfo.provider,
             appWidgetId,
             appWidgetProviderInfo.minHeight,
         )
         _addedWidgets += newWidget
-        addedWidgetsMap[internalId] = newWidget
+        addedWidgetsMap[newWidget.id] = newWidget
+        addedWidgetPositions[newWidget.id] = _addedWidgets.lastIndex
         saveAddedWidgets()
         setChanged()
         notifyObservers(
@@ -117,9 +119,11 @@ internal class WidgetPreferenceManager @Inject constructor(
         }
     }
 
-    fun removeAndroidWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
+    fun removeAndroidWidget(appWidgetId: Int): Int? {
+        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
         _addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
         saveAddedWidgets()
+        return addedWidgetPositions.remove(appWidgetId)
     }
 
     fun removeStarlightWidget(extensionName: String) {

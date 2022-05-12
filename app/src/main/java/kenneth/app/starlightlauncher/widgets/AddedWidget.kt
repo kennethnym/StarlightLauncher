@@ -14,10 +14,9 @@ internal sealed class AddedWidget(val id: Int) {
 
     @Serializable
     data class AndroidWidget(
-        val internalId: Int,
         @Serializable(with = ComponentNameSerializer::class)
         val provider: ComponentName,
         val appWidgetId: Int,
         val height: Int,
-    ) : AddedWidget(internalId)
+    ) : AddedWidget(appWidgetId)
 }

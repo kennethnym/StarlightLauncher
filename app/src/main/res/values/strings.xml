@@ -9,6 +9,7 @@
     <string name="welcome_label">Welcome to</string>
     <string name="starlight_launcher_tagline">Home screen reimagined.</string>
     <string name="continue_btn_label">Continue -></string>
+    <string name="setup_finish_btn_label">Finish setup</string>
     <string name="setup_feature_header">Features</string>
     <string name="setup_feature_description">Choose features you want to enable</string>
     <string name="setup_permission_header">Permissions</string>

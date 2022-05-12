@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.appwidget.AppWidgetHost
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
@@ -82,6 +83,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     internal lateinit var launcherApi: StarlightLauncherApi
 
+    @Inject
+    internal lateinit var appWidgetHost: AppWidgetHost
+
     private lateinit var binding: ActivityMainBinding
 
     private var currentWallpaper: Bitmap? = null
@@ -92,6 +96,11 @@ class MainActivity : AppCompatActivity() {
 
     internal fun addBackPressListener(handler: BackPressHandler) {
         backPressedCallbacks.add(handler)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        appWidgetHost.startListening()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,6 +182,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cleanup() {
+        appWidgetHost.stopListening()
         BindingRegister.mainActivity = null
     }
 

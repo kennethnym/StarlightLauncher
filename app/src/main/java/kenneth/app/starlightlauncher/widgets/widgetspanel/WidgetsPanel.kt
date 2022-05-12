@@ -197,7 +197,10 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         canBeSwiped = true
         isEditModeEnabled = false
         binding.isInEditMode = false
-        binding.widgetList.disableDragAndDrop()
+        with(binding.widgetList) {
+            exitEditMode()
+            disableDragAndDrop()
+        }
     }
 
     override fun onTouchEvent(ev: MotionEvent?): Boolean {

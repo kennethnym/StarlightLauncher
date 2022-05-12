@@ -169,11 +169,9 @@ internal class AvailableWidgetsListAdapter(
         val packageName = providerPackageNames[groupPosition]
         val appWidgetProviderInfo = providers[packageName]!![childPosition]
         // TODO: can be 0 or unavailable
-        val widgetPreview = ResourcesCompat.getDrawableForDensity(
-            context.packageManager.getResourcesForApplication(packageName),
-            appWidgetProviderInfo.previewImage,
-            context.resources.displayMetrics.densityDpi,
-            context.theme,
+        val widgetPreview = appWidgetProviderInfo.loadPreviewImage(
+            context,
+            context.resources.displayMetrics.densityDpi
         )
         val widgetPreviewSpacing =
             context.resources.getDimensionPixelSize(R.dimen.available_widgets_list_preview_padding_bottom)
@@ -189,13 +187,16 @@ internal class AvailableWidgetsListAdapter(
             text = appWidgetProviderInfo.loadLabel(context.packageManager)
             isClickable = true
             isFocusable = true
+            compoundDrawablePadding = widgetPreviewSpacing
+
             setCompoundDrawablesRelativeWithIntrinsicBounds(
                 null,
-                widgetPreview,
+                widgetPreview
+                    ?: appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
+                        .toDrawable(context.resources),
                 null,
                 null,
             )
-            compoundDrawablePadding = widgetPreviewSpacing
             setOnClickListener { addSelectedWidget(appWidgetProviderInfo) }
         }
     }
