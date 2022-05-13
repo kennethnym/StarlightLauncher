@@ -16,6 +16,9 @@ import kenneth.app.starlightlauncher.databinding.FragmentSetupPermissionBinding
 import kenneth.app.starlightlauncher.databinding.SetupPermissionItemBinding
 import kenneth.app.starlightlauncher.views.NotificationListenerStub
 
+/**
+ * This setup fragment informs the users the permissions Starlight Launcher needs for some features to work.
+ */
 internal class PermissionFragment : Fragment() {
     private val permissionRequestActivityLauncher =
         registerForActivityResult(
@@ -83,12 +86,14 @@ internal class PermissionFragment : Fragment() {
             currentlyRequestedPermission?.let {
                 grantedPermissions += it
                 permissionItemBindings[it]?.isPermissionGranted = true
+                currentlyRequestedPermission = null
             }
         }
     }
 
     private fun requestManifestPermission(permission: String) {
         if (currentlyRequestedPermission == null && !grantedPermissions.contains(permission)) {
+            currentlyRequestedPermission = permission
             permissionRequestActivityLauncher.launch(permission)
         }
     }

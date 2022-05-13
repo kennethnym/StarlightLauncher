@@ -2,12 +2,11 @@ package kenneth.app.starlightlauncher.api.view
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.AttributeSet
 import android.view.*
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
@@ -18,7 +17,6 @@ import kenneth.app.starlightlauncher.api.R
 import kenneth.app.starlightlauncher.api.utils.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.api.utils.GestureMover
 import kenneth.app.starlightlauncher.api.utils.dp
-import kotlin.math.max
 
 /**
  * A function that adds content to [OptionMenu], for example adding items to the menu.
@@ -90,10 +88,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
         setOnApplyWindowInsetsListener { _, insets ->
             val navBarHeight =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                    insets.getInsets(WindowInsets.Type.systemBars()).bottom
-                else
-                    insets.systemWindowInsetBottom
+                WindowInsetsCompat.toWindowInsetsCompat(insets)
+                    .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
 
             updatePadding(
                 bottom = 24.dp + navBarHeight

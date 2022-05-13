@@ -1,10 +1,9 @@
 package kenneth.app.starlightlauncher.searching.views
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.WindowInsets
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,10 +77,8 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
         super.onAttachedToWindow()
         updatePadding(
             bottom = activity?.window?.decorView?.rootWindowInsets?.let {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                    it.getInsets(WindowInsets.Type.navigationBars()).bottom
-                else
-                    it.systemWindowInsetBottom
+                WindowInsetsCompat.toWindowInsetsCompat(it)
+                    .getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             } ?: 0
         )
     }

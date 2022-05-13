@@ -7,14 +7,13 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
-import android.view.WindowInsets
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -140,10 +139,8 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
         setOnApplyWindowInsetsListener { _, insets ->
             updatePadding(
                 bottom =
-                (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                    insets.getInsets(WindowInsets.Type.systemBars()).bottom
-                else
-                    insets.systemWindowInsetBottom) + 40
+                WindowInsetsCompat.toWindowInsetsCompat(insets)
+                    .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             )
             insets
         }

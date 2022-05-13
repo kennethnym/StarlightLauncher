@@ -12,13 +12,13 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,30 +58,30 @@ internal object MainActivityModule {
 }
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+internal class MainActivity : AppCompatActivity() {
     @Inject
-    internal lateinit var searcher: Searcher
+    lateinit var searcher: Searcher
 
     @Inject
-    internal lateinit var extensionManager: ExtensionManager
+    lateinit var extensionManager: ExtensionManager
 
     @Inject
-    internal lateinit var blurHandler: BlurHandler
+    lateinit var blurHandler: BlurHandler
 
     @Inject
-    internal lateinit var appState: AppState
+    lateinit var appState: AppState
 
     @Inject
-    internal lateinit var appearancePreferenceManager: AppearancePreferenceManager
+    lateinit var appearancePreferenceManager: AppearancePreferenceManager
 
     @Inject
-    internal lateinit var inputMethodManager: InputMethodManager
+    lateinit var inputMethodManager: InputMethodManager
 
     @Inject
-    internal lateinit var permissionHandler: PermissionHandler
+    lateinit var permissionHandler: PermissionHandler
 
     @Inject
-    internal lateinit var launcherApi: StarlightLauncherApi
+    lateinit var launcherApi: StarlightLauncherApi
 
     @Inject
     internal lateinit var appWidgetHost: AppWidgetHost
@@ -126,7 +126,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             BindingRegister.apply {
                 activityMainBinding = it
-                mainActivity = this@MainActivity
             }
         }
         isDarkModeActive =
@@ -142,7 +141,6 @@ class MainActivity : AppCompatActivity() {
         }
         permissionHandler.handlePermissionRequestsForActivity(this)
         attachListeners()
-        askForReadExternalStoragePermission()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -183,29 +181,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun cleanup() {
         appWidgetHost.stopListening()
-        BindingRegister.mainActivity = null
-    }
-
-    /**
-     * a temporary function to ask for READ_EXTERNAL_STORAGE permission
-     */
-    private fun askForReadExternalStoragePermission() {
-        // TODO: a temporary function to ask for READ_EXTERNAL_STORAGE permission
-        // TODO: in prod this should be done during setup
-        permissionHandler.run {
-            requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
     }
 
     private fun attachListeners() {
         with(binding.root) {
             setOnApplyWindowInsetsListener { _, insets ->
-                appState.statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val systemBarsInset = insets.getInsets(WindowInsets.Type.systemBars())
-                    systemBarsInset.top
-                } else {
-                    insets.systemWindowInsetTop
-                }
+                appState.statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(insets)
+                    .getInsets(WindowInsetsCompat.Type.systemBars()).top
 
                 insets
             }
@@ -216,8 +198,9 @@ class MainActivity : AppCompatActivity() {
      * Update the current adaptive color scheme by finding the dominant color of the current wallpaper.
      */
     private fun updateAdaptiveColors() {
-        val currentWallpaper = this.currentWallpaper ?: return
+        val currentWallpaper = this.currentWallpaper
         if (
+            currentWallpaper != null &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
             appState.apply {
@@ -231,6 +214,8 @@ class MainActivity : AppCompatActivity() {
                         R.style.LightLauncherTheme
                 )
             }
+        } else {
+            setTheme(R.style.DarkLauncherTheme)
         }
     }
 

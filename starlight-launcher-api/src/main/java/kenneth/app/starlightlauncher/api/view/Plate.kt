@@ -1,9 +1,10 @@
 package kenneth.app.starlightlauncher.api.view
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Choreographer
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -41,12 +42,19 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
             )
         ).run {
             try {
-                blurBackground.setColorFilter(
-                    getColor(
-                        0,
-                        context.getColor(android.R.color.transparent)
-                    )
+                val plateColor = getColor(
+                    0,
+                    context.getColor(android.R.color.transparent)
                 )
+
+                // detect if the launcher has access to the wallpaper
+                if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    // set color filter of the blur effect
+                    blurBackground.setColorFilter(plateColor)
+                } else {
+                    // set a simple transparent color because the launcher cannot provide blur effect
+                    blurBackground.setBackgroundColor(plateColor)
+                }
 
                 @SuppressLint("ResourceType")
                 blurAmount = getInt(1, 20)

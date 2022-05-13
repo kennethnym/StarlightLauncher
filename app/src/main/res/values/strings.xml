@@ -29,7 +29,6 @@
     <string name="permission_name_notification_access">Notification access</string>
     <string name="permission_description_notification_access">Required to access currently playing media. Starlight Launcher will not read any notification.</string>
 
-    <string name="app_name">Hub Launcher</string>
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 

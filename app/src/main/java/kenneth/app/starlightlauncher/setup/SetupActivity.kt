@@ -12,7 +12,7 @@ import kenneth.app.starlightlauncher.MainActivity
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
 
-class SetupActivity : AppCompatActivity() {
+internal class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
 
     private lateinit var sharedPreferences: SharedPreferences

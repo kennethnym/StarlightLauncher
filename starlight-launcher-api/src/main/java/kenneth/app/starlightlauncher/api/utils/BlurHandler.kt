@@ -21,7 +21,7 @@ private const val BLUR_SCALE = 0.2f
 /**
  * Handles blurring of wallpapers and views.
  */
-class BlurHandler(context: Context) {
+class BlurHandler(private val context: Context) {
     private val resources = context.resources
 
     /**

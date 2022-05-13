@@ -14,7 +14,8 @@ import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
-import kenneth.app.starlightlauncher.utils.mainActivity
+import kenneth.app.starlightlauncher.utils.activity
+import kenneth.app.starlightlauncher.utils.addBackPressedCallback
 import javax.inject.Inject
 
 /**
@@ -53,7 +54,7 @@ internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, a
     private var content: View? = null
 
     init {
-        mainActivity?.addBackPressListener {
+        activity?.addBackPressedCallback {
             if (isVisible && !isClosing) {
                 close()
                 HANDLED

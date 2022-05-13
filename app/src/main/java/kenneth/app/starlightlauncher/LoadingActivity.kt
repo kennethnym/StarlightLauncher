@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.setup.SetupActivity
  * A NoDisplay activity that determines whether to launch setup activity or main launcher activity
  * depending on whether the user has completed setup.
  */
-class LoadingActivity : AppCompatActivity() {
+internal class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

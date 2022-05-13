@@ -27,7 +27,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textColor">@android:color/white</item>
 
-        <item name="plateColor">#4D000000</item>
+        <item name="plateColor">#80000000</item>
         <item name="colorOnPlate">#FFFFFFFF</item>
         <item name="backgroundColorOnPlate">#1A000000</item>
         <item name="colorOnBackground">#FFFFFFFF</item>

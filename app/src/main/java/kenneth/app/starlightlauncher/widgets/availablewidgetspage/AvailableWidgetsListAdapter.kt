@@ -168,7 +168,6 @@ internal class AvailableWidgetsListAdapter(
     ): View {
         val packageName = providerPackageNames[groupPosition]
         val appWidgetProviderInfo = providers[packageName]!![childPosition]
-        // TODO: can be 0 or unavailable
         val widgetPreview = appWidgetProviderInfo.loadPreviewImage(
             context,
             context.resources.displayMetrics.densityDpi

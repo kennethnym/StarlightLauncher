@@ -18,7 +18,7 @@ import dagger.hilt.android.HiltAndroidApp
 // onEnterAnimationComplete.
 
 @HiltAndroidApp
-class MainApplication : Application() {
+internal class MainApplication : Application() {
     override fun onCreate() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         super.onCreate()
