@@ -2,14 +2,15 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     app:key="@string/appearance_pref_screen">
 
-    <PreferenceCategory app:title="@string/appearance_icon_category_title">
+    <SwitchPreference
+        app:key="@string/pref_key_appearance_blur_effect_enabled"
+        app:summary="@string/appearance_blur_effect_summary"
+        app:title="@string/appearance_blur_effect_title" />
 
-        <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.appearance.IconPackSettingsFragment"
-            app:key="@string/appearance_icon_pack"
-            app:summary="@string/appearance_change_icon_pack_summary"
-            app:title="@string/appearance_change_icon_pack_title" />
-
-    </PreferenceCategory>
+    <Preference
+        app:fragment="kenneth.app.starlightlauncher.prefs.appearance.IconPackSettingsFragment"
+        app:key="@string/appearance_icon_pack"
+        app:summary="@string/appearance_change_icon_pack_summary"
+        app:title="@string/appearance_change_icon_pack_title" />
 
 </PreferenceScreen>

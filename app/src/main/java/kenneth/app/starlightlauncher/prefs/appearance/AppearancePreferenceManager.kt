@@ -12,19 +12,17 @@ import javax.inject.Singleton
 internal class AppearancePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    val prefKeys = AppearancePreferenceKeys(context)
+
     private val defaultIconPack = DefaultIconPack(context)
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    val iconPackPrefKey by lazy {
-        context.getString(R.string.appearance_icon_pack)
-    }
 
     /**
      * The icon pack to use, if user has picked any. null if user has not picked any icon pack.
      */
     var iconPack: IconPack =
-        sharedPreferences.getString(iconPackPrefKey, null)
+        sharedPreferences.getString(prefKeys.iconPack, null)
             ?.let {
                 InstalledIconPack(context, it)
             }
@@ -34,7 +32,7 @@ internal class AppearancePreferenceManager @Inject constructor(
     fun changeIconPack(iconPack: InstalledIconPack) {
         sharedPreferences
             .edit()
-            .putString(iconPackPrefKey, iconPack.packageName)
+            .putString(prefKeys.iconPack, iconPack.packageName)
             .apply()
 
         this.iconPack = iconPack
@@ -46,9 +44,15 @@ internal class AppearancePreferenceManager @Inject constructor(
     fun useDefaultIconPack() {
         sharedPreferences
             .edit()
-            .remove(iconPackPrefKey)
+            .remove(prefKeys.iconPack)
             .apply()
 
         iconPack = DefaultIconPack(context)
     }
+}
+
+internal class AppearancePreferenceKeys(context: Context) {
+    val iconPack = context.getString(R.string.appearance_icon_pack)
+
+    val blurEffectEnabled = context.getString(R.string.pref_key_appearance_blur_effect_enabled)
 }

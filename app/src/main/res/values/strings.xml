@@ -144,6 +144,8 @@
     <string name="appearance_icon_category_title">Icons</string>
     <string name="appearance_icon_pack_title">Icon packs</string>
     <string name="appearance_summary">Adjust how Hub Launcher looks.</string>
+    <string name="appearance_blur_effect_title">Enable blur effect</string>
+    <string name="appearance_blur_effect_summary">Requires read storage permission to access the wallpaper.</string>
     <string name="appearance_show_pinned_apps_labels_title">Show names of pinned apps</string>
     <string name="appearance_show_pinned_apps_labels_summary">Show names of pinned apps under their icons</string>
     <string name="appearance_show_app_names_in_search_result_title">Show app names in search result</string>
