@@ -1,6 +1,6 @@
 package kenneth.app.starlightlauncher.mathsearchmodule
 
-import com.github.keelar.exprk.ExpressionException
+import android.content.Context
 import com.github.keelar.exprk.Expressions
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
@@ -10,9 +10,12 @@ import java.math.BigDecimal
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.mathsearchmodule"
 
-class MathSearchModule : SearchModule {
-    override lateinit var metadata: SearchModule.Metadata
-        private set
+class MathSearchModule(context: Context) : SearchModule(context) {
+    override val metadata = Metadata(
+        extensionName = EXTENSION_NAME,
+        displayName = context.getString(R.string.math_search_module_display_name),
+        description = context.getString(R.string.math_search_module_description),
+    )
 
     override val adapter: SearchResultAdapter
         get() = mathSearchResultAdapter
@@ -20,14 +23,6 @@ class MathSearchModule : SearchModule {
     private lateinit var mathSearchResultAdapter: MathSearchResultAdapter
 
     override fun initialize(launcher: StarlightLauncherApi) {
-        val mainContext = launcher.context
-
-        metadata = SearchModule.Metadata(
-            extensionName = EXTENSION_NAME,
-            displayName = mainContext.getString(R.string.math_search_module_display_name),
-            description = mainContext.getString(R.string.math_search_module_description),
-        )
-
         mathSearchResultAdapter = MathSearchResultAdapter(launcher)
     }
 

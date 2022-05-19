@@ -15,9 +15,12 @@ import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appshortcutsearchmodule"
 
-class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
-    override lateinit var metadata: SearchModule.Metadata
-        private set
+class AppShortcutSearchModule(context: Context) : SearchModule(context) {
+    override val metadata = Metadata(
+        extensionName = context.getString(R.string.app_shortcut_search_module_name),
+        displayName = context.getString(R.string.app_shortcut_search_module_display_name),
+        description = context.getString(R.string.app_shortcut_search_module_description),
+    )
 
     override lateinit var adapter: SearchResultAdapter
         private set
@@ -32,14 +35,45 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
 
     private lateinit var launcherApps: LauncherApps
 
+    private val launcherAppsCallback = object : LauncherApps.Callback() {
+        override fun onShortcutsChanged(
+            packageName: String,
+            newShortcuts: MutableList<ShortcutInfo>,
+            user: UserHandle
+        ) {
+            super.onShortcutsChanged(packageName, newShortcuts, user)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                updateShortcutInfo(packageName, newShortcuts)
+            }
+        }
+
+        override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+
+        }
+
+        override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+        }
+
+        override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+        }
+
+        override fun onPackagesAvailable(
+            packageNames: Array<out String>?,
+            user: UserHandle?,
+            replacing: Boolean
+        ) {
+        }
+
+        override fun onPackagesUnavailable(
+            packageNames: Array<out String>?,
+            user: UserHandle?,
+            replacing: Boolean
+        ) {
+        }
+    }
+
     override fun initialize(launcher: StarlightLauncherApi) {
         val mainContext = launcher.context
-
-        metadata = SearchModule.Metadata(
-            extensionName = mainContext.getString(R.string.app_shortcut_search_module_name),
-            displayName = mainContext.getString(R.string.app_shortcut_search_module_display_name),
-            description = mainContext.getString(R.string.app_shortcut_search_module_description),
-        )
 
         adapter = AppShortcutSearchResultAdapter(mainContext, launcher)
 
@@ -81,13 +115,13 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
                     // cannot fetch shortcut infos
                 }
 
-                registerCallback(this@AppShortcutSearchModule)
+                registerCallback(launcherAppsCallback)
             }
         }
     }
 
     override fun cleanup() {
-        launcherApps.unregisterCallback(this)
+        launcherApps.unregisterCallback(launcherAppsCallback)
     }
 
     override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
@@ -108,41 +142,6 @@ class AppShortcutSearchModule : SearchModule, LauncherApps.Callback() {
                     }
                     .take(2)
             )
-
-    override fun onShortcutsChanged(
-        packageName: String,
-        newShortcuts: MutableList<ShortcutInfo>,
-        user: UserHandle
-    ) {
-        super.onShortcutsChanged(packageName, newShortcuts, user)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            updateShortcutInfo(packageName, newShortcuts)
-        }
-    }
-
-    override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
-
-    }
-
-    override fun onPackageAdded(packageName: String?, user: UserHandle?) {
-    }
-
-    override fun onPackageChanged(packageName: String?, user: UserHandle?) {
-    }
-
-    override fun onPackagesAvailable(
-        packageNames: Array<out String>?,
-        user: UserHandle?,
-        replacing: Boolean
-    ) {
-    }
-
-    override fun onPackagesUnavailable(
-        packageNames: Array<out String>?,
-        user: UserHandle?,
-        replacing: Boolean
-    ) {
-    }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun updateShortcutInfo(packageName: String?, newShortcuts: MutableList<ShortcutInfo>) {

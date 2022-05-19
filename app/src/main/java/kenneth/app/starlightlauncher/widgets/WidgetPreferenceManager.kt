@@ -28,6 +28,10 @@ internal sealed class WidgetPreferenceChanged {
 
         val appWidgetProviderInfo: AppWidgetProviderInfo,
     ) : WidgetPreferenceChanged()
+
+    data class NewStarlightWidgetAdded(
+        val addedWidget: AddedWidget.StarlightWidget,
+    ) : WidgetPreferenceChanged()
 }
 
 internal typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
@@ -77,6 +81,36 @@ internal class WidgetPreferenceManager @Inject constructor(
 
     override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
+    fun isStarlightWidgetAdded(extensionName: String) =
+        addedWidgets.any { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
+
+    fun addStarlightWidget(extensionName: String) {
+        val widgetId = random.nextInt()
+        val newWidget = AddedWidget.StarlightWidget(
+            internalId = widgetId,
+            extensionName,
+        )
+        _addedWidgets += newWidget
+        addedWidgetsMap[widgetId] = newWidget
+        addedWidgetPositions[widgetId] = _addedWidgets.lastIndex
+        saveAddedWidgets()
+        setChanged()
+        notifyObservers(
+            WidgetPreferenceChanged.NewStarlightWidgetAdded(newWidget)
+        )
+    }
+
+    fun removeStarlightWidget(extensionName: String) {
+        val widget =
+            _addedWidgets.find { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
+                ?: return
+
+        _addedWidgets.remove(widget)
+        addedWidgetsMap.remove(widget.id)
+        addedWidgetPositions.remove(widget.id)
+        saveAddedWidgets()
+    }
+
     fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
         val fromWidget = _addedWidgets[fromPosition]
         val toWidget = _addedWidgets[toPosition]
@@ -124,11 +158,6 @@ internal class WidgetPreferenceManager @Inject constructor(
         _addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
         saveAddedWidgets()
         return addedWidgetPositions.remove(appWidgetId)
-    }
-
-    fun removeStarlightWidget(extensionName: String) {
-        _addedWidgets.removeIf { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
-        saveAddedWidgets()
     }
 
     fun addOnWidgetPreferenceChangedListener(listener: WidgetPreferenceListener) {

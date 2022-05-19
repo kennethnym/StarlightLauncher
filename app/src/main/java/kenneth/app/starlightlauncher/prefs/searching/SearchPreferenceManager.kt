@@ -7,8 +7,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
-import kenneth.app.starlightlauncher.extension.DEFAULT_EXTENSIONS
-import kenneth.app.starlightlauncher.extension.DEFAULT_EXTENSION_NAMES
+import kenneth.app.starlightlauncher.extension.Extension
+import kenneth.app.starlightlauncher.extension.ExtensionManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,24 +26,14 @@ internal typealias SearchPreferenceChangedListener = (event: SearchPreferenceCha
 
 @Singleton
 internal class SearchPreferenceManager @Inject constructor(
+    private val extensionManager: ExtensionManager,
     @ApplicationContext context: Context,
 ) : ObservablePreferences<SearchPreferenceManager>(context) {
     val keys = SearchPreferencesPrefKeys(context)
 
-    private val _enabledSearchModules =
-        sharedPreferences.getStringSet(keys.enabledSearchModules, null)
-            ?.toMutableSet()
-            ?: mutableSetOf<String>().apply {
-                DEFAULT_EXTENSIONS.forEach { (_, ext) ->
-                    if (ext.searchModule != null) add(ext.name)
-                }
-            }
+    private var enabledSearchModules = mutableSetOf<String>()
 
-    private var _categoryOrder =
-        sharedPreferences.getString(keys.searchCategoryOrder, null)
-            ?.split(CATEGORY_ORDER_LIST_SEPARATOR)
-            ?.toMutableList()
-            ?: DEFAULT_EXTENSION_NAMES.toMutableList()
+    private var _categoryOrder = mutableListOf<String>()
 
     /**
      * Defines the order the search modules should appear on the search result page,
@@ -52,15 +42,14 @@ internal class SearchPreferenceManager @Inject constructor(
     val categoryOrder
         get() = _categoryOrder as List<String>
 
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
-
-    /**
-     * Adds the given search module name to the order list.
-     */
-    fun addNewSearchModule(searchModuleName: String) {
-        _categoryOrder += searchModuleName
-        saveOrderList()
+    init {
+        extensionManager.addOnExtensionsLoadedListener {
+            getSearchModuleOrder(it)
+            getEnabledSearchModules(it)
+        }
     }
+
+    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     /**
      * Returns the order the search module should appear on the search result list, or -1
@@ -82,6 +71,62 @@ internal class SearchPreferenceManager @Inject constructor(
             if (arg is SearchPreferenceChanged) {
                 listener(arg)
             }
+        }
+    }
+
+    private fun getSearchModuleOrder(extensions: List<Extension>) {
+        // when the launcher is initializing, there may be new modules installed
+        // since the last time the search module order list is saved to storage.
+        //
+        // therefore, we need to find out what modules are newly installed since last save,
+        // add them to the order list and save the new list.
+        //
+        // SearchPreferenceManager will load the search module order list from storage
+        // when initializing. we obtain the list, then update the list accordingly.
+
+        val savedOrder = sharedPreferences.getString(keys.searchCategoryOrder, null)
+            ?.split(CATEGORY_ORDER_LIST_SEPARATOR)
+
+        if (savedOrder == null) {
+            _categoryOrder += extensions.map { it.name }
+        } else {
+            _categoryOrder = savedOrder.toMutableList().also {
+                it.retainAll { ext -> extensionManager.isExtensionInstalled(ext) }
+            }
+
+            // find newly-installed extensions
+            extensions.forEach {
+                if (savedOrder.indexOf(it.name) < 0) {
+                    _categoryOrder += it.name
+                }
+            }
+
+            saveOrderList()
+        }
+    }
+
+    private fun getEnabledSearchModules(extensions: List<Extension>) {
+        val saved = sharedPreferences.getStringSet(keys.enabledSearchModules, null)
+        if (saved == null) {
+            enabledSearchModules.addAll(extensions.map { it.name })
+        } else {
+            enabledSearchModules += saved
+            enabledSearchModules.retainAll { extensionManager.isExtensionInstalled(it) }
+
+            // find uninstalled extensions
+            extensions.forEach {
+                if (!saved.contains(it.name)) {
+                    enabledSearchModules += it.name
+                }
+            }
+
+            saveEnabledSearchModules()
+        }
+    }
+
+    private fun saveEnabledSearchModules() {
+        sharedPreferences.edit(commit = true) {
+            putStringSet(keys.enabledSearchModules, enabledSearchModules)
         }
     }
 

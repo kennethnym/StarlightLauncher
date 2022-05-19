@@ -8,10 +8,12 @@ import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
+import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.MainActivity
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
 
+@AndroidEntryPoint
 internal class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
 

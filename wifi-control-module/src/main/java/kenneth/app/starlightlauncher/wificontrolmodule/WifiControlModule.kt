@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.wificontrolmodule
 
+import android.content.Context
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -7,9 +8,12 @@ import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.wificontrolmodule"
 
-class WifiControlModule : SearchModule {
-    override lateinit var metadata: SearchModule.Metadata
-        private set
+class WifiControlModule(context: Context) : SearchModule(context) {
+    override val metadata = Metadata(
+        extensionName = EXTENSION_NAME,
+        displayName = context.getString(R.string.wifi_control_module_display_name),
+        description = context.getString(R.string.permissions_required_description),
+    )
 
     override lateinit var adapter: SearchResultAdapter
         private set
@@ -17,11 +21,6 @@ class WifiControlModule : SearchModule {
     override fun initialize(launcher: StarlightLauncherApi) {
         val mainContext = launcher.context
 
-        metadata = SearchModule.Metadata(
-            extensionName = EXTENSION_NAME,
-            displayName = mainContext.getString(R.string.wifi_control_module_display_name),
-            description = mainContext.getString(R.string.permissions_required_description),
-        )
         adapter = WifiControlAdapter(mainContext, launcher)
     }
 

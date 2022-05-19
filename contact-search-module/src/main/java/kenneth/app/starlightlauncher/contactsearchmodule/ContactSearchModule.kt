@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.Contacts
 import android.provider.ContactsContract
 import android.util.Log
 import kenneth.app.starlightlauncher.api.SearchModule
@@ -15,23 +14,18 @@ import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.contactsearchmodule"
 private const val MAX_RESULT = 2
 
-class ContactSearchModule : SearchModule {
-    override lateinit var metadata: SearchModule.Metadata
-        private set
+class ContactSearchModule(context: Context) : SearchModule(context) {
+    override val metadata = Metadata(
+        extensionName = EXTENSION_NAME,
+        displayName = context.getString(R.string.contact_search_module_display_name),
+        description = context.getString(R.string.contact_search_module_description),
+    )
 
     override lateinit var adapter: SearchResultAdapter
         private set
 
-    private lateinit var context: Context
-
     override fun initialize(launcher: StarlightLauncherApi) {
-        context = launcher.context
-        metadata = SearchModule.Metadata(
-            extensionName = EXTENSION_NAME,
-            displayName = context.getString(R.string.contact_search_module_display_name),
-            description = context.getString(R.string.contact_search_module_description),
-        )
-        adapter = ContactSearchResultAdapter(context, launcher)
+        adapter = ContactSearchResultAdapter(launcher.context, launcher)
     }
 
     override fun cleanup() {}

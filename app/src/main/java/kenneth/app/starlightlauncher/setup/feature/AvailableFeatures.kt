@@ -29,14 +29,4 @@ internal val AVAILABLE_FEATURES = listOf(
         description = R.string.feature_description_media_control,
         key = R.string.pref_key_media_control_enabled,
     ),
-    Feature(
-        name = R.string.feature_name_note_widget,
-        description = R.string.feature_description_note_widget,
-        key = R.string.pref_key_note_widget_enabled,
-    ),
-    Feature(
-        name = R.string.feature_name_unit_converter,
-        description = R.string.feature_description_unit_converter,
-        key = R.string.pref_key_unit_converter_enabled,
-    ),
 )

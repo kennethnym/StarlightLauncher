@@ -13,9 +13,23 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
-import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
+import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
+import kenneth.app.starlightlauncher.appshortcutsearchmodule.AppShortcutSearchModule
+import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
+import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
+import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
+import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
+import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
+import kenneth.app.starlightlauncher.urlopener.UrlOpener
+import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private sealed class ExtensionManagerEvent {
+    data class ExtensionsLoaded(val extensions: List<Extension>)
+}
 
 /**
  * Loads and manages Starlight Launcher extensions.
@@ -23,35 +37,61 @@ import javax.inject.Singleton
 @Singleton
 internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val searchPreferenceManager: SearchPreferenceManager,
     private val launcherApi: StarlightLauncherApi,
 ) {
     /**
-     * A map of extensions loaded into memory.
+     * An observable that listeners of [ExtensionManager] is subscribed to.
      */
-    private val extensions = mutableMapOf<String, Extension>().also {
-        it += DEFAULT_EXTENSIONS
+    private val observable = object : Observable() {
+        fun changed() {
+            setChanged()
+        }
     }
 
-    private val widgets = mutableMapOf<String, WidgetCreator>()
-
-    private val widgetMetadata = mutableMapOf<String, WidgetMetadata>(
-        "kenneth.app.starlightlauncher.appsearchmodule" to WidgetMetadata(
-            extensionName = "kenneth.app.starlightlauncher.appsearchmodule",
-            displayName = context.getString(R.string.pinned_apps_widget_display_name),
-            description = context.getString(R.string.pinned_apps_widget_description),
+    /**
+     * A map of extensions loaded into memory.
+     */
+    private val extensions = mutableMapOf<String, Extension>(
+        "kenneth.app.starlightlauncher.appsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.appsearchmodule",
+            searchModule = AppSearchModule(context),
+            widget = PinnedAppsWidgetCreator(context),
         ),
-        "kenneth.app.starlightlauncher.noteswidget" to WidgetMetadata(
-            extensionName = "kenneth.app.starlightlauncher.noteswidget",
-            displayName = context.getString(R.string.notes_widget_display_name),
-            description = context.getString(R.string.notes_widget_settings_description)
+        "kenneth.app.starlightlauncher.appshortcutsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.appshortcutsearchmodule",
+            searchModule = AppShortcutSearchModule(context),
         ),
-        "kenneth.app.starlightlauncher.unitconverterwidget" to WidgetMetadata(
-            extensionName = "kenneth.app.starlightlauncher.unitconverterwidget",
-            displayName = context.getString(R.string.unit_converter_widget_display_name),
-            description = context.getString(R.string.unit_converter_widget_description),
-        )
+        "kenneth.app.starlightlauncher.contactsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.contactsearchmodule",
+            searchModule = ContactSearchModule(context),
+        ),
+        "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.filesearchmodule",
+            searchModule = FileSearchModule(context),
+        ),
+        "kenneth.app.starlightlauncher.mathsearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.mathsearchmodule",
+            searchModule = MathSearchModule(context),
+        ),
+        "kenneth.app.starlightlauncher.wificontrolmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.wificontrolmodule",
+            searchModule = WifiControlModule(context),
+        ),
+        "kenneth.app.starlightlauncher.urlopener" to Extension(
+            name = "kenneth.app.starlightlauncher.urlopener",
+            searchModule = UrlOpener(context),
+        ),
+        "kenneth.app.starlightlauncher.noteswidget" to Extension(
+            name = "kenneth.app.starlightlauncher.noteswidget",
+            widget = NotesWidgetCreator(context),
+        ),
+        "kenneth.app.starlightlauncher.unitconverterwidget" to Extension(
+            name = "kenneth.app.starlightlauncher.unitconverterwidget",
+            widget = UnitConverterWidgetCreator(context),
+        ),
     )
+
+    private val widgets = mutableMapOf<String, WidgetCreator>()
 
     private val searchModules = mutableMapOf<String, SearchModule>()
 
@@ -134,7 +174,21 @@ internal class ExtensionManager @Inject constructor(
     fun loadExtensions() {
         queryExtensions()
         queryExtensionSettings()
+        with(observable) {
+            changed()
+            notifyObservers()
+        }
     }
+
+    fun addOnExtensionsLoadedListener(listener: (extensions: List<Extension>) -> Unit) {
+        observable.addObserver { o, arg ->
+            if (arg is ExtensionManagerEvent.ExtensionsLoaded) {
+                listener(arg.extensions)
+            }
+        }
+    }
+
+    fun isExtensionInstalled(extName: String) = extensions.containsKey(extName)
 
     /**
      * Determines whether an extension provides a [SearchModule].
@@ -158,28 +212,6 @@ internal class ExtensionManager @Inject constructor(
             PackageManager.GET_META_DATA,
         ).forEach { resolveInfo ->
             tryInitializeExtension(resolveInfo)
-        }
-
-        // when the launcher is initializing, there may be new modules installed
-        // since the last time the search module order list is saved to storage.
-        //
-        // therefore, we need to find out what modules are newly installed since last save,
-        // add them to the order list and save the new list.
-        //
-        // SearchPreferenceManager will load the search module order list from storage
-        // when initializing. we obtain the list from it, then update the list accordingly.
-
-        val savedModules = sharedPreferences.getString(
-            context.getString(R.string.pref_key_search_category_order),
-            null,
-        )
-
-        extensions.forEach { (_, ext) ->
-            if (savedModules != null && savedModules.indexOf(ext.name) < 0) {
-                searchPreferenceManager.addNewSearchModule(ext.name)
-            }
-
-            ext.searchModule?.initialize(launcherApi)
         }
     }
 
@@ -290,7 +322,9 @@ internal class ExtensionManager @Inject constructor(
             ) {
                 extensions[packageName] = Extension(
                     packageName,
-                    searchModule = searchModuleClass?.newInstance() as SearchModule,
+                    searchModule = searchModuleClass
+                        ?.getDeclaredConstructor(Context::class.java)!!
+                        .newInstance() as SearchModule,
                     widget = widgetClass?.newInstance() as WidgetCreator
                 )
             }

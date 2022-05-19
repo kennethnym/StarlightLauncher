@@ -4,8 +4,12 @@
     <data>
 
         <variable
-            name="feature"
-            type="kenneth.app.starlightlauncher.setup.feature.Feature" />
+            name="name"
+            type="String" />
+
+        <variable
+            name="description"
+            type="String" />
     </data>
 
     <LinearLayout
@@ -28,14 +32,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{feature.name}"
+                android:text="@{name}"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{feature.description}" />
+                android:text="@{description}" />
 
         </LinearLayout>
 
