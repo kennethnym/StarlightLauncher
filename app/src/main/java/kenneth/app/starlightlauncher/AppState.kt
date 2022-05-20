@@ -22,23 +22,7 @@ internal class AppState @Inject constructor() {
     var halfScreenHeight: Int = 0
         private set
 
-    /**
-     * Determines if MainActivity is starting for the first time.
-     */
-    var isInitialStart = true
-
     var theme: Theme = Theme.DARK
-
-    val themeStyleId: Int
-        get() = when (theme) {
-            Theme.LIGHT -> R.style.LightLauncherTheme
-            Theme.DARK -> R.style.DarkLauncherTheme
-        }
-
-    /**
-     * Current adaptive theme based on the current wallpaper.
-     */
-//    var adaptiveTheme = AdaptiveTheme()
 
     var statusBarHeight = 0
 }

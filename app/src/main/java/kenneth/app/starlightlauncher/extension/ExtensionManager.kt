@@ -51,7 +51,7 @@ internal class ExtensionManager @Inject constructor(
     /**
      * A map of extensions loaded into memory.
      */
-    private val extensions = mutableMapOf<String, Extension>(
+    private val extensions = mutableMapOf(
         "kenneth.app.starlightlauncher.appsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(context),
@@ -153,8 +153,6 @@ internal class ExtensionManager @Inject constructor(
             )
         )
     )
-
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     val installedExtensions
         get() = extensions.values as Collection<Extension>

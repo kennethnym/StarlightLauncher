@@ -1,7 +1,7 @@
 package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
-import androidx.preference.PreferenceManager
+import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
@@ -10,13 +10,12 @@ import javax.inject.Singleton
 
 @Singleton
 internal class AppearancePreferenceManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val sharedPreferences: SharedPreferences,
 ) {
-    val prefKeys = AppearancePreferenceKeys(context)
+    private val prefKeys = AppearancePreferenceKeys(context)
 
     private val defaultIconPack = DefaultIconPack(context)
-
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     /**
      * The icon pack to use, if user has picked any. null if user has not picked any icon pack.
@@ -47,12 +46,10 @@ internal class AppearancePreferenceManager @Inject constructor(
             .remove(prefKeys.iconPack)
             .apply()
 
-        iconPack = DefaultIconPack(context)
+        iconPack = defaultIconPack
     }
 }
 
 internal class AppearancePreferenceKeys(context: Context) {
     val iconPack = context.getString(R.string.appearance_icon_pack)
-
-    val blurEffectEnabled = context.getString(R.string.pref_key_appearance_blur_effect_enabled)
 }
