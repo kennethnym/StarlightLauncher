@@ -44,7 +44,7 @@ private interface AvailableWidgetListAdapterEntryPoint {
  * Shows available widgets on the phone to an expandable list.
  * Also handles initial creation/configuration of widgets.
  */
-internal class AvailableWidgetsListAdapter(
+internal class AvailableAndroidWidgetListAdapter(
     private val context: Context,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()

@@ -29,6 +29,10 @@ internal abstract class StarlightLauncherApiModule {
     ): StarlightLauncherApi
 }
 
+/**
+ * An implementation of [StarlightLauncherApi] which extensions can use to provide
+ * additional features for the launcher.
+ */
 @Singleton
 internal class StarlightLauncherApiImpl @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 internal class AndroidWidgetsFragment(
     private val availableWidgetsPageBinding: AvailableWidgetsPageBinding,
 ) : Fragment() {
-    private var listAdapter: AvailableWidgetsListAdapter? = null
+    private var listAdapter: AvailableAndroidWidgetListAdapter? = null
 
     private val appLabels = mutableMapOf<String, String>()
     private val appIcons = mutableMapOf<String, Drawable>()
@@ -36,7 +36,7 @@ internal class AndroidWidgetsFragment(
         FragmentAndroidWidgetListBinding.inflate(inflater).run {
             availableWidgetList.apply {
                 clipToPadding = false
-                setAdapter(AvailableWidgetsListAdapter(context).also {
+                setAdapter(AvailableAndroidWidgetListAdapter(context).also {
                     listAdapter = it
                     loadInstalledWidgets()
                 })

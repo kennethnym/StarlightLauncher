@@ -114,6 +114,7 @@ internal class WidgetListAdapter(
         val widgetIndex = addedWidgets.size
         addedWidgets += widget
         notifyItemInserted(widgetIndex)
+        widgetList?.scrollToPosition(widgetIndex)
     }
 
     private fun onWidgetPreferenceChanged(event: WidgetPreferenceChanged) {

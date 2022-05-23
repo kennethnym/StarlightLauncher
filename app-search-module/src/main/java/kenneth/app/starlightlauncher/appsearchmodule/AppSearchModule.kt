@@ -25,7 +25,6 @@ class AppSearchModule(context: Context) : SearchModule(context) {
     override lateinit var adapter: SearchResultAdapter
         private set
 
-    private lateinit var searchResultAdapter: AppSearchResultAdapter
     private lateinit var launcherContext: Context
     private lateinit var preferences: AppSearchModulePreferences
     private lateinit var launcherApps: LauncherApps
@@ -46,13 +45,24 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             currentAppList += launcherApps.getActivityList(packageName, user)
         }
 
-        override fun onPackageChanged(packageName: String?, user: UserHandle?) {}
+        override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+            if (packageName == null || user == null) return
+
+            currentAppList.removeAll { it.componentName.packageName == packageName }
+            currentAppList += launcherApps.getActivityList(packageName, user)
+        }
 
         override fun onPackagesAvailable(
             packageNames: Array<out String>?,
             user: UserHandle?,
             replacing: Boolean
         ) {
+            if (packageNames == null || user == null) return
+
+            packageNames.forEach { packageName ->
+                currentAppList.removeAll { it.componentName.packageName == packageName }
+                currentAppList += launcherApps.getActivityList(packageName, user)
+            }
         }
 
         override fun onPackagesUnavailable(
@@ -60,6 +70,9 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             user: UserHandle?,
             replacing: Boolean
         ) {
+            if (packageNames == null || user == null) return
+
+            currentAppList.removeAll { packageNames.contains(it.componentName.packageName) }
         }
     }
 

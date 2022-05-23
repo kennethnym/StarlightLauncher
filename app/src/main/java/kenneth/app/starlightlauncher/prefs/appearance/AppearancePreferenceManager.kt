@@ -8,6 +8,9 @@ import kenneth.app.starlightlauncher.api.IconPack
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Handles preferences for launcher appearance.
+ */
 @Singleton
 internal class AppearancePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
