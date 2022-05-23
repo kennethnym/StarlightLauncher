@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
@@ -30,6 +29,13 @@ import javax.inject.Singleton
 private sealed class ExtensionManagerEvent {
     data class ExtensionsLoaded(val extensions: List<Extension>)
 }
+
+/**
+ * Defines Starlight Widgets that are fixed and cannot be removed.
+ */
+private val FIXED_STARLIGHT_WIDGETS = mutableSetOf(
+    "kenneth.app.starlightlauncher.appsearchmodule"
+)
 
 /**
  * Loads and manages Starlight Launcher extensions.
@@ -165,7 +171,9 @@ internal class ExtensionManager @Inject constructor(
         extensions.forEach { (name, ext) ->
             extensions[name] = ext
             ext.searchModule?.let { searchModules[name] = it }
-            ext.widget?.let { widgets[name] = it }
+            if (!FIXED_STARLIGHT_WIDGETS.contains(name)) {
+                ext.widget?.let { widgets[name] = it }
+            }
         }
     }
 

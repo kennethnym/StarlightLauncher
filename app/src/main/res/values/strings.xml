@@ -19,10 +19,6 @@
     <!-- Available features -->
     <string name="feature_name_media_control">Media control</string>
     <string name="feature_description_media_control">Control your music right on your home screen.</string>
-    <string name="feature_name_note_widget">Note widget</string>
-    <string name="feature_description_note_widget">Make simple notes quickly.</string>
-    <string name="feature_name_unit_converter">Unit converter</string>
-    <string name="feature_description_unit_converter">Quickly make unit conversions</string>
     <!-- Permissions -->
     <string name="permission_name_external_storage">External storage access</string>
     <string name="permission_description_external_storage">Required to provide blur effect and file searching</string>
@@ -99,6 +95,8 @@
 
     <!-- Available widgets page -->
     <string name="available_widgets_page_header">Widgets</string>
+    <string name="available_widgets_page_android_widgets">Android Widgets</string>
+    <string name="available_widgets_page_starlight_widgets">Starlight Widgets</string>
 
     <!-- Bluetooth controls -->
     <string name="bluetooth_label">Bluetooth</string>

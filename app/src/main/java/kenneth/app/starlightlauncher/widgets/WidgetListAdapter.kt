@@ -24,6 +24,7 @@ import kenneth.app.starlightlauncher.utils.toDp
 import kenneth.app.starlightlauncher.utils.toPx
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
+import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlin.math.max
 
@@ -57,11 +58,6 @@ internal class WidgetListAdapter(
 
     private var widgetList: WidgetList? = null
 
-    private val appWidgetIds: MutableList<Int?> =
-        addedWidgets
-            .map { null }
-            .toMutableList()
-
     init {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
@@ -70,7 +66,11 @@ internal class WidgetListAdapter(
             extensionManager = extensionManager()
             launcherApi = launcherApi()
             appWidgetHost = appWidgetHost()
-            widgetPreferenceManager = widgetPreferenceManager()
+            widgetPreferenceManager = widgetPreferenceManager().also {
+                it.addOnWidgetPreferenceChangedListener {
+
+                }
+            }
         }
     }
 
@@ -113,8 +113,16 @@ internal class WidgetListAdapter(
     fun addAndroidWidget(widget: AddedWidget.AndroidWidget) {
         val widgetIndex = addedWidgets.size
         addedWidgets += widget
-        appWidgetIds += null
         notifyItemInserted(widgetIndex)
+    }
+
+    private fun onWidgetPreferenceChanged(event: WidgetPreferenceChanged) {
+        when (event) {
+            is WidgetPreferenceChanged.WidgetRemoved -> {
+
+            }
+            else -> {}
+        }
     }
 
     private fun showAndroidWidget(
@@ -162,22 +170,22 @@ internal class WidgetListAdapter(
             }
         }
         holder.binding.removeWidgetBtn.setOnClickListener {
-            removeStarlightWidget(widget.extensionName, position)
+            removeStarlightWidget(widget.extensionName)
         }
     }
 
     private fun removeAndroidWidget(appWidgetId: Int) {
-        widgetPreferenceManager.removeAndroidWidget(appWidgetId)?.let {
-            addedWidgets.removeAt(it)
-            appWidgetIds.removeAt(it)
-            notifyItemRemoved(it)
-        }
+        widgetPreferenceManager.removeAndroidWidget(appWidgetId)
     }
 
-    private fun removeStarlightWidget(extensionName: String, position: Int) {
+    private fun removeStarlightWidget(extensionName: String) {
         widgetPreferenceManager.removeStarlightWidget(extensionName)
-        addedWidgets.removeAt(position)
-        notifyItemRemoved(position)
+    }
+
+    private fun removeWidgetFromList(widget: AddedWidget) {
+        val removedPosition = addedWidgets.indexOfFirst { it == widget }
+        addedWidgets.removeAt(removedPosition)
+        notifyItemRemoved(removedPosition)
     }
 }
 

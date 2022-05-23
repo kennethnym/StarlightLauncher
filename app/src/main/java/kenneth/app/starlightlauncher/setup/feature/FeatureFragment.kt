@@ -9,8 +9,8 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.api.WidgetCreator
+import kenneth.app.starlightlauncher.databinding.FeatureItemBinding
 import kenneth.app.starlightlauncher.databinding.FragmentSetupFeatureBinding
-import kenneth.app.starlightlauncher.databinding.SetupFeatureItemBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import javax.inject.Inject
@@ -37,7 +37,7 @@ internal class FeatureFragment : Fragment() {
         AVAILABLE_FEATURES.forEach {
             val featurePrefKey = getString(it.key)
 
-            SetupFeatureItemBinding.inflate(inflater, root, true).apply {
+            FeatureItemBinding.inflate(inflater, root, true).apply {
                 name = getString(it.name)
                 description = getString(it.description)
                 enableFeatureCheckbox.isChecked =
@@ -51,7 +51,7 @@ internal class FeatureFragment : Fragment() {
         }
 
         extensionManager.installedWidgets.forEach {
-            SetupFeatureItemBinding.inflate(inflater, root, true).apply {
+            FeatureItemBinding.inflate(inflater, root, true).apply {
                 name = it.metadata.displayName
                 description = it.metadata.description
 
@@ -85,7 +85,7 @@ internal class FeatureFragment : Fragment() {
         }
     }
 
-    private fun toggleFeature(prefKey: String, binding: SetupFeatureItemBinding) {
+    private fun toggleFeature(prefKey: String, binding: FeatureItemBinding) {
         binding.enableFeatureCheckbox.isChecked = !binding.enableFeatureCheckbox.isChecked
         val isFeatureEnabled = binding.enableFeatureCheckbox.isChecked
         setFeatureEnabled(prefKey, isFeatureEnabled)

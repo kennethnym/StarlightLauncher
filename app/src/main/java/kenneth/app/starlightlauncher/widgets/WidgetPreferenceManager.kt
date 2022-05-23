@@ -32,6 +32,10 @@ internal sealed class WidgetPreferenceChanged {
     data class NewStarlightWidgetAdded(
         val addedWidget: AddedWidget.StarlightWidget,
     ) : WidgetPreferenceChanged()
+
+    data class WidgetRemoved(
+        val removedWidget: AddedWidget,
+    ) : WidgetPreferenceChanged()
 }
 
 internal typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
@@ -63,6 +67,15 @@ internal class WidgetPreferenceManager @Inject constructor(
                 }
             }
 
+    private var addedStarlightWidgets = mutableSetOf<String>().apply {
+        addAll(
+            _addedWidgets
+                .asSequence()
+                .filterIsInstance<AddedWidget.StarlightWidget>()
+                .map { it.extensionName }
+        )
+    }
+
     /**
      * Maps internal IDs of added widgets to their corresponding position in the widget list.
      */
@@ -79,10 +92,14 @@ internal class WidgetPreferenceManager @Inject constructor(
     val addedWidgets
         get() = _addedWidgets.toList()
 
+    init {
+
+    }
+
     override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     fun isStarlightWidgetAdded(extensionName: String) =
-        addedWidgets.any { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
+        addedStarlightWidgets.contains(extensionName)
 
     fun addStarlightWidget(extensionName: String) {
         val widgetId = random.nextInt()
@@ -91,6 +108,7 @@ internal class WidgetPreferenceManager @Inject constructor(
             extensionName,
         )
         _addedWidgets += newWidget
+        addedStarlightWidgets += extensionName
         addedWidgetsMap[widgetId] = newWidget
         addedWidgetPositions[widgetId] = _addedWidgets.lastIndex
         saveAddedWidgets()
@@ -109,6 +127,10 @@ internal class WidgetPreferenceManager @Inject constructor(
         addedWidgetsMap.remove(widget.id)
         addedWidgetPositions.remove(widget.id)
         saveAddedWidgets()
+        setChanged()
+        notifyObservers(
+            WidgetPreferenceChanged.WidgetRemoved(widget)
+        )
     }
 
     fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
