@@ -2,15 +2,15 @@ package kenneth.app.starlightlauncher.noteswidget.pref
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
-import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
+import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.R
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.*
 
 internal typealias NoteListListener = (event: NoteListModified) -> Unit
 
@@ -22,8 +22,7 @@ sealed class NoteListModified {
 }
 
 internal class NotesWidgetPreferences
-private constructor(context: Context) :
-    ObservablePreferences<NotesWidgetPreferences>(context) {
+private constructor(context: Context) : Observable() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: NotesWidgetPreferences? = null
@@ -32,6 +31,8 @@ private constructor(context: Context) :
             instance ?: NotesWidgetPreferences(context.applicationContext)
                 .also { instance = it }
     }
+
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val noteList = mutableListOf<Note>()
 
@@ -43,8 +44,6 @@ private constructor(context: Context) :
     init {
         loadNotes()
     }
-
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     internal fun addNote(note: Note) {
         noteList += note

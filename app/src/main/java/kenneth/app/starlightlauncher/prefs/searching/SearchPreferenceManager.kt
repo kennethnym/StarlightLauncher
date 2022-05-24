@@ -6,9 +6,9 @@ import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
-import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.extension.Extension
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,9 +26,10 @@ internal typealias SearchPreferenceChangedListener = (event: SearchPreferenceCha
 
 @Singleton
 internal class SearchPreferenceManager @Inject constructor(
+    private val sharedPreferences: SharedPreferences,
     private val extensionManager: ExtensionManager,
     @ApplicationContext context: Context,
-) : ObservablePreferences<SearchPreferenceManager>(context) {
+) : Observable() {
     val keys = SearchPreferencesPrefKeys(context)
 
     private var enabledSearchModules = mutableSetOf<String>()
@@ -43,13 +44,9 @@ internal class SearchPreferenceManager @Inject constructor(
         get() = _categoryOrder as List<String>
 
     init {
-        extensionManager.addOnExtensionsLoadedListener {
-            getSearchModuleOrder(it)
-            getEnabledSearchModules(it)
-        }
+        getSearchModuleOrder(extensionManager.installedExtensions)
+        getEnabledSearchModules(extensionManager.installedExtensions)
     }
-
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     /**
      * Returns the order the search module should appear on the search result list, or -1
@@ -74,7 +71,7 @@ internal class SearchPreferenceManager @Inject constructor(
         }
     }
 
-    private fun getSearchModuleOrder(extensions: List<Extension>) {
+    private fun getSearchModuleOrder(extensions: Collection<Extension>) {
         // when the launcher is initializing, there may be new modules installed
         // since the last time the search module order list is saved to storage.
         //
@@ -105,7 +102,7 @@ internal class SearchPreferenceManager @Inject constructor(
         }
     }
 
-    private fun getEnabledSearchModules(extensions: List<Extension>) {
+    private fun getEnabledSearchModules(extensions: Collection<Extension>) {
         val saved = sharedPreferences.getStringSet(keys.enabledSearchModules, null)
         if (saved == null) {
             enabledSearchModules.addAll(extensions.map { it.name })

@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.api.utils.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.serialization.decodeFromString
@@ -43,9 +42,10 @@ internal typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -
 @Singleton
 internal class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
+    private val sharedPreferences: SharedPreferences,
     private val extensionManager: ExtensionManager,
     private val random: Random,
-) : ObservablePreferences<WidgetPreferenceManager>(context) {
+) : Observable() {
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
     val keys = WidgetPrefKeys(context)
@@ -91,12 +91,6 @@ internal class WidgetPreferenceManager @Inject constructor(
 
     val addedWidgets
         get() = _addedWidgets.toList()
-
-    init {
-
-    }
-
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     fun isStarlightWidgetAdded(extensionName: String) =
         addedStarlightWidgets.contains(extensionName)

@@ -1,24 +1,18 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.annotation.SuppressLint
-import android.app.appsearch.exceptions.AppSearchException
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.content.edit
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
 import kenneth.app.starlightlauncher.api.utils.swap
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
-import java.util.prefs.Preferences
 
 sealed class AppSearchModulePreferenceChanged {
     /**

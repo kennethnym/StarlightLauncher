@@ -27,7 +27,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private sealed class ExtensionManagerEvent {
-    data class ExtensionsLoaded(val extensions: List<Extension>)
+    data class ExtensionsLoaded(val extensions: List<Extension>) : ExtensionManagerEvent()
 }
 
 /**
@@ -37,6 +37,8 @@ private val FIXED_STARLIGHT_WIDGETS = mutableSetOf(
     "kenneth.app.starlightlauncher.appsearchmodule"
 )
 
+internal typealias InstalledExtensions = Collection<Extension>
+
 /**
  * Loads and manages Starlight Launcher extensions.
  */
@@ -44,16 +46,7 @@ private val FIXED_STARLIGHT_WIDGETS = mutableSetOf(
 internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val launcherApi: StarlightLauncherApi,
-) {
-    /**
-     * An observable that listeners of [ExtensionManager] is subscribed to.
-     */
-    private val observable = object : Observable() {
-        fun changed() {
-            setChanged()
-        }
-    }
-
+) : Observable() {
     /**
      * A map of extensions loaded into memory.
      */
@@ -161,7 +154,7 @@ internal class ExtensionManager @Inject constructor(
     )
 
     val installedExtensions
-        get() = extensions.values as Collection<Extension>
+        get() = extensions.values as InstalledExtensions
 
     val installedSearchModules = searchModules.values as Collection<SearchModule>
 
@@ -180,14 +173,12 @@ internal class ExtensionManager @Inject constructor(
     fun loadExtensions() {
         queryExtensions()
         queryExtensionSettings()
-        with(observable) {
-            changed()
-            notifyObservers()
-        }
+        setChanged()
+        notifyObservers(ExtensionManagerEvent.ExtensionsLoaded(installedExtensions.toList()))
     }
 
     fun addOnExtensionsLoadedListener(listener: (extensions: List<Extension>) -> Unit) {
-        observable.addObserver { o, arg ->
+        addObserver { o, arg ->
             if (arg is ExtensionManagerEvent.ExtensionsLoaded) {
                 listener(arg.extensions)
             }
@@ -218,6 +209,10 @@ internal class ExtensionManager @Inject constructor(
             PackageManager.GET_META_DATA,
         ).forEach { resolveInfo ->
             tryInitializeExtension(resolveInfo)
+        }
+
+        extensions.forEach { (_, ext) ->
+            ext.searchModule?.initialize(launcherApi)
         }
     }
 

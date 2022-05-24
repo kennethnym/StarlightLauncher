@@ -7,11 +7,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.edit
-import kenneth.app.starlightlauncher.api.preference.ObservablePreferences
+import androidx.preference.PreferenceManager
+import java.util.*
 
 internal class FileSearchModulePreferences
-private constructor(private val context: Context) :
-    ObservablePreferences<FileSearchModulePreferences>(context) {
+private constructor(private val context: Context) : Observable() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: FileSearchModulePreferences? = null
@@ -23,6 +23,8 @@ private constructor(private val context: Context) :
             }
     }
 
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
     val keys = PrefKeys(context)
 
     private val _includedPaths =
@@ -30,8 +32,6 @@ private constructor(private val context: Context) :
 
     val includedPaths
         get() = _includedPaths.toList()
-
-    override fun updateValue(sharedPreferences: SharedPreferences, key: String) {}
 
     /**
      * Include a path and save it to SharedPreference.
