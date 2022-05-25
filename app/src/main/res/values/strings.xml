@@ -24,6 +24,8 @@
     <string name="permission_description_external_storage">Required to provide blur effect and file searching</string>
     <string name="permission_name_notification_access">Notification access</string>
     <string name="permission_description_notification_access">Required to access currently playing media. Starlight Launcher will not read any notification.</string>
+    <string name="finishing_setup">Finishing setup…</string>
+    <string name="setup_finished">Setup finished!</string>
 
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
