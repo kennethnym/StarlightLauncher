@@ -189,6 +189,10 @@ internal class MainActivity : AppCompatActivity() {
                 appState.statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(insets)
                     .getInsets(WindowInsetsCompat.Type.systemBars()).top
 
+                binding.statusBarShade.layoutParams = binding.statusBarShade.layoutParams.apply {
+                    height = appState.statusBarHeight * 2
+                }
+
                 insets
             }
         }

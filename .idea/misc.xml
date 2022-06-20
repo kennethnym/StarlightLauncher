@@ -50,6 +50,7 @@
         <entry key="app/src/main/res/drawable/remove_widget_btn_bg.xml" value="0.296" />
         <entry key="app/src/main/res/drawable/require_location_perm_bg.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/rounded_background.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/status_bar_shade.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/widget_resize_frame.xml" value="0.296" />
         <entry key="app/src/main/res/drawable/widget_resize_handle.xml" value="0.2825" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2658514492753623" />
