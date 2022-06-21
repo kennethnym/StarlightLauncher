@@ -58,6 +58,11 @@ internal class WidgetListAdapter(
 
     private var widgetList: WidgetList? = null
 
+    /**
+     * IDs of [AddedWidget]s that are in layout.
+     */
+    private var widgetsInLayout = mutableSetOf<Int>()
+
     init {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
@@ -67,8 +72,12 @@ internal class WidgetListAdapter(
             launcherApi = launcherApi()
             appWidgetHost = appWidgetHost()
             widgetPreferenceManager = widgetPreferenceManager().also {
-                it.addOnWidgetPreferenceChangedListener {
-
+                it.addOnWidgetPreferenceChangedListener { event ->
+                    when (event) {
+                        is WidgetPreferenceChanged.WidgetRemoved ->
+                            removeWidgetFromList(event.removedWidget)
+                        else -> {}
+                    }
                 }
             }
         }
@@ -88,7 +97,7 @@ internal class WidgetListAdapter(
                 showStarlightWidget(addedWidget, holder, position)
             }
             is AddedWidget.AndroidWidget -> {
-                showAndroidWidget(addedWidget, holder, position)
+                showAndroidWidget(addedWidget, holder)
             }
         }
     }
@@ -114,13 +123,13 @@ internal class WidgetListAdapter(
         val widgetIndex = addedWidgets.size
         addedWidgets += widget
         notifyItemInserted(widgetIndex)
+        widgetsInLayout.add(widget.id)
         widgetList?.scrollToPosition(widgetIndex)
     }
 
     private fun onWidgetPreferenceChanged(event: WidgetPreferenceChanged) {
         when (event) {
             is WidgetPreferenceChanged.WidgetRemoved -> {
-
             }
             else -> {}
         }
@@ -129,7 +138,6 @@ internal class WidgetListAdapter(
     private fun showAndroidWidget(
         addedWidget: AddedWidget.AndroidWidget,
         holder: WidgetListAdapterItem,
-        position: Int,
     ) {
         val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(addedWidget.appWidgetId)
 
@@ -158,6 +166,8 @@ internal class WidgetListAdapter(
         holder.binding.removeWidgetBtn.setOnClickListener {
             removeAndroidWidget(addedWidget.appWidgetId)
         }
+
+        widgetsInLayout.add(addedWidget.id)
     }
 
     private fun showStarlightWidget(
@@ -173,6 +183,7 @@ internal class WidgetListAdapter(
         holder.binding.removeWidgetBtn.setOnClickListener {
             removeStarlightWidget(widget.extensionName)
         }
+        widgetsInLayout.add(widget.id)
     }
 
     private fun removeAndroidWidget(appWidgetId: Int) {
@@ -184,9 +195,12 @@ internal class WidgetListAdapter(
     }
 
     private fun removeWidgetFromList(widget: AddedWidget) {
-        val removedPosition = addedWidgets.indexOfFirst { it == widget }
-        addedWidgets.removeAt(removedPosition)
-        notifyItemRemoved(removedPosition)
+        if (widgetsInLayout.contains(widget.id)) {
+            val removedPosition = addedWidgets.indexOfFirst { it == widget }
+            addedWidgets.removeAt(removedPosition)
+            widgetsInLayout.remove(widget.id)
+            notifyItemRemoved(removedPosition)
+        }
     }
 }
 

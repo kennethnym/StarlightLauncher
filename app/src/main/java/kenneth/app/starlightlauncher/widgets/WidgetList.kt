@@ -127,8 +127,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                     onAndroidWidgetAdded(it.addedWidget, it.appWidgetProviderInfo)
                 }
 
-                else -> {
-                }
+                else -> {}
             }
         }
 

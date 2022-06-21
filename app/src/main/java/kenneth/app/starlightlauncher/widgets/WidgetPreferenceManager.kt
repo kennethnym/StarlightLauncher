@@ -169,11 +169,15 @@ internal class WidgetPreferenceManager @Inject constructor(
         }
     }
 
-    fun removeAndroidWidget(appWidgetId: Int): Int? {
+    fun removeAndroidWidget(appWidgetId: Int) {
         val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-        _addedWidgets.removeIf { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
-        saveAddedWidgets()
-        return addedWidgetPositions.remove(appWidgetId)
+        _addedWidgets.find { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
+            ?.let { widget ->
+                _addedWidgets.remove(widget)
+                saveAddedWidgets()
+                setChanged()
+                notifyObservers(WidgetPreferenceChanged.WidgetRemoved(widget))
+            }
     }
 
     fun addOnWidgetPreferenceChangedListener(listener: WidgetPreferenceListener) {
