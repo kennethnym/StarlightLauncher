@@ -21,16 +21,16 @@ interface IconPack {
     val name: String
 
     /**
-     * Retrieves the icon of the given [ResolveInfo].
+     * Retrieves the icon of [launcherActivityInfo].
+     *
+     * @return The [Bitmap] representation of the icon.
      */
-    fun getIconOf(resolveInfo: ResolveInfo): Bitmap
-
-    /**
-     * Retrieves the icon of the given [ActivityInfo]
-     */
-    fun getIconOf(activityInfo: ActivityInfo): Bitmap
-
     fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap
 
+    /**
+     * Retrieves the icon of [applicationInfo].
+     *
+     * @return The [Bitmap] representation of the icon.
+     */
     fun getIconOf(applicationInfo: ApplicationInfo): Bitmap
 }

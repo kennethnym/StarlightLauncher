@@ -9,6 +9,9 @@ import kenneth.app.starlightlauncher.api.TemperatureUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Manages preference for date & time for this launcher.
+ */
 @Singleton
 internal class DateTimePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context

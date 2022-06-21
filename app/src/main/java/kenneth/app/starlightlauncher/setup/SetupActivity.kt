@@ -65,13 +65,6 @@ internal class SetupActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun finishSetup() {
-        binding.continueBtn.apply {
-            isEnabled = false
-            isInvisible = false
-        }
-    }
-
     private fun goToNextStep() {
         if (binding.setupPager.currentItem == SETUP_STEP_COUNT - 1) {
             CoroutineScope(Dispatchers.IO).launch {

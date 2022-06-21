@@ -9,6 +9,9 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.views.ReorderablePreference
 import javax.inject.Inject
 
+/**
+ * Settings fragment for search layout. Allows users to re-arrange positions of search categories.
+ */
 @AndroidEntryPoint
 internal class SearchLayoutSettingsFragment : PreferenceFragmentCompat() {
     @Inject

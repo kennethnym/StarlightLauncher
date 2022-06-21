@@ -12,6 +12,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
+/**
+ * Settings fragment for media control card.
+ */
 @AndroidEntryPoint
 internal class MediaControlSettingsFragment : PreferenceFragmentCompat() {
     @Inject

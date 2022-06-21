@@ -1,7 +1,6 @@
 package kenneth.app.starlightlauncher
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
 import android.content.Context
@@ -11,8 +10,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsetsController
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
@@ -57,6 +54,9 @@ internal object MainActivityModule {
     }
 }
 
+/**
+ * The home screen of the launcher.
+ */
 @AndroidEntryPoint
 internal class MainActivity : AppCompatActivity() {
     @Inject
@@ -78,9 +78,6 @@ internal class MainActivity : AppCompatActivity() {
     lateinit var inputMethodManager: InputMethodManager
 
     @Inject
-    lateinit var permissionHandler: PermissionHandler
-
-    @Inject
     lateinit var launcherApi: StarlightLauncherApi
 
     @Inject
@@ -94,10 +91,6 @@ internal class MainActivity : AppCompatActivity() {
 
     private var isDarkModeActive = false
 
-    internal fun addBackPressListener(handler: BackPressHandler) {
-        backPressedCallbacks.add(handler)
-    }
-
     override fun onStart() {
         super.onStart()
         appWidgetHost.startListening()
@@ -110,6 +103,8 @@ internal class MainActivity : AppCompatActivity() {
         updateAdaptiveColors()
 
         launcherApi.let {
+            // set the context of the API entry point
+            // the context will be this activity.
             if (it is StarlightLauncherApiImpl) it.setContext(this)
         }
 
@@ -139,26 +134,15 @@ internal class MainActivity : AppCompatActivity() {
         appearancePreferenceManager.iconPack.let {
             if (it is InstalledIconPack) it.load()
         }
-        permissionHandler.handlePermissionRequestsForActivity(this)
         attachListeners()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        isDarkModeActive =
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) newConfig.isNightModeActive
-            else newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        if (binding.widgetsPanel.isExpanded) {
-            if (isDarkModeActive) {
-                disableLightStatusBar()
-            } else {
-                enableLightStatusBar()
-            }
-        }
-    }
-
     override fun onBackPressed() {
-        val isHandled = backPressedCallbacks.fold(false) { _, cb -> cb() }
+        // calls all registered back press callbacks
+        // check if they handled the back press
+        // don't do anything if any of the callback has handled the back press
+        // otherwise, use the default behavior.
+        val isHandled = backPressedCallbacks.any { it() }
         if (!isHandled) {
             super.onBackPressed()
         }
@@ -200,6 +184,9 @@ internal class MainActivity : AppCompatActivity() {
 
     /**
      * Update the current adaptive color scheme by finding the dominant color of the current wallpaper.
+     * If the launcher doesn't have permission to access the current wallpaper,
+     * the launcher will fallback to dark theme.
+     * TODO: maybe make the fallback theme configurable by the user in settings
      */
     private fun updateAdaptiveColors() {
         val currentWallpaper = this.currentWallpaper
@@ -223,37 +210,8 @@ internal class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("InlinedApi")
-    private fun enableLightStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window
-                .insetsController
-                ?.setSystemBarsAppearance(
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                )
-        } else if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.M..Build.VERSION_CODES.Q) && !isDarkModeActive) {
-            binding.root.systemUiVisibility =
-                binding.root.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-    }
-
-    private fun disableLightStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window
-                .insetsController
-                ?.setSystemBarsAppearance(
-                    0,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                )
-        } else
-            binding.root.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-    }
-
     /**
-     * Checks if the wallpaper is updated. If it is, recreate activity.
+     * Checks if the wallpaper is updated. If it is, recreate activity to update adaptive theme.
      */
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
@@ -267,6 +225,9 @@ internal class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Fetches the current wallpaper if the launcher has permission to do so.
+     */
     private fun getCurrentWallpaper() {
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED

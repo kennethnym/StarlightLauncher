@@ -97,20 +97,6 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
         loadAppFilterXmlContent(appFilterXml)
     }
 
-    /**
-     * Retrieves the icon of the given [ResolveInfo].
-     *
-     * @return The icon for the [ResolveInfo], or the default icon if this icon pack
-     * doesn't have an icon for it.
-     */
-    override fun getIconOf(resolveInfo: ResolveInfo): Bitmap =
-        getIconOf(resolveInfo.activityInfo)
-
-    override fun getIconOf(activityInfo: ActivityInfo): Bitmap {
-        val default = activityInfo.loadIcon(packageManager)
-        return getIconOf(activityInfo.packageName, default.toBitmap())
-    }
-
     override fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap =
         getIconOf(
             launcherActivityInfo.applicationInfo.packageName,

@@ -14,16 +14,35 @@ import javax.inject.Singleton
 
 private const val CATEGORY_ORDER_LIST_SEPARATOR = ";"
 
+/**
+ * Represents an event that search preference has changed.
+ * Subtypes of this class specifies exactly which search preference has changed.
+ */
 internal sealed class SearchPreferenceChanged {
+    /**
+     * The order of search category has changed.
+     */
     data class SearchCategoryOrderChanged(
+        /**
+         * The original position of the search category moved by the user.
+         */
         val fromIndex: Int,
+        /**
+         * The new position of the search category moved by the user.
+         */
         val toIndex: Int
     ) :
         SearchPreferenceChanged()
 }
 
+/**
+ * Defines the signature of a listener that will be notified when search preferences have changed.
+ */
 internal typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
 
+/**
+ * Manages search preferences for this launcher.
+ */
 @Singleton
 internal class SearchPreferenceManager @Inject constructor(
     private val sharedPreferences: SharedPreferences,

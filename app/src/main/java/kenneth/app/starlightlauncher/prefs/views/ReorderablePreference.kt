@@ -13,6 +13,9 @@ import kenneth.app.starlightlauncher.databinding.ReorderablePreferenceItemBindin
 import kenneth.app.starlightlauncher.views.ListOrderChangedListener
 import kenneth.app.starlightlauncher.views.ReorderableList
 
+/**
+ * A preference view that allows users to reorder items by drag-n-drop.
+ */
 internal class ReorderablePreference(context: Context, attrs: AttributeSet?) :
     PreferenceCategory(context, attrs) {
     private var orderListener: ListOrderChangedListener? = null
@@ -32,6 +35,12 @@ internal class ReorderablePreference(context: Context, attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * Registers [listener] to be called when the order of items has changed.
+
+     * Only one can be registered at a time.
+     * Subsequent registrations replace the listener registered previously.
+     */
     fun setOnPreferenceOrderChanged(listener: ListOrderChangedListener) {
         orderListener = listener
     }
@@ -40,9 +49,22 @@ internal class ReorderablePreference(context: Context, attrs: AttributeSet?) :
         orderListener?.let { it(fromIndex, toIndex) }
     }
 
+    /**
+     * Represents an item in [ReorderablePreference].
+     * Use [ReorderablePreference.items] to set the list of items to show in [ReorderablePreference]
+     */
     data class Item(
+        /**
+         * The value this item stores.
+         */
         val value: String,
+        /**
+         * The title of this item. Equivalent to Preference title.
+         */
         val title: String,
+        /**
+         * The summary of this item. Equivalent to Preference summary.
+         */
         val summary: String,
     )
 }

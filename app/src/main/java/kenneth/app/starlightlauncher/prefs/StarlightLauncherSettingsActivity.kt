@@ -7,6 +7,9 @@ import kenneth.app.starlightlauncher.api.preference.SettingsActivity
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import javax.inject.Inject
 
+/**
+ * The settings page for this launcher.
+ */
 @AndroidEntryPoint
 class StarlightLauncherSettingsActivity : SettingsActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
@@ -16,6 +19,5 @@ class StarlightLauncherSettingsActivity : SettingsActivity(),
 
     override fun createPreferenceFragment(): PreferenceFragmentCompat = RootSettingsFragment()
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-    }
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {}
 }

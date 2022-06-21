@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * A settings fragment that lets user change the icon pack.
+ */
 @AndroidEntryPoint
 internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
     @Inject

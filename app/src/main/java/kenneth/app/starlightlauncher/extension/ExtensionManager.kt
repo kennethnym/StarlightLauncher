@@ -170,6 +170,9 @@ internal class ExtensionManager @Inject constructor(
         }
     }
 
+    /**
+     * Loads all the installed extensions for this launcher.
+     */
     fun loadExtensions() {
         queryExtensions()
         queryExtensionSettings()
