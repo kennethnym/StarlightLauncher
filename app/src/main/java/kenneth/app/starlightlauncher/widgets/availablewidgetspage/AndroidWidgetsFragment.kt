@@ -36,7 +36,7 @@ internal class AndroidWidgetsFragment(
         FragmentAndroidWidgetListBinding.inflate(inflater).run {
             availableWidgetList.apply {
                 clipToPadding = false
-                setAdapter(AvailableAndroidWidgetListAdapter(context).also {
+                setAdapter(AvailableAndroidWidgetListAdapter(context, this).also {
                     listAdapter = it
                     loadInstalledWidgets()
                 })

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.ExpandableListView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -23,7 +24,10 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kenneth.app.starlightlauncher.utils.toDp
+import kenneth.app.starlightlauncher.utils.toPx
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlin.math.roundToInt
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
     "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
@@ -46,6 +50,7 @@ private interface AvailableWidgetListAdapterEntryPoint {
  */
 internal class AvailableAndroidWidgetListAdapter(
     private val context: Context,
+    private val listView: ExpandableListView,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()
     private var providers: Map<String, List<AppWidgetProviderInfo>> = emptyMap()
@@ -188,11 +193,20 @@ internal class AvailableAndroidWidgetListAdapter(
             isFocusable = true
             compoundDrawablePadding = widgetPreviewSpacing
 
-            setCompoundDrawablesRelativeWithIntrinsicBounds(
+            widgetPreview?.let {
+                // - 16 for left/right padding
+                if (it.intrinsicWidth > listView.width - 32.toPx()) {
+                    val previewWidth = listView.width - 32.toPx()
+                    val aspectRatio = it.intrinsicWidth.toDouble() / it.intrinsicHeight
+                    it.setBounds(0, 0, previewWidth, (previewWidth / aspectRatio).roundToInt())
+                    setCompoundDrawablesRelative(null, it, null, null)
+                } else {
+                    setCompoundDrawablesRelativeWithIntrinsicBounds(null, it, null, null)
+                }
+            } ?: setCompoundDrawablesRelativeWithIntrinsicBounds(
                 null,
-                widgetPreview
-                    ?: appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
-                        .toDrawable(context.resources),
+                appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
+                    .toDrawable(context.resources),
                 null,
                 null,
             )
