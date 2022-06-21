@@ -6,16 +6,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.PathInterpolator
+import androidx.activity.OnBackPressedCallback
 import androidx.core.animation.addListener
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.utils.activity
-import kenneth.app.starlightlauncher.utils.addBackPressedCallback
 import javax.inject.Inject
 
 /**
@@ -53,12 +51,11 @@ internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, a
      */
     private var content: View? = null
 
-    init {
-        activity?.addBackPressedCallback {
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
             if (isVisible && !isClosing) {
                 close()
-                HANDLED
-            } else NOT_HANDLED
+            }
         }
     }
 
@@ -87,6 +84,9 @@ internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, a
         }
 
         displayContent(withContent)
+        activity?.let {
+            it.onBackPressedDispatcher.addCallback(it, onBackPressedCallback)
+        }
     }
 
     fun close() {
@@ -108,6 +108,8 @@ internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, a
 
             start()
         }
+
+        onBackPressedCallback.remove()
     }
 
     private fun displayContent(content: View) {

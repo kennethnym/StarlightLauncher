@@ -137,17 +137,6 @@ internal class MainActivity : AppCompatActivity() {
         attachListeners()
     }
 
-    override fun onBackPressed() {
-        // calls all registered back press callbacks
-        // check if they handled the back press
-        // don't do anything if any of the callback has handled the back press
-        // otherwise, use the default behavior.
-        val isHandled = backPressedCallbacks.any { it() }
-        if (!isHandled) {
-            super.onBackPressed()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         checkWallpaper()

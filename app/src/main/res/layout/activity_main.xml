@@ -60,7 +60,7 @@
 
     </LinearLayout>
 
-    <kenneth.app.starlightlauncher.views.widgetspanel.WidgetsPanel
+    <kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
         android:id="@+id/widgets_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

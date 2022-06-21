@@ -6,6 +6,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
 import androidx.annotation.RequiresApi
 import kenneth.app.starlightlauncher.AppState
+import kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.R)

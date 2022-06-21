@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.views.widgetspanel
+package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.content.Context
 import android.os.Build
@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
@@ -25,7 +26,7 @@ import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
-import kenneth.app.starlightlauncher.utils.addBackPressedCallback
+import kenneth.app.starlightlauncher.views.widgetspanel.KeyboardAnimation
 import javax.inject.Inject
 
 /**
@@ -81,6 +82,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private val binding: WidgetsPanelBinding
 
+    private val onBackPressedCallback: OnBackPressedCallback
+
     init {
         translationY = appState.halfScreenHeight.toFloat()
 
@@ -88,11 +91,12 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             BindingRegister.widgetsPanelBinding = it
         }
 
-        activity?.addBackPressedCallback {
-            if (isExpanded && !isEditModeEnabled && !binding.searchBox.hasQueryText) {
-                retract()
-                HANDLED
-            } else NOT_HANDLED
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isExpanded && !isEditModeEnabled && !binding.searchBox.hasQueryText) {
+                    retract()
+                }
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -127,8 +131,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     fun expand() {
-        Log.d("starlight", "expand")
-
         isExpanded = true
 
         WidgetPanelAnimation(0f)
@@ -141,6 +143,9 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         gestureMover.reset()
+        activity?.let {
+            it.onBackPressedDispatcher.addCallback(it, onBackPressedCallback)
+        }
     }
 
     fun retract() {
@@ -158,6 +163,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         gestureMover.reset()
+        onBackPressedCallback.remove()
     }
 
     /**
