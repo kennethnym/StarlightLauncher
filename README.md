@@ -1,7 +1,9 @@
 <p align="center" style="margin-bottom: 0px !important;">
   <img width="200" src="./images/logo.png" alt="Starlight Launcher Logo" align="center">
-  [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 </p>
+<div align="center">
+  <a href="">[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]</a>
+</div>
 <h1 align="center" style="margin-top: 0px;">Starlight Launcher</h1>
 
 A beautiful, extensible search-based Android launcher that helps you get things done faster.
