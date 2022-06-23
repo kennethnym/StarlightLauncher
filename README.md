@@ -2,12 +2,17 @@
 
 This is still a work in progress.
 
-# Starlight Launcher
-
-<img src="./screenshots/main-screen.png" alt="Screenshot of Starlight Launcher" height="360" />
+<p align="center" style="margin-bottom: 0px !important;">
+  <img width="200" src="./images/logo.png" alt="Starlight Launcher Logo" align="center">
+</p>
+<h1 align="center" style="margin-top: 0px;">Starlight Launcher</h1>
 
 A beautiful, extensible search-based Android launcher that helps you get things done faster.
 Everything you need is right at your fingertips. No more searching through grids of icons.
+
+## Screenshots
+
+<img src="./images/main-screen.png" alt="Screenshot of Starlight Launcher" height="360" />
 
 ## License
 
