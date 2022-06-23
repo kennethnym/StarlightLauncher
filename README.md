@@ -2,7 +2,9 @@
   <img width="200" src="./images/logo.png" alt="Starlight Launcher Logo" align="center">
 </p>
 <div align="center">
-  <a href="">[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)</a>
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+    <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg" />
+  </a>
 </div>
 <h1 align="center" style="margin-top: 0px;">Starlight Launcher</h1>
 
