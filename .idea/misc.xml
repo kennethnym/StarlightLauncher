@@ -31,16 +31,20 @@
         <entry key="app/src/main/res/drawable/edit_text_in_widget_bg.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_angle_down.xml" value="0.2745" />
         <entry key="app/src/main/res/drawable/ic_angle_up.xml" value="0.4197916666666667" />
+        <entry key="app/src/main/res/drawable/ic_brackets_curly.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/ic_clock.xml" value="0.36354166666666665" />
+        <entry key="app/src/main/res/drawable/ic_comment_dots.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/ic_draggabledots.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_exchange.xml" value="0.36354166666666665" />
         <entry key="app/src/main/res/drawable/ic_export.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_file_search_alt.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_history_alt.xml" value="0.2815" />
+        <entry key="app/src/main/res/drawable/ic_info_circle.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.218" />
         <entry key="app/src/main/res/drawable/ic_notes.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_play.xml" value="0.2825" />
+        <entry key="app/src/main/res/drawable/ic_play_circle.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/ic_step_backward_alt.xml" value="0.317" />
         <entry key="app/src/main/res/drawable/ic_twotone_computer_24.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_twotone_watch_24.xml" value="0.4197916666666667" />
@@ -105,13 +109,14 @@
         <entry key="app/src/main/res/layout/wifi_control.xml" value="0.2269021739130435" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.218" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.218" />
+        <entry key="app/src/main/res/xml/about_launcher_preferences.xml" value="0.25905797101449274" />
         <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.335" />
         <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.1" />
         <entry key="app/src/main/res/xml/file_search_preferences.xml" value="0.2368659420289855" />
         <entry key="app/src/main/res/xml/icon_pack_preferences.xml" value="0.3496376811594203" />
         <entry key="app/src/main/res/xml/media_control_preferences.xml" value="0.19630192502532928" />
         <entry key="app/src/main/res/xml/quick_notes_preferences.xml" value="0.37681159420289856" />
-        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.2620895385742188" />
         <entry key="app/src/main/res/xml/search_layout_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
         <entry key="app/src/main/res/xml/widget_layout_preferences.xml" value="0.30570652173913043" />

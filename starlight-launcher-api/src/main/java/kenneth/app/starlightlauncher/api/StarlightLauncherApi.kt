@@ -19,7 +19,7 @@ typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
 typealias MultiplePermissionRequestCallback = (results: Map<String, Boolean>) -> Unit
 
 /**
- * This interface defines methods that can be called to interact with Spotlight Launcher.
+ * This interface defines methods that can be called to interact with Starlight Launcher.
  */
 interface StarlightLauncherApi {
     /**

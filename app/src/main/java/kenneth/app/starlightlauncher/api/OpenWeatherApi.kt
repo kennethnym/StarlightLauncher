@@ -15,8 +15,8 @@ import java.io.IOException
 import javax.inject.Inject
 
 enum class TemperatureUnit(val code: String, val symbol: String) {
-    STANDARD("standard", "K"),
-    METRIC("metric", "°C"),
+    KELVIN("standard", "K"),
+    CELSIUS("metric", "°C"),
     IMPERIAL("imperial", "°F");
 }
 
@@ -40,7 +40,7 @@ class OpenWeatherApi @Inject constructor(
      * The unit that the temperature values returned by this API should be in.
      * Default is TemperatureUnit.METRIC. Can be STANDARD, METRIC or IMPERIAL.
      */
-    var unit: TemperatureUnit = TemperatureUnit.METRIC
+    var unit: TemperatureUnit = TemperatureUnit.CELSIUS
 
     /**
      * Fetches the current weather of the location specified by latLong

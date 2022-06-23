@@ -24,7 +24,7 @@ abstract class SearchModule(protected val context: Context) {
     /**
      * Initializes this [SearchModule].
      *
-     * @param launcher An instance of [StarlightLauncherApi] that allows you to interact with Spotlight Launcher.
+     * @param launcher An instance of [StarlightLauncherApi] that allows you to interact with Starlight Launcher.
      */
     abstract fun initialize(launcher: StarlightLauncherApi)
 

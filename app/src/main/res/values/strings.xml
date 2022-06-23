@@ -3,6 +3,9 @@
 
     <string name="starlight_launcher_name">Starlight Launcher</string>
     <string name="starlight_launcher_icon_description">Icon of Starlight Launcher</string>
+    <string name="starlight_launcher_source_code_url">https://www.github.com/kennethnym/StarlightLauncher</string>
+    <string name="starlight_launcher_feedback_url">https://github.com/kennethnym/StarlightLauncher/discussions</string>
+    <string name="starlight_launcher_author_email">kenneth.ng.nym@outlook.com</string>
 
     <!-- Launcher setup -->
     <string name="setup_activity_label">Starlight Launcher Setup</string>
@@ -74,7 +77,7 @@
 
     <string name="files_section_title">Files</string>
     <string name="files_section_include_path_instruction">
-        Open settings and add paths that you want Spotlight to search in.
+        Open settings and add paths that you want Starlight to search in.
     </string>
     <string name="files_section_no_result">No relevant files found.</string>
 
@@ -143,7 +146,7 @@
     <string name="appearance_title">Appearance</string>
     <string name="appearance_icon_category_title">Icons</string>
     <string name="appearance_icon_pack_title">Icon packs</string>
-    <string name="appearance_summary">Adjust how Hub Launcher looks.</string>
+    <string name="appearance_summary">Adjust how Starlight Launcher looks.</string>
     <string name="appearance_blur_effect_title">Enable blur effect</string>
     <string name="appearance_blur_effect_summary">Requires read storage permission to access the wallpaper.</string>
     <string name="appearance_show_pinned_apps_labels_title">Show names of pinned apps</string>
@@ -182,10 +185,10 @@
 
     <!-- File search preferences -->
     <string name="file_search_title">Files</string>
-    <string name="file_search_summary">Adjust how Spotlight searches your files.</string>
+    <string name="file_search_summary">Adjust how Starlight searches your files.</string>
     <string name="file_include_paths_category_header">Include paths</string>
     <string name="file_include_paths_summary">
-        Add paths that you want Spotlight to search in. Spotlight will only search for files
+        Add paths that you want Starlight to search in. Starlight will only search for files
         in those paths.
         To remove a path, simply tap on it.
     </string>
@@ -212,7 +215,7 @@
     <string name="date_time_use_auto_location_summary">Shows current weather of your location.</string>
     <string name="date_time_use_auto_location_check_frequency_title">Location check frequency</string>
     <string name="date_time_use_auto_location_check_frequency_summary">
-        How often should Hub Launcher check device location to obtain relevant weather
+        How often should Starlight Launcher check device location to obtain relevant weather
     </string>
     <string name="date_time_picked_location_label">Picked location: %1$s</string>
     <string name="date_time_unknown_location">Unknown</string>
@@ -241,15 +244,14 @@
         The app does NOT and will NEVER monitor and collect device notifications.
     </string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="powered_by_ddg_label">Powered by DuckDuckGo</string>
+    <!-- Info preferences -->
+    <string name="info_pref_category_title">Info</string>
+    <string name="about_launcher_title">About Starlight Launcher</string>
+    <string name="launcher_version_title">Launcher version</string>
+    <string name="launcher_source_code_title">Source code</string>
+    <string name="launcher_source_code_summary">Opens GitHub</string>
+    <string name="launcher_provide_feedback_title">Provide feedback</string>
+    <string name="launcher_provide_feedback_summary">Have feedback/suggestions? Click here!</string>
+    <string name="launcher_author_title">Author</string>
+    <string name="launcher_author_summary">Kenneth Ng · kenneth.ng.nym@outlook.com</string>
 </resources>

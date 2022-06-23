@@ -1,0 +1,47 @@
+workflows:
+  build-beta:
+    name: Beta build
+    max_build_duration: 60
+    instance_type: mac_mini
+    environment:
+      groups:
+        - keystore_credentials # Comment this out if you are using code-signing-identities <-- Includes - CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS
+        - google_play # <-- Includes - GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        - other
+      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+      node: latest
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: beta
+          include: true
+          source: true
+    scripts:
+      - name: Set up local properties
+        script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Add API key
+        script: |
+          touch apikey.properties
+          echo "OPEN_WEATHER_API_KEY=$OPEN_WEATHER_API_KEY" >> ./apikey.properties
+      - name: Set up key.properties file for code signing
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH
+          cat >> "$CM_BUILD_DIR/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF
+      - name: Build Android app
+        script:
+          ./gradlew bundleRelease  # To generate an .apk use--> ./gradlew assembleRelease
+    artifacts:
+      - app/build/outputs/**/**/*.aab
+      - app/build/outputs/**/**/*.apk
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal

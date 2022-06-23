@@ -9,14 +9,14 @@ def apiKeys = new Properties()
 apiKeys.load(new FileInputStream(apiKeyFile))
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "kenneth.app.starlightlauncher"
         minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 33
+        versionCode 1001
+        versionName "1.0.0-beta.1"
 
         renderscriptTargetApi 30
         renderscriptSupportModeEnabled true
@@ -29,7 +29,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }

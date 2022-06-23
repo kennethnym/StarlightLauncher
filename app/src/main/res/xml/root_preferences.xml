@@ -39,4 +39,30 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/info_pref_category_title">
+
+        <Preference
+            app:icon="@drawable/ic_info_circle"
+            app:key="@string/pref_key_launcher_version"
+            app:title="@string/launcher_version_title" />
+
+        <Preference
+            app:icon="@drawable/ic_brackets_curly"
+            app:key="@string/pref_key_launcher_source_code"
+            app:summary="@string/launcher_source_code_summary"
+            app:title="@string/launcher_source_code_title" />
+
+        <Preference
+            app:icon="@drawable/ic_comment_dots"
+            app:key="@string/pref_key_launcher_provide_feedback"
+            app:summary="@string/launcher_provide_feedback_summary"
+            app:title="@string/launcher_provide_feedback_title" />
+
+        <Preference
+            app:key="@string/pref_key_launcher_author"
+            app:summary="@string/launcher_author_summary"
+            app:title="@string/launcher_author_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

@@ -6,14 +6,14 @@
         android:name=".MainApplication"
         android:allowBackup="false">
 
-        <!-- A dummy activity with an intent filter so that Spotlight Launcher can discover this application as a plugin -->
+        <!-- A dummy activity with an intent filter so that Starlight Launcher can discover this application as a plugin -->
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <!-- This intent category has to be present in order for Spotlight Launcher to consider this application as a plugin -->
+                <!-- This intent category has to be present in order for Starlight Launcher to consider this application as a plugin -->
                 <category android:name="kenneth.app.starlightlauncher.intent.category.EXTENSION" />
             </intent-filter>
 

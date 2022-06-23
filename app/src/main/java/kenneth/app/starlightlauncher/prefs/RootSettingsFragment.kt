@@ -1,5 +1,7 @@
 package kenneth.app.starlightlauncher.prefs
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.preference.Preference
@@ -7,6 +9,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
@@ -22,6 +25,45 @@ internal class RootSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         loadExtensionSettings()
+
+        findPreference<Preference>(getString(R.string.pref_key_launcher_version))
+            ?.summary = BuildConfig.VERSION_NAME
+
+        findPreference<Preference>(getString(R.string.pref_key_launcher_source_code))
+            ?.setOnPreferenceClickListener {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.starlight_launcher_source_code_url))
+                    )
+                )
+                false
+            }
+
+        findPreference<Preference>(getString(R.string.pref_key_launcher_provide_feedback))
+            ?.setOnPreferenceClickListener {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.starlight_launcher_feedback_url))
+                    )
+                )
+                false
+            }
+
+        findPreference<Preference>(getString(R.string.pref_key_launcher_author))
+            ?.setOnPreferenceClickListener {
+                startActivity(
+                    Intent(Intent.ACTION_SENDTO).apply {
+                        data = Uri.parse("mailto:")
+                        putExtra(
+                            Intent.EXTRA_EMAIL,
+                            getString(R.string.starlight_launcher_author_email)
+                        )
+                    }
+                )
+                false
+            }
     }
 
     override fun onResume() {

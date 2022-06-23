@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- This theme attribute defines the intensity of blur effects used throughout Spotlight Launcher. -->
+    <!-- This theme attribute defines the intensity of blur effects used throughout Starlight Launcher. -->
     <attr name="blurAmount" format="integer" />
 
     <!-- This attribute defines the background color that should be used for views drawn on top of BlurView -->
