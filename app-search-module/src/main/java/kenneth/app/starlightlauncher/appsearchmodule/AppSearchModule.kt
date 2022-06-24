@@ -75,6 +75,7 @@ class AppSearchModule(context: Context) : SearchModule(context) {
 
             packageNames.forEach { packageName ->
                 val activities = launcherApps.getActivityList(packageName, user)
+                currentAppList.removeAll { it.applicationInfo.packageName == packageName }
                 currentAppList += activities
                 activities.forEach {
                     appLabels[it.applicationInfo.packageName] = it.label.toString()

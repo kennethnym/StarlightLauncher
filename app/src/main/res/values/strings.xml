@@ -254,4 +254,6 @@
     <string name="launcher_provide_feedback_summary">Have feedback/suggestions? Click here!</string>
     <string name="launcher_author_title">Author</string>
     <string name="launcher_author_summary">Kenneth Ng · kenneth.ng.nym@outlook.com</string>
+    <string name="restart_launcher_title">Restart Starlight Launcher</string>
+    <string name="restart_launcher_summary">For when things aren\'t working correctly</string>
 </resources>

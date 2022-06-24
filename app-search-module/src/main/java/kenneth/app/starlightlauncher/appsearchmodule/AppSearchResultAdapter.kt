@@ -77,20 +77,9 @@ class AppSearchResultAdapter(
             } else {
                 appList = searchResult.apps
 
-                val initialAppGridItems =
-                    if (appList.size > INITIAL_ITEM_COUNT)
-                        appList
-                            .subList(0, INITIAL_ITEM_COUNT)
-                            .toMutableList()
-                    else
-                        appList.toMutableList()
-
                 val appGridAdapter =
                     AppGridAdapter(
-                        context,
-                        initialAppGridItems,
-                        launcher,
-                        prefs.shouldShowAppNames
+                        context, appList, launcher, prefs.shouldShowAppNames
                     )
                         .also { appGridAdapter = it }
 

@@ -61,28 +61,24 @@ internal class AppGridAdapter(
 
     private val launcherAppsCallback = object : LauncherApps.Callback() {
         override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
-            if (packageName == null) return
-            this@AppGridAdapter.apps.removeAll { it.applicationInfo.packageName == packageName }
-            val i = visibleApps.indexOfFirst { it.applicationInfo.packageName == packageName }
-            if (i >= 0) {
-                visibleApps.removeAt(i)
-                notifyItemRemoved(i)
-            }
+            packageName?.let { removeAppFromGrid(it) }
         }
 
         override fun onPackageChanged(packageName: String?, user: UserHandle?) {
             if (packageName == null) return
             launcherApps.getActivityList(packageName, user).forEach { launcherActivityInfo ->
-                val i = visibleApps.indexOfFirst {
-                    it.applicationInfo.packageName == packageName &&
-                            it.componentName == launcherActivityInfo.componentName
-                }
-                visibleApps[i] = launcherActivityInfo
                 this@AppGridAdapter.apps.removeAll {
                     it.applicationInfo.packageName == packageName &&
                             it.componentName == launcherActivityInfo.componentName
                 }
-                notifyItemChanged(i)
+                val i = visibleApps.indexOfFirst {
+                    it.applicationInfo.packageName == packageName &&
+                            it.componentName == launcherActivityInfo.componentName
+                }
+                if (i >= 0) {
+                    visibleApps[i] = launcherActivityInfo
+                    notifyItemChanged(i)
+                }
             }
         }
 
@@ -92,16 +88,7 @@ internal class AppGridAdapter(
             replacing: Boolean
         ) {
             packageNames?.forEach { packageName ->
-                this@AppGridAdapter.apps.removeAll {
-                    it.applicationInfo.packageName == packageName
-                }
-                val i = visibleApps.indexOfFirst {
-                    it.applicationInfo.packageName == packageName
-                }
-                if (i >= 0) {
-                    visibleApps.removeAt(i)
-                    notifyItemRemoved(i)
-                }
+                removeAppFromGrid(packageName)
             }
         }
 
@@ -261,6 +248,18 @@ internal class AppGridAdapter(
         }
     }
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            appSearchModulePreferences.keys.showAppNames -> {
+                if (appSearchModulePreferences.shouldShowAppNames) {
+                    showAppLabels()
+                } else {
+                    hideAppLabels()
+                }
+            }
+        }
+    }
+
     private fun showAppOptionMenu(): Boolean {
         launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
         return true
@@ -282,14 +281,16 @@ internal class AppGridAdapter(
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            appSearchModulePreferences.keys.showAppNames -> {
-                if (appSearchModulePreferences.shouldShowAppNames) {
-                    showAppLabels()
-                } else {
-                    hideAppLabels()
-                }
+    private fun removeAppFromGrid(packageName: String) {
+        this@AppGridAdapter.apps.removeAll { it.applicationInfo.packageName == packageName }
+        val i = visibleApps.indexOfFirst { it.applicationInfo.packageName == packageName }
+        if (i >= 0) {
+            visibleApps.removeAt(i)
+            notifyItemRemoved(i)
+            if (hasMore()) {
+                val lastIndex = visibleApps.size
+                visibleApps += apps[lastIndex]
+                notifyItemInserted(lastIndex)
             }
         }
     }
