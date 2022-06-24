@@ -7,6 +7,7 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.graphics.Rect
 import android.os.Process
+import android.os.UserHandle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +20,16 @@ import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBind
 import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
 import kotlin.math.min
 
+/**
+ * A grid adapter for [RecyclerView] to show [apps] in a grid of icons.
+ */
 internal class AppGridAdapter(
     private val context: Context,
     apps: AppList,
     private val launcher: StarlightLauncherApi,
+    /**
+     * Whether app names should be shown underneath each app icon.
+     */
     private var shouldShowAppNames: Boolean,
     /**
      * Whether all apps should be shown at once. Defaults to false.
@@ -52,9 +59,67 @@ internal class AppGridAdapter(
     private var recyclerView: RecyclerView? = null
     private var gridSpanCount = 0
 
+    private val launcherAppsCallback = object : LauncherApps.Callback() {
+        override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+            if (packageName == null) return
+            this@AppGridAdapter.apps.removeAll { it.applicationInfo.packageName == packageName }
+            val i = visibleApps.indexOfFirst { it.applicationInfo.packageName == packageName }
+            if (i >= 0) {
+                visibleApps.removeAt(i)
+                notifyItemRemoved(i)
+            }
+        }
+
+        override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+            if (packageName == null) return
+            launcherApps.getActivityList(packageName, user).forEach { launcherActivityInfo ->
+                val i = visibleApps.indexOfFirst {
+                    it.applicationInfo.packageName == packageName &&
+                            it.componentName == launcherActivityInfo.componentName
+                }
+                visibleApps[i] = launcherActivityInfo
+                this@AppGridAdapter.apps.removeAll {
+                    it.applicationInfo.packageName == packageName &&
+                            it.componentName == launcherActivityInfo.componentName
+                }
+                notifyItemChanged(i)
+            }
+        }
+
+        override fun onPackagesUnavailable(
+            packageNames: Array<out String>?,
+            user: UserHandle?,
+            replacing: Boolean
+        ) {
+            packageNames?.forEach { packageName ->
+                this@AppGridAdapter.apps.removeAll {
+                    it.applicationInfo.packageName == packageName
+                }
+                val i = visibleApps.indexOfFirst {
+                    it.applicationInfo.packageName == packageName
+                }
+                if (i >= 0) {
+                    visibleApps.removeAt(i)
+                    notifyItemRemoved(i)
+                }
+            }
+        }
+
+        override fun onPackagesAvailable(
+            packageNames: Array<out String>?,
+            user: UserHandle?,
+            replacing: Boolean
+        ) {
+        }
+
+        override fun onPackageAdded(packageName: String?, user: UserHandle?) {}
+
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        launcherApps.registerCallback(launcherAppsCallback)
         this.recyclerView = recyclerView
         recyclerView.layoutManager.let {
             if (it is GridLayoutManager) {
@@ -71,6 +136,7 @@ internal class AppGridAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        launcherApps.unregisterCallback(launcherAppsCallback)
         this.recyclerView = null
         visibleApps.clear()
     }

@@ -30,6 +30,10 @@ class AppSearchModule(context: Context) : SearchModule(context) {
     private lateinit var launcherApps: LauncherApps
 
     private val currentAppList = mutableListOf<LauncherActivityInfo>()
+
+    /**
+     * Maps app package names to their corresponding labels.
+     */
     private val appLabels = mutableMapOf<String, String>()
 
     private val launcherAppsCallback = object : LauncherApps.Callback() {
@@ -37,19 +41,29 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             if (packageName == null || user == null) return
 
             currentAppList.removeAll { it.applicationInfo.packageName == packageName }
+            appLabels.remove(packageName)
         }
 
         override fun onPackageAdded(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
 
-            currentAppList += launcherApps.getActivityList(packageName, user)
+            val activities = launcherApps.getActivityList(packageName, user)
+            currentAppList += activities
+            activities.forEach {
+                appLabels[it.applicationInfo.packageName] = it.label.toString()
+            }
         }
 
         override fun onPackageChanged(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
 
+            val activities = launcherApps.getActivityList(packageName, user)
             currentAppList.removeAll { it.componentName.packageName == packageName }
-            currentAppList += launcherApps.getActivityList(packageName, user)
+            appLabels.remove(packageName)
+            currentAppList += activities
+            activities.forEach {
+                appLabels[it.applicationInfo.packageName] = it.label.toString()
+            }
         }
 
         override fun onPackagesAvailable(
@@ -60,8 +74,11 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             if (packageNames == null || user == null) return
 
             packageNames.forEach { packageName ->
-                currentAppList.removeAll { it.componentName.packageName == packageName }
-                currentAppList += launcherApps.getActivityList(packageName, user)
+                val activities = launcherApps.getActivityList(packageName, user)
+                currentAppList += activities
+                activities.forEach {
+                    appLabels[it.applicationInfo.packageName] = it.label.toString()
+                }
             }
         }
 
@@ -73,6 +90,7 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             if (packageNames == null || user == null) return
 
             currentAppList.removeAll { packageNames.contains(it.componentName.packageName) }
+            packageNames.forEach { appLabels.remove(it) }
         }
     }
 
