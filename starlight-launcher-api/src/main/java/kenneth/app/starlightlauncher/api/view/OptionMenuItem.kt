@@ -30,6 +30,9 @@ class OptionMenuItem @JvmOverloads constructor(
             }
         }
 
+    val iconView
+        get() = binding.itemIcon
+
     var itemLabel: String
         get() = binding.itemLabel.text.toString()
         /**
