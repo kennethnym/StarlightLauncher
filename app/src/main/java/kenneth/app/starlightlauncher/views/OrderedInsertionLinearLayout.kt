@@ -3,7 +3,7 @@ package kenneth.app.starlightlauncher.views
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.util.swap
 
 /**
  * A [LinearLayout] that provides methods for inserting children in a given order.
@@ -51,9 +51,8 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 toContainer.position = fromPosition
 
                 allContainers.swap(fromPosition, toPosition)
-                containersInLayout.swap(fromContainer.id, toContainer.id)
-                removeView(fromContainer)
-                removeView(toContainer)
+                removeContainer(fromContainer)
+                removeContainer(toContainer)
                 insertContainer(fromContainer)
                 insertContainer(toContainer)
             }
@@ -62,7 +61,7 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 allContainers[toPosition] = fromContainer
                 allContainers[fromPosition] = null
 
-                removeView(fromContainer)
+                removeContainer(fromContainer)
                 insertContainer(fromContainer)
             }
             fromContainer == null && toContainer != null -> {
@@ -70,10 +69,15 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
                 allContainers[fromPosition] = toContainer
                 allContainers[toPosition] = null
 
-                removeView(toContainer)
+                removeContainer(toContainer)
                 insertContainer(toContainer)
             }
         }
+    }
+
+    private fun removeContainer(container: Container) {
+        removeView(container)
+        containersInLayout.remove(container.id)
     }
 
     /**
