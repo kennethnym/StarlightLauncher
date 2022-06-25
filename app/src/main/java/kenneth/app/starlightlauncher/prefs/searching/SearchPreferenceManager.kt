@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.InternalLauncherEvent
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.extension.Extension
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +19,7 @@ private const val CATEGORY_ORDER_LIST_SEPARATOR = ";"
  * Represents an event that search preference has changed.
  * Subtypes of this class specifies exactly which search preference has changed.
  */
-internal sealed class SearchPreferenceChanged {
+internal sealed class SearchPreferenceChanged : InternalLauncherEvent() {
     /**
      * The order of search category has changed.
      */
@@ -36,20 +37,16 @@ internal sealed class SearchPreferenceChanged {
 }
 
 /**
- * Defines the signature of a listener that will be notified when search preferences have changed.
- */
-internal typealias SearchPreferenceChangedListener = (event: SearchPreferenceChanged) -> Unit
-
-/**
  * Manages search preferences for this launcher.
  */
 @Singleton
 internal class SearchPreferenceManager @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val extensionManager: ExtensionManager,
+    private val launcherEventChannel: LauncherEventChannel,
     @ApplicationContext context: Context,
-) : Observable() {
-    val keys = SearchPreferencesPrefKeys(context)
+) {
+    private val keys = SearchPreferencesPrefKeys(context)
 
     private var enabledSearchModules = mutableSetOf<String>()
 
@@ -78,16 +75,12 @@ internal class SearchPreferenceManager @Inject constructor(
     fun changeSearchCategoryOrder(fromIndex: Int, toIndex: Int, newOrder: List<String>) {
         _categoryOrder = newOrder.toMutableList()
         saveOrderList()
-        setChanged()
-        notifyObservers(SearchPreferenceChanged.SearchCategoryOrderChanged(fromIndex, toIndex))
-    }
-
-    fun addOnSearchPreferencesChangedListener(listener: SearchPreferenceChangedListener) {
-        addObserver { o, arg ->
-            if (arg is SearchPreferenceChanged) {
-                listener(arg)
-            }
-        }
+        launcherEventChannel.add(
+            SearchPreferenceChanged.SearchCategoryOrderChanged(
+                fromIndex,
+                toIndex
+            )
+        )
     }
 
     private fun getSearchModuleOrder(extensions: Collection<Extension>) {
@@ -156,7 +149,7 @@ internal class SearchPreferenceManager @Inject constructor(
     }
 }
 
-class SearchPreferencesPrefKeys(context: Context) {
+private class SearchPreferencesPrefKeys(context: Context) {
     val searchCategoryOrder by lazy { context.getString(R.string.pref_key_search_category_order) }
 
     val enabledSearchModules by lazy { context.getString(R.string.search_enabled_modules_pref_key) }

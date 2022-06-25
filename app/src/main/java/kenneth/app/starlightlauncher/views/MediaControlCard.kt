@@ -24,7 +24,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.utils.activity
 import kotlinx.coroutines.*

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.views.ReorderablePreference
 import javax.inject.Inject

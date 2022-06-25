@@ -8,11 +8,11 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageManager
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.util.EventChannel
+import kenneth.app.starlightlauncher.api.util.swap
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.*
 
 sealed class AppSearchModulePreferenceChanged {
     /**
@@ -39,13 +39,12 @@ sealed class AppSearchModulePreferenceChanged {
         AppSearchModulePreferenceChanged()
 }
 
-typealias AppSearchModulePreferenceListener = (event: AppSearchModulePreferenceChanged) -> Unit
-
 /**
  * Manages preferences of [AppSearchModule]
  */
 internal class AppSearchModulePreferences
-private constructor(private val context: Context) : Observable(),
+private constructor(private val context: Context) :
+    EventChannel<AppSearchModulePreferenceChanged>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -98,30 +97,20 @@ private constructor(private val context: Context) : Observable(),
         loadPinnedApps()
     }
 
-    fun addOnPreferenceChangedListener(listener: AppSearchModulePreferenceListener) {
-        addObserver { o, arg ->
-            if (arg is AppSearchModulePreferenceChanged) {
-                listener(arg)
-            }
-        }
-    }
-
     fun isAppPinned(app: LauncherActivityInfo) =
         _pinnedApps.find { it == app.componentName } != null
 
     fun addPinnedApp(app: LauncherActivityInfo) {
         _pinnedApps += app.componentName
         savePinnedApps()
-        setChanged()
-        notifyObservers(AppSearchModulePreferenceChanged.PinnedAppAdded(app))
+        add(AppSearchModulePreferenceChanged.PinnedAppAdded(app))
     }
 
     fun removePinnedApp(app: LauncherActivityInfo) {
         val position = _pinnedApps.indexOfFirst { it == app.componentName }
         _pinnedApps.removeAt(position)
         savePinnedApps()
-        setChanged()
-        notifyObservers(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
+        add(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
     }
 
     fun swapPinnedApps(fromPosition: Int, toPosition: Int) {
@@ -138,8 +127,7 @@ private constructor(private val context: Context) : Observable(),
                     key,
                     context.resources.getBoolean(R.bool.def_pref_show_app_names)
                 ).also {
-                    setChanged()
-                    notifyObservers(AppSearchModulePreferenceChanged.AppLabelVisibilityChanged(it))
+                    add(AppSearchModulePreferenceChanged.AppLabelVisibilityChanged(it))
                 }
             }
             keys.showPinnedAppNames -> {
@@ -147,10 +135,7 @@ private constructor(private val context: Context) : Observable(),
                     key,
                     context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
                 ).also {
-                    setChanged()
-                    notifyObservers(
-                        AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged(it)
-                    )
+                    add(AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged(it))
                 }
             }
         }

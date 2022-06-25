@@ -14,9 +14,9 @@ import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import kenneth.app.starlightlauncher.api.R
-import kenneth.app.starlightlauncher.api.utils.GESTURE_ACTION_THRESHOLD
-import kenneth.app.starlightlauncher.api.utils.GestureMover
-import kenneth.app.starlightlauncher.api.utils.dp
+import kenneth.app.starlightlauncher.api.util.GESTURE_ACTION_THRESHOLD
+import kenneth.app.starlightlauncher.api.util.GestureMover
+import kenneth.app.starlightlauncher.api.util.dp
 
 /**
  * A function that adds content to [OptionMenu], for example adding items to the menu.

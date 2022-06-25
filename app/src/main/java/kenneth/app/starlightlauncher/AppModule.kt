@@ -17,13 +17,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.LauncherEvent
+import kenneth.app.starlightlauncher.api.util.BlurHandler
+import kenneth.app.starlightlauncher.api.util.EventChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
 import java.util.*
+import javax.inject.Named
 import javax.inject.Singleton
+
+internal const val LAUNCHER_EVENT_CHANNEL = "LAUNCHER_EVENT_CHANNEL"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -74,7 +79,6 @@ internal object AppModule {
     @Singleton
     fun provideLocationManager(@ApplicationContext context: Context) =
         context.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
 
     @Provides
     fun provideLocale() = Locale.getDefault()

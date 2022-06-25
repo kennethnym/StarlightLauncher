@@ -9,8 +9,16 @@ import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.QuickNoteListItemBinding
 import kenneth.app.starlightlauncher.noteswidget.pref.NoteListModified
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<QuickNoteListItem>() {
+internal class QuickNoteListAdapter(
+    context: Context,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+) :
+    RecyclerView.Adapter<QuickNoteListItem>() {
     private val prefs = NotesWidgetPreferences.getInstance(context)
 
     private var notes = prefs.notes.toMutableList()
@@ -19,8 +27,8 @@ internal class QuickNoteListAdapter(context: Context) : RecyclerView.Adapter<Qui
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        with(prefs) {
-            addNoteListModifiedListener(::onNoteListChanged)
+        CoroutineScope(mainDispatcher).launch {
+            prefs.subscribe(::onNoteListChanged)
         }
     }
 

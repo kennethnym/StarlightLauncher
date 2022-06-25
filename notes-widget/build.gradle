@@ -7,13 +7,13 @@ plugins {
 apply plugin: 'kotlinx-serialization'
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         minSdk 23
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        targetSdk 33
+        versionCode 1001
+        versionName "1.0.0-beta.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

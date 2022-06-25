@@ -9,8 +9,15 @@ import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.NoteCardBinding
 import kenneth.app.starlightlauncher.noteswidget.pref.NoteListModified
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-internal class AllNoteCardListAdapter(private val context: Context) :
+internal class AllNoteCardListAdapter(
+    private val context: Context,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+) :
     RecyclerView.Adapter<NoteCard>() {
     private val prefs = NotesWidgetPreferences.getInstance(context)
     private val notes = mutableListOf<Note>()
@@ -23,7 +30,9 @@ internal class AllNoteCardListAdapter(private val context: Context) :
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        prefs.addNoteListModifiedListener(::onNoteListChanged)
+        CoroutineScope(mainDispatcher).launch {
+            prefs.subscribe(::onNoteListChanged)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {

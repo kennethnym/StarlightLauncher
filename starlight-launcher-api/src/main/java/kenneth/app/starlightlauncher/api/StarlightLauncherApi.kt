@@ -3,11 +3,9 @@ package kenneth.app.starlightlauncher.api
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.result.ActivityResultCallback
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
-import java.lang.reflect.Constructor
 
 typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
 

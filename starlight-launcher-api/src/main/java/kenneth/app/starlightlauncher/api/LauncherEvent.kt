@@ -5,7 +5,7 @@ package kenneth.app.starlightlauncher.api
  *
  * Use [StarlightLauncherApi.addLauncherEventListener] to subscribe to the events.
  */
-sealed class LauncherEvent {
+abstract class LauncherEvent {
     /**
      * Emitted when user has changed the icon pack.
      */

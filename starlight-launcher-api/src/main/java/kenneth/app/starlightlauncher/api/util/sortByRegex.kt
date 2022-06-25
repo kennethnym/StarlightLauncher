@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.api.utils
+package kenneth.app.starlightlauncher.api.util
 
 fun sortByRegex(string1: String, string2: String, regex: Regex): Int {
     val result1 = regex.findAll(string1).toList()

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.BindingRegister
@@ -26,6 +27,9 @@ import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.views.ReorderableList
 import kenneth.app.starlightlauncher.views.WidgetListAdapter
 import kenneth.app.starlightlauncher.views.WidgetListAdapterItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -50,6 +54,9 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
 
     @Inject
     lateinit var launcher: StarlightLauncherApi
+
+    @Inject
+    lateinit var launcherEventChannel: LauncherEventChannel
 
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
@@ -121,13 +128,15 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
         layoutManager = LinearLayoutManager(context)
         adapter = WidgetListAdapter(context, addedWidgets).also { widgetListAdapter = it }
 
-        widgetPreferenceManager.addOnWidgetPreferenceChangedListener {
-            when (it) {
-                is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
-                    onAndroidWidgetAdded(it.addedWidget, it.appWidgetProviderInfo)
-                }
+        CoroutineScope(Dispatchers.Main).launch {
+            launcherEventChannel.subscribe {
+                when (it) {
+                    is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
+                        onAndroidWidgetAdded(it.addedWidget, it.appWidgetProviderInfo)
+                    }
 
-                else -> {}
+                    else -> {}
+                }
             }
         }
 

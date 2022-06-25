@@ -8,10 +8,12 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchResult
-import kenneth.app.starlightlauncher.api.utils.dp
-import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.util.dp
+import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
@@ -20,6 +22,9 @@ import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,6 +41,9 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var launcherEventChannel: LauncherEventChannel
 
     override val allContainers: MutableList<Container?> =
         extensionManager.installedSearchModules
@@ -64,12 +72,8 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
             }
         }
 
-        searchPreferenceManager.addOnSearchPreferencesChangedListener {
-            when (it) {
-                is SearchPreferenceChanged.SearchCategoryOrderChanged -> {
-                    onSearchCategoryOrderChanged(it.fromIndex, it.toIndex)
-                }
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+            launcherEventChannel.subscribe(::onLauncherEvent)
         }
     }
 
@@ -85,6 +89,14 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
 
     fun clearSearchResults() {
         allContainers.forEach { it?.isVisible = false }
+    }
+
+    private fun onLauncherEvent(event: LauncherEvent) {
+        when (event) {
+            is SearchPreferenceChanged.SearchCategoryOrderChanged -> {
+                onSearchCategoryOrderChanged(event.fromIndex, event.toIndex)
+            }
+        }
     }
 
     private fun showSearchResult(result: SearchResult) {

@@ -6,8 +6,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.InternalLauncherEvent
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.utils.swap
+import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -16,7 +18,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-internal sealed class WidgetPreferenceChanged {
+internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
     data class WidgetOrderChanged(
         val fromPosition: Int,
         val toPosition: Int,
@@ -37,15 +39,14 @@ internal sealed class WidgetPreferenceChanged {
     ) : WidgetPreferenceChanged()
 }
 
-internal typealias WidgetPreferenceListener = (event: WidgetPreferenceChanged) -> Unit
-
 @Singleton
 internal class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
     private val sharedPreferences: SharedPreferences,
     private val extensionManager: ExtensionManager,
+    private val launcherEventChannel: LauncherEventChannel,
     private val random: Random,
-) : Observable() {
+) {
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
     val keys = WidgetPrefKeys(context)
@@ -106,10 +107,7 @@ internal class WidgetPreferenceManager @Inject constructor(
         addedWidgetsMap[widgetId] = newWidget
         addedWidgetPositions[widgetId] = _addedWidgets.lastIndex
         saveAddedWidgets()
-        setChanged()
-        notifyObservers(
-            WidgetPreferenceChanged.NewStarlightWidgetAdded(newWidget)
-        )
+        launcherEventChannel.add(WidgetPreferenceChanged.NewStarlightWidgetAdded(newWidget))
     }
 
     fun removeStarlightWidget(extensionName: String) {
@@ -121,10 +119,7 @@ internal class WidgetPreferenceManager @Inject constructor(
         addedWidgetsMap.remove(widget.id)
         addedWidgetPositions.remove(widget.id)
         saveAddedWidgets()
-        setChanged()
-        notifyObservers(
-            WidgetPreferenceChanged.WidgetRemoved(widget)
-        )
+        launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget))
     }
 
     fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
@@ -133,8 +128,12 @@ internal class WidgetPreferenceManager @Inject constructor(
         _addedWidgets.swap(fromPosition, toPosition)
         addedWidgetPositions.swap(fromWidget.id, toWidget.id)
         saveAddedWidgets()
-        setChanged()
-        notifyObservers(WidgetPreferenceChanged.WidgetOrderChanged(fromPosition, toPosition))
+        launcherEventChannel.add(
+            WidgetPreferenceChanged.WidgetOrderChanged(
+                fromPosition,
+                toPosition
+            )
+        )
     }
 
     fun addAndroidWidget(appWidgetId: Int, appWidgetProviderInfo: AppWidgetProviderInfo) {
@@ -147,8 +146,7 @@ internal class WidgetPreferenceManager @Inject constructor(
         addedWidgetsMap[newWidget.id] = newWidget
         addedWidgetPositions[newWidget.id] = _addedWidgets.lastIndex
         saveAddedWidgets()
-        setChanged()
-        notifyObservers(
+        launcherEventChannel.add(
             WidgetPreferenceChanged.NewAndroidWidgetAdded(
                 newWidget,
                 appWidgetProviderInfo
@@ -175,17 +173,8 @@ internal class WidgetPreferenceManager @Inject constructor(
             ?.let { widget ->
                 _addedWidgets.remove(widget)
                 saveAddedWidgets()
-                setChanged()
-                notifyObservers(WidgetPreferenceChanged.WidgetRemoved(widget))
+                launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget))
             }
-    }
-
-    fun addOnWidgetPreferenceChangedListener(listener: WidgetPreferenceListener) {
-        addObserver { o, arg ->
-            if (arg is WidgetPreferenceChanged) {
-                listener(arg)
-            }
-        }
     }
 
     private fun saveAddedWidgets() {

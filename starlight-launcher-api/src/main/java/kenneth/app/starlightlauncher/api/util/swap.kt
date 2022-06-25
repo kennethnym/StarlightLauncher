@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.api.utils
+package kenneth.app.starlightlauncher.api.util
 
 fun <T> MutableList<T>.swap(fromIndex: Int, toIndex: Int) {
     with(this[fromIndex]) {

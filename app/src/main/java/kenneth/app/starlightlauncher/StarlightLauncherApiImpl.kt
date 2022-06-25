@@ -10,12 +10,11 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.*
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.util.BlurHandler
+import kenneth.app.starlightlauncher.api.util.EventChannel
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.utils.BindingRegister
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 

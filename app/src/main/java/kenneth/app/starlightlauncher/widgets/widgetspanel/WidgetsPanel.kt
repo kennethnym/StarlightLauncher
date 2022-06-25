@@ -21,7 +21,7 @@ import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.utils.GestureMover
+import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister

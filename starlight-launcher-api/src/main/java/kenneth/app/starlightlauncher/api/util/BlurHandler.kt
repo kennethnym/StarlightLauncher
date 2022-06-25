@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.api.utils
+package kenneth.app.starlightlauncher.api.util
 
 import android.app.Activity
 import android.content.Context

@@ -1,6 +1,5 @@
-package kenneth.app.starlightlauncher.api.utils
+package kenneth.app.starlightlauncher.api.util
 
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import java.lang.IllegalArgumentException

@@ -5,16 +5,14 @@ import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import kenneth.app.starlightlauncher.api.util.EventChannel
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.R
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.*
 
-internal typealias NoteListListener = (event: NoteListModified) -> Unit
-
-sealed class NoteListModified {
+internal sealed class NoteListModified {
     data class ListChanged(val notes: List<Note>) : NoteListModified()
     data class NoteAdded(val note: Note) : NoteListModified()
     data class NoteChanged(val note: Note) : NoteListModified()
@@ -22,7 +20,7 @@ sealed class NoteListModified {
 }
 
 internal class NotesWidgetPreferences
-private constructor(context: Context) : Observable() {
+private constructor(context: Context) : EventChannel<NoteListModified>() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: NotesWidgetPreferences? = null
@@ -36,7 +34,7 @@ private constructor(context: Context) : Observable() {
 
     private val noteList = mutableListOf<Note>()
 
-    val keys = PrefKeys(context)
+    private val keys = PrefKeys(context)
 
     val notes
         get() = noteList.toList()
@@ -68,12 +66,6 @@ private constructor(context: Context) : Observable() {
         notifyNoteRemoved(note)
     }
 
-    internal fun addNoteListModifiedListener(listener: NoteListListener) {
-        addObserver { o, arg ->
-            if (arg is NoteListModified) listener(arg)
-        }
-    }
-
     internal fun exportNotesToJson(): String = Json.encodeToString(notes)
 
     internal fun restoreNotesFromJson(json: String) {
@@ -84,23 +76,19 @@ private constructor(context: Context) : Observable() {
     }
 
     private fun notifyNoteListChanged() {
-        setChanged()
-        notifyObservers(NoteListModified.ListChanged(notes))
+        add(NoteListModified.ListChanged(notes))
     }
 
     private fun notifyNoteAdded(noteAdded: Note) {
-        setChanged()
-        notifyObservers(NoteListModified.NoteAdded(noteAdded))
+        add(NoteListModified.NoteAdded(noteAdded))
     }
 
     private fun notifyNoteRemoved(noteRemoved: Note) {
-        setChanged()
-        notifyObservers(NoteListModified.NoteRemoved(noteRemoved))
+        add(NoteListModified.NoteRemoved(noteRemoved))
     }
 
     private fun notifyNoteEdited(noteEdited: Note) {
-        setChanged()
-        notifyObservers(NoteListModified.NoteChanged(noteEdited))
+        add(NoteListModified.NoteChanged(noteEdited))
     }
 
     private fun loadNotes() {

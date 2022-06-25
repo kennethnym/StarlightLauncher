@@ -11,7 +11,7 @@ import androidx.core.animation.addListener
 import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.utils.activity
 import javax.inject.Inject

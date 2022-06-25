@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.utils.sortByRegex
+import kenneth.app.starlightlauncher.api.util.sortByRegex
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appshortcutsearchmodule"

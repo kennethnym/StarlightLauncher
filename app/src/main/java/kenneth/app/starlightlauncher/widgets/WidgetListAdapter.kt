@@ -15,8 +15,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
@@ -26,17 +28,18 @@ import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 internal interface WidgetListAdapterEntryPoint {
     fun launcherApi(): StarlightLauncherApi
-
     fun extensionManager(): ExtensionManager
-
     fun appWidgetHost(): AppWidgetHost
-
+    fun launcherEventChannel(): LauncherEventChannel
     fun widgetPreferenceManager(): WidgetPreferenceManager
 }
 
@@ -71,14 +74,9 @@ internal class WidgetListAdapter(
             extensionManager = extensionManager()
             launcherApi = launcherApi()
             appWidgetHost = appWidgetHost()
-            widgetPreferenceManager = widgetPreferenceManager().also {
-                it.addOnWidgetPreferenceChangedListener { event ->
-                    when (event) {
-                        is WidgetPreferenceChanged.WidgetRemoved ->
-                            removeWidgetFromList(event.removedWidget)
-                        else -> {}
-                    }
-                }
+            widgetPreferenceManager = widgetPreferenceManager()
+            CoroutineScope(Dispatchers.Main).launch {
+                launcherEventChannel().subscribe(::onLauncherEvent)
             }
         }
     }
@@ -127,10 +125,10 @@ internal class WidgetListAdapter(
         widgetList?.scrollToPosition(widgetIndex)
     }
 
-    private fun onWidgetPreferenceChanged(event: WidgetPreferenceChanged) {
+    private fun onLauncherEvent(event: LauncherEvent) {
         when (event) {
-            is WidgetPreferenceChanged.WidgetRemoved -> {
-            }
+            is WidgetPreferenceChanged.WidgetRemoved ->
+                removeWidgetFromList(event.removedWidget)
             else -> {}
         }
     }

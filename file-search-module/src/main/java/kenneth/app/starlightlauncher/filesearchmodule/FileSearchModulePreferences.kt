@@ -11,7 +11,7 @@ import androidx.preference.PreferenceManager
 import java.util.*
 
 internal class FileSearchModulePreferences
-private constructor(private val context: Context) : Observable() {
+private constructor(private val context: Context) {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance: FileSearchModulePreferences? = null
@@ -25,7 +25,7 @@ private constructor(private val context: Context) : Observable() {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    val keys = PrefKeys(context)
+    private val keys = PrefKeys(context)
 
     private val _includedPaths =
         sharedPreferences.getStringSet(keys.includedPaths, mutableSetOf()) ?: mutableSetOf()

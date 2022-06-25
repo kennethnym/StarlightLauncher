@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.TooltipCompat
 import kenneth.app.starlightlauncher.api.R
-import kenneth.app.starlightlauncher.api.utils.dp
+import kenneth.app.starlightlauncher.api.util.dp
 
 /**
  * Whether [IconButton] should show the icon with an adaptive color by default.

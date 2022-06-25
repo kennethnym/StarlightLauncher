@@ -7,6 +7,7 @@ import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.LauncherEvent
+import kenneth.app.starlightlauncher.api.util.EventChannel
 import javax.inject.Inject
 import javax.inject.Singleton
 

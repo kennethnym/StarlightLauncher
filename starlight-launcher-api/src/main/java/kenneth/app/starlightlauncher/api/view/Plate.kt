@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.api.R
-import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kenneth.app.starlightlauncher.api.util.BlurHandler
 
 private const val DEFAULT_USE_ROUNDED_CORNERS = true
 

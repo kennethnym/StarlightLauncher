@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo
 import androidx.appcompat.content.res.AppCompatResources
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetCreator
@@ -26,10 +27,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private sealed class ExtensionManagerEvent {
-    data class ExtensionsLoaded(val extensions: List<Extension>) : ExtensionManagerEvent()
-}
-
 /**
  * Defines Starlight Widgets that are fixed and cannot be removed.
  */
@@ -46,7 +43,7 @@ internal typealias InstalledExtensions = Collection<Extension>
 internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val launcherApi: StarlightLauncherApi,
-) : Observable() {
+) {
     /**
      * A map of extensions loaded into memory.
      */
@@ -176,16 +173,6 @@ internal class ExtensionManager @Inject constructor(
     fun loadExtensions() {
         queryExtensions()
         queryExtensionSettings()
-        setChanged()
-        notifyObservers(ExtensionManagerEvent.ExtensionsLoaded(installedExtensions.toList()))
-    }
-
-    fun addOnExtensionsLoadedListener(listener: (extensions: List<Extension>) -> Unit) {
-        addObserver { o, arg ->
-            if (arg is ExtensionManagerEvent.ExtensionsLoaded) {
-                listener(arg.extensions)
-            }
-        }
     }
 
     fun isExtensionInstalled(extName: String) = extensions.containsKey(extName)

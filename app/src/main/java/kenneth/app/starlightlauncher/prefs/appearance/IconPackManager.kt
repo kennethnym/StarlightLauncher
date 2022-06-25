@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
