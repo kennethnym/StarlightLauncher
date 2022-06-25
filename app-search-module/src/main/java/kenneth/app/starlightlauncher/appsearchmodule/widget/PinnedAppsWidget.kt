@@ -9,16 +9,20 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import kenneth.app.starlightlauncher.api.IconPack
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
 import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferenceChanged
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
+import kotlinx.coroutines.*
 
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
     private val launcher: StarlightLauncherApi,
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
@@ -92,6 +96,9 @@ internal class PinnedAppsWidget(
 
     init {
         prefs.addOnPreferenceChangedListener(::onPreferenceChanged)
+        CoroutineScope(defaultDispatcher).launch {
+            launcher.addLauncherEventListener(::onLauncherEvent)
+        }
 
         if (prefs.hasPinnedApps) {
             showWidget()
@@ -100,6 +107,14 @@ internal class PinnedAppsWidget(
         }
 
         dndTouchHelper.attachToRecyclerView(binding.pinnedAppsGrid)
+    }
+
+    private fun onLauncherEvent(event: LauncherEvent) {
+        when (event) {
+            is LauncherEvent.IconPackChanged -> {
+                appGridAdapter?.refresh()
+            }
+        }
     }
 
     private fun onPreferenceChanged(event: AppSearchModulePreferenceChanged) {

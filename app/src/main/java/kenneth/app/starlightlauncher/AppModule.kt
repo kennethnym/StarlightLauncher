@@ -18,6 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
@@ -34,6 +35,10 @@ internal object AppModule {
     @Provides
     @Singleton
     fun provideJsonHandler() = Json { ignoreUnknownKeys = true }
+
+    @Provides
+    @Singleton
+    fun provideDefaultDispatcher() = Dispatchers.Default
 
     @Provides
     @Singleton

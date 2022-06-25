@@ -9,12 +9,12 @@ def apiKeys = new Properties()
 apiKeys.load(new FileInputStream(apiKeyFile))
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     defaultConfig {
         applicationId "kenneth.app.starlightlauncher"
-        minSdkVersion 23
-        targetSdkVersion 33
+        minSdk 23
+        targetSdk 33
         versionCode 1001
         versionName "1.0.0-beta.1"
 

@@ -9,14 +9,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kenneth.app.starlightlauncher.api.IconPack
-import kenneth.app.starlightlauncher.api.MultiplePermissionRequestCallback
-import kenneth.app.starlightlauncher.api.PermissionRequestCallback
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.utils.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.utils.BindingRegister
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,6 +35,7 @@ internal abstract class StarlightLauncherApiModule {
 @Singleton
 internal class StarlightLauncherApiImpl @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,
+    private val launcherEventChannel: LauncherEventChannel,
     override val blurHandler: BlurHandler
 ) : StarlightLauncherApi {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -79,6 +79,9 @@ internal class StarlightLauncherApiImpl @Inject constructor(
         requestMultiplePermissionsResultCallback = callback
         requestMultiplePermissionsLauncher.launch(permissions)
     }
+
+    override suspend fun addLauncherEventListener(listener: LauncherEventListener) =
+        launcherEventChannel.subscribe(listener)
 
     internal fun setContext(context: Context) {
         this.context = context

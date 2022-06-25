@@ -18,6 +18,8 @@ typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
  */
 typealias MultiplePermissionRequestCallback = (results: Map<String, Boolean>) -> Unit
 
+typealias LauncherEventListener = (event: LauncherEvent) -> Unit
+
 /**
  * This interface defines methods that can be called to interact with Starlight Launcher.
  */
@@ -83,4 +85,10 @@ interface StarlightLauncherApi {
      * Requests the given [permissions] to be granted. The results are passed to the given [callback].
      */
     fun requestPermissions(vararg permissions: String, callback: MultiplePermissionRequestCallback)
+
+    /**
+     * Registers [listener] to receive [LauncherEvent]s emitted by the launcher.
+     * [listener] will be called in a coroutine.
+     */
+    suspend fun addLauncherEventListener(listener: LauncherEventListener)
 }

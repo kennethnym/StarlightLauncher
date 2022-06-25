@@ -3,8 +3,10 @@ package kenneth.app.starlightlauncher.prefs.appearance
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +17,7 @@ import javax.inject.Singleton
 internal class AppearancePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences,
+    private val launcherEventChannel: LauncherEventChannel,
 ) {
     private val prefKeys = AppearancePreferenceKeys(context)
 
@@ -38,6 +41,7 @@ internal class AppearancePreferenceManager @Inject constructor(
             .apply()
 
         this.iconPack = iconPack
+        launcherEventChannel.add(LauncherEvent.IconPackChanged)
     }
 
     /**
@@ -50,6 +54,7 @@ internal class AppearancePreferenceManager @Inject constructor(
             .apply()
 
         iconPack = defaultIconPack
+        launcherEventChannel.add(LauncherEvent.IconPackChanged)
     }
 }
 

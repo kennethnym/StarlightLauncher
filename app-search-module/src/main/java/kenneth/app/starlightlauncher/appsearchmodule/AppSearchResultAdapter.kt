@@ -6,11 +6,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
+import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.preference.PreferencesChanged
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Defines how many apps are shown when the app grid is displayed initially.
@@ -30,6 +35,9 @@ class AppSearchResultAdapter(
 
     init {
         prefs.addOnPreferenceChangedListener(::onPreferencesChanged)
+        CoroutineScope(Dispatchers.Main).launch {
+            launcher.addLauncherEventListener(::onLauncherEvent)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): AppSearchResultViewHolder {
@@ -47,6 +55,14 @@ class AppSearchResultAdapter(
     ) {
         if (holder is AppSearchResultViewHolder && searchResult is AppSearchModule.Result) {
             onBindSearchResult(holder, searchResult)
+        }
+    }
+
+    private fun onLauncherEvent(event: LauncherEvent) {
+        when (event) {
+            is LauncherEvent.IconPackChanged -> {
+                appGridAdapter?.refresh()
+            }
         }
     }
 

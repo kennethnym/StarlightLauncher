@@ -100,7 +100,6 @@ internal class AppGridAdapter(
         }
 
         override fun onPackageAdded(packageName: String?, user: UserHandle?) {}
-
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -170,6 +169,10 @@ internal class AppGridAdapter(
     }
 
     override fun getItemCount(): Int = visibleApps.size
+
+    fun refresh() {
+        notifyItemRangeChanged(0, visibleApps.size)
+    }
 
     fun addAppToGrid(app: LauncherActivityInfo) {
         apps += app
