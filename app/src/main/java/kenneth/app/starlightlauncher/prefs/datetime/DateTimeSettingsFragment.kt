@@ -43,8 +43,8 @@ internal class DateTimeSettingsFragment : PreferenceFragmentCompat(),
             if (value is Boolean) {
                 useAutoWeatherLocationPref.isEnabled = value
                 weatherLocationPickerPref.isEnabled = value
-                value
-            } else false
+            }
+            true
         }
 
         useAutoWeatherLocationPref.run {
