@@ -1,13 +1,13 @@
 package kenneth.app.starlightlauncher.searching
 
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.concurrent.schedule
 
@@ -18,6 +18,8 @@ typealias ResultCallback = (SearchResult) -> Unit
 @Singleton
 internal class Searcher @Inject constructor(
     private val extensionManager: ExtensionManager,
+    @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher,
+    @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
     private val resultCallbacks = mutableListOf<ResultCallback>()
 
@@ -63,10 +65,12 @@ internal class Searcher @Inject constructor(
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         extensionManager.installedSearchModules.forEach { module ->
-            CoroutineScope(Dispatchers.IO)
+            CoroutineScope(mainDispatcher)
                 .also { searchCoroutineScopes.add(it) }
                 .launch {
-                    val result = module.search(keyword, searchRegex)
+                    val result = withContext(ioDispatcher) {
+                        module.search(keyword, searchRegex)
+                    }
                     numberOfLoadedModules++
                     resultCallbacks.forEach { cb -> cb(result) }
                 }

@@ -21,18 +21,22 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.starlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.utils.activity
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 internal class DateTimeView(context: Context, attrs: AttributeSet) :
@@ -52,8 +56,15 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject
+    @Named(IO_DISPATCHER)
+    lateinit var ioDispatcher: CoroutineDispatcher
+
     private val timeTickIntentFilter = IntentFilter(Intent.ACTION_TIME_TICK)
-    private val weatherApiScope = CoroutineScope(Dispatchers.IO)
 
     private val weatherLocationCriteria = Criteria().apply {
         accuracy = Criteria.ACCURACY_COARSE
@@ -203,40 +214,41 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
     }
 
     private fun loadWeather() {
-        weatherApiScope.launch {
-            val weather = try {
+        CoroutineScope(mainDispatcher).launch {
+            val weatherRequestResult = try {
                 openWeatherApi.run {
                     latLong = currentWeatherLocation
                     unit = dateTimePreferenceManager.weatherUnit
-                    getCurrentWeather()
+                    withContext(ioDispatcher) {
+                        getCurrentWeather()
+                    }
                 }
             } catch (ex: Exception) {
                 Log.e("Starlight", "$ex")
                 return@launch
             }
 
+            val weather = weatherRequestResult.getOrNull()
             val isWeatherAvailable = weather != null
 
-            activity?.runOnUiThread {
-                binding.temp.isVisible = isWeatherAvailable
-                separator.isVisible = isWeatherAvailable
-                binding.weatherIcon.isVisible = isWeatherAvailable
+            binding.temp.isVisible = isWeatherAvailable
+            separator.isVisible = isWeatherAvailable
+            binding.weatherIcon.isVisible = isWeatherAvailable
 
-                if (isWeatherAvailable) {
-                    binding.temp.text = context.getString(
-                        R.string.date_time_temperature_format,
-                        weather!!.main.temp,
-                        openWeatherApi.unit.symbol
-                    )
+            if (isWeatherAvailable) {
+                binding.temp.text = context.getString(
+                    R.string.date_time_temperature_format,
+                    weather!!.main.temp,
+                    openWeatherApi.unit.symbol
+                )
 
-                    Glide
-                        .with(context)
-                        .load(weather.weather[0].iconURL)
-                        .into(binding.weatherIcon)
+                Glide
+                    .with(context)
+                    .load(weather.weather[0].iconURL)
+                    .into(binding.weatherIcon)
 
-                    binding.weatherIcon.contentDescription = weather.weather[0].description
-                    binding.dateTimeWeatherSeparator.isVisible = true
-                }
+                binding.weatherIcon.contentDescription = weather.weather[0].description
+                binding.dateTimeWeatherSeparator.isVisible = true
             }
         }
     }

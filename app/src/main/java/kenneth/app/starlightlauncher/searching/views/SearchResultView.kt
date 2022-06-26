@@ -9,6 +9,7 @@ import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchResult
@@ -22,10 +23,11 @@ import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 internal class SearchResultView(context: Context, attrs: AttributeSet) :
@@ -44,6 +46,10 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var launcherEventChannel: LauncherEventChannel
+
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     override val allContainers: MutableList<Container?> =
         extensionManager.installedSearchModules
@@ -66,13 +72,11 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
 
         with(searcher) {
             addSearchResultListener { result ->
-                activity?.runOnUiThread {
-                    showSearchResult(result)
-                }
+                showSearchResult(result)
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(mainDispatcher).launch {
             launcherEventChannel.subscribe(::onLauncherEvent)
         }
     }

@@ -1,5 +1,8 @@
 package kenneth.app.starlightlauncher.api
 
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -10,6 +13,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
+import javax.inject.Named
 
 private const val API_URL = "https://nominatim.openstreetmap.org"
 
@@ -18,30 +22,27 @@ private const val API_URL = "https://nominatim.openstreetmap.org"
  */
 class NominatimApi @Inject constructor(
     private val json: Json,
-    private val httpClient: OkHttpClient
+    private val httpClient: OkHttpClient,
+    @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher,
+    @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend fun searchForLocations(query: String): List<Place>? {
+    suspend fun searchForLocations(query: String) = withContext(mainDispatcher) {
         val url = HttpUrl.parse("$API_URL/search")!!
             .newBuilder()
             .addQueryParameter("q", query)
             .addQueryParameter("format", "json")
             .build()
-
         val req = Request.Builder().url(url).build()
 
-        return try {
-            val response = withContext(Dispatchers.IO) {
-                httpClient.newCall(req).execute()
+        return@withContext runCatching {
+            withContext(ioDispatcher) {
+                httpClient.newCall(req).execute().body()?.string()
+                    ?.let { json.decodeFromString<List<Place>>(it) }
             }
-            val body = response.body()?.string() ?: return null
-
-            json.decodeFromString<List<Place>>(body)
-        } catch (ex: Exception) {
-            throw ex
         }
     }
 
-    suspend fun reverseGeocode(latLong: LatLong): Place? {
+    suspend fun reverseGeocode(latLong: LatLong) = withContext(mainDispatcher) {
         val (lat, long) = latLong
         val url = HttpUrl.parse("$API_URL/reverse")!!
             .newBuilder()
@@ -52,12 +53,11 @@ class NominatimApi @Inject constructor(
 
         val req = Request.Builder().url(url).build()
 
-        return try {
-            withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            withContext(ioDispatcher) {
                 httpClient.newCall(req).execute().body()?.string()
-            }?.let { json.decodeFromString<Place>(it) }
-        } catch (ex: Exception) {
-            throw ex
+                    ?.let { json.decodeFromString<Place>(it) }
+            }
         }
     }
 }

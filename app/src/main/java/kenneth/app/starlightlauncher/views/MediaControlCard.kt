@@ -23,12 +23,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.utils.activity
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * Displays a media control card on the home screen when media is playing.
@@ -45,6 +47,10 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var blurHandler: BlurHandler
+
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     /**
      * The ComponentName of the notification listener stub
@@ -73,12 +79,6 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
 
     private val dateTimeViewContainer
         get() = parent as DateTimeViewContainer?
-
-    /**
-     * This thread is used to poll and show the current media progress, since there is no listeners
-     * available to listen to media progress.
-     */
-    private val mediaProgressPollingScope = CoroutineScope(Dispatchers.Default)
 
     /**
      * Determines if this widget should poll media progress every second.
@@ -385,25 +385,18 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
      * Continuously poll and show currently media progress every second.
      */
     private fun pollAndShowMediaProgress() {
-        mediaProgressPollingScope.launch {
-            withContext(Dispatchers.Default) {
-                while (pollMediaProgress) {
-                    activeMediaSession?.playbackState?.position?.toInt()?.let {
-                        activity?.runOnUiThread {
-                            if (newProgressSet) {
-                                if (it == binding.mediaSeekBar.progress) {
-                                    newProgressSet = false
-                                }
-                            } else {
-                                binding.mediaSeekBar.progress = it
-                            }
+        CoroutineScope(mainDispatcher).launch {
+            while (pollMediaProgress) {
+                activeMediaSession?.playbackState?.position?.toInt()?.let {
+                    if (newProgressSet) {
+                        if (it == binding.mediaSeekBar.progress) {
+                            newProgressSet = false
                         }
-                    }
-
-                    withContext(Dispatchers.Default) {
-                        delay(1000)
+                    } else {
+                        binding.mediaSeekBar.progress = it
                     }
                 }
+                delay(1000)
             }
         }
     }

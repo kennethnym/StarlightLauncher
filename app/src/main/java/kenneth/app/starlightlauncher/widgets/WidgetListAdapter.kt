@@ -28,6 +28,7 @@ import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ internal interface WidgetListAdapterEntryPoint {
 internal class WidgetListAdapter(
     private val context: Context,
     val widgets: List<AddedWidget>,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : RecyclerView.Adapter<WidgetListAdapterItem>() {
     private val addedWidgets = widgets.toMutableList()
 
@@ -75,7 +77,7 @@ internal class WidgetListAdapter(
             launcherApi = launcherApi()
             appWidgetHost = appWidgetHost()
             widgetPreferenceManager = widgetPreferenceManager()
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(mainDispatcher).launch {
                 launcherEventChannel().subscribe(::onLauncherEvent)
             }
         }

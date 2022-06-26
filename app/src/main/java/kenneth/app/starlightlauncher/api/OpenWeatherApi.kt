@@ -1,7 +1,9 @@
 package kenneth.app.starlightlauncher.api
 
 import kenneth.app.starlightlauncher.BuildConfig
-import kotlinx.coroutines.Dispatchers
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,8 +13,8 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Named
 
 enum class TemperatureUnit(val code: String, val symbol: String) {
     KELVIN("standard", "K"),
@@ -28,7 +30,9 @@ private const val WEATHER_ICON_URL = "https://openweathermap.org/img/wn"
  */
 class OpenWeatherApi @Inject constructor(
     private val json: Json,
-    private val httpClient: OkHttpClient
+    private val httpClient: OkHttpClient,
+    @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher,
+    @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
     /**
      * Weather information returned by this API is based on the location this lat long pair describes.
@@ -45,7 +49,7 @@ class OpenWeatherApi @Inject constructor(
     /**
      * Fetches the current weather of the location specified by latLong
      */
-    suspend fun getCurrentWeather(): Response? {
+    suspend fun getCurrentWeather() = withContext(mainDispatcher) {
         val (lat, long) = latLong
         val url = HttpUrl.parse("$API_URL/weather")!!
             .newBuilder()
@@ -57,15 +61,11 @@ class OpenWeatherApi @Inject constructor(
 
         val req = Request.Builder().url(url).build()
 
-        try {
-            val response = withContext(Dispatchers.IO) {
-                httpClient.newCall(req).execute()
+        return@withContext runCatching {
+            withContext(ioDispatcher) {
+                httpClient.newCall(req).execute().body()?.string()
+                    ?.let { json.decodeFromString<Response>(it) }
             }
-            val body = response.body()?.string() ?: return null
-
-            return json.decodeFromString<Response>(body)
-        } catch (ex: IOException) {
-            throw ex
         }
     }
 

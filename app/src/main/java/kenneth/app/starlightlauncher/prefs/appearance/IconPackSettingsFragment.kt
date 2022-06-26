@@ -10,12 +10,15 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.utils.toPx
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * A settings fragment that lets user change the icon pack.
@@ -27,6 +30,10 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
     lateinit var iconPackManager: IconPackManager
+
+    @Inject
+    @Named(IO_DISPATCHER)
+    lateinit var ioDispatcher: CoroutineDispatcher
 
     private val noCurrentIconPackPreference by lazy {
         Preference(context).apply {
@@ -86,7 +93,7 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
 
     private fun changeIconPack(newIconPack: InstalledIconPack) {
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 appearancePreferenceManager.changeIconPack(newIconPack)
                 newIconPack.load()
             }

@@ -13,13 +13,14 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.NominatimApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
@@ -32,14 +33,22 @@ internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var locationManager: LocationManager
 
-    private var locationSearchBox: LocationSearchBoxPreference? = null
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
 
-    private val apiScope = CoroutineScope(Dispatchers.IO)
+    @Inject
+    @Named(IO_DISPATCHER)
+    lateinit var ioDispatcher: CoroutineDispatcher
+
+    private var locationSearchBox: LocationSearchBoxPreference? = null
 
     private val locationPermRequest = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
         ::handleLocationPermRequestResult
     )
+
+    private val addedLocationPreferences = mutableListOf<Preference>()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.weather_location_preferences)
@@ -69,28 +78,32 @@ internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
      * Searches for possible locations given a search query.
      */
     private fun performLocationSearch(query: String) {
-        apiScope.launch {
-            activity?.runOnUiThread {
-                locationSearchBox?.isLoading = true
+        CoroutineScope(mainDispatcher).launch {
+            locationSearchBox?.isLoading = true
+            val places = withContext(ioDispatcher) {
+                nominatimApi.searchForLocations(query)
             }
-
-            val places = nominatimApi.searchForLocations(query)
-            places?.forEach { place ->
+            with(addedLocationPreferences) {
+                forEach { preferenceScreen.removePreference(it) }
+                clear()
+            }
+            places.getOrNull()?.forEach { place ->
                 preferenceScreen.addPreference(
                     Preference(context).apply {
                         title = place.displayName
                     }.also {
+                        addedLocationPreferences += it
                         it.setOnPreferenceClickListener {
-                            setWeatherLocation(LatLong(place.lat, place.long), place.displayName)
+                            setWeatherLocation(
+                                LatLong(place.lat, place.long),
+                                place.displayName
+                            )
                             false
                         }
                     }
                 )
             }
-
-            activity?.runOnUiThread {
-                locationSearchBox?.isLoading = false
-            }
+            locationSearchBox?.isLoading = false
         }
     }
 
@@ -110,13 +123,13 @@ internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
             locationManager.getBestProvider(locationCriteria, true)
                 ?.let { locationManager.getLastKnownLocation(it) }
                 ?.let {
-                    apiScope.launch {
+                    CoroutineScope(mainDispatcher).launch {
                         val latLong = LatLong(it)
-                        nominatimApi.reverseGeocode(latLong)?.let { place ->
-                            setWeatherLocation(latLong, place.displayName)
-                        } ?: activity?.runOnUiThread {
-                            showLocationUnavailableDialog()
-                        }
+                        withContext(ioDispatcher) {
+                            nominatimApi.reverseGeocode(latLong)
+                        }.getOrNull()?.let { result ->
+                            setWeatherLocation(latLong, result.displayName)
+                        } ?: showLocationUnavailableDialog()
                     }
                 }
                 ?: showLocationUnavailableDialog()

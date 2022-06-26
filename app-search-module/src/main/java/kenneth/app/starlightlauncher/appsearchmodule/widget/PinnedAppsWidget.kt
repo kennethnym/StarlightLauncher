@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
@@ -22,7 +21,7 @@ import kotlinx.coroutines.*
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
     private val launcher: StarlightLauncherApi,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
@@ -95,7 +94,7 @@ internal class PinnedAppsWidget(
     })
 
     init {
-        CoroutineScope(defaultDispatcher).launch {
+        CoroutineScope(mainDispatcher).launch {
             prefs.subscribe(::onPreferenceChanged)
             launcher.addLauncherEventListener(::onLauncherEvent)
         }

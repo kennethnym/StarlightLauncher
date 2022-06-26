@@ -10,6 +10,7 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ private const val INITIAL_ITEM_COUNT = 10
 
 class AppSearchResultAdapter(
     private val context: Context,
-    private val launcher: StarlightLauncherApi
+    private val launcher: StarlightLauncherApi,
+    mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) :
     SearchResultAdapter {
     private lateinit var appList: AppList
@@ -31,7 +33,7 @@ class AppSearchResultAdapter(
     private val prefs = AppSearchModulePreferences.getInstance(context)
 
     init {
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(mainDispatcher).launch {
             prefs.subscribe(::onPreferencesChanged)
             launcher.addLauncherEventListener(::onLauncherEvent)
         }

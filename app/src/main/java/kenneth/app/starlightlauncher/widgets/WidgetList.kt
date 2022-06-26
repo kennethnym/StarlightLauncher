@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.utils.BindingRegister
@@ -27,10 +28,12 @@ import kenneth.app.starlightlauncher.utils.activity
 import kenneth.app.starlightlauncher.views.ReorderableList
 import kenneth.app.starlightlauncher.views.WidgetListAdapter
 import kenneth.app.starlightlauncher.views.WidgetListAdapterItem
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.math.abs
 
 private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
@@ -57,6 +60,10 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
 
     @Inject
     lateinit var launcherEventChannel: LauncherEventChannel
+
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
@@ -128,7 +135,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
         layoutManager = LinearLayoutManager(context)
         adapter = WidgetListAdapter(context, addedWidgets).also { widgetListAdapter = it }
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(mainDispatcher).launch {
             launcherEventChannel.subscribe {
                 when (it) {
                     is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {

@@ -31,7 +31,12 @@ import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.utils.BindingRegister
 import kenneth.app.starlightlauncher.utils.calculateDominantColor
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.concurrent.thread
 
 /**
@@ -79,6 +84,14 @@ internal class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var launcherApi: StarlightLauncherApi
+
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject
+    @Named(IO_DISPATCHER)
+    lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject
     internal lateinit var appWidgetHost: AppWidgetHost
@@ -205,10 +218,14 @@ internal class MainActivity : AppCompatActivity() {
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            thread(start = true) {
-                val wallpaper = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
-                if (!wallpaper.sameAs(currentWallpaper)) {
-                    runOnUiThread { recreate() }
+            CoroutineScope(mainDispatcher).launch {
+                val isWallpaperChanged = withContext(ioDispatcher) {
+                    val wallpaper =
+                        WallpaperManager.getInstance(this@MainActivity).fastDrawable.toBitmap()
+                    !wallpaper.sameAs(currentWallpaper)
+                }
+                if (isWallpaperChanged) {
+                    recreate()
                 }
             }
         }

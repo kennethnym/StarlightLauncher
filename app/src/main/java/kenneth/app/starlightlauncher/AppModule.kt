@@ -20,6 +20,7 @@ import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.util.EventChannel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -28,7 +29,9 @@ import java.util.*
 import javax.inject.Named
 import javax.inject.Singleton
 
-internal const val LAUNCHER_EVENT_CHANNEL = "LAUNCHER_EVENT_CHANNEL"
+internal const val DEFAULT_DISPATCHER = "DEFAULT_DISPATCHER"
+internal const val MAIN_DISPATCHER = "MAIN_DISPATCHER"
+internal const val IO_DISPATCHER = "IO_DISPATCHER"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -43,7 +46,18 @@ internal object AppModule {
 
     @Provides
     @Singleton
-    fun provideDefaultDispatcher() = Dispatchers.Default
+    @Named(DEFAULT_DISPATCHER)
+    fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
+    @Singleton
+    @Named(MAIN_DISPATCHER)
+    fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+
+    @Provides
+    @Singleton
+    @Named(IO_DISPATCHER)
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Singleton

@@ -7,15 +7,15 @@ import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.Collections.synchronizedList
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.filesearchmodule"
 
-class FileSearchModule(context: Context) : SearchModule(context) {
+class FileSearchModule(
+    context: Context,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : SearchModule(context) {
     override val metadata = Metadata(
         extensionName = context.getString(R.string.file_search_module_name),
         displayName = context.getString(R.string.file_search_module_display_name),
@@ -53,7 +53,7 @@ class FileSearchModule(context: Context) : SearchModule(context) {
         val jobs = mutableListOf<Job>()
         paths.forEach { path ->
             DocumentFile.fromTreeUri(context, Uri.parse(path))?.let {
-                CoroutineScope(Dispatchers.IO)
+                CoroutineScope(ioDispatcher)
                     .launch { files += collectAllFiles(it, regex) }
                     .also { jobs += it }
             }

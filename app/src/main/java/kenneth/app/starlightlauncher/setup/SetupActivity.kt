@@ -8,20 +8,28 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.WindowCompat
-import androidx.core.view.isInvisible
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.IO_DISPATCHER
+import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.MainActivity
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 internal class SetupActivity : AppCompatActivity() {
+    @Inject
+    @Named(MAIN_DISPATCHER)
+    lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject
+    @Named(IO_DISPATCHER)
+    lateinit var ioDispatcher: CoroutineDispatcher
+
     private lateinit var binding: ActivitySetupBinding
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -67,9 +75,12 @@ internal class SetupActivity : AppCompatActivity() {
 
     private fun goToNextStep() {
         if (binding.setupPager.currentItem == SETUP_STEP_COUNT - 1) {
-            CoroutineScope(Dispatchers.IO).launch {
-                runFinalSetup()
-                delay(3000)
+            CoroutineScope(mainDispatcher).launch {
+                withContext(ioDispatcher) {
+                    runFinalSetup()
+                }
+                startActivity(Intent(this@SetupActivity, MainActivity::class.java))
+                finish()
             }
             binding.isLoading = true
         } else {
@@ -80,8 +91,8 @@ internal class SetupActivity : AppCompatActivity() {
         }
     }
 
-    private fun runFinalSetup() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+    private suspend fun runFinalSetup() = withContext(mainDispatcher) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@SetupActivity)
 
         sharedPreferences.edit(commit = true) {
             putBoolean(
@@ -92,11 +103,6 @@ internal class SetupActivity : AppCompatActivity() {
 
         sharedPreferences.edit(commit = true) {
             putBoolean(getString(R.string.pref_key_setup_finished), true)
-        }
-
-        runOnUiThread {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
         }
     }
 }
