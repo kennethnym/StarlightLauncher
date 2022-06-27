@@ -40,7 +40,8 @@ import javax.inject.Named
 
 @AndroidEntryPoint
 internal class DateTimeView(context: Context, attrs: AttributeSet) :
-    LinearLayout(context, attrs), LifecycleEventObserver {
+    LinearLayout(context, attrs), LifecycleEventObserver,
+    SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     lateinit var locale: Locale
 
@@ -112,10 +113,12 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
         currentWeatherLocation = dateTimePreferenceManager.weatherLocation
 
         updateTime()
-        showWeather()
         applyTextShadow()
+        if (dateTimePreferenceManager.shouldShowWeather) {
+            showWeather()
+        }
         activity?.lifecycle?.addObserver(this)
-        sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferencesChanged)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -137,6 +140,35 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         registerTimeTickListener()
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            dateTimePreferenceManager.keys.useAutoWeatherLocation -> {
+                toggleLocationUpdate()
+            }
+            dateTimePreferenceManager.keys.showWeather -> {
+                val shouldShowWeather = dateTimePreferenceManager.shouldShowWeather
+                binding.isWeatherShown = shouldShowWeather
+                if (shouldShowWeather) {
+                    showWeather()
+                }
+            }
+            dateTimePreferenceManager.keys.autoWeatherLocationCheckFrequency -> {
+                changeLocationUpdateFrequency()
+            }
+            dateTimePreferenceManager.keys.use24HrClock -> {
+                updateTime()
+            }
+            dateTimePreferenceManager.keys.weatherLocationLat,
+            dateTimePreferenceManager.keys.weatherLocationLong -> {
+                currentWeatherLocation = dateTimePreferenceManager.weatherLocation
+                showWeather()
+            }
+            dateTimePreferenceManager.keys.weatherUnit -> {
+                showWeather()
+            }
+        }
     }
 
     private fun applyTextShadow() {
@@ -164,17 +196,14 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
     private fun onResume() {
         registerTimeTickListener()
         updateTime()
-        showWeather()
     }
 
     private fun onPause() {
         unregisterTimeTickListener()
     }
 
-    private fun onSharedPreferencesChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == dateTimePreferenceManager.useAutoWeatherLocationKey) {
-            toggleLocationUpdate()
-        }
+    private fun onSharedPreferencesChanged(key: String) {
+
     }
 
     private fun registerTimeTickListener() {
@@ -189,27 +218,19 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
     }
 
     private fun showWeather() {
-        if (dateTimePreferenceManager.shouldShowWeather) {
-            if (dateTimePreferenceManager.shouldUseAutoWeatherLocation && ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                locationManager.getBestProvider(weatherLocationCriteria, true)?.let {
-                    locationManager.getLastKnownLocation(it)?.let { loc ->
-                        currentWeatherLocation = LatLong(loc)
-                        loadWeather()
-                    }
+        if (dateTimePreferenceManager.shouldUseAutoWeatherLocation && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationManager.getBestProvider(weatherLocationCriteria, true)?.let {
+                locationManager.getLastKnownLocation(it)?.let { loc ->
+                    currentWeatherLocation = LatLong(loc)
+                    loadWeather()
                 }
-            } else {
-                loadWeather()
             }
         } else {
-            with(binding) {
-                temp.isVisible = false
-                weatherIcon.isVisible = false
-                dateTimeWeatherSeparator.isVisible = false
-            }
+            loadWeather()
         }
     }
 
@@ -228,17 +249,10 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
                 return@launch
             }
 
-            val weather = weatherRequestResult.getOrNull()
-            val isWeatherAvailable = weather != null
-
-            binding.temp.isVisible = isWeatherAvailable
-            separator.isVisible = isWeatherAvailable
-            binding.weatherIcon.isVisible = isWeatherAvailable
-
-            if (isWeatherAvailable) {
+            weatherRequestResult.getOrNull()?.let { weather ->
                 binding.temp.text = context.getString(
                     R.string.date_time_temperature_format,
-                    weather!!.main.temp,
+                    weather.main.temp,
                     openWeatherApi.unit.symbol
                 )
 
@@ -247,10 +261,38 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
                     .load(weather.weather[0].iconURL)
                     .into(binding.weatherIcon)
 
-                binding.weatherIcon.contentDescription = weather.weather[0].description
-                binding.dateTimeWeatherSeparator.isVisible = true
+                binding.apply {
+                    isWeatherShown = true
+                    weatherIcon.contentDescription = weather.weather[0].description
+                }
+            } ?: kotlin.run {
+                binding.isWeatherShown = false
             }
         }
+    }
+
+    /**
+     * Stops receiving location updates from the system.
+     */
+    private fun stopLocationUpdates() {
+        locationManager.removeUpdates(::onLocationUpdated)
+    }
+
+    private fun changeLocationUpdateFrequency() {
+        stopLocationUpdates()
+        locationManager.getBestProvider(weatherLocationCriteria, true)
+            ?.let {
+                locationManager.getLastKnownLocation(it)?.let { loc ->
+                    currentWeatherLocation = LatLong(loc)
+                }
+                loadWeather()
+                locationManager.requestLocationUpdates(
+                    it,
+                    dateTimePreferenceManager.autoWeatherLocationCheckFrequency,
+                    1000F,
+                    ::onLocationUpdated
+                )
+            }
     }
 
     /**
@@ -262,12 +304,7 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            val locationCriteria = Criteria().apply {
-                accuracy = Criteria.ACCURACY_COARSE
-                powerRequirement = Criteria.POWER_LOW
-            }
-
-            locationManager.getBestProvider(locationCriteria, true)
+            locationManager.getBestProvider(weatherLocationCriteria, true)
                 ?.let {
                     locationManager.getLastKnownLocation(it)?.let { loc ->
                         currentWeatherLocation = LatLong(loc)
@@ -282,7 +319,7 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
                 }
         } else {
             currentWeatherLocation = dateTimePreferenceManager.weatherLocation
-            locationManager.removeUpdates(::onLocationUpdated)
+            stopLocationUpdates()
         }
     }
 

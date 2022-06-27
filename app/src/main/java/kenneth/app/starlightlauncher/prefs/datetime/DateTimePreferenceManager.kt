@@ -1,7 +1,8 @@
 package kenneth.app.starlightlauncher.prefs.datetime
 
 import android.content.Context
-import androidx.preference.PreferenceManager
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
@@ -14,11 +15,14 @@ import javax.inject.Singleton
  */
 @Singleton
 internal class DateTimePreferenceManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val sharedPreferences: SharedPreferences,
 ) {
-    val shouldUse24HrClock: Boolean
-        get() = sharedPreference.getBoolean(
-            use24HrClockPrefKey,
+    val keys = DateTimePrefKeys(context)
+
+    val shouldUse24HrClock
+        get() = sharedPreferences.getBoolean(
+            keys.use24HrClock,
             context.resources.getBoolean(R.bool.default_use_24hr_clock)
         )
 
@@ -28,60 +32,60 @@ internal class DateTimePreferenceManager @Inject constructor(
      */
     val weatherLocation: LatLong
         get() {
-            val lat = sharedPreference.getFloat(weatherLocationLatPrefKey, 0f)
-            val long = sharedPreference.getFloat(weatherLocationLongPrefKey, 0f)
+            val lat = sharedPreferences.getFloat(keys.weatherLocationLat, 0f)
+            val long = sharedPreferences.getFloat(keys.weatherLocationLong, 0f)
             return LatLong(lat, long)
         }
 
-    val weatherLocationName: String
-        get() = sharedPreference.getString(
-            weatherLocationNamePrefKey, context.getString(
+    val weatherLocationName
+        get() = sharedPreferences.getString(
+            keys.weatherLocationName, context.getString(
                 R.string.date_time_unknown_location
             )
         ) ?: ""
 
-    val shouldShowWeather: Boolean
-        get() = sharedPreference.getBoolean(
-            showWeatherPrefKey,
+    val shouldShowWeather
+        get() = sharedPreferences.getBoolean(
+            keys.showWeather,
             context.resources.getBoolean(R.bool.default_show_weather)
         )
 
-    val weatherUnit: TemperatureUnit
+    val weatherUnit
         get() = TemperatureUnit.valueOf(
-            sharedPreference.getString(weatherUnitPrefKey, null)
+            sharedPreferences.getString(keys.weatherUnit, null)
                 ?: context.getString(R.string.default_weather_unit)
         )
 
-    val shouldUseAutoWeatherLocation: Boolean
-        get() = sharedPreference.getBoolean(
-            useAutoWeatherLocationKey,
+    val shouldUseAutoWeatherLocation
+        get() = sharedPreferences.getBoolean(
+            keys.useAutoWeatherLocation,
             context.resources.getBoolean(R.bool.default_use_auto_weather_location)
         )
 
-    val autoWeatherLocationCheckFrequency: Long
-        get() = sharedPreference.getString(autoWeatherLocationCheckFrequencyKey, null)
+    val autoWeatherLocationCheckFrequency
+        get() = sharedPreferences.getString(keys.autoWeatherLocationCheckFrequency, null)
             ?.toLong()
             ?: context.getString(R.string.default_check_weather_frequency).toLong()
 
-    private val sharedPreference by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
-
-    val use24HrClockPrefKey by lazy { context.getString(R.string.date_time_use_24hr_clock) }
-    val showWeatherPrefKey by lazy { context.getString(R.string.date_time_show_weather) }
-    val weatherUnitPrefKey by lazy { context.getString(R.string.date_time_weather_unit) }
-    val weatherLocationLatPrefKey by lazy { context.getString(R.string.date_time_weather_location_lat) }
-    val weatherLocationLongPrefKey by lazy { context.getString(R.string.date_time_weather_location_long) }
-    val weatherLocationNamePrefKey by lazy { context.getString(R.string.date_time_weather_location_name) }
-    val useAutoWeatherLocationKey by lazy { context.getString(R.string.date_time_use_auto_location) }
-    val autoWeatherLocationCheckFrequencyKey by lazy { context.getString(R.string.date_time_auto_location_check_frequency) }
-
-    /**
+     /**
      * Changes the weather location described by the given LatLong.
      */
     fun changeWeatherLocation(latLong: LatLong, displayName: String) {
-        sharedPreference.edit()
-            .putFloat(weatherLocationLatPrefKey, latLong.lat)
-            .putFloat(weatherLocationLongPrefKey, latLong.long)
-            .putString(weatherLocationNamePrefKey, displayName)
-            .apply()
+        sharedPreferences.edit(commit = true) {
+            putFloat(keys.weatherLocationLat, latLong.lat)
+            putFloat(keys.weatherLocationLong, latLong.long)
+            putString(keys.weatherLocationName, displayName)
+        }
     }
+}
+
+internal class DateTimePrefKeys(context: Context) {
+    val use24HrClock by lazy { context.getString(R.string.date_time_use_24hr_clock) }
+    val showWeather by lazy { context.getString(R.string.date_time_show_weather) }
+    val weatherUnit by lazy { context.getString(R.string.date_time_weather_unit) }
+    val weatherLocationLat by lazy { context.getString(R.string.date_time_weather_location_lat) }
+    val weatherLocationLong by lazy { context.getString(R.string.date_time_weather_location_long) }
+    val weatherLocationName by lazy { context.getString(R.string.date_time_weather_location_name) }
+    val useAutoWeatherLocation by lazy { context.getString(R.string.date_time_use_auto_location) }
+    val autoWeatherLocationCheckFrequency by lazy { context.getString(R.string.date_time_auto_location_check_frequency) }
 }
