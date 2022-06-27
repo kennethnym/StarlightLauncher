@@ -65,4 +65,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/advanced_pref_category_title">
+
+        <Preference
+            app:key="@string/pref_key_restart_launcher"
+            app:summary="@string/restart_launcher_summary"
+            app:title="@string/restart_launcher_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

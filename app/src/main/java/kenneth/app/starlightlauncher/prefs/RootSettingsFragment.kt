@@ -11,6 +11,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.MainActivity
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.extension.ExtensionManager
@@ -64,6 +65,12 @@ internal class RootSettingsFragment : PreferenceFragmentCompat() {
                 )
                 false
             }
+
+        findPreference<Preference>(getString(R.string.pref_key_restart_launcher))
+            ?.setOnPreferenceClickListener {
+                restartLauncher()
+                false
+            }
     }
 
     override fun onResume() {
@@ -110,5 +117,15 @@ internal class RootSettingsFragment : PreferenceFragmentCompat() {
     private fun changeToolbarTitle() {
         activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
             getString(R.string.title_activity_settings)
+    }
+
+    private fun restartLauncher() {
+        context?.let { context ->
+            Intent(context, MainActivity::class.java).run {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(this)
+                activity?.finish()
+            }
+        }
     }
 }

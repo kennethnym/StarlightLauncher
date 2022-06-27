@@ -11,6 +11,8 @@
     <string name="pref_key_launcher_provide_feedback">launcher_provide_feedback</string>
     <string name="pref_key_launcher_author">launcher_author</string>
 
+    <string name="pref_key_restart_launcher">restart_launcher</string>
+
     <string name="appearance_pref_key">appearance</string>
     <string name="appearance_pref_screen">appearance_pref_screen</string>
     <string name="appearance_show_pinned_apps_labels">appearance_show_pinned_apps_labels</string>

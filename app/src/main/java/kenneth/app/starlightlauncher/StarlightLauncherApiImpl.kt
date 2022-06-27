@@ -80,7 +80,7 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     }
 
     override suspend fun addLauncherEventListener(listener: LauncherEventListener) =
-        launcherEventChannel.subscribe(listener)
+        launcherEventChannel.subscribePublic(listener)
 
     internal fun setContext(context: Context) {
         this.context = context

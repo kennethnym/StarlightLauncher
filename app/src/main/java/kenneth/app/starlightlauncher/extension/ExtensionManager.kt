@@ -91,6 +91,8 @@ internal class ExtensionManager @Inject constructor(
 
     private val searchModules = mutableMapOf<String, SearchModule>()
 
+    private val initializedWidgets = mutableSetOf<String>()
+
     /**
      * Stores all intents for settings activities exported by extensions.
      * Maps categories of settings, to a map of extension names to the corresponding
@@ -202,7 +204,10 @@ internal class ExtensionManager @Inject constructor(
         }
 
         extensions.forEach { (_, ext) ->
-            ext.searchModule?.initialize(launcherApi)
+            if (!initializedWidgets.contains(ext.name)) {
+                ext.searchModule?.initialize(launcherApi)
+                initializedWidgets += ext.name
+            }
         }
     }
 
