@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherActivityInfo
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.os.UserHandle
 import androidx.core.graphics.drawable.toBitmap
 import kenneth.app.starlightlauncher.api.IconPack
 
@@ -21,9 +23,17 @@ internal class DefaultIconPack(context: Context) : IconPack {
     override val name: String
         get() = "Default"
 
-    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap =
-        launcherActivityInfo.getIcon(0).toBitmap()
+    private val loadedIcons = mutableMapOf<String, Drawable>()
 
-    override fun getIconOf(applicationInfo: ApplicationInfo): Bitmap =
-        applicationInfo.loadIcon(packageManager).toBitmap()
+    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo, user: UserHandle) =
+        loadedIcons.getOrPut(launcherActivityInfo.applicationInfo.packageName) {
+            val icon = launcherActivityInfo.getIcon(0)
+            packageManager.getUserBadgedIcon(icon, user)
+        }
+
+    override fun getIconOf(applicationInfo: ApplicationInfo, user: UserHandle): Drawable =
+        loadedIcons.getOrPut(applicationInfo.packageName) {
+            val icon = applicationInfo.loadIcon(packageManager)
+            packageManager.getUserBadgedIcon(icon, user)
+        }
 }

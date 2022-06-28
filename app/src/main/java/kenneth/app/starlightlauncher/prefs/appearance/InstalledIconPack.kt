@@ -1,16 +1,21 @@
 package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.content.Context
-import android.content.pm.*
+import android.content.pm.ApplicationInfo
+import android.content.pm.LauncherActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.ScaleDrawable
+import android.os.UserHandle
+import android.view.Gravity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import kenneth.app.starlightlauncher.api.IconPack
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 private const val RES_TYPE_DRAWABLE = "drawable"
@@ -19,7 +24,7 @@ private const val RES_TYPE_XML = "xml"
 /**
  * Represents an icon pack installed on the device.
  */
-internal class InstalledIconPack(context: Context, val packageName: String) : IconPack {
+internal class InstalledIconPack(private val context: Context, val packageName: String) : IconPack {
     private val packageInfo by lazy {
         packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
     }
@@ -59,6 +64,10 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
 
     private lateinit var iconPackResources: Resources
 
+    private val defaultIcons = mutableMapOf<String, Drawable>()
+
+    private val loadedIcons = mutableMapOf<String, Drawable>()
+
     /**
      * Loads all icons of this icon pack into memory.
      * Must be called before getting individual icons of an app.
@@ -97,39 +106,45 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
         loadAppFilterXmlContent(appFilterXml)
     }
 
-    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap =
+    override fun getIconOf(launcherActivityInfo: LauncherActivityInfo, user: UserHandle): Drawable =
         getIconOf(
             launcherActivityInfo.applicationInfo.packageName,
-            launcherActivityInfo.getIcon(0).toBitmap()
+            defaultIcons.getOrPut(
+                launcherActivityInfo.applicationInfo.packageName
+            ) { launcherActivityInfo.getIcon(0) }
         )
 
-    override fun getIconOf(applicationInfo: ApplicationInfo): Bitmap {
+    override fun getIconOf(applicationInfo: ApplicationInfo, user: UserHandle): Drawable {
         val default = applicationInfo.loadIcon(packageManager)
-        return getIconOf(applicationInfo.packageName, default.toBitmap())
+        return getIconOf(
+            applicationInfo.packageName,
+            defaultIcons.getOrPut(applicationInfo.packageName) { default }
+        )
     }
 
     /**
      * Retrieves the icon of the given package. Must call `load()` to load the bitmaps of icons,
      * otherwise this function will return null.
      */
-    private fun getIconOf(packageName: String, default: Bitmap): Bitmap {
-        val packageIntent = packageManager.getLaunchIntentForPackage(packageName)
+    private fun getIconOf(packageName: String, default: Drawable): Drawable =
+        loadedIcons.getOrPut(packageName) {
+            val packageIntent = packageManager.getLaunchIntentForPackage(packageName)
 
-        if (packageIntent != null) {
-            val componentName = packageIntent.component.toString()
-            val iconDrawableName = icons[componentName]
+            if (packageIntent != null) {
+                val componentName = packageIntent.component.toString()
+                val iconDrawableName = icons[componentName]
 
-            if (iconDrawableName != null) {
-                val iconBitmap = getBitmapOfDrawableRes(iconDrawableName)
+                if (iconDrawableName != null) {
+                    val iconBitmap = getDrawableRes(iconDrawableName)
 
-                return iconBitmap ?: generateAppIcon(default)
+                    return iconBitmap ?: generateAppIcon(default)
+                }
+
+                return findIconInResources(componentName) ?: generateAppIcon(default)
             }
 
-            return findIconInResources(componentName) ?: generateAppIcon(default)
+            return default
         }
-
-        return default
-    }
 
     /**
      * Try to find the icon for the package in icon pack resources. Useful when the icon for
@@ -139,7 +154,7 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
      * @param componentName The component name of the package this function should find the icon for.
      * Should be of format: `ComponentInfo{component-name}`.
      */
-    private fun findIconInResources(componentName: String): Bitmap? {
+    private fun findIconInResources(componentName: String): Drawable? {
         // first, quickly verify the format of the given component name
 
         val startBraceIndex = componentName.indexOf('{') + 1
@@ -152,7 +167,7 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
                 .lowercase()
                 .replace(Regex("(.|/)"), "_")
 
-            return getBitmapOfDrawableRes(drawableName)
+            return getDrawableRes(drawableName)
         }
 
         return null
@@ -171,9 +186,9 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
                             val attrName = xml.getAttributeName(i)
                             if (attrName.startsWith("img")) {
                                 val drawableName = xml.getAttributeValue(i)
-                                val backImageBitmap = getBitmapOfDrawableRes(drawableName)
+                                val backImageBitmap = getDrawableRes(drawableName)
                                 if (backImageBitmap != null) {
-                                    backImages.add(backImageBitmap)
+                                    backImages.add(backImageBitmap.toBitmap())
                                 }
                             }
                         }
@@ -181,13 +196,13 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
                     "iconmask" -> {
                         if (xml.attributeCount > 0 && xml.getAttributeName(0) == "img1") {
                             val drawableName = xml.getAttributeValue(0)
-                            maskImage = getBitmapOfDrawableRes(drawableName)
+                            maskImage = getDrawableRes(drawableName)?.toBitmap()
                         }
                     }
                     "iconupon" -> {
                         if (xml.attributeCount > 0 && xml.getAttributeName(0) == "img1") {
                             val drawableName = xml.getAttributeValue(0)
-                            frontImage = getBitmapOfDrawableRes(drawableName)
+                            frontImage = getDrawableRes(drawableName)?.toBitmap()
                         }
                     }
                     "scale" -> {
@@ -228,19 +243,20 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
     /**
      * Retrieves the bitmap version of a given drawable in the resources of this icon pack.
      */
-    private fun getBitmapOfDrawableRes(drawableName: String): Bitmap? {
+    private fun getDrawableRes(drawableName: String): Drawable? {
         val drawableResId = iconPackResources.getIdentifier(
             drawableName,
             RES_TYPE_DRAWABLE,
             packageName
         )
 
-        if (drawableResId > 0) {
-            val drawable = ResourcesCompat.getDrawable(iconPackResources, drawableResId, null)
-            if (drawable is BitmapDrawable) return drawable.bitmap
-        }
-
-        return null
+        return if (drawableResId > 0) {
+            try {
+                ResourcesCompat.getDrawable(iconPackResources, drawableResId, null)
+            } catch (ex: Resources.NotFoundException) {
+                null
+            }
+        } else null
     }
 
     /**
@@ -248,9 +264,9 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
      * back images, mask image and front image. Useful when this icon pack does not
      * have support for the app yet.
      */
-    private fun generateAppIcon(baseIconBitmap: Bitmap): Bitmap {
+    private fun generateAppIcon(baseIcon: Drawable): Drawable {
         if (backImages.isEmpty())
-            return baseIconBitmap
+            return baseIcon
 
         val backImage = backImages[Random.Default.nextInt(backImages.size)]
         val resultBitmap = Bitmap.createBitmap(
@@ -259,19 +275,16 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
             Bitmap.Config.ARGB_8888
         )
         val resultCanvas = Canvas(resultBitmap).also {
-            it.drawBitmap(backImage, 0f, 0f, null)
+            it.drawBitmap(backImage, 0f, 0f, Paint())
         }
 
         val scaledBaseIcon =
-            if (baseIconBitmap.width > backImage.width || baseIconBitmap.height > backImage.height) {
-                Bitmap.createScaledBitmap(
-                    baseIconBitmap,
-                    (backImage.width * scaleFactor).roundToInt(),
-                    (backImage.height * scaleFactor).roundToInt(),
-                    false,
-                )
+            if (baseIcon.intrinsicWidth > backImage.width || baseIcon.intrinsicHeight > backImage.height) {
+                ScaleDrawable(baseIcon, Gravity.CENTER, 1f, 1f).apply {
+                    level = 8000
+                }
             } else {
-                baseIconBitmap
+                baseIcon
             }
 
         val maskBitmap =
@@ -286,26 +299,37 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
             xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
         }
 
-        // draw the default app icon onto the canvas
-        // position the icon at the center of the result canvas
-        with(resultCanvas) {
-            drawBitmap(
-                scaledBaseIcon,
-                ((backImage.width - scaledBaseIcon.width) / 2).toFloat(),
-                ((backImage.height - scaledBaseIcon.height) / 2).toFloat(),
-                null
-            )
+        val maskedIcon = Bitmap.createBitmap(
+            maskBitmap.width,
+            maskBitmap.height,
+            Bitmap.Config.ARGB_8888,
+        )
 
+        Canvas(maskedIcon).run {
+            // draw the base icon
+            drawBitmap(
+                scaledBaseIcon.toBitmap(),
+                (width - scaledBaseIcon.intrinsicWidth) / 2f,
+                (height - scaledBaseIcon.intrinsicHeight) / 2f,
+                null,
+            )
             // draw the mask on top of the icon
             drawBitmap(maskBitmap, 0f, 0f, maskPaint)
         }
 
-        maskPaint.xfermode = null
+        // draw the masked icon onto the final result canvas
+        // position the icon at the center of the result canvas
+        resultCanvas.drawBitmap(
+            maskedIcon,
+            ((resultCanvas.width - maskedIcon.width) / 2).toFloat(),
+            ((resultCanvas.height - maskedIcon.height) / 2).toFloat(),
+            null
+        )
 
         frontImage?.let {
             resultCanvas.drawBitmap(it, 0f, 0f, null)
         }
 
-        return resultBitmap
+        return BitmapDrawable(context.resources, resultBitmap)
     }
 }

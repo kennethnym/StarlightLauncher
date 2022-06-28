@@ -153,9 +153,7 @@ internal class AvailableAndroidWidgetListAdapter(
         }.apply {
             text = label
             setCompoundDrawablesRelative(
-                icon.toDrawable(context.resources).apply {
-                    setBounds(0, 0, iconSize, iconSize)
-                },
+                icon.apply { setBounds(0, 0, iconSize, iconSize) },
                 null,
                 indicator,
                 null
@@ -205,8 +203,7 @@ internal class AvailableAndroidWidgetListAdapter(
                 }
             } ?: setCompoundDrawablesRelativeWithIntrinsicBounds(
                 null,
-                appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
-                    .toDrawable(context.resources),
+                appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!),
                 null,
                 null,
             )

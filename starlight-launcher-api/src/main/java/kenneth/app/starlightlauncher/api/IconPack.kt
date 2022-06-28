@@ -7,6 +7,8 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Process
+import android.os.UserHandle
 
 /**
  * Describes an IconPack.
@@ -25,14 +27,20 @@ interface IconPack {
     /**
      * Retrieves the icon of [launcherActivityInfo].
      *
-     * @return The [Bitmap] representation of the icon.
+     * @return The [Drawable] representation of the icon.
      */
-    fun getIconOf(launcherActivityInfo: LauncherActivityInfo): Bitmap
+    fun getIconOf(
+        launcherActivityInfo: LauncherActivityInfo,
+        user: UserHandle = Process.myUserHandle(),
+    ): Drawable
 
     /**
      * Retrieves the icon of [applicationInfo].
      *
-     * @return The [Bitmap] representation of the icon.
+     * @return The [Drawable] representation of the icon.
      */
-    fun getIconOf(applicationInfo: ApplicationInfo): Bitmap
+    fun getIconOf(
+        applicationInfo: ApplicationInfo,
+        user: UserHandle = Process.myUserHandle(),
+    ): Drawable
 }
