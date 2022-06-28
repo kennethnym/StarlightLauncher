@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo
 import androidx.appcompat.content.res.AppCompatResources
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetCreator
@@ -23,7 +22,6 @@ import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -200,7 +198,7 @@ internal class ExtensionManager @Inject constructor(
             },
             PackageManager.GET_META_DATA,
         ).forEach { resolveInfo ->
-            tryInitializeExtension(resolveInfo)
+            tryToLoadExtensionInfo(resolveInfo)
         }
 
         extensions.forEach { (_, ext) ->
@@ -275,7 +273,7 @@ internal class ExtensionManager @Inject constructor(
         }
     }
 
-    private fun tryInitializeExtension(resolveInfo: ResolveInfo) {
+    private fun tryToLoadExtensionInfo(resolveInfo: ResolveInfo) {
         try {
             val packageName = resolveInfo.activityInfo.packageName
             val packageRes =

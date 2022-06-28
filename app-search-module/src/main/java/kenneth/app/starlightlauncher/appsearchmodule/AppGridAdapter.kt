@@ -300,6 +300,4 @@ internal class AppGridAdapter(
 }
 
 internal class AppGridItem(internal val binding: AppGridItemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
-
-}
+    RecyclerView.ViewHolder(binding.root)
