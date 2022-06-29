@@ -39,6 +39,8 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/search_result_card_padding">
 
+            <!-- Disable showing wifi name for now, cannot get it to work -->
+
             <LinearLayout
                 android:id="@+id/location_perm_notification_container"
                 android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                 android:background="@drawable/require_location_perm_bg"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:visibility="@{hasAllPermissions ? View.GONE : View.VISIBLE}">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -89,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="@{hasLocationPermission ? View.VISIBLE : View.GONE}">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
