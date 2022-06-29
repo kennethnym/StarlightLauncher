@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.appshortcutsearchmodule
 import android.content.Context
 import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
+import android.content.res.Resources
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
@@ -10,7 +11,7 @@ import androidx.annotation.RequiresApi
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.util.sortByRegex
+import kenneth.app.starlightlauncher.api.util.fuzzyScore
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appshortcutsearchmodule"
@@ -73,11 +74,10 @@ class AppShortcutSearchModule(context: Context) : SearchModule(context) {
     }
 
     override fun initialize(launcher: StarlightLauncherApi) {
-        val mainContext = launcher.context
-
-        adapter = AppShortcutSearchResultAdapter(mainContext, launcher)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val mainContext = launcher.context
+
+            adapter = AppShortcutSearchResultAdapter(mainContext, launcher)
             launcherApps =
                 mainContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
@@ -127,21 +127,23 @@ class AppShortcutSearchModule(context: Context) : SearchModule(context) {
     override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1 || shortcutsIndexed.isEmpty())
             SearchResult.None(keyword, EXTENSION_NAME)
-        else
+        else {
+            val locale =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                    Resources.getSystem().configuration.locales.get(0)
+                else
+                    Resources.getSystem().configuration.locale
+
             Result(
                 query = keyword,
                 shortcuts = shortcutList
-                    .sortedWith { shortcut1, shortcut2 ->
-                        val name1 = shortcut1.info.longLabel ?: shortcut1.info.shortLabel ?: ""
-                        val name2 = shortcut2.info.longLabel ?: shortcut2.info.shortLabel ?: ""
-                        return@sortedWith sortByRegex(
-                            name1.toString(),
-                            name2.toString(),
-                            keywordRegex
-                        )
+                    .sortedByDescending {
+                        val name = it.info.longLabel ?: it.info.shortLabel ?: ""
+                        fuzzyScore(name, keyword, locale)
                     }
                     .take(2)
             )
+        }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun updateShortcutInfo(packageName: String?, newShortcuts: MutableList<ShortcutInfo>) {

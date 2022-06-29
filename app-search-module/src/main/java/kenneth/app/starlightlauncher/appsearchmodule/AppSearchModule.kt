@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
+import android.content.res.Resources
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
@@ -13,7 +14,7 @@ import android.os.UserManager
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.util.sortByRegex
+import kenneth.app.starlightlauncher.api.util.fuzzyScore
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appsearchmodule"
@@ -200,15 +201,23 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             ?.let {
                 if (it.isEmpty())
                     SearchResult.None(keyword, EXTENSION_NAME)
-                else
+                else {
+                    val locale =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            Resources.getSystem().configuration.locales.get(0)
+                        else
+                            Resources.getSystem().configuration.locale
+
                     Result(
                         query = keyword,
-                        apps = it.sortedWith { app1, app2 ->
-                            val appName1 = appLabels[app1.applicationInfo.packageName]!!
-                            val appName2 = appLabels[app2.applicationInfo.packageName]!!
-                            return@sortedWith sortByRegex(appName1, appName2, keywordRegex)
-                        }
+                        apps = it
+                            .sortedByDescending {
+                                val appName = appLabels[it.applicationInfo.packageName]!!
+                                fuzzyScore(appName, keyword, locale)
+                            }
+                            .take(20)
                     )
+                }
             }
             ?: SearchResult.None(keyword, EXTENSION_NAME)
 
