@@ -66,10 +66,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
         with(binding) {
             searchBoxContainer.setOnClickListener {
                 binding.searchBoxEditText.requestFocus()
-                inputMethodManager.toggleSoftInput(
-                    InputMethodManager.SHOW_FORCED,
-                    InputMethodManager.HIDE_IMPLICIT_ONLY,
-                )
+                inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
             }
 
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
