@@ -3,8 +3,10 @@ package kenneth.app.starlightlauncher.appsearchmodule
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
+import android.os.Build
 import android.os.Process
 import android.os.UserHandle
 import android.os.UserManager
@@ -126,7 +128,24 @@ class AppSearchModule(context: Context) : SearchModule(context) {
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            if (context == null) return
+            when (intent?.action) {
+                Intent.ACTION_MANAGED_PROFILE_ADDED -> {
+                    val user =
+                        if (Build.VERSION.SDK_INT >= 33)
+                            intent.getParcelableExtra(Intent.EXTRA_USER, UserHandle::class.java)
+                        else
+                            UserHandle(intent.getParcelableExtra(Intent.EXTRA_USER))
 
+                    user?.let { loadAppsForUser(it) }
+                }
+                Intent.ACTION_MANAGED_PROFILE_REMOVED -> {
+                    allApps.clear()
+                    userLabelsToSerialNumbers.clear()
+                    appLabels.clear()
+                    loadApps()
+                }
+            }
         }
     }
 
@@ -139,11 +158,16 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         preferences = AppSearchModulePreferences.getInstance(launcher.context)
         defaultUserNo = userManager.getSerialNumberForUser(Process.myUserHandle())
 
+        context.registerReceiver(broadcastReceiver, IntentFilter().apply {
+            addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
+            addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
+        })
         loadApps()
     }
 
     override fun cleanup() {
         launcherApps.unregisterCallback(launcherAppsCallback)
+        context.unregisterReceiver(broadcastReceiver)
     }
 
     override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
@@ -188,26 +212,32 @@ class AppSearchModule(context: Context) : SearchModule(context) {
             }
             ?: SearchResult.None(keyword, EXTENSION_NAME)
 
+    /**
+     * Finds apps for all user profiles.
+     */
     private fun loadApps() {
-        with(launcherApps) {
-            userManager.userProfiles.forEach { user ->
-                val userNo = userManager.getSerialNumberForUser(user)
-                val userLabel =
-                    launcherContext.packageManager.getUserBadgedLabel("", user).toString()
-                        .lowercase()
-                val userApps = mutableListOf<LauncherActivityInfo>()
-                getActivityList(null, user)
-                    .forEach {
-                        val packageName = it.applicationInfo.packageName
-                        userApps.add(it)
-                        appLabels[packageName] = it.label.toString()
-                    }
-                userLabelsToSerialNumbers[userLabel] = userNo
-                allApps[userNo] = userApps
-            }
+        userManager.userProfiles.forEach { loadAppsForUser(it) }
+        launcherApps.registerCallback(launcherAppsCallback)
+    }
 
-            registerCallback(launcherAppsCallback)
-        }
+    /**
+     * Finds apps installed under [user].
+     */
+    private fun loadAppsForUser(user: UserHandle) {
+        val userNo = userManager.getSerialNumberForUser(user)
+        val userLabel =
+            launcherContext.packageManager.getUserBadgedLabel("", user).toString()
+                .trim()
+                .lowercase()
+        val userApps = mutableListOf<LauncherActivityInfo>()
+        launcherApps.getActivityList(null, user)
+            .forEach {
+                val packageName = it.applicationInfo.packageName
+                userApps.add(it)
+                appLabels[packageName] = it.label.toString()
+            }
+        userLabelsToSerialNumbers[userLabel] = userNo
+        allApps[userNo] = userApps
     }
 
     class Result(query: String, val apps: AppList) : SearchResult(query, EXTENSION_NAME)

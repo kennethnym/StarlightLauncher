@@ -107,20 +107,26 @@ internal class InstalledIconPack(private val context: Context, val packageName: 
     }
 
     override fun getIconOf(launcherActivityInfo: LauncherActivityInfo, user: UserHandle): Drawable =
-        getIconOf(
-            launcherActivityInfo.applicationInfo.packageName,
-            defaultIcons.getOrPut(
-                launcherActivityInfo.applicationInfo.packageName
-            ) { launcherActivityInfo.getIcon(0) }
+        packageManager.getUserBadgedIcon(
+            getIconOf(
+                launcherActivityInfo.applicationInfo.packageName,
+                defaultIcons.getOrPut(
+                    launcherActivityInfo.applicationInfo.packageName
+                ) { launcherActivityInfo.getIcon(0) }
+            ),
+            user,
         )
 
-    override fun getIconOf(applicationInfo: ApplicationInfo, user: UserHandle): Drawable {
-        val default = applicationInfo.loadIcon(packageManager)
-        return getIconOf(
-            applicationInfo.packageName,
-            defaultIcons.getOrPut(applicationInfo.packageName) { default }
+    override fun getIconOf(applicationInfo: ApplicationInfo, user: UserHandle): Drawable =
+        packageManager.getUserBadgedIcon(
+            getIconOf(
+                applicationInfo.packageName,
+                defaultIcons.getOrPut(applicationInfo.packageName) {
+                    applicationInfo.loadIcon(packageManager)
+                }
+            ),
+            user,
         )
-    }
 
     /**
      * Retrieves the icon of the given package. Must call `load()` to load the bitmaps of icons,

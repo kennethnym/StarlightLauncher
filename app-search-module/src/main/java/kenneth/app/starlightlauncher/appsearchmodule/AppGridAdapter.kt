@@ -140,7 +140,7 @@ internal class AppGridAdapter(
             appIcon.apply {
                 contentDescription =
                     context.getString(R.string.app_icon_content_description, appName)
-                setImageDrawable(launcher.getIconPack().getIconOf(app))
+                setImageDrawable(launcher.getIconPack().getIconOf(app, app.user))
             }
 
             if (shouldShowAppNames) {
