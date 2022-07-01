@@ -116,7 +116,7 @@
         <entry key="app/src/main/res/xml/icon_pack_preferences.xml" value="0.3496376811594203" />
         <entry key="app/src/main/res/xml/media_control_preferences.xml" value="0.19630192502532928" />
         <entry key="app/src/main/res/xml/quick_notes_preferences.xml" value="0.37681159420289856" />
-        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.2620895385742188" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.1" />
         <entry key="app/src/main/res/xml/search_layout_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
         <entry key="app/src/main/res/xml/widget_layout_preferences.xml" value="0.30570652173913043" />

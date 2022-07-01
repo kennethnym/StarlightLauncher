@@ -27,11 +27,7 @@ internal class MediaControlSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.media_control_preferences, rootKey)
 
-        findPreference<SwitchPreferenceCompat>(getString(R.string.media_control_enabled))
-            ?.isChecked =
-            sharedPreferences.getBoolean(getString(R.string.media_control_enabled), true)
-
-        findPreference<Preference>(getString(R.string.media_control_notification_listener_permission))
+        findPreference<Preference>(getString(R.string.pref_key_media_control_notification_listener_permission))
             ?.setOnPreferenceClickListener {
                 openNotificationListenerSettings()
                 true

@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.concurrent.thread
 
 /**
  * Called when back button is pressed.
@@ -158,11 +157,6 @@ internal class MainActivity : AppCompatActivity() {
     override fun onStop() {
         cleanup()
         super.onStop()
-    }
-
-    override fun onPause() {
-        cleanup()
-        super.onPause()
     }
 
     private fun cleanup() {

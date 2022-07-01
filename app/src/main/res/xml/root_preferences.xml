@@ -33,7 +33,7 @@
         <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.MediaControlSettingsFragment"
             app:icon="@drawable/ic_play_circle"
-            app:key="@string/media_control_pref_key"
+            app:key="@string/pref_key_media_control"
             app:summary="@string/media_control_summary"
             app:title="@string/media_control_title" />
 

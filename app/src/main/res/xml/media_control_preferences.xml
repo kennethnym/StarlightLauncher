@@ -3,12 +3,12 @@
 
     <SwitchPreferenceCompat
         app:defaultValue="true"
-        app:key="@string/media_control_enabled"
+        app:key="@string/pref_key_media_control_enabled"
         app:summary="@string/enable_media_control_description"
         app:title="@string/enable_media_control" />
 
     <Preference
-        app:key="@string/media_control_notification_listener_permission"
+        app:key="@string/pref_key_media_control_notification_listener_permission"
         app:summary="@string/media_control_notification_listener_perm_summary"
         app:title="@string/media_control_notification_listener_perm_title" />
 

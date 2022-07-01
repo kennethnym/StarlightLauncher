@@ -130,7 +130,7 @@ internal class WidgetListAdapter(
     private fun onLauncherEvent(event: LauncherEvent) {
         when (event) {
             is WidgetPreferenceChanged.WidgetRemoved ->
-                removeWidgetFromList(event.removedWidget)
+                removeWidgetFromList(event.removedWidget, event.position)
             else -> {}
         }
     }
@@ -194,12 +194,11 @@ internal class WidgetListAdapter(
         widgetPreferenceManager.removeStarlightWidget(extensionName)
     }
 
-    private fun removeWidgetFromList(widget: AddedWidget) {
+    private fun removeWidgetFromList(widget: AddedWidget, position: Int) {
         if (widgetsInLayout.contains(widget.id)) {
-            val removedPosition = addedWidgets.indexOfFirst { it == widget }
-            addedWidgets.removeAt(removedPosition)
+            addedWidgets.removeAt(position)
             widgetsInLayout.remove(widget.id)
-            notifyItemRemoved(removedPosition)
+            notifyItemRemoved(position)
         }
     }
 }

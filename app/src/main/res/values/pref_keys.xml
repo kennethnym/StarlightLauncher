@@ -59,11 +59,10 @@
     <string name="quick_notes_restore">quick_notes_restore</string>
     <string name="note_list">note_list</string>
 
-    <string name="media_control_pref_key">media_control</string>
-    <string name="media_control_notification_listener_permission">
+    <string name="pref_key_media_control">media_control</string>
+    <string name="pref_key_media_control_notification_listener_permission">
         media_control_notification_listener_permission
     </string>
-    <string name="media_control_enabled">media_control_enabled</string>
 
     <string name="pinned_apps">pinned_apps</string>
 </resources>

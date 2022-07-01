@@ -36,6 +36,7 @@ internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
 
     data class WidgetRemoved(
         val removedWidget: AddedWidget,
+        val position: Int,
     ) : WidgetPreferenceChanged()
 }
 
@@ -85,11 +86,6 @@ internal class WidgetPreferenceManager @Inject constructor(
             m.apply { put(widget.id, i) }
         }
 
-    private var addedWidgetsMap =
-        _addedWidgets.fold(mutableMapOf<Int, AddedWidget>()) { m, widget ->
-            m.apply { put(widget.id, widget) }
-        }
-
     val addedWidgets
         get() = _addedWidgets.toList()
 
@@ -104,7 +100,6 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
         _addedWidgets += newWidget
         addedStarlightWidgets += extensionName
-        addedWidgetsMap[widgetId] = newWidget
         addedWidgetPositions[widgetId] = _addedWidgets.lastIndex
         saveAddedWidgets()
         launcherEventChannel.add(WidgetPreferenceChanged.NewStarlightWidgetAdded(newWidget))
@@ -116,10 +111,9 @@ internal class WidgetPreferenceManager @Inject constructor(
                 ?: return
 
         _addedWidgets.remove(widget)
-        addedWidgetsMap.remove(widget.id)
-        addedWidgetPositions.remove(widget.id)
+        val position = addedWidgetPositions.remove(widget.id)
         saveAddedWidgets()
-        launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget))
+        launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget, position!!))
     }
 
     fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
@@ -143,7 +137,6 @@ internal class WidgetPreferenceManager @Inject constructor(
             appWidgetProviderInfo.minHeight,
         )
         _addedWidgets += newWidget
-        addedWidgetsMap[newWidget.id] = newWidget
         addedWidgetPositions[newWidget.id] = _addedWidgets.lastIndex
         saveAddedWidgets()
         launcherEventChannel.add(
@@ -172,8 +165,9 @@ internal class WidgetPreferenceManager @Inject constructor(
         _addedWidgets.find { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
             ?.let { widget ->
                 _addedWidgets.remove(widget)
+                val position = addedWidgetPositions.remove(widget.id)
                 saveAddedWidgets()
-                launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget))
+                launcherEventChannel.add(WidgetPreferenceChanged.WidgetRemoved(widget, position!!))
             }
     }
 

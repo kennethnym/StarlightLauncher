@@ -96,7 +96,7 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private val isMediaControlEnabled: Boolean
         get() = sharedPreferences.getBoolean(
-            context.getString(R.string.media_control_enabled), true
+            context.getString(R.string.pref_key_media_control_enabled), true
         )
 
     /**
@@ -199,9 +199,7 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == context.getString(R.string.media_control_enabled)) {
-            val isMediaControlEnabled = sharedPreferences.getBoolean(key, false)
-
+        if (key == context.getString(R.string.pref_key_media_control_enabled)) {
             if (isMediaControlEnabled) {
                 checkNotificationListenerAndUpdate()
                 attachListeners()
