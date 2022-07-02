@@ -32,21 +32,19 @@ internal class LocationSearchBoxPreference(context: Context, attrs: AttributeSet
         layoutResource = R.layout.location_search_box
     }
 
-    override fun onBindViewHolder(holder: PreferenceViewHolder?) {
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        holder?.let {
-            it.itemView.isClickable = false
-            (it.findViewById(R.id.location_search_box) as EditText)
-                .setOnEditorActionListener { textView, action, _ ->
-                    if (action == EditorInfo.IME_ACTION_SEARCH && ::onRequestSearchListener.isInitialized) {
-                        onRequestSearchListener(textView.text.toString())
-                        true
-                    } else false
-                }
+        holder.itemView.isClickable = false
+        (holder.findViewById(R.id.location_search_box) as EditText)
+            .setOnEditorActionListener { textView, action, _ ->
+                if (action == EditorInfo.IME_ACTION_SEARCH && ::onRequestSearchListener.isInitialized) {
+                    onRequestSearchListener(textView.text.toString())
+                    true
+                } else false
+            }
 
-            searchProgressBar =
-                it.findViewById(R.id.location_search_progress_indicator) as ProgressBar
-        }
+        searchProgressBar =
+            holder.findViewById(R.id.location_search_progress_indicator) as ProgressBar
     }
 
     /**

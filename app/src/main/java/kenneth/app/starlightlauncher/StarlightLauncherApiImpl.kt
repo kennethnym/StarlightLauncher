@@ -11,7 +11,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.api.util.EventChannel
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.utils.BindingRegister
@@ -39,7 +38,7 @@ internal class StarlightLauncherApiImpl @Inject constructor(
 ) : StarlightLauncherApi {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private lateinit var requestMultiplePermissionsLauncher: ActivityResultLauncher<Array<out String>>
+    private lateinit var requestMultiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
 
     private var requestPermissionResultCallback: PermissionRequestCallback? = null
 
@@ -76,7 +75,7 @@ internal class StarlightLauncherApiImpl @Inject constructor(
         callback: MultiplePermissionRequestCallback
     ) {
         requestMultiplePermissionsResultCallback = callback
-        requestMultiplePermissionsLauncher.launch(permissions)
+        requestMultiplePermissionsLauncher.launch(arrayOf(*permissions))
     }
 
     override suspend fun addLauncherEventListener(listener: LauncherEventListener) =

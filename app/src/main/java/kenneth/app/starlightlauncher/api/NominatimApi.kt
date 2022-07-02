@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class NominatimApi @Inject constructor(
     @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun searchForLocations(query: String) = withContext(mainDispatcher) {
-        val url = HttpUrl.parse("$API_URL/search")!!
+        val url = "$API_URL/search".toHttpUrlOrNull()!!
             .newBuilder()
             .addQueryParameter("q", query)
             .addQueryParameter("format", "json")
@@ -36,7 +37,7 @@ class NominatimApi @Inject constructor(
 
         return@withContext runCatching {
             withContext(ioDispatcher) {
-                httpClient.newCall(req).execute().body()?.string()
+                httpClient.newCall(req).execute().body?.string()
                     ?.let { json.decodeFromString<List<Place>>(it) }
             }
         }
@@ -44,7 +45,7 @@ class NominatimApi @Inject constructor(
 
     suspend fun reverseGeocode(latLong: LatLong) = withContext(mainDispatcher) {
         val (lat, long) = latLong
-        val url = HttpUrl.parse("$API_URL/reverse")!!
+        val url = "$API_URL/reverse".toHttpUrlOrNull()!!
             .newBuilder()
             .addQueryParameter("lat", lat.toString())
             .addQueryParameter("lon", long.toString())
@@ -55,7 +56,7 @@ class NominatimApi @Inject constructor(
 
         return@withContext runCatching {
             withContext(ioDispatcher) {
-                httpClient.newCall(req).execute().body()?.string()
+                httpClient.newCall(req).execute().body?.string()
                     ?.let { json.decodeFromString<Place>(it) }
             }
         }

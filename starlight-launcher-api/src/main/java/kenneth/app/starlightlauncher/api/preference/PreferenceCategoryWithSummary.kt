@@ -11,10 +11,10 @@ import androidx.preference.PreferenceViewHolder
  */
 class PreferenceCategoryWithSummary(context: Context, attrs: AttributeSet?) :
     PreferenceCategory(context, attrs) {
-    override fun onBindViewHolder(holder: PreferenceViewHolder?) {
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
 
-        (holder?.findViewById(android.R.id.summary) as? TextView)?.apply {
+        (holder.findViewById(android.R.id.summary) as TextView).apply {
             isSingleLine = false
             maxLines = 10
         }

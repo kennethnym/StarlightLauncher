@@ -88,20 +88,22 @@ internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
                 clear()
             }
             places.getOrNull()?.forEach { place ->
-                preferenceScreen.addPreference(
-                    Preference(context).apply {
-                        title = place.displayName
-                    }.also {
-                        addedLocationPreferences += it
-                        it.setOnPreferenceClickListener {
-                            setWeatherLocation(
-                                LatLong(place.lat, place.long),
-                                place.displayName
-                            )
-                            false
+                context?.let { context ->
+                    preferenceScreen.addPreference(
+                        Preference(context).apply {
+                            title = place.displayName
+                        }.also {
+                            addedLocationPreferences += it
+                            it.setOnPreferenceClickListener {
+                                setWeatherLocation(
+                                    LatLong(place.lat, place.long),
+                                    place.displayName
+                                )
+                                false
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
             locationSearchBox?.isLoading = false
         }

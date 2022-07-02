@@ -79,38 +79,42 @@ internal class RootSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun loadExtensionSettings() {
-        findPreference<PreferenceCategory>(getString(R.string.pref_category_search_behavior))?.let {
+        findPreference<PreferenceCategory>(getString(R.string.pref_category_search_behavior))?.let { category ->
             // get all search module settings
             extensionManager
                 .getIntentsForSettingsCategory(StarlightLauncherIntent.CATEGORY_SEARCH_MODULE_SETTINGS)
                 .forEach { extSettings ->
-                    it.addPreference(createPreferenceForExtensionSettings(extSettings))
+                    createPreferenceForExtensionSettings(extSettings)
+                        ?.let { category.addPreference(it) }
                 }
         }
 
-        findPreference<PreferenceCategory>(getString(R.string.pref_category_widgets))?.let {
+        findPreference<PreferenceCategory>(getString(R.string.pref_category_widgets))?.let { category ->
             // get all widget settings
             extensionManager
                 .getIntentsForSettingsCategory(StarlightLauncherIntent.CATEGORY_WIDGET_SETTINGS)
                 .forEach { extSettings ->
-                    it.addPreference(createPreferenceForExtensionSettings(extSettings))
+                    createPreferenceForExtensionSettings(extSettings)
+                        ?.let { category.addPreference(it) }
                 }
         }
     }
 
     private fun createPreferenceForExtensionSettings(settings: ExtensionSettings) =
-        Preference(context).apply {
-            title = settings.title
-            summary = settings.description
-            icon = settings.icon?.apply {
-                setTint(TypedValue().run {
-                    context.theme.resolveAttribute(R.attr.colorPrimary, this, true)
-                    data
-                })
-            }
-            setOnPreferenceClickListener {
-                startActivity(settings.intent)
-                HANDLED
+        context?.let {
+            Preference(it).apply {
+                title = settings.title
+                summary = settings.description
+                icon = settings.icon?.apply {
+                    setTint(TypedValue().run {
+                        context.theme.resolveAttribute(R.attr.colorPrimary, this, true)
+                        data
+                    })
+                }
+                setOnPreferenceClickListener {
+                    startActivity(settings.intent)
+                    HANDLED
+                }
             }
         }
 

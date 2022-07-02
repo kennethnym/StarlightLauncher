@@ -11,6 +11,7 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
@@ -51,7 +52,7 @@ class OpenWeatherApi @Inject constructor(
      */
     suspend fun getCurrentWeather() = withContext(mainDispatcher) {
         val (lat, long) = latLong
-        val url = HttpUrl.parse("$API_URL/weather")!!
+        val url = "$API_URL/weather".toHttpUrlOrNull()!!
             .newBuilder()
             .addQueryParameter("units", unit.code)
             .addQueryParameter("lat", lat.toString())
@@ -63,7 +64,7 @@ class OpenWeatherApi @Inject constructor(
 
         return@withContext runCatching {
             withContext(ioDispatcher) {
-                httpClient.newCall(req).execute().body()?.string()
+                httpClient.newCall(req).execute().body?.string()
                     ?.let { json.decodeFromString<Response>(it) }
             }
         }

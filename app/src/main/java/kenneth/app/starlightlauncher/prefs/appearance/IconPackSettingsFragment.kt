@@ -14,7 +14,6 @@ import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.utils.toPx
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -36,18 +35,22 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
     lateinit var ioDispatcher: CoroutineDispatcher
 
     private val noCurrentIconPackPreference by lazy {
-        Preference(context).apply {
-            isSelectable = false
-            isPersistent = false
-            title = getString(R.string.appearance_no_current_icon_pack)
+        context?.let {
+            Preference(it).apply {
+                isSelectable = false
+                isPersistent = false
+                title = getString(R.string.appearance_no_current_icon_pack)
+            }
         }
     }
 
     private val noSupportedIconPacksPreference by lazy {
-        Preference(context).apply {
-            isSelectable = false
-            isPersistent = false
-            title = getString(R.string.appearance_no_supported_icon_packs)
+        context?.let {
+            Preference(it).apply {
+                isSelectable = false
+                isPersistent = false
+                title = getString(R.string.appearance_no_supported_icon_packs)
+            }
         }
     }
 
@@ -78,12 +81,14 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
     /**
      * Creates a Preference entry for the given icon pack.
      */
-    private fun iconPackPreference(iconPack: InstalledIconPack): Preference =
-        Preference(context).apply {
-            key = iconPack.packageName
-            title = iconPack.name
-            icon = Bitmap.createScaledBitmap(iconPack.icon, 48.toPx(), 48.toPx(), false)
-                .toDrawable(resources)
+    private fun iconPackPreference(iconPack: InstalledIconPack) =
+        context?.let {
+            Preference(it).apply {
+                key = iconPack.packageName
+                title = iconPack.name
+                icon = Bitmap.createScaledBitmap(iconPack.icon, 48.toPx(), 48.toPx(), false)
+                    .toDrawable(resources)
+            }
         }
 
     private fun changeToolbarTitle() {
@@ -125,23 +130,22 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
      * Displays the currently active icon pack and installed icon packs
      */
     private fun showIconPacks() {
-        currentIconPackCategory?.let {
-            it.removeAll()
-            it.addPreference(
-                appearancePreferenceManager.iconPack
-                    .let { selectedIconPack ->
-                        if (selectedIconPack is InstalledIconPack)
-                            iconPackPreference(selectedIconPack).apply {
-                                isSelectable = false
-                                isPersistent = false
-                            }
-                        else noCurrentIconPackPreference
-                    }
-            )
+        currentIconPackCategory?.let { category ->
+            category.removeAll()
+            appearancePreferenceManager.iconPack
+                .let { selectedIconPack ->
+                    if (selectedIconPack is InstalledIconPack)
+                        iconPackPreference(selectedIconPack)?.apply {
+                            isSelectable = false
+                            isPersistent = false
+                        }
+                    else noCurrentIconPackPreference
+                }
+                ?.let { category.addPreference(it) }
         }
 
-        installedIconPacksCategory?.let {
-            it.removeAll()
+        installedIconPacksCategory?.let { category ->
+            category.removeAll()
 
             val installedIconPacks = iconPackManager.queryInstalledIconPacks()
             val selectedIconPack = appearancePreferenceManager.iconPack
@@ -152,18 +156,18 @@ internal class IconPackSettingsFragment : PreferenceFragmentCompat() {
                         iconPackEntry.key != selectedIconPack.packageName
                         || selectedIconPack is DefaultIconPack
                     ) {
-                        it.addPreference(
-                            iconPackPreference(iconPackEntry.value).also { pref ->
-                                pref.setOnPreferenceClickListener {
-                                    changeIconPack(iconPackEntry.value)
-                                    true
-                                }
+                        iconPackPreference(iconPackEntry.value)?.also { pref ->
+                            pref.setOnPreferenceClickListener {
+                                changeIconPack(iconPackEntry.value)
+                                true
                             }
-                        )
+                        }?.let { category.addPreference(it) }
                     }
                 }
             } else {
-                it.addPreference(noSupportedIconPacksPreference)
+                noSupportedIconPacksPreference?.let {
+                    category.addPreference(it)
+                }
             }
 
             return

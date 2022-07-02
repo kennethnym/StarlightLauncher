@@ -50,12 +50,10 @@ internal class DateTimeSettingsFragment : PreferenceFragmentCompat(),
         useAutoWeatherLocationPref.run {
             setOnPreferenceClickListener { pref ->
                 if (pref is SwitchPreference) {
-                    if (context?.let {
-                            ActivityCompat.checkSelfPermission(
-                                it,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
-                            )
-                        } != PackageManager.PERMISSION_GRANTED
+                    if (ActivityCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED
                     ) {
                         useAutoWeatherLocationPref.isChecked = false
                         locationPermRequest.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -77,25 +75,26 @@ internal class DateTimeSettingsFragment : PreferenceFragmentCompat(),
         caller: PreferenceFragmentCompat,
         pref: Preference,
     ): Boolean {
-        activity?.let {
-            // Instantiate the new Fragment
-            val args = pref.extras
-            val fragment = childFragmentManager.fragmentFactory.instantiate(
-                it.classLoader,
-                pref.fragment
-            ).apply {
-                arguments = args
-                setTargetFragment(caller, 0)
-            }
+        val activity = this.activity ?: return false
+
+        // Instantiate the new Fragment
+        val args = pref.extras
+        return pref.fragment?.let {
+            val fragment =
+                childFragmentManager.fragmentFactory.instantiate(activity.classLoader, it)
+                    .apply {
+                        arguments = args
+//                        setTargetFragment(caller, 0)
+                    }
 
             // Replace the existing Fragment with the new Fragment
             childFragmentManager.beginTransaction()
                 .replace(R.id.settings_content, fragment)
                 .addToBackStack(null)
                 .commit()
-        }
 
-        return true
+            true
+        } ?: false
     }
 
     override fun onResume() {

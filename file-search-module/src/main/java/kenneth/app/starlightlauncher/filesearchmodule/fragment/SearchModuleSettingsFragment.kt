@@ -65,6 +65,7 @@ class SearchModuleSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun addPathPreference(uri: Uri) {
+        val context = this.context ?: return
         pathPrefCategory.addPreference(
             Preference(context)
                 .apply {

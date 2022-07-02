@@ -26,9 +26,9 @@ internal class ReorderablePreference(context: Context, attrs: AttributeSet?) :
         layoutResource = R.layout.reorderable_preference_layout
     }
 
-    override fun onBindViewHolder(holder: PreferenceViewHolder?) {
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        (holder?.findViewById(R.id.order_list) as? ReorderableList)?.apply {
+        (holder.findViewById(R.id.order_list) as ReorderableList).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = ReorderablePreferenceListAdapter(items)
             addOnOrderChangedListener(::onOrderChanged)

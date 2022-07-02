@@ -209,13 +209,13 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
     }
 
-    override fun onTouchEvent(ev: MotionEvent?): Boolean {
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
         Log.d("starlight", "on touch event")
         return if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
     }
 
-    private fun handleWidgetPanelGesture(ev: MotionEvent?): Boolean =
+    private fun handleWidgetPanelGesture(ev: MotionEvent): Boolean =
         when (ev?.actionMasked) {
             MotionEvent.ACTION_BUTTON_PRESS -> performClick()
 
