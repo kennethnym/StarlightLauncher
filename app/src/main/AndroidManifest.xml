@@ -68,8 +68,7 @@
         <activity
             android:name="kenneth.app.starlightlauncher.MainActivity"
             android:configChanges="uiMode"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />

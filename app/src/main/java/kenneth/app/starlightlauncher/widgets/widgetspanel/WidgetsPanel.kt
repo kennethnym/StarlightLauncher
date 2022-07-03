@@ -1,16 +1,11 @@
 package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
+import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -26,7 +21,7 @@ import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.util.BindingRegister
 import kenneth.app.starlightlauncher.util.activity
-import kenneth.app.starlightlauncher.views.widgetspanel.KeyboardAnimation
+import java.lang.Integer.max
 import javax.inject.Inject
 
 /**
@@ -34,7 +29,9 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
-    NestedScrollView(context, attrs) {
+    NestedScrollView(context, attrs),
+    OnApplyWindowInsetsListener,
+    ViewTreeObserver.OnGlobalFocusChangeListener {
     /**
      * Determines whether [WidgetsPanel] can be expanded/retracted with swipes.
      */
@@ -63,9 +60,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private lateinit var velocityTracker: VelocityTracker
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    private val keyboardAnimation = KeyboardAnimation(this, appState)
-
     private var isVelocityTrackerObtained = false
 
     private var isScrolling = false
@@ -75,6 +69,10 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     private var isClick = false
 
     private var ongoingAnimation: WidgetPanelAnimation? = null
+
+    private var originalTranslationY: Float? = null
+
+    private var focusedView: View? = null
 
     private val gestureMover = GestureMover().apply {
         targetView = this@WidgetsPanel
@@ -99,9 +97,9 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            setWindowInsetsAnimationCallback(keyboardAnimation)
-        }
+        ViewCompat.setWindowInsetsAnimationCallback(this, KeyboardAnimation())
+        ViewCompat.setOnApplyWindowInsetsListener(this, this)
+        viewTreeObserver.addOnGlobalFocusChangeListener(this)
     }
 
     fun unfocusSearchBox() {
@@ -167,25 +165,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     /**
-     * Sets the currently focused view so that [WidgetsPanel]
-     * can move appropriately to avoid the onscreen keyboard from blocking the view.
-     */
-    fun avoidView(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            keyboardAnimation.avoidView(view)
-        }
-    }
-
-    /**
-     * Opposite of [avoidView]. [WidgetsPanel] will not move to avoid the keyboard.
-     */
-    fun stopAvoidingView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            keyboardAnimation.stopAvoidingView()
-        }
-    }
-
-    /**
      * Enables widget editing. Users can reorder and remove widgets.
      */
     fun editWidgets() {
@@ -209,6 +188,34 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
     }
 
+    override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+        val focusedView = this.focusedView ?: return insets
+        val y = IntArray(2).run {
+            focusedView.getLocationOnScreen(this)
+            this[1] + focusedView.height
+        }
+        val imeHeight = insets
+            .getInsets(WindowInsetsCompat.Type.ime())
+            .bottom
+        // y coordinate of the top of ime
+        val imeY = appState.screenHeight - imeHeight
+
+        Log.d("starlight", "y $y imeHeight $imeY")
+
+        if (imeHeight > 0) {
+            originalTranslationY = translationY
+            translationY -= max(0, y + 100 - imeY)
+        } else {
+            originalTranslationY?.let { translationY = it }
+        }
+
+        return insets
+    }
+
+    override fun onGlobalFocusChanged(prevFocusedView: View?, focusedView: View?) {
+        this.focusedView = focusedView
+    }
+
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         Log.d("starlight", "on touch event")
         return if (canBeSwiped) handleWidgetPanelGesture(ev)
@@ -216,7 +223,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     private fun handleWidgetPanelGesture(ev: MotionEvent): Boolean =
-        when (ev?.actionMasked) {
+        when (ev.actionMasked) {
             MotionEvent.ACTION_BUTTON_PRESS -> performClick()
 
             MotionEvent.ACTION_DOWN -> {
@@ -348,6 +355,46 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
         fun cancel() {
             anim?.cancel()
+        }
+    }
+
+    private inner class KeyboardAnimation :
+        WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_STOP) {
+        private var startTranslationY: Float? = null
+        private var endTranslationY: Float? = null
+
+        override fun onPrepare(animation: WindowInsetsAnimationCompat) {
+            startTranslationY = translationY
+            super.onPrepare(animation)
+        }
+
+        override fun onStart(
+            animation: WindowInsetsAnimationCompat,
+            bounds: WindowInsetsAnimationCompat.BoundsCompat
+        ): WindowInsetsAnimationCompat.BoundsCompat {
+            endTranslationY = translationY
+            originalTranslationY?.let { translationY = it }
+            return super.onStart(animation, bounds)
+        }
+
+        override fun onProgress(
+            insets: WindowInsetsCompat,
+            runningAnimations: MutableList<WindowInsetsAnimationCompat>
+        ): WindowInsetsCompat {
+            val startTranslationY = this.startTranslationY ?: return insets
+            val endTranslationY = this.endTranslationY ?: return insets
+
+            // Find an IME animation.
+            val imeAnimation = runningAnimations.find {
+                it.typeMask and WindowInsetsCompat.Type.ime() != 0
+            } ?: return insets
+
+            val delta = startTranslationY - endTranslationY
+
+            // Offset the view based on the interpolated fraction of the IME animation.
+            translationY = startTranslationY - (delta * imeAnimation.interpolatedFraction)
+
+            return insets
         }
     }
 }
