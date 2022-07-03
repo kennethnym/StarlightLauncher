@@ -1,6 +1,6 @@
 package kenneth.app.starlightlauncher.models
 
-import kenneth.app.starlightlauncher.utils.LocalDateTimeSerializer
+import kenneth.app.starlightlauncher.util.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.util.*

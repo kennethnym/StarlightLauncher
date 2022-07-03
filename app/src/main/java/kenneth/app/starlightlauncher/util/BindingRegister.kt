@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.utils
+package kenneth.app.starlightlauncher.util
 
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding

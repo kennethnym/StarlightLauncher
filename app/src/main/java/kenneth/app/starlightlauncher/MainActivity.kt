@@ -3,13 +3,17 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
+import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.os.UserHandle
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
@@ -29,8 +33,8 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.utils.BindingRegister
-import kenneth.app.starlightlauncher.utils.calculateDominantColor
+import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.util.calculateDominantColor
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -102,6 +106,16 @@ internal class MainActivity : AppCompatActivity() {
     private var backPressedCallbacks = mutableListOf<BackPressHandler>()
 
     private var isDarkModeActive = false
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == Intent.ACTION_MAIN) {
+            intent.getBundleExtra(EXTRA_GESTURE_NAV_CONTRACT_V1)?.let {
+                handleGestureNav(it)
+            }
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -211,8 +225,8 @@ internal class MainActivity : AppCompatActivity() {
      */
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            CoroutineScope(mainDispatcher).launch {
+        CoroutineScope(mainDispatcher).launch {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 val isWallpaperChanged = withContext(ioDispatcher) {
                     val wallpaper =
                         WallpaperManager.getInstance(this@MainActivity).fastDrawable.toBitmap()
@@ -241,5 +255,26 @@ internal class MainActivity : AppCompatActivity() {
             binding.wallpaperImage.setImageBitmap(it)
             blurHandler.changeWallpaper(it)
         }
+    }
+
+    private fun handleGestureNav(bundle: Bundle) {
+        Log.d(
+            "starlight",
+            "component name ${
+                bundle.getParcelable(
+                    Intent.EXTRA_COMPONENT_NAME,
+                    ComponentName::class.java
+                )
+            }"
+        )
+        Log.d(
+            "starlight",
+            "user handle ${
+                bundle.getParcelable(
+                    Intent.EXTRA_USER,
+                    UserHandle::class.java
+                )
+            }"
+        )
     }
 }

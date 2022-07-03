@@ -94,9 +94,9 @@ internal class PinnedAppsWidget(
     })
 
     init {
-        CoroutineScope(mainDispatcher).launch {
-            prefs.subscribe(::onPreferenceChanged)
-            launcher.addLauncherEventListener(::onLauncherEvent)
+        CoroutineScope(mainDispatcher).run {
+            launch { prefs.subscribe(::onPreferenceChanged) }
+            launch { launcher.addLauncherEventListener(::onLauncherEvent) }
         }
 
         if (prefs.hasPinnedApps) {

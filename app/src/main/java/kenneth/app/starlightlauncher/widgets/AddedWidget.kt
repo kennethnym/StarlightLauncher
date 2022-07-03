@@ -1,7 +1,7 @@
 package kenneth.app.starlightlauncher.widgets
 
 import android.content.ComponentName
-import kenneth.app.starlightlauncher.utils.ComponentNameSerializer
+import kenneth.app.starlightlauncher.util.ComponentNameSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable

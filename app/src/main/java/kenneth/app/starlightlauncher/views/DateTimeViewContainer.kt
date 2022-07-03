@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.utils.BindingRegister
+import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 import kotlin.math.max
 

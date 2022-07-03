@@ -33,9 +33,9 @@ class AppSearchResultAdapter(
     private val prefs = AppSearchModulePreferences.getInstance(context)
 
     init {
-        CoroutineScope(mainDispatcher).launch {
-            prefs.subscribe(::onPreferencesChanged)
-            launcher.addLauncherEventListener(::onLauncherEvent)
+        CoroutineScope(mainDispatcher).run {
+            launch { prefs.subscribe(::onPreferencesChanged) }
+            launch { launcher.addLauncherEventListener(::onLauncherEvent) }
         }
     }
 

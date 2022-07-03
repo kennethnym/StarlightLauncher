@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.utils
+package kenneth.app.starlightlauncher.util
 
 import android.content.ComponentName
 import kotlinx.serialization.KSerializer

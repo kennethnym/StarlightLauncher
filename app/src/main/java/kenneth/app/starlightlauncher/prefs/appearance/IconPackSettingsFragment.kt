@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.utils.toPx
+import kenneth.app.starlightlauncher.util.toPx
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

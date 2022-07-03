@@ -13,8 +13,7 @@ import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class AppearanceSettingsFragment : PreferenceFragmentCompat(),
-    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+internal class AppearanceSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
 
@@ -36,32 +35,6 @@ internal class AppearanceSettingsFragment : PreferenceFragmentCompat(),
             }
 
         changeToolbarTitle()
-    }
-
-    override fun onPreferenceStartFragment(
-        caller: PreferenceFragmentCompat,
-        pref: Preference,
-    ): Boolean {
-        val activity = this.activity ?: return false
-
-        // Instantiate the new Fragment
-        val args = pref.extras
-
-        return pref.fragment?.let {
-            val fragment =
-                childFragmentManager.fragmentFactory.instantiate(activity.classLoader, it).apply {
-                    arguments = args
-                    setTargetFragment(caller, 0)
-                }
-
-            // Replace the existing Fragment with the new Fragment
-            childFragmentManager.beginTransaction()
-                .replace(R.id.settings_content, fragment)
-                .addToBackStack(null)
-                .commit()
-
-            true
-        } ?: false
     }
 
     override fun onResume() {

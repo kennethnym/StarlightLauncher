@@ -24,8 +24,8 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.utils.BindingRegister
-import kenneth.app.starlightlauncher.utils.activity
+import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.util.activity
 import kenneth.app.starlightlauncher.views.widgetspanel.KeyboardAnimation
 import javax.inject.Inject
 

@@ -7,7 +7,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
-import kenneth.app.starlightlauncher.utils.BindingRegister
+import kenneth.app.starlightlauncher.util.BindingRegister
 import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsPage
 
 internal class LauncherOptionMenu(

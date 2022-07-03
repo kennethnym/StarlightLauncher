@@ -16,6 +16,8 @@ import dagger.hilt.android.HiltAndroidApp
 // the app should animate to and an optional surface to be used for
 // crossFade animation. The surface cleanup can be handled in
 // onEnterAnimationComplete.
+//
+// url: https://android.googlesource.com/platform/packages/apps/Launcher3/+/30ac97d9386736c3322a3277f74523497627b9f5
 
 @HiltAndroidApp
 internal class MainApplication : Application() {

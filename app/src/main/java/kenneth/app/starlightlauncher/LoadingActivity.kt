@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.setup.SetupActivity
@@ -21,12 +22,19 @@ internal class LoadingActivity : AppCompatActivity() {
             false
         )
 
+        finish()
+
         if (setupFinished) {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            })
         } else {
             startActivity(Intent(this, SetupActivity::class.java))
         }
+    }
 
-        finish()
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d("starlight", "intent received in loading activity")
     }
 }

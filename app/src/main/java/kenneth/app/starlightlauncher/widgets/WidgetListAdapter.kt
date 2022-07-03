@@ -22,8 +22,8 @@ import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kenneth.app.starlightlauncher.utils.toDp
-import kenneth.app.starlightlauncher.utils.toPx
+import kenneth.app.starlightlauncher.util.toDp
+import kenneth.app.starlightlauncher.util.toPx
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged

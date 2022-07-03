@@ -9,7 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.databinding.EditModeHeaderBinding
-import kenneth.app.starlightlauncher.utils.BindingRegister
+import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 
 @AndroidEntryPoint

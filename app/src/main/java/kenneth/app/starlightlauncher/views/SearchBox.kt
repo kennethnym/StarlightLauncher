@@ -18,7 +18,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.utils.BindingRegister
+import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 
 @AndroidEntryPoint

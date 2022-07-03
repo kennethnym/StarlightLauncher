@@ -13,7 +13,7 @@ import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.starlightlauncher.utils.BindingRegister
+import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 import javax.inject.Singleton
 

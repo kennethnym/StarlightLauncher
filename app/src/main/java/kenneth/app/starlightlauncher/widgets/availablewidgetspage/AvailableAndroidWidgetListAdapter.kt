@@ -14,7 +14,6 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.ExpandableListView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -24,8 +23,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.starlightlauncher.utils.toDp
-import kenneth.app.starlightlauncher.utils.toPx
+import kenneth.app.starlightlauncher.util.toPx
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlin.math.roundToInt
 

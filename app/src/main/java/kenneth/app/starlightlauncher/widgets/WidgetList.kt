@@ -23,14 +23,13 @@ import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.utils.BindingRegister
-import kenneth.app.starlightlauncher.utils.activity
+import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.util.activity
 import kenneth.app.starlightlauncher.views.ReorderableList
 import kenneth.app.starlightlauncher.views.WidgetListAdapter
 import kenneth.app.starlightlauncher.views.WidgetListAdapterItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named

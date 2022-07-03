@@ -48,15 +48,11 @@ class AppShortcutSearchModule(context: Context) : SearchModule(context) {
             }
         }
 
-        override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
+        override fun onPackageRemoved(packageName: String?, user: UserHandle?) {}
 
-        }
+        override fun onPackageAdded(packageName: String?, user: UserHandle?) {}
 
-        override fun onPackageAdded(packageName: String?, user: UserHandle?) {
-        }
-
-        override fun onPackageChanged(packageName: String?, user: UserHandle?) {
-        }
+        override fun onPackageChanged(packageName: String?, user: UserHandle?) {}
 
         override fun onPackagesAvailable(
             packageNames: Array<out String>?,
@@ -153,19 +149,22 @@ class AppShortcutSearchModule(context: Context) : SearchModule(context) {
             newShortcuts.filter { !currentShortcuts.containsKey(it.id) }
 
         val updatedShortcutIds = mutableListOf<String>()
+        val removedShortcutIds = mutableSetOf<String>()
 
         currentShortcuts.forEach { (currentShortcutId, currentShortcut) ->
             if (!currentShortcut.isPinned) {
                 val newShortcutInfo = newShortcuts.find { it.id == currentShortcutId }
 
                 when {
-                    newShortcutInfo == null -> currentShortcuts.remove(currentShortcutId)
+                    newShortcutInfo == null -> removedShortcutIds += currentShortcutId
 
                     newShortcutInfo.lastChangedTimestamp > currentShortcut.lastChangedTimestamp ->
                         updatedShortcutIds += currentShortcutId
                 }
             }
         }
+
+        currentShortcuts.entries.removeAll { removedShortcutIds.contains(it.key) }
 
         val shortcutQuery = LauncherApps.ShortcutQuery()
             .setPackage(packageName)
