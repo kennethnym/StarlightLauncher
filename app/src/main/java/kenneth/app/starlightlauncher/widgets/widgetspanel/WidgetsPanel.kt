@@ -11,6 +11,7 @@ import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.*
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
@@ -190,6 +191,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         val focusedView = this.focusedView ?: return insets
+        if (focusedView.id == R.id.search_box) return insets
+
         val y = IntArray(2).run {
             focusedView.getLocationOnScreen(this)
             this[1] + focusedView.height
