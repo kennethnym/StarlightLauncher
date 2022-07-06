@@ -103,8 +103,6 @@ internal class MainActivity : AppCompatActivity() {
 
     private var currentWallpaper: Bitmap? = null
 
-    private var backPressedCallbacks = mutableListOf<BackPressHandler>()
-
     private var isDarkModeActive = false
 
     override fun onNewIntent(intent: Intent?) {
@@ -115,7 +113,6 @@ internal class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     override fun onStart() {
         super.onStart()

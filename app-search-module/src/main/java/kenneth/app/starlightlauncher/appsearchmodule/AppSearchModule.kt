@@ -171,8 +171,9 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         context.unregisterReceiver(broadcastReceiver)
     }
 
-    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
-        when {
+    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult {
+        var actualKeyword = keyword
+        return when {
             keyword.startsWith('.') -> {
                 // search for apps in other user profiles
                 // e.g. ".work gmail" searches for gmail in work profile
@@ -181,13 +182,10 @@ class AppSearchModule(context: Context) : SearchModule(context) {
                     // syntax is not valid, search in app list of default user
                     allApps[defaultUserNo]
                 } else {
-                    // if keyword is ".my work profile gmail"
-                    // profileName will be "my work profile"
-                    val profileName =
-                        (listOf(split.first().substring(1)) + split.subList(
-                            1,
-                            split.lastIndex
-                        )).joinToString(" ")
+                    actualKeyword = split.subList(1, split.size).joinToString(" ")
+                    // if keyword is ".work gmail"
+                    // profileName will be "work"
+                    val profileName = split.first().substring(1)
                     userLabelsToSerialNumbers[profileName]?.let {
                         // user found, search in app list of the user profile
                         allApps[it]
@@ -213,13 +211,14 @@ class AppSearchModule(context: Context) : SearchModule(context) {
                         apps = it
                             .sortedByDescending {
                                 val appName = appLabels[it.applicationInfo.packageName]!!
-                                fuzzyScore(appName, keyword, locale)
+                                fuzzyScore(appName, actualKeyword, locale)
                             }
                             .take(20)
                     )
                 }
             }
             ?: SearchResult.None(keyword, EXTENSION_NAME)
+    }
 
     /**
      * Finds apps for all user profiles.
