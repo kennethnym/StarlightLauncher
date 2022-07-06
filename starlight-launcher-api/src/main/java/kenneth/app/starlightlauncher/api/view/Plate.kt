@@ -12,14 +12,17 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.preference.PreferenceManager
 import kenneth.app.starlightlauncher.api.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
+import kenneth.app.starlightlauncher.api.util.activity
 
 private const val DEFAULT_USE_ROUNDED_CORNERS = true
 
 open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+    SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {
     private lateinit var blurHandler: BlurHandler
     private val blurAmount: Int
 
@@ -39,6 +42,13 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     @ColorInt
     private val plateColor: Int
+
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onResume(owner: LifecycleOwner) {
+            super.onResume(owner)
+            toggleBlurEffect()
+        }
+    }
 
     init {
         context.obtainStyledAttributes(
@@ -86,6 +96,8 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
                 recycle()
             }
         }
+
+        activity?.lifecycle?.addObserver(lifecycleObserver)
     }
 
     override fun onAttachedToWindow() {

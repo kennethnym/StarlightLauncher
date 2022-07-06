@@ -27,7 +27,7 @@ import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.starlightlauncher.prefs.datetime.DateTimePreferenceManager
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

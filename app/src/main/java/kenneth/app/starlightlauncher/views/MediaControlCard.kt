@@ -27,7 +27,7 @@ import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Named

@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +17,9 @@ import javax.inject.Inject
 internal class AppearanceSettingsFragment : PreferenceFragmentCompat() {
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     private val storagePermissinoRequestLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -34,12 +38,29 @@ internal class AppearanceSettingsFragment : PreferenceFragmentCompat() {
                 else true
             }
 
+        updateBlurEffectPreference()
         changeToolbarTitle()
     }
 
     override fun onResume() {
         super.onResume()
+        updateBlurEffectPreference()
         changeToolbarTitle()
+    }
+
+    /**
+     * Checks if the launcher has the permission to access the wallpaper,
+     * if not, turn off blur effect automatically
+     */
+    private fun updateBlurEffectPreference() {
+        val hasPermission =
+            context?.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        if (!hasPermission && appearancePreferenceManager.isBlurEffectEnabled) {
+            blurEffectPreference?.isChecked = false
+            appearancePreferenceManager.setBlurEffectEnabled(enabled = false)
+        } else if (hasPermission) {
+            blurEffectPreference?.isChecked = appearancePreferenceManager.isBlurEffectEnabled
+        }
     }
 
     private fun onPermissionRequestResult(isGranted: Boolean) {
@@ -48,6 +69,11 @@ internal class AppearanceSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    /**
+     * Checks if the launcher has read storage permission, if not, launch the permission prompt.
+     *
+     * @return Whether the launcher has read storage permission.
+     */
     private fun checkStoragePermission(): Boolean {
         val context = this.context ?: return false
         if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

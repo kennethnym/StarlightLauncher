@@ -21,7 +21,7 @@ import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.util.BindingRegister
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 import java.lang.Integer.max
 import javax.inject.Inject
 

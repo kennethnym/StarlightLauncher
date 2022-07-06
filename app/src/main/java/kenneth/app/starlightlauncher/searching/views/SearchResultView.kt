@@ -21,7 +21,7 @@ import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.util.BindingRegister
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

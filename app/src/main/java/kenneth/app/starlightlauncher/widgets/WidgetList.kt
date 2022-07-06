@@ -24,7 +24,7 @@ import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.util.BindingRegister
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.views.ReorderableList
 import kenneth.app.starlightlauncher.views.WidgetListAdapter
 import kenneth.app.starlightlauncher.views.WidgetListAdapterItem

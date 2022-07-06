@@ -7,7 +7,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsPageBinding
-import kenneth.app.starlightlauncher.util.activity
+import kenneth.app.starlightlauncher.api.util.activity
 
 internal class AvailableWidgetsPage(context: Context) : ConstraintLayout(context) {
     private val binding =
