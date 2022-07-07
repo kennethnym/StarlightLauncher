@@ -83,6 +83,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private val onBackPressedCallback: OnBackPressedCallback
 
+    private val keyboardAnimation = KeyboardAnimation()
+
     init {
         translationY = appState.halfScreenHeight.toFloat()
 
@@ -98,7 +100,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             }
         }
 
-        ViewCompat.setWindowInsetsAnimationCallback(this, KeyboardAnimation())
+        ViewCompat.setWindowInsetsAnimationCallback(this, keyboardAnimation)
         ViewCompat.setOnApplyWindowInsetsListener(this, this)
         viewTreeObserver.addOnGlobalFocusChangeListener(this)
     }
@@ -191,7 +193,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         val focusedView = this.focusedView ?: return insets
-        if (focusedView.id == R.id.search_box) return insets
+        if (focusedView.id == R.id.search_box_edit_text) return insets
 
         val y = IntArray(2).run {
             focusedView.getLocationOnScreen(this)
@@ -202,8 +204,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             .bottom
         // y coordinate of the top of ime
         val imeY = appState.screenHeight - imeHeight
-
-        Log.d("starlight", "y $y imeHeight $imeY")
 
         if (imeHeight > 0) {
             originalTranslationY = translationY
@@ -217,6 +217,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     override fun onGlobalFocusChanged(prevFocusedView: View?, focusedView: View?) {
         this.focusedView = focusedView
+        keyboardAnimation.shouldAnimate =
+            focusedView != null && focusedView.id != R.id.search_box_edit_text
     }
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
@@ -363,20 +365,26 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private inner class KeyboardAnimation :
         WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_STOP) {
+        var shouldAnimate = true
+
         private var startTranslationY: Float? = null
         private var endTranslationY: Float? = null
 
         override fun onPrepare(animation: WindowInsetsAnimationCompat) {
-            startTranslationY = translationY
-            super.onPrepare(animation)
+            if (shouldAnimate) {
+                startTranslationY = translationY
+                super.onPrepare(animation)
+            }
         }
 
         override fun onStart(
             animation: WindowInsetsAnimationCompat,
             bounds: WindowInsetsAnimationCompat.BoundsCompat
         ): WindowInsetsAnimationCompat.BoundsCompat {
-            endTranslationY = translationY
-            originalTranslationY?.let { translationY = it }
+            if (shouldAnimate) {
+                endTranslationY = translationY
+                originalTranslationY?.let { translationY = it }
+            }
             return super.onStart(animation, bounds)
         }
 
@@ -384,6 +392,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             insets: WindowInsetsCompat,
             runningAnimations: MutableList<WindowInsetsAnimationCompat>
         ): WindowInsetsCompat {
+            if (!shouldAnimate) return insets
             val startTranslationY = this.startTranslationY ?: return insets
             val endTranslationY = this.endTranslationY ?: return insets
 
