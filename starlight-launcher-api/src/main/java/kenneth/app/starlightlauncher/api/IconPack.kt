@@ -1,11 +1,8 @@
 package kenneth.app.starlightlauncher.api
 
-import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherActivityInfo
-import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Process
 import android.os.UserHandle

@@ -11,6 +11,8 @@ import android.os.UserHandle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
@@ -274,6 +276,9 @@ internal class AppGridAdapter(
                 sourceIconView.getGlobalVisibleRect(this)
                 this
             }
+
+            context.getSystemService<InputMethodManager>()
+                ?.hideSoftInputFromWindow(sourceIconView.windowToken, 0)
 
             launcherApps.startMainActivity(
                 selectedApp.componentName,
