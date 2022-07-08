@@ -1,7 +1,5 @@
-workflows:
-  build-beta:
-    name: Beta build
-    max_build_duration: 60
+definitions:
+  build_env: &build_env
     instance_type: mac_mini
     environment:
       groups:
@@ -40,7 +38,13 @@ workflows:
     artifacts:
       - app/build/outputs/**/**/*.aab
       - app/build/outputs/**/**/*.apk
+
+workflows:
+  build_internal:
+    name: Internal build
+    max_build_duration: 60
+    <<: *build_env
     publishing:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: beta
+        track: internal
