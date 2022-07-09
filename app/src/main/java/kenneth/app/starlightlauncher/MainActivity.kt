@@ -3,10 +3,7 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
-import android.content.ComponentName
-import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -14,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
@@ -26,6 +24,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
@@ -41,12 +40,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
-
-/**
- * Called when back button is pressed.
- * If handler returns true, subsequent handlers will not be called.
- */
-typealias BackPressHandler = () -> Boolean
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -66,7 +59,7 @@ internal object MainActivityModule {
  * The home screen of the launcher.
  */
 @AndroidEntryPoint
-internal class MainActivity : AppCompatActivity() {
+internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener {
     @Inject
     lateinit var searcher: Searcher
 
@@ -89,6 +82,9 @@ internal class MainActivity : AppCompatActivity() {
     lateinit var launcherApi: StarlightLauncherApi
 
     @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    @Inject
     @Named(MAIN_DISPATCHER)
     lateinit var mainDispatcher: CoroutineDispatcher
 
@@ -98,6 +94,9 @@ internal class MainActivity : AppCompatActivity() {
 
     @Inject
     internal lateinit var appWidgetHost: AppWidgetHost
+
+    @Inject
+    lateinit var tutorialOverlay: TutorialOverlay
 
     private lateinit var binding: ActivityMainBinding
 
@@ -160,6 +159,19 @@ internal class MainActivity : AppCompatActivity() {
         attachListeners()
     }
 
+    override fun onGlobalLayout() {
+        val isTutorialFinished = sharedPreferences.getBoolean(
+            getString(R.string.pref_key_tutorial_finished),
+            false,
+        )
+        // only show spotlight after layout is complete
+        // because spotlight relies on the global position of views
+        // in order to position itself correctly to point to views
+        if (!isTutorialFinished) showSpotlight()
+
+        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+    }
+
     override fun onResume() {
         super.onResume()
         checkWallpaper()
@@ -186,7 +198,16 @@ internal class MainActivity : AppCompatActivity() {
 
                 insets
             }
+
+            viewTreeObserver.addOnGlobalLayoutListener(this@MainActivity)
         }
+    }
+
+    /**
+     * Shows a tutorial overlay for the user to guide them through how to use the launcher.
+     */
+    private fun showSpotlight() {
+        tutorialOverlay.start()
     }
 
     /**

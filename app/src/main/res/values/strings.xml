@@ -33,6 +33,20 @@
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
+    <!-- Tutorial -->
+    <string name="spotlight_overlay_description_go_next">Tap anywhere here to continue…</string>
+    <string name="spotlight_overlay_description_title_widgets_panel">Widgets Panel</string>
+    <string name="spotlight_overlay_description_body_widgets_panel">
+        To access all your widgets, swipe up from anywhere below the search box.
+        You can also interact with the visible widgets directly.
+        To put the panel back, just swipe back down.
+    </string>
+    <string name="spotlight_overlay_description_title_launcher_menu">Launcher menu</string>
+    <string name="spotlight_overlay_description_body_launcher_menu">
+        To access the launcher menu, long press anywhere above the search box.
+        Swipe down from anywhere to close the menu.
+    </string>
+
     <!-- Common actions -->
     <string name="action_ok">OK</string>
     <string name="action_edit">Edit</string>

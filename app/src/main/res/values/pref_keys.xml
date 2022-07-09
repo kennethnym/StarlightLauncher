@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pref_key_setup_finished">setup_finished</string>
+    <string name="pref_key_tutorial_finished">tutorial_finished</string>
 
     <string name="pref_key_media_control_enabled">media_control_enabled</string>
     <string name="pref_key_note_widget_enabled">note_widget_enabled</string>

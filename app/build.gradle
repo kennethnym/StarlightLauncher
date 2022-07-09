@@ -83,6 +83,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.9.3"
     implementation "com.beust:klaxon:5.0.1"
     implementation "com.github.bumptech.glide:glide:4.11.0"
+    implementation 'com.github.takusemba:spotlight:2.0.5'
     implementation "dev.chrisbanes.insetter:insetter:0.6.0"
     testImplementation "junit:junit:4.13.2"
     annotationProcessor "com.github.bumptech.glide:compiler:4.11.0"

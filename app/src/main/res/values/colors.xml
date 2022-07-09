@@ -7,4 +7,6 @@
     <color name="nightColorPrimary">#B794F6</color>
     <color name="nightColorPrimaryDark">#0400ba</color>
     <color name="nightColorAccent">#03DAC6</color>
+
+    <color name="spotlightOverlayBackgroundColor">#80000000</color>
 </resources>

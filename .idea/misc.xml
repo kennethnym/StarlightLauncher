@@ -98,6 +98,9 @@
         <entry key="app/src/main/res/layout/search_result_layout.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/settings_activity.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/setup_permission_item.xml" value="0.30932971014492755" />
+        <entry key="app/src/main/res/layout/spotlight_overlay_launcher_menu.xml" value="0.2504528985507246" />
+        <entry key="app/src/main/res/layout/spotlight_overlay_launcher_settings.xml" value="0.2504528985507246" />
+        <entry key="app/src/main/res/layout/spotlight_overlay_widgets_panel.xml" value="0.1" />
         <entry key="app/src/main/res/layout/unit_converter_widget.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/web_result_card.xml" value="0.17685185185185184" />
         <entry key="app/src/main/res/layout/web_result_related_topic_item.xml" value="0.196875" />
