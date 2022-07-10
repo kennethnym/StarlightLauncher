@@ -12,6 +12,9 @@ import kenneth.app.starlightlauncher.databinding.EditModeHeaderBinding
 import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 
+/**
+ * Header that is shown when widget edit mode is active.
+ */
 @AndroidEntryPoint
 internal class EditModeHeader(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
     @Inject

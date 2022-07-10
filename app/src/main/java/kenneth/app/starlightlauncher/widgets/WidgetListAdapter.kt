@@ -44,6 +44,9 @@ internal interface WidgetListAdapterEntryPoint {
     fun widgetPreferenceManager(): WidgetPreferenceManager
 }
 
+/**
+ * Adapter for [WidgetList]
+ */
 internal class WidgetListAdapter(
     private val context: Context,
     val widgets: List<AddedWidget>,
