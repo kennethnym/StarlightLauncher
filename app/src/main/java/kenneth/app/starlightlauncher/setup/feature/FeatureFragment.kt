@@ -60,7 +60,6 @@ internal class FeatureFragment : Fragment() {
 
                 root.setOnClickListener { _ ->
                     enableFeatureCheckbox.isChecked = !enableFeatureCheckbox.isChecked
-                    toggleWidget(it, enableFeatureCheckbox.isChecked)
                 }
                 enableFeatureCheckbox.setOnCheckedChangeListener { _, isChecked ->
                     toggleWidget(it, isChecked)
