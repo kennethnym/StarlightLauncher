@@ -138,7 +138,7 @@ internal class WidgetPreferenceManager @Inject constructor(
      */
     fun changeWidgetHeight(addedWidget: AddedWidget, newHeight: Int) {
         if (addedWidget is AddedWidget.AndroidWidget) {
-            val widgetPos = _addedWidgets.indexOf(addedWidget)
+            val widgetPos = _addedWidgets.indexOfFirst { it.id == addedWidget.id }
             _addedWidgets[widgetPos] = addedWidget.copy(height = newHeight)
             saveAddedWidgets()
         }

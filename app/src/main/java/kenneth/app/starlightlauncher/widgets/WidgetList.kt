@@ -100,18 +100,12 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
      */
     private var widgetViewHolderInEditMode: WidgetListAdapterItem? = null
 
-    private var scrollListener = object : OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-            Log.d("starlight", "scrolled $dx $dy")
-        }
-    }
-
     init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT,
         )
+        isNestedScrollingEnabled = true
         clipToPadding = false
         updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between))
 
@@ -148,8 +142,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
 
         addOnOrderChangedListener(::onWidgetOrderChanged)
         addOnSelectionChangedListener(::onWidgetLongPressed)
-        addOnScrollListener(scrollListener)
-
         setOnApplyWindowInsetsListener { _, insets ->
             updatePadding(
                 bottom =

@@ -28,6 +28,7 @@ import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetList
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kenneth.app.starlightlauncher.widgets.LauncherAppWidgetHostView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -152,6 +153,9 @@ internal class WidgetListAdapter(
         )
             .run {
                 setAppWidget(appWidgetId, appWidgetInfo)
+                if (this is LauncherAppWidgetHostView) {
+                    scrollingParent = widgetList
+                }
 
                 holder.binding.widgetFrameContainer.layoutParams =
                     holder.binding.widgetFrameContainer.layoutParams.apply {

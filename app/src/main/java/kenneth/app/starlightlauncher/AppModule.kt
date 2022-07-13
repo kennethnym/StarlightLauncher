@@ -109,11 +109,6 @@ internal object AppModule {
 
     @Provides
     @Singleton
-    fun provideAppWidgetHost(@ApplicationContext context: Context) =
-        AppWidgetHost(context.applicationContext, R.id.app_widget_host_id)
-
-    @Provides
-    @Singleton
     fun provideSecureRandom() = SecureRandom()
 }
 

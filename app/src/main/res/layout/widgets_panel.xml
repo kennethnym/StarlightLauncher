@@ -40,11 +40,16 @@
 
             </FrameLayout>
 
-            <kenneth.app.starlightlauncher.widgets.WidgetList
-                android:id="@+id/widget_list"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false" />
+                android:layout_height="wrap_content">
+
+                <kenneth.app.starlightlauncher.widgets.WidgetList
+                    android:id="@+id/widget_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false" />
+            </androidx.core.widget.NestedScrollView>
 
             <kenneth.app.starlightlauncher.searching.views.SearchResultView
                 android:id="@+id/search_result_view"
