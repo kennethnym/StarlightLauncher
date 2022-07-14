@@ -59,7 +59,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var launcher: StarlightLauncherApi
 
-    private lateinit var velocityTracker: VelocityTracker
+    private var velocityTracker: VelocityTracker? = null
 
     private var isVelocityTrackerObtained = false
 
@@ -222,7 +222,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
-        Log.d("starlight", "on touch event")
         return if (canBeSwiped) handleWidgetPanelGesture(ev)
         else super.onTouchEvent(ev)
     }
@@ -251,7 +250,10 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
     private fun handleDragGesture(ev: MotionEvent) {
+        val velocityTracker = this.velocityTracker
         when {
+            velocityTracker == null -> super.onTouchEvent(ev)
+
             isDraggingPanel || !isExpanded ||
                     !isScrolling && ev.rawY - gestureMover.initialY >= 0 && scrollY == 0 -> {
                 Log.d("starlight", "start drag")
@@ -274,6 +276,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     private fun handleGestureEnd(ev: MotionEvent): Boolean {
+        val velocityTracker = this.velocityTracker ?: return super.onTouchEvent(ev)
+
         if (isScrolling) {
             Log.d("starlight", "reset after scrolling")
             gestureMover.reset()
@@ -291,7 +295,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         gestureMover.addMotionUpEvent(ev)
 
         val gestureDistance = gestureMover.gestureDelta
-        Log.d("starlight", "gesture distance $gestureDistance, isExpanded $isExpanded")
 
         when {
             gestureDistance < -GESTURE_ACTION_THRESHOLD -> {
@@ -321,7 +324,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     private fun obtainVelocityTracker(): VelocityTracker {
-        velocityTracker = VelocityTracker.obtain()
+        val velocityTracker = VelocityTracker.obtain()
+        this.velocityTracker = velocityTracker
         isVelocityTrackerObtained = true
         return velocityTracker
     }
@@ -333,7 +337,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         private var anim: SpringAnimation? = null
 
         fun start() {
-            if (this@WidgetsPanel.translationY != finalPosition) {
+            val velocityTracker = this@WidgetsPanel.velocityTracker
+            if (this@WidgetsPanel.translationY != finalPosition && velocityTracker != null) {
                 SpringAnimation(
                     this@WidgetsPanel,
                     DynamicAnimation.TRANSLATION_Y,

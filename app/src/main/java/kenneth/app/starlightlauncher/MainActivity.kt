@@ -93,7 +93,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject
-    internal lateinit var appWidgetHost: AppWidgetHost
+    lateinit var appWidgetHost: AppWidgetHost
 
     @Inject
     lateinit var tutorialOverlay: TutorialOverlay
