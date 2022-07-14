@@ -56,6 +56,7 @@ internal class AppGridAdapter(
     private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
     private val launcherApps =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+    private val inputMethodManager = context.getSystemService<InputMethodManager>()
 
     private lateinit var selectedApp: LauncherActivityInfo
     private var recyclerView: RecyclerView? = null
@@ -266,6 +267,9 @@ internal class AppGridAdapter(
     }
 
     private fun showAppOptionMenu(): Boolean {
+        recyclerView?.let {
+            inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
+        }
         launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
         return true
     }
