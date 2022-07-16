@@ -97,7 +97,7 @@ internal class SearchPreferenceManager @Inject constructor(
             ?.split(CATEGORY_ORDER_LIST_SEPARATOR)
 
         if (savedOrder == null) {
-            _categoryOrder += extensions.map { it.name }
+            _categoryOrder += extensionManager.installedSearchModules.map { it.metadata.extensionName }
         } else {
             _categoryOrder = savedOrder.toMutableList().also {
                 it.retainAll { ext -> extensionManager.isExtensionInstalled(ext) }
@@ -117,7 +117,7 @@ internal class SearchPreferenceManager @Inject constructor(
     private fun getEnabledSearchModules(extensions: Collection<Extension>) {
         val saved = sharedPreferences.getStringSet(keys.enabledSearchModules, null)
         if (saved == null) {
-            enabledSearchModules.addAll(extensions.map { it.name })
+            enabledSearchModules.addAll(extensionManager.installedSearchModules.map { it.metadata.extensionName })
         } else {
             enabledSearchModules += saved
             enabledSearchModules.retainAll { extensionManager.isExtensionInstalled(it) }

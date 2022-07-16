@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
@@ -51,10 +52,6 @@ internal class ExtensionManager @Inject constructor(
             searchModule = AppSearchModule(context),
             widget = PinnedAppsWidgetCreator(context),
         ),
-        "kenneth.app.starlightlauncher.appshortcutsearchmodule" to Extension(
-            name = "kenneth.app.starlightlauncher.appshortcutsearchmodule",
-            searchModule = AppShortcutSearchModule(context),
-        ),
         "kenneth.app.starlightlauncher.contactsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.contactsearchmodule",
             searchModule = ContactSearchModule(context),
@@ -83,7 +80,16 @@ internal class ExtensionManager @Inject constructor(
             name = "kenneth.app.starlightlauncher.unitconverterwidget",
             widget = UnitConverterWidgetCreator(context),
         ),
-    )
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            put(
+                "kenneth.app.starlightlauncher.appshortcutsearchmodule", Extension(
+                    name = "kenneth.app.starlightlauncher.appshortcutsearchmodule",
+                    searchModule = AppShortcutSearchModule(context),
+                )
+            )
+        }
+    }
 
     private val widgets = mutableMapOf<String, WidgetCreator>()
 
@@ -190,6 +196,10 @@ internal class ExtensionManager @Inject constructor(
 
     fun getIntentsForSettingsCategory(category: String) =
         extensionSettingsIntents[category]?.values?.toList() ?: listOf()
+
+    fun cleanUpExtensions() {
+        extensions.forEach { (_, ext) -> ext.searchModule?.cleanup() }
+    }
 
     private fun queryExtensions() {
         context.packageManager.queryIntentActivities(

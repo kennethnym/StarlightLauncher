@@ -177,12 +177,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         checkWallpaper()
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
         cleanup()
-        super.onStop()
+        super.onDestroy()
     }
 
     private fun cleanup() {
+        extensionManager.cleanUpExtensions()
         appWidgetHost.stopListening()
     }
 

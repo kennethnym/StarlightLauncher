@@ -309,6 +309,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         Log.d("starlight", "reset")
+        velocityTracker.recycle()
+        this.velocityTracker = null
         gestureMover.reset()
 
         return HANDLED
@@ -337,7 +339,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         private var anim: SpringAnimation? = null
 
         fun start() {
-            val velocityTracker = this@WidgetsPanel.velocityTracker
+            val velocityTracker = VelocityTracker.obtain()
             if (this@WidgetsPanel.translationY != finalPosition && velocityTracker != null) {
                 SpringAnimation(
                     this@WidgetsPanel,

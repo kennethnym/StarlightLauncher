@@ -18,11 +18,14 @@
 
     <application
         android:name="kenneth.app.starlightlauncher.MainApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:clearTaskOnLaunch="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/starlight_launcher_name"
+        android:launchMode="singleTask"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:stateNotNeeded="true"
         android:supportsRtl="true"
         android:theme="@style/LightLauncherTheme"
         tools:replace="android:name,android:allowBackup">
@@ -68,7 +71,10 @@
         <activity
             android:name="kenneth.app.starlightlauncher.MainActivity"
             android:configChanges="uiMode"
-            android:exported="true">
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
