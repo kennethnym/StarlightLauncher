@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.appsearchmodule
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.graphics.Rect

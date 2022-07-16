@@ -11,10 +11,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class LauncherAppWidgetHostProvider {
+    @Singleton
     @Binds
     abstract fun bindAppWidgetHost(impl: LauncherAppWidgetHost): AppWidgetHost
 }

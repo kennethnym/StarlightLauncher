@@ -303,9 +303,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
 
     private fun addAndroidWidget(widget: AddedWidget.AndroidWidget) {
         widgetListAdapter.addAndroidWidget(widget)
-        if (!BindingRegister.activityMainBinding.widgetsPanel.isExpanded) {
-            BindingRegister.activityMainBinding.widgetsPanel.expand()
-        }
     }
 
     private fun requestBindWidgetPermission(
