@@ -43,6 +43,8 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
 
     private val binding = SearchBoxBinding.inflate(LayoutInflater.from(context), this, true)
 
+    private var isOpeningKeyboard = false
+
     private val searchBoxAnimationInterpolator by lazy {
         PathInterpolator(0.16f, 1f, 0.3f, 1f)
     }
@@ -64,9 +66,24 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
         }
 
         with(binding) {
+            searchBoxEditText.setOnClickListener {
+                if (hasFocus()) {
+                    isOpeningKeyboard = true
+                    clearFocus()
+                }
+                requestFocus()
+                inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
+                isOpeningKeyboard = false
+            }
+
             searchBoxContainer.setOnClickListener {
+                if (binding.searchBoxEditText.hasFocus()) {
+                    isOpeningKeyboard = true
+                    binding.searchBoxEditText.clearFocus()
+                }
                 binding.searchBoxEditText.requestFocus()
                 inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
+                isOpeningKeyboard = false
             }
 
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
@@ -141,20 +158,22 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
     }
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
-        with(BindingRegister.activityMainBinding.widgetsPanel) {
-            canBeSwiped = when {
-                hasFocus -> {
-                    expand()
-                    false
+        if (!isOpeningKeyboard) {
+            with(BindingRegister.activityMainBinding.widgetsPanel) {
+                canBeSwiped = when {
+                    hasFocus -> {
+                        expand()
+                        false
+                    }
+                    !hasQueryText -> {
+                        retract()
+                        true
+                    }
+                    else -> false
                 }
-                !hasQueryText -> {
-                    retract()
-                    true
-                }
-                else -> false
-            }
 
-            toggleSearchBoxAnimation(isActive = isExpanded)
+                toggleSearchBoxAnimation(isActive = isExpanded)
+            }
         }
     }
 

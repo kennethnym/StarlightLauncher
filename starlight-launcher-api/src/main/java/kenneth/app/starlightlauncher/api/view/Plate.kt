@@ -23,7 +23,7 @@ private const val DEFAULT_USE_ROUNDED_CORNERS = true
 
 open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
     SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {
-    private lateinit var blurHandler: BlurHandler
+    private var blurHandler: BlurHandler? = null
     private val blurAmount: Int
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -158,10 +158,8 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     private fun frameCallback(ms: Long) {
         if (shouldBlur) {
-            if (::blurHandler.isInitialized) {
-                blurHandler.blurView(blurBackground, blurAmount)
-            }
-            startBlur()
+            blurHandler?.blurView(blurBackground, blurAmount)
+            Choreographer.getInstance().postFrameCallbackDelayed(::frameCallback, 1000 / 120)
         }
     }
 }
