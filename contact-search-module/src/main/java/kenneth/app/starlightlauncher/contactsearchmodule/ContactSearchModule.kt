@@ -60,7 +60,6 @@ class ContactSearchModule(context: Context) : SearchModule(context) {
                         continue
 
                     val contactId = cursor.getString(idCol)
-                    Log.d("starlight", "contact id $contactId")
 
                     contacts += Contact(
                         uri = Uri.withAppendedPath(

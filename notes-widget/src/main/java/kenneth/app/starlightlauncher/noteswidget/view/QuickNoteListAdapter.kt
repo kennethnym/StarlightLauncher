@@ -80,8 +80,6 @@ internal class QuickNoteListAdapter(
     }
 
     private fun deleteNote(note: Note) {
-        Log.d("Starlight", "deleting note")
-        Log.d("Starlight", "has pending operations? $hasPendingOperations")
         if (!hasPendingOperations) {
             hasPendingOperations = true
             prefs.deleteNote(note)

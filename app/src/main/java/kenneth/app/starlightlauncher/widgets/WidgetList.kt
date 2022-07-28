@@ -179,7 +179,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
         return if (scrollY == 0 && !widgetsPanel.isEditModeEnabled)
             when (e?.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
-                    Log.d("starlight", "action down ${e.y}")
                     initialY = e.y
                     isClick = true
                     HANDLED
@@ -188,7 +187,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                 MotionEvent.ACTION_MOVE ->
                     when {
                         initialY == null -> {
-                            Log.d("starlight", "initial y null")
                             initialY = e.y
                             isClick = true
                             HANDLED
@@ -196,7 +194,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
 
                         abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
                                 ((widgetsPanel.isExpanded && e.y - initialY!! > 0) || !widgetsPanel.isExpanded) -> {
-                            Log.d("starlight", "delegate")
                             isClick = false
                             BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
                         }
@@ -204,7 +201,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                         !widgetsPanel.isExpanded -> false
 
                         else -> {
-                            Log.d("starlight", "super")
                             super.onTouchEvent(e)
                         }
                     }
@@ -212,7 +208,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                 MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> {
                     if (isClick) {
-                        Log.d("starlight", "is click")
                         super.onTouchEvent(e)
                     } else {
                         initialY = null
@@ -221,7 +216,6 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                 }
 
                 MotionEvent.ACTION_BUTTON_PRESS -> {
-                    Log.d("starlight", "button press")
                     performClick()
                 }
 

@@ -256,7 +256,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
             isDraggingPanel || !isExpanded ||
                     !isScrolling && ev.rawY - gestureMover.initialY >= 0 && scrollY == 0 -> {
-                Log.d("starlight", "start drag")
                 // scroll view is at the top and user wants to swipe down
                 // i.e. retract widget panel
                 // therefore we let user move the widget panel
@@ -266,7 +265,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             }
 
             else -> {
-                Log.d("starlight", "start scroll")
                 isDraggingPanel = false
                 isScrolling = true
                 // let user scroll the content
@@ -279,7 +277,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         val velocityTracker = this.velocityTracker ?: return super.onTouchEvent(ev)
 
         if (isScrolling) {
-            Log.d("starlight", "reset after scrolling")
             gestureMover.reset()
             isScrolling = false
             return super.onTouchEvent(ev)
@@ -308,7 +305,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             !isExpanded -> retract()
         }
 
-        Log.d("starlight", "reset")
         velocityTracker.recycle()
         this.velocityTracker = null
         gestureMover.reset()

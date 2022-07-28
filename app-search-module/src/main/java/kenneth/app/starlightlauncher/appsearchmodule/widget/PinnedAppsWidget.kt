@@ -176,13 +176,11 @@ internal class PinnedAppsWidget(
                 appGridAdapter?.hideAppLabels()
             }
 
-            Log.d("starlight", "start blur")
             pinnedAppsWidget.blurWith(launcher.blurHandler)
         }
     }
 
     private fun hideWidget() {
-        Log.d("starlight", "hide widget")
         rootView.isVisible = false
         appGridAdapter = null
     }

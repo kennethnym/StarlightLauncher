@@ -57,11 +57,8 @@ private constructor(context: Context) : EventChannel<NoteListModified>() {
     }
 
     internal fun deleteNote(note: Note) {
-        Log.d("Starlight", "Deleting note, id ${note.id}")
-        Log.d("Starlight", "Current notes ${noteList.size}")
         val index = noteList.indexOf(note)
         noteList.removeAt(index)
-        Log.d("Starlight", "Index $index")
         saveNoteList()
         notifyNoteRemoved(note)
     }

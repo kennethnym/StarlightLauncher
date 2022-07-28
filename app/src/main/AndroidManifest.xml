@@ -74,7 +74,8 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="nosensor">
+            android:screenOrientation="nosensor"
+            android:windowSoftInputMode="stateVisible">
 
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />

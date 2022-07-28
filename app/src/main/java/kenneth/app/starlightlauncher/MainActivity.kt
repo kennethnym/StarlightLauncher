@@ -277,23 +277,6 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     private fun handleGestureNav(bundle: Bundle) {
-        Log.d(
-            "starlight",
-            "component name ${
-                bundle.getParcelable(
-                    Intent.EXTRA_COMPONENT_NAME,
-                    ComponentName::class.java
-                )
-            }"
-        )
-        Log.d(
-            "starlight",
-            "user handle ${
-                bundle.getParcelable(
-                    Intent.EXTRA_USER,
-                    UserHandle::class.java
-                )
-            }"
-        )
+
     }
 }

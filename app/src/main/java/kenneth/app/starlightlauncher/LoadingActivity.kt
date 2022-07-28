@@ -37,9 +37,4 @@ internal class LoadingActivity : AppCompatActivity() {
             startActivity(Intent(this, SetupActivity::class.java))
         }
     }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        Log.d("starlight", "intent received in loading activity")
-    }
 }

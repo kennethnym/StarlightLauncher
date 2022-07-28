@@ -1,12 +1,15 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
+import android.content.pm.ResolveInfo
 import android.graphics.Rect
-import android.os.Process
 import android.os.UserHandle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -283,11 +286,12 @@ internal class AppGridAdapter(
             context.getSystemService<InputMethodManager>()
                 ?.hideSoftInputFromWindow(sourceIconView.windowToken, 0)
 
-            launcherApps.startMainActivity(
-                selectedApp.componentName,
-                Process.myUserHandle(),
-                sourceBounds,
-                null
+            context.startActivity(
+                Intent(Intent.ACTION_MAIN).apply {
+                    component = selectedApp.componentName
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                            Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                }
             )
         }
     }

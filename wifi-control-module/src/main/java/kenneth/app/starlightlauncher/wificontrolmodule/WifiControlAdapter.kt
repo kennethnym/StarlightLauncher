@@ -63,8 +63,6 @@ class WifiControlAdapter(
             val hasNetworkStatePerm =
                 context.applicationContext.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED
 
-            Log.d("starlight", "has fine location $hasFineLocationPerm")
-
             val transportInfo =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     networkCapabilities.transportInfo

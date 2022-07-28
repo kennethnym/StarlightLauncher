@@ -7,6 +7,5 @@ import androidx.databinding.BindingAdapter
 
 @BindingAdapter("textStyle")
 fun setTextStyle(v: TextView, style: Int) {
-    Log.d("starlight", "set text style $style")
     v.typeface = Typeface.create(v.typeface, style)
 }
