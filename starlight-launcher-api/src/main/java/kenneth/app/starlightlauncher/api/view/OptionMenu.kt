@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.*
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -16,6 +17,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import kenneth.app.starlightlauncher.api.R
 import kenneth.app.starlightlauncher.api.util.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.api.util.GestureMover
+import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.api.util.dp
 
 /**
@@ -73,6 +75,12 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         }
     }
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            hide()
+        }
+    }
+
     init {
         setPadding(24.dp)
         orientation = VERTICAL
@@ -99,32 +107,30 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return when (event?.actionMasked) {
-            null -> false
+    override fun onTouchEvent(event: MotionEvent?): Boolean = when (event?.actionMasked) {
+        null -> false
 
-            MotionEvent.ACTION_DOWN -> {
-                gestureMover.recordInitialEvent(event)
-                true
-            }
-
-            MotionEvent.ACTION_MOVE -> {
-                gestureMover.addMotionMoveEvent(event)
-                true
-            }
-
-            MotionEvent.ACTION_UP -> {
-                gestureMover.addMotionUpEvent(event)
-
-                if (gestureMover.gestureDelta > GESTURE_ACTION_THRESHOLD) {
-                    hide()
-                }
-
-                true
-            }
-
-            else -> false
+        MotionEvent.ACTION_DOWN -> {
+            gestureMover.recordInitialEvent(event)
+            true
         }
+
+        MotionEvent.ACTION_MOVE -> {
+            gestureMover.addMotionMoveEvent(event)
+            true
+        }
+
+        MotionEvent.ACTION_UP -> {
+            gestureMover.addMotionUpEvent(event)
+
+            if (gestureMover.gestureDelta > GESTURE_ACTION_THRESHOLD) {
+                hide()
+            }
+
+            true
+        }
+
+        else -> false
     }
 
     /**
@@ -186,6 +192,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         isVisible = true
         gestureMover.minY = 0f
         showAnimation.start()
+        activity?.onBackPressedDispatcher?.addCallback(onBackPressedCallback)
     }
 
     /**
@@ -193,6 +200,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
      * Call super last when cleanup is required before hiding the menu.
      */
     fun hide() {
+        onBackPressedCallback.remove()
         with(hideAnimation) {
             addEndListener { _, _, _, _ ->
                 this@OptionMenu.apply {
