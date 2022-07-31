@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_label_min_size">8sp</dimen>
+    <dimen name="app_label_max_size">12sp</dimen>
+</resources>
