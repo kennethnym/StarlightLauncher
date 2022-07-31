@@ -48,6 +48,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.android:renderscript-intrinsics-replacement-toolkit:b6363490c3bb64ddf2ec2308ad62eadb68c50ae3'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'org.apache.commons:commons-text:1.9'
 }
 repositories {

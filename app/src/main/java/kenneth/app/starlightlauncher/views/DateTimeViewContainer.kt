@@ -70,6 +70,6 @@ internal class DateTimeViewContainer(context: Context, attrs: AttributeSet) :
     }
 
     private fun startAnimation() {
-        choreographer.postFrameCallbackDelayed(::scaleSelf, ANIMATION_FRAME_DELAY)
+        choreographer.postFrameCallbackDelayed({ scaleSelf(0) }, ANIMATION_FRAME_DELAY)
     }
 }

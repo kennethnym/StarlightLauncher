@@ -19,6 +19,7 @@ import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
 import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
@@ -145,7 +146,10 @@ internal class AppGridAdapter(
             appIcon.apply {
                 contentDescription =
                     context.getString(R.string.app_icon_content_description, appName)
-                setImageDrawable(launcher.getIconPack().getIconOf(app, app.user))
+
+                Glide.with(context)
+                    .load(launcher.getIconPack().getIconOf(app, app.user))
+                    .into(this)
             }
 
             if (shouldShowAppNames) {

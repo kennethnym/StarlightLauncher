@@ -4,11 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.google.android.renderscript.Toolkit
+import java.lang.ref.WeakReference
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -21,7 +25,7 @@ private const val BLUR_SCALE = 0.2f
 /**
  * Handles blurring of wallpapers and views.
  */
-class BlurHandler(private val context: Context) {
+class BlurHandler(context: Context) {
     private val resources = context.resources
 
     /**
@@ -42,7 +46,7 @@ class BlurHandler(private val context: Context) {
      */
     private var shouldBlurWallpaper = true
 
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val imageViewCoors = mutableMapOf<ImageView, IntArray>()
 
     /**
      * Changes the wallpaper to be used for blur effect.
@@ -50,6 +54,7 @@ class BlurHandler(private val context: Context) {
     fun changeWallpaper(wallpaper: Bitmap) {
         this.wallpaper = wallpaper
         shouldBlurWallpaper = true
+        imageViewCoors.clear()
     }
 
     /**
@@ -68,10 +73,23 @@ class BlurHandler(private val context: Context) {
 
             // get window insets
             val insets = getInsets(dest)
-            val (viewX, viewY) = IntArray(2).run {
+            val currentCoors = IntArray(2).run {
                 dest.getLocationOnScreen(this)
                 this
             }
+
+            if (!imageViewCoors.contains(dest)) {
+                imageViewCoors[dest] = currentCoors
+            } else {
+                imageViewCoors[dest]?.let { coor ->
+                    if (coor contentEquals currentCoors) {
+                        return
+                    }
+                    imageViewCoors[dest] = currentCoors
+                }
+            }
+
+            val (viewX, viewY) = currentCoors
             // y coor of the bottom of the dest view
             val viewBottomY = viewY + dest.height
 
@@ -108,12 +126,14 @@ class BlurHandler(private val context: Context) {
             val bgHeight = it.height * destVisibleHeight / screenHeight
 
             if (bgWidth > 0 && bgHeight > 0 && bitmapX + bgWidth <= it.width && bitmapY + bgHeight <= it.height) {
-                val bitmap = Bitmap.createBitmap(
-                    it,
-                    bitmapX,
-                    bitmapY,
-                    bgWidth,
-                    bgHeight,
+                val bitmap = WeakReference(
+                    Bitmap.createBitmap(
+                        it,
+                        bitmapX,
+                        bitmapY,
+                        bgWidth,
+                        bgHeight,
+                    )
                 )
                 val bgAspectRatio = bgWidth.toFloat() / bgHeight
                 val destWidthFloat = dest.width.toFloat()
@@ -127,7 +147,11 @@ class BlurHandler(private val context: Context) {
                     )
                 }
 
-                dest.setImageBitmap(bitmap)
+                dest.drawable.let { drawable ->
+                    if (drawable is BitmapDrawable) drawable.bitmap.recycle()
+                }
+
+                dest.setImageBitmap(bitmap.get())
             }
         }
     }
