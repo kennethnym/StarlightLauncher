@@ -26,10 +26,12 @@ internal class DefaultIconPack(context: Context) : IconPack {
     private val loadedIcons = mutableMapOf<String, Drawable>()
 
     override fun getIconOf(launcherActivityInfo: LauncherActivityInfo, user: UserHandle) =
-        loadedIcons.getOrPut(launcherActivityInfo.applicationInfo.packageName) {
-            val icon = launcherActivityInfo.getIcon(0)
-            packageManager.getUserBadgedIcon(icon, user)
-        }
+        packageManager.getUserBadgedIcon(
+            loadedIcons.getOrPut(launcherActivityInfo.applicationInfo.packageName) {
+                launcherActivityInfo.getIcon(0)
+            },
+            user
+        )
 
     override fun getIconOf(applicationInfo: ApplicationInfo, user: UserHandle): Drawable =
         loadedIcons.getOrPut(applicationInfo.packageName) {

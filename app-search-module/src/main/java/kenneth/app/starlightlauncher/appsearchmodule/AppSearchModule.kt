@@ -40,38 +40,27 @@ class AppSearchModule(context: Context) : SearchModule(context) {
     private var defaultUserNo: Long = -1
 
     /**
-     * Stores all apps installed on the device,
-     * indexed by the serial number of the user profile the apps are installed under.
+     * Stores all apps installed on the device.
      */
-    private val allApps = mutableMapOf<Long, MutableList<LauncherActivityInfo>>()
+    private val allApps = mutableListOf<LauncherActivityInfo>()
 
     /**
      * Maps app package names to their corresponding labels.
      */
     private val appLabels = mutableMapOf<String, String>()
 
-    /**
-     * Maps user labels to their corresponding serial number.
-     */
-    private val userLabelsToSerialNumbers = mutableMapOf<String, Long>()
-
     private val launcherAppsCallback = object : LauncherApps.Callback() {
         override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
-
-            val userNo = userManager.getSerialNumberForUser(user)
-
-            allApps[userNo]?.removeAll { it.applicationInfo.packageName == packageName }
+            allApps.removeAll { it.applicationInfo.packageName == packageName && it.user == user }
             appLabels.remove(packageName)
         }
 
         override fun onPackageAdded(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
 
-            val userNo = userManager.getSerialNumberForUser(user)
-
             val activities = launcherApps.getActivityList(packageName, user)
-            allApps[userNo]?.addAll(activities)
+            allApps.addAll(activities)
             activities.forEach {
                 appLabels[it.applicationInfo.packageName] = it.label.toString()
             }
@@ -80,11 +69,10 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         override fun onPackageChanged(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
 
-            val userNo = userManager.getSerialNumberForUser(user)
             val activities = launcherApps.getActivityList(packageName, user)
-            allApps[userNo]?.let { apps ->
-                apps.removeAll { it.componentName.packageName == packageName }
-                apps.addAll(activities)
+            allApps.apply {
+                removeAll { it.applicationInfo.packageName == packageName && it.user == user }
+                addAll(activities)
             }
             appLabels.remove(packageName)
             activities.forEach {
@@ -99,13 +87,11 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         ) {
             if (packageNames == null || user == null) return
 
-            val userNo = userManager.getSerialNumberForUser(user)
-
             packageNames.forEach { packageName ->
                 val activities = launcherApps.getActivityList(packageName, user)
-                allApps[userNo]?.let { apps ->
-                    apps.removeAll { it.applicationInfo.packageName == packageName }
-                    apps.addAll(activities)
+                allApps.apply {
+                    removeAll { it.applicationInfo.packageName == packageName && it.user == user }
+                    addAll(activities)
                 }
                 activities.forEach {
                     appLabels[it.applicationInfo.packageName] = it.label.toString()
@@ -120,9 +106,7 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         ) {
             if (packageNames == null || user == null) return
 
-            val userNo = userManager.getSerialNumberForUser(user)
-
-            allApps[userNo]?.removeAll { packageNames.contains(it.componentName.packageName) }
+            allApps.removeAll { it.user == user && packageNames.contains(it.applicationInfo.packageName) }
             packageNames.forEach { appLabels.remove(it) }
         }
     }
@@ -141,10 +125,13 @@ class AppSearchModule(context: Context) : SearchModule(context) {
                     user?.let { loadAppsForUser(it) }
                 }
                 Intent.ACTION_MANAGED_PROFILE_REMOVED -> {
-                    allApps.clear()
-                    userLabelsToSerialNumbers.clear()
-                    appLabels.clear()
-                    loadApps()
+                    val removedUser =
+                        if (Build.VERSION.SDK_INT >= 33)
+                            intent.getParcelableExtra(Intent.EXTRA_USER, UserHandle::class.java)
+                        else
+                            UserHandle(intent.getParcelableExtra(Intent.EXTRA_USER))
+
+                    allApps.removeAll { it.user == removedUser }
                 }
             }
         }
@@ -171,54 +158,29 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         context.unregisterReceiver(broadcastReceiver)
     }
 
-    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult {
-        var actualKeyword = keyword
-        return when {
-            keyword.startsWith('.') -> {
-                // search for apps in other user profiles
-                // e.g. ".work gmail" searches for gmail in work profile
-                val split = keyword.split(' ')
-                if (split.isEmpty() || split.size == 1) {
-                    // syntax is not valid, search in app list of default user
-                    allApps[defaultUserNo]
-                } else {
-                    actualKeyword = split.subList(1, split.size).joinToString(" ")
-                    // if keyword is ".work gmail"
-                    // profileName will be "work"
-                    val profileName = split.first().substring(1)
-                    userLabelsToSerialNumbers[profileName]?.let {
-                        // user found, search in app list of the user profile
-                        allApps[it]
-                    }
-                        ?: allApps[defaultUserNo] // user not found, search in app list of default user
-                }
-            }
-            else -> allApps[defaultUserNo]
-        }
-            ?.filter { app -> appLabels[app.applicationInfo.packageName]?.contains(keywordRegex) == true }
-            ?.let {
-                if (it.isEmpty())
-                    SearchResult.None(keyword, EXTENSION_NAME)
-                else {
-                    val locale =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            Resources.getSystem().configuration.locales.get(0)
-                        else
-                            Resources.getSystem().configuration.locale
+    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult = allApps
+        .filter { app -> appLabels[app.applicationInfo.packageName]?.contains(keywordRegex) == true }
+        .let {
+            if (it.isEmpty())
+                SearchResult.None(keyword, EXTENSION_NAME)
+            else {
+                val locale =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        Resources.getSystem().configuration.locales.get(0)
+                    else
+                        Resources.getSystem().configuration.locale
 
-                    Result(
-                        query = keyword,
-                        apps = it
-                            .sortedByDescending {
-                                val appName = appLabels[it.applicationInfo.packageName]!!
-                                fuzzyScore(appName, actualKeyword, locale)
-                            }
-                            .take(20)
-                    )
-                }
+                Result(
+                    query = keyword,
+                    apps = it
+                        .sortedByDescending {
+                            val appName = appLabels[it.applicationInfo.packageName]!!
+                            fuzzyScore(appName, keyword, locale)
+                        }
+                        .take(20)
+                )
             }
-            ?: SearchResult.None(keyword, EXTENSION_NAME)
-    }
+        }
 
     /**
      * Finds apps for all user profiles.
@@ -232,20 +194,12 @@ class AppSearchModule(context: Context) : SearchModule(context) {
      * Finds apps installed under [user].
      */
     private fun loadAppsForUser(user: UserHandle) {
-        val userNo = userManager.getSerialNumberForUser(user)
-        val userLabel =
-            launcherContext.packageManager.getUserBadgedLabel("", user).toString()
-                .trim()
-                .lowercase()
-        val userApps = mutableListOf<LauncherActivityInfo>()
         launcherApps.getActivityList(null, user)
             .forEach {
                 val packageName = it.applicationInfo.packageName
-                userApps.add(it)
+                allApps += it
                 appLabels[packageName] = it.label.toString()
             }
-        userLabelsToSerialNumbers[userLabel] = userNo
-        allApps[userNo] = userApps
     }
 
     class Result(query: String, val apps: AppList) : SearchResult(query, EXTENSION_NAME)
