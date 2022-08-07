@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.api.preference
 
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
 import android.view.WindowInsets
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +48,7 @@ abstract class SettingsActivity : AppCompatActivity(),
 
         toolbar = findViewById(R.id.settings_toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -83,6 +85,14 @@ abstract class SettingsActivity : AppCompatActivity(),
 
             true
         } ?: false
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        if (supportFragmentManager.backStackEntryCount > 0)
+            supportFragmentManager.popBackStack()
+        else
+            finish()
+        return true;
     }
 
     abstract fun createPreferenceFragment(): PreferenceFragmentCompat
