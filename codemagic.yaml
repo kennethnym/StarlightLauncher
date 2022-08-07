@@ -48,3 +48,12 @@ workflows:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
+
+  build_beta:
+    name: Beta build
+    max_build_duration: 60
+    <<: *build_env
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: beta
