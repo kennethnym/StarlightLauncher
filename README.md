@@ -14,7 +14,10 @@ This is still a work in progress.
 
 ## Screenshots
 
-<img src="./images/main-screen.png" alt="Screenshot of Starlight Launcher" height="360" />
+<img src="./images/screenshots/screenshot-1.png" alt="Home screen of Starlight Launcher" height="360" />
+<img src="./images/screenshots/screenshot-2.png" alt="Search result screen with 'c' as search query" height="360" />
+<img src="./images/screenshots/screenshot-3.png" alt="Search result screen showing result of a math expression" height="360" />
+<img src="./images/screenshots/screenshot-5.png" alt="Notes page" width="360" />
 
 ## License
 
