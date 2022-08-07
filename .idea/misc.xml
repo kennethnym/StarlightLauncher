@@ -57,6 +57,7 @@
         <entry key="app/src/main/res/drawable/status_bar_shade.xml" value="0.2435" />
         <entry key="app/src/main/res/drawable/widget_resize_frame.xml" value="0.296" />
         <entry key="app/src/main/res/drawable/widget_resize_handle.xml" value="0.2825" />
+        <entry key="app/src/main/res/font-v16/manrope.xml" value="0.36354166666666665" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/activity_setup.xml" value="0.30932971014492755" />
         <entry key="app/src/main/res/layout/all_notes.xml" value="0.21965579710144928" />
