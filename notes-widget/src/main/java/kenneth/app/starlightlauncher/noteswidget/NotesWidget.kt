@@ -41,10 +41,12 @@ internal class NotesWidget(
     }
 
     private fun addNote() {
-        binding.addNotesEditText.text.run {
-            if (this.isNotBlank()) {
-                val newNote = Note(content = toString())
+        binding.addNotesEditText.run {
+            if (text.isNotBlank()) {
+                val newNote = Note(content = text.toString())
                 prefs.addNote(newNote)
+                // clear text field after a note is added
+                text.clear()
             }
         }
     }
