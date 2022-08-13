@@ -68,6 +68,7 @@
     <string name="date_time_weather_separator">·</string>
     <string name="date_time_temperature_format">%1$.1f %2$s</string>
     <string name="weather_image_description">Icon of the current weather</string>
+    <string name="weather_updated_message">Weather updated</string>
 
     <!-- Widgets panel -->
     <string name="widgets_panel_edit_mode_header">Long press a widget to edit it.</string>
