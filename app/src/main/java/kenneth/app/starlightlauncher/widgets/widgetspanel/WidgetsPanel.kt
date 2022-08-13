@@ -94,8 +94,12 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (isExpanded && !isEditModeEnabled && !binding.searchBox.hasQueryText) {
-                    retract()
+                if (isExpanded && !isEditModeEnabled) {
+                    if (binding.searchBox.hasQueryText) {
+                        binding.searchBox.clear()
+                    } else {
+                        retract()
+                    }
                 }
             }
         }

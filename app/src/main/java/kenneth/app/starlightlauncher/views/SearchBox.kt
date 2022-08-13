@@ -106,6 +106,13 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
         binding.searchBoxEditText.clearFocus()
     }
 
+    /**
+     * Clears the content of the search box.
+     */
+    fun clear() {
+        binding.searchBoxEditText.text.clear()
+    }
+
     fun showTopPadding() {
         createPaddingAnimation(showTopPadding = true).start()
     }
@@ -143,7 +150,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
     private fun onRightSideButtonClicked() {
         when {
             hasQueryText -> {
-                binding.searchBoxEditText.text.clear()
+                clear()
                 showRetractWidgetPanelButton()
             }
             BindingRegister.activityMainBinding.widgetsPanel.isExpanded -> {
