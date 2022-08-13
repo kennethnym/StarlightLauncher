@@ -13,6 +13,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
@@ -28,6 +29,7 @@ import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.starlightlauncher.prefs.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.api.util.activity
+import kenneth.app.starlightlauncher.api.view.IconButton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -118,6 +120,11 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
         }
         activity?.lifecycle?.addObserver(this)
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        binding.refreshWeatherBtn.setOnClickListener {
+            (it as IconButton).disabled = true
+            showWeather()
+        }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -263,6 +270,18 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
                 binding.apply {
                     isWeatherShown = true
                     weatherIcon.contentDescription = weather.weather[0].description
+                    if (refreshWeatherBtn.disabled) {
+                        // this loadWeather call is triggered
+                        // by the refresh btn
+                        // re-enable the button and tell user weather is updated
+                        refreshWeatherBtn.disabled = false
+                        Toast.makeText(
+                            context,
+                            R.string.weather_updated_message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
                 }
             } ?: kotlin.run {
                 binding.isWeatherShown = false

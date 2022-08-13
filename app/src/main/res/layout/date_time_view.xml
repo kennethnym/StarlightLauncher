@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -62,6 +63,19 @@
                 android:contentDescription="@string/weather_image_description"
                 android:elevation="4dp"
                 android:visibility="@{isWeatherShown ? View.VISIBLE : View.GONE}" />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                android:visibility="@{isWeatherShown ? View.VISIBLE : View.GONE}" />
+
+            <kenneth.app.starlightlauncher.api.view.IconButton
+                android:id="@+id/refresh_weather_btn"
+                android:layout_width="@dimen/weather_refresh_button_size"
+                android:layout_height="@dimen/weather_refresh_button_size"
+                android:src="@drawable/ic_redo"
+                android:visibility="@{isWeatherShown ? View.VISIBLE : View.GONE}"
+                app:tint="?android:attr/textColor" />
 
         </LinearLayout>
 

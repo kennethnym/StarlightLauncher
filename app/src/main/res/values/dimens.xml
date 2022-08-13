@@ -53,4 +53,6 @@
     <dimen name="available_widgets_list_app_icon_size">40dp</dimen>
     <dimen name="available_widgets_list_app_icon_padding_end">16dp</dimen>
     <dimen name="available_widgets_list_preview_padding_bottom">16dp</dimen>
+
+    <dimen name="weather_refresh_button_size">16dp</dimen>
 </resources>
