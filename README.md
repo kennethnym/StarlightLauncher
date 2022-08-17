@@ -6,6 +6,8 @@
   <a href="https://www.gnu.org/licenses/gpl-3.0">
     <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
   </a>
+</div>
+<div align="center">
   <img src="./images/screenshots/screenshot-1.png" alt="Home screen of Starlight Launcher" height="360" />
 </div>
 
