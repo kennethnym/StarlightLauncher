@@ -3,7 +3,9 @@
 </p>
 <h1 align="center" style="margin-top: 0px;">Starlight Launcher</h1>
 <div align="center">
-  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+  <a href="https://www.gnu.org/licenses/gpl-3.0">
+    <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
+  </a>
   <img src="./images/screenshots/screenshot-1.png" alt="Home screen of Starlight Launcher" height="360" />
 </div>
 
