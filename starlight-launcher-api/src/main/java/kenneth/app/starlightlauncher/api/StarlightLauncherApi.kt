@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.api
 
 import android.content.Context
+import android.content.pm.LauncherActivityInfo
 import android.view.LayoutInflater
 import android.view.View
 import kenneth.app.starlightlauncher.api.util.BlurHandler
@@ -31,6 +32,10 @@ interface StarlightLauncherApi {
      * The [BlurHandler] that is handling the blur effects of this launcher.
      */
     val blurHandler: BlurHandler
+
+    val installedApps: List<LauncherActivityInfo>
+
+    fun appLabelOf(packageName: String): String?
 
     /**
      * Shows the option menu with the content added by [builder].

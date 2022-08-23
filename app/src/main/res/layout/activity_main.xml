@@ -9,6 +9,13 @@
     android:focusableInTouchMode="true"
     tools:context="kenneth.app.starlightlauncher.MainActivity">
 
+    <View
+        android:id="@+id/status_bar_shade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/status_bar_shade"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/wallpaper_image"
         android:layout_width="match_parent"
@@ -18,68 +25,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/status_bar_shade"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/status_bar_shade"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/home_screen_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <kenneth.app.starlightlauncher.views.DateTimeViewContainer
-            android:id="@+id/date_time_view_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <kenneth.app.starlightlauncher.views.DateTimeView
-                android:id="@+id/date_time_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <kenneth.app.starlightlauncher.views.MediaControlCard
-                android:id="@+id/media_control_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/widget_list_padding"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="32dp"
-                android:visibility="invisible" />
-
-        </kenneth.app.starlightlauncher.views.DateTimeViewContainer>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
-        android:id="@+id/widgets_panel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <kenneth.app.starlightlauncher.widgets.widgetspanel.Overlay
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <kenneth.app.starlightlauncher.api.view.OptionMenu
-        android:id="@+id/option_menu"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

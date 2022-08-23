@@ -59,6 +59,10 @@ internal class Overlay(context: Context, attrs: AttributeSet) : Plate(context, a
         }
     }
 
+    init {
+        backgroundAlpha = 220
+    }
+
     /**
      * Shows this [Overlay] by animating from [view]
      */

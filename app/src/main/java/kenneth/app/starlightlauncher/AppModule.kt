@@ -1,13 +1,14 @@
 package kenneth.app.starlightlauncher
 
-import android.appwidget.AppWidgetHost
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.LauncherApps
 import android.location.LocationManager
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
+import android.os.UserManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
 import androidx.preference.PreferenceManager
@@ -17,9 +18,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.api.util.EventChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
@@ -106,6 +105,16 @@ internal object AppModule {
     @Provides
     @Singleton
     fun provideBlurHandler(@ApplicationContext context: Context) = BlurHandler(context)
+
+    @Provides
+    @Singleton
+    fun provideLauncherApps(@ApplicationContext context: Context) =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+
+    @Provides
+    @Singleton
+    fun provideUserManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.USER_SERVICE) as UserManager
 
     @Provides
     @Singleton

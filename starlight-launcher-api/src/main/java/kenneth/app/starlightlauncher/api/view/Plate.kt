@@ -10,8 +10,11 @@ import android.view.Choreographer
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.annotation.IntRange
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.alpha
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.preference.PreferenceManager
@@ -23,6 +26,16 @@ private const val DEFAULT_USE_ROUNDED_CORNERS = true
 
 open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
     SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {
+    @IntRange(from = 0x00, to = 0xFF)
+    var backgroundAlpha: Int = 0
+        set(alpha) {
+            field = alpha
+            if (!shouldBlur) {
+                plateColor = ColorUtils.setAlphaComponent(plateColor, alpha)
+                blurBackground.setBackgroundColor(plateColor)
+            }
+        }
+
     private var blurHandler: BlurHandler? = null
     private val blurAmount: Int
 
@@ -41,7 +54,7 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
     private var shouldBlur: Boolean
 
     @ColorInt
-    private val plateColor: Int
+    private var plateColor: Int
 
     private val lifecycleObserver = object : DefaultLifecycleObserver {
         override fun onResume(owner: LifecycleOwner) {
@@ -78,6 +91,8 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
                     // set a simple transparent color because the launcher cannot provide blur effect
                     blurBackground.setBackgroundColor(plateColor)
                 }
+
+                backgroundAlpha = plateColor.alpha
 
                 @SuppressLint("ResourceType")
                 blurAmount = getInt(1, 20)

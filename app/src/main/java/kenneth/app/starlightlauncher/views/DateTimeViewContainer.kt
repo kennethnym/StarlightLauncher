@@ -10,7 +10,7 @@ import kenneth.app.starlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import javax.inject.Inject
 import kotlin.math.max
 
@@ -29,11 +29,14 @@ internal class DateTimeViewContainer(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var launcher: StarlightLauncherApi
 
+    @Inject
+    lateinit var bindingRegister: BindingRegister
+
     private val choreographer = Choreographer.getInstance()
 
     init {
         setOnLongClickListener {
-            launcher.showOptionMenu { LauncherOptionMenu(context, launcher, it) }
+            launcher.showOptionMenu { LauncherOptionMenu(context, launcher, bindingRegister, it) }
             HANDLED
         }
     }
@@ -56,7 +59,7 @@ internal class DateTimeViewContainer(context: Context, attrs: AttributeSet) :
      * Scales itself based on where the widget panel is.
      */
     private fun scaleSelf(delay: Long) {
-        val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
+        val widgetsPanel = bindingRegister.mainScreenBinding.widgetsPanel
 
         val dateTimeViewScale = max(
             0f,

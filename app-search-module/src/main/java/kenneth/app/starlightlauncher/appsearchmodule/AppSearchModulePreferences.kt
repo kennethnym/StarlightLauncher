@@ -47,7 +47,6 @@ private constructor(private val context: Context) :
     EventChannel<AppSearchModulePreferenceChanged>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
-        @SuppressLint("StaticFieldLeak")
         private var instance: AppSearchModulePreferences? = null
 
         fun getInstance(context: Context) =

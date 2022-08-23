@@ -8,7 +8,6 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -16,14 +15,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.views.ReorderableList
 import kenneth.app.starlightlauncher.views.WidgetListAdapter
@@ -63,6 +61,9 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
     @Inject
     @Named(MAIN_DISPATCHER)
     lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject
+    lateinit var bindingRegister: BindingRegister
 
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
@@ -173,7 +174,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
     }
 
     override fun onTouchEvent(e: MotionEvent?): Boolean {
-        val widgetsPanel = BindingRegister.activityMainBinding.widgetsPanel
+        val widgetsPanel = bindingRegister.mainScreenBinding.widgetsPanel
         val scrollY = widgetsPanel.scrollY
 
         return if (scrollY == 0 && !widgetsPanel.isEditModeEnabled)
@@ -195,7 +196,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                         abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
                                 ((widgetsPanel.isExpanded && e.y - initialY!! > 0) || !widgetsPanel.isExpanded) -> {
                             isClick = false
-                            BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
+                            bindingRegister.mainScreenBinding.widgetsPanel.onTouchEvent(e)
                         }
 
                         !widgetsPanel.isExpanded -> false
@@ -211,7 +212,7 @@ internal class WidgetList(context: Context, attrs: AttributeSet) : ReorderableLi
                         super.onTouchEvent(e)
                     } else {
                         initialY = null
-                        BindingRegister.activityMainBinding.widgetsPanel.onTouchEvent(e)
+                        bindingRegister.mainScreenBinding.widgetsPanel.onTouchEvent(e)
                     }
                 }
 

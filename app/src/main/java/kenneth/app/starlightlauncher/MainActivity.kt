@@ -3,14 +3,14 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
-import android.content.*
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.UserHandle
-import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -18,24 +18,25 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.prefs.PREF_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
 import kenneth.app.starlightlauncher.util.calculateDominantColor
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -82,9 +83,6 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     lateinit var launcherApi: StarlightLauncherApi
 
     @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
-    @Inject
     @Named(MAIN_DISPATCHER)
     lateinit var mainDispatcher: CoroutineDispatcher
 
@@ -97,6 +95,9 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     @Inject
     lateinit var tutorialOverlay: TutorialOverlay
+
+    @Inject
+    lateinit var bindingRegister: BindingRegister
 
     private lateinit var binding: ActivityMainBinding
 
@@ -141,10 +142,11 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater).also {
-            BindingRegister.apply {
-                activityMainBinding = it
-            }
+            bindingRegister.activityMainBinding = it
         }
+
+        binding.homeScreenViewPager.adapter = HomeScreenViewPagerAdapter(this, bindingRegister)
+
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 resources.configuration.isNightModeActive
@@ -160,16 +162,15 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     override fun onGlobalLayout() {
-        val isTutorialFinished = sharedPreferences.getBoolean(
-            getString(R.string.pref_key_tutorial_finished),
-            false,
-        )
-        // only show spotlight after layout is complete
-        // because spotlight relies on the global position of views
-        // in order to position itself correctly to point to views
-        if (!isTutorialFinished) showSpotlight()
+        lifecycleScope.launch {
+            val isTutorialFinished = dataStore.data.first()[PREF_TUTORIAL_FINISHED] ?: false
+            // only show spotlight after layout is complete
+            // because spotlight relies on the global position of views
+            // in order to position itself correctly to point to views
+            if (!isTutorialFinished) showSpotlight()
 
-        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this@MainActivity)
+        }
     }
 
     override fun onResume() {

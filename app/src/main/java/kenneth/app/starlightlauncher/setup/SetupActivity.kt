@@ -2,21 +2,20 @@ package kenneth.app.starlightlauncher.setup
 
 import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import androidx.core.view.WindowCompat
-import androidx.preference.PreferenceManager
+import androidx.datastore.preferences.core.edit
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.IO_DISPATCHER
-import kenneth.app.starlightlauncher.MAIN_DISPATCHER
-import kenneth.app.starlightlauncher.MainActivity
-import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.*
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
-import kotlinx.coroutines.*
+import kenneth.app.starlightlauncher.prefs.PREF_BLUR_EFFECT_ENABLED
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -31,8 +30,6 @@ internal class SetupActivity : AppCompatActivity() {
     lateinit var ioDispatcher: CoroutineDispatcher
 
     private lateinit var binding: ActivitySetupBinding
-
-    private lateinit var sharedPreferences: SharedPreferences
 
     private val onPageChangedListener = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -52,7 +49,6 @@ internal class SetupActivity : AppCompatActivity() {
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         binding = ActivitySetupBinding.inflate(layoutInflater)
             .apply {
                 setupPager.isUserInputEnabled = false
@@ -91,18 +87,11 @@ internal class SetupActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun runFinalSetup() = withContext(mainDispatcher) {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@SetupActivity)
-
-        sharedPreferences.edit(commit = true) {
-            putBoolean(
-                getString(R.string.pref_key_appearance_blur_effect_enabled),
+    private suspend fun runFinalSetup() {
+        dataStore.edit {
+            it[PREF_BLUR_EFFECT_ENABLED] =
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-            )
-        }
-
-        sharedPreferences.edit(commit = true) {
-            putBoolean(getString(R.string.pref_key_setup_finished), true)
+            it[PREF_SETUP_FINISHED] = true
         }
     }
 }

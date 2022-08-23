@@ -20,7 +20,7 @@ import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.views.OrderedInsertionLinearLayout
 import kotlinx.coroutines.CoroutineDispatcher
@@ -50,6 +50,9 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
     @Inject
     @Named(MAIN_DISPATCHER)
     lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject
+    lateinit var bindingRegister: BindingRegister
 
     override val allContainers: MutableList<Container?> =
         extensionManager.installedSearchModules
@@ -108,7 +111,7 @@ internal class SearchResultView(context: Context, attrs: AttributeSet) :
             val order = searchPreferenceManager.orderOf(result.extensionName)
             allContainers[order]?.isVisible = false
         } else {
-            BindingRegister.activityMainBinding.widgetsPanel.showSearchResults()
+            bindingRegister.mainScreenBinding.widgetsPanel.showSearchResults()
             extensionManager.lookupSearchModule(result.extensionName)?.let { searchModule ->
                 val order = searchPreferenceManager.orderOf(searchModule.metadata.extensionName)
 

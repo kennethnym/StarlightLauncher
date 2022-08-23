@@ -5,9 +5,14 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.setup.PREF_SETUP_FINISHED
 import kenneth.app.starlightlauncher.setup.SetupActivity
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -22,19 +27,18 @@ internal class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val setupFinished = sharedPreferences.getBoolean(
-            getString(R.string.pref_key_setup_finished),
-            false
-        )
+        lifecycleScope.launch {
+            val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
 
-        finish()
+            finish()
 
-        if (setupFinished) {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            })
-        } else {
-            startActivity(Intent(this, SetupActivity::class.java))
+            if (setupFinished) {
+                startActivity(Intent(this@LoadingActivity, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                })
+            } else {
+                startActivity(Intent(this@LoadingActivity, SetupActivity::class.java))
+            }
         }
     }
 }

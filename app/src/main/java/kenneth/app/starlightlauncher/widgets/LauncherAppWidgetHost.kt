@@ -9,25 +9,27 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class LauncherAppWidgetHostProvider {
+internal abstract class LauncherAppWidgetHostProvider {
     @Singleton
     @Binds
     abstract fun bindAppWidgetHost(impl: LauncherAppWidgetHost): AppWidgetHost
 }
 
-class LauncherAppWidgetHost @Inject constructor(
+internal class LauncherAppWidgetHost @Inject constructor(
     @ApplicationContext context: Context,
+    private val bindingRegister: BindingRegister,
 ) :
     AppWidgetHost(context, R.id.app_widget_host_id) {
     override fun onCreateView(
         context: Context,
         appWidgetId: Int,
         appWidget: AppWidgetProviderInfo?
-    ): AppWidgetHostView = LauncherAppWidgetHostView(context)
+    ): AppWidgetHostView = LauncherAppWidgetHostView(context, bindingRegister)
 }

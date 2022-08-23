@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher
 
 import android.content.Context
+import android.content.pm.LauncherActivityInfo
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +14,6 @@ import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
-import kenneth.app.starlightlauncher.util.BindingRegister
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,7 +34,9 @@ internal abstract class StarlightLauncherApiModule {
 internal class StarlightLauncherApiImpl @Inject constructor(
     private val appearancePreferenceManager: AppearancePreferenceManager,
     private val launcherEventChannel: LauncherEventChannel,
-    override val blurHandler: BlurHandler
+    private val bindingRegister: BindingRegister,
+    private val appManager: AppManager,
+    override val blurHandler: BlurHandler,
 ) : StarlightLauncherApi {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -47,20 +49,26 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     override lateinit var context: Context
         private set
 
+    override val installedApps: List<LauncherActivityInfo>
+        get() = appManager.installedApps
+
+    override fun appLabelOf(packageName: String): String? =
+        appManager.appLabelOf(packageName)
+
     override fun showOptionMenu(builder: OptionMenuBuilder) {
-        BindingRegister.activityMainBinding.optionMenu.show(builder)
+        bindingRegister.mainScreenBinding.optionMenu.show(builder)
     }
 
     override fun closeOptionMenu() {
-        BindingRegister.activityMainBinding.optionMenu.hide()
+        bindingRegister.mainScreenBinding.optionMenu.hide()
     }
 
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
-        BindingRegister.activityMainBinding.overlay.showFrom(fromView, viewConstructor(context))
+        bindingRegister.mainScreenBinding.overlay.showFrom(fromView, viewConstructor(context))
     }
 
     override fun closeOverlay() {
-        BindingRegister.activityMainBinding.overlay.close()
+        bindingRegister.mainScreenBinding.overlay.close()
     }
 
     override fun getIconPack(): IconPack = appearancePreferenceManager.iconPack

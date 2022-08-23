@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.*
@@ -20,7 +19,7 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
 import java.lang.Integer.max
 import javax.inject.Inject
@@ -59,6 +58,9 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var launcher: StarlightLauncherApi
 
+    @Inject
+    lateinit var bindingRegister: BindingRegister
+
     private var velocityTracker: VelocityTracker? = null
 
     private var isVelocityTrackerObtained = false
@@ -89,7 +91,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         translationY = appState.halfScreenHeight.toFloat()
 
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
-            BindingRegister.widgetsPanelBinding = it
+            bindingRegister.widgetsPanelBinding = it
         }
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {

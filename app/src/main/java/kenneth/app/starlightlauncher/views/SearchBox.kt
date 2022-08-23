@@ -18,7 +18,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,6 +40,9 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
 
     @Inject
     lateinit var appState: AppState
+
+    @Inject
+    lateinit var bindingRegister: BindingRegister
 
     private val binding = SearchBoxBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -139,8 +142,8 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
     private fun handleSearchQuery(query: Editable?) {
         if (isQueryEmpty(query)) {
             searcher.cancelPendingSearch()
-            BindingRegister.widgetsPanelBinding.searchResultView.clearSearchResults()
-            BindingRegister.activityMainBinding.widgetsPanel.hideSearchResults()
+            bindingRegister.widgetsPanelBinding.searchResultView.clearSearchResults()
+            bindingRegister.mainScreenBinding.widgetsPanel.hideSearchResults()
         } else {
             showClearSearchBoxButton()
             searcher.requestSearch(query.toString())
@@ -153,12 +156,12 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
                 clear()
                 showRetractWidgetPanelButton()
             }
-            BindingRegister.activityMainBinding.widgetsPanel.isExpanded -> {
-                BindingRegister.activityMainBinding.widgetsPanel.retract()
+            bindingRegister.mainScreenBinding.widgetsPanel.isExpanded -> {
+                bindingRegister.mainScreenBinding.widgetsPanel.retract()
                 showExpandWidgetPanelButton()
             }
             else -> {
-                BindingRegister.activityMainBinding.widgetsPanel.expand()
+                bindingRegister.mainScreenBinding.widgetsPanel.expand()
                 showRetractWidgetPanelButton()
             }
         }
@@ -166,7 +169,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
         if (!isOpeningKeyboard) {
-            with(BindingRegister.activityMainBinding.widgetsPanel) {
+            with(bindingRegister.mainScreenBinding.widgetsPanel) {
                 canBeSwiped = when {
                     hasFocus -> {
                         expand()
@@ -191,7 +194,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
             createPaddingAnimation(showTopPadding = isActive).start()
         }
 
-        with(BindingRegister.activityMainBinding.widgetsPanel) {
+        with(bindingRegister.mainScreenBinding.widgetsPanel) {
             if (isActive) {
                 hideWidgets()
             } else {
