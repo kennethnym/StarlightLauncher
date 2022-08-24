@@ -26,6 +26,14 @@ internal class DateTimePreferenceManager @Inject constructor(
             context.resources.getBoolean(R.bool.default_use_24hr_clock)
         )
 
+    val dateTimeViewSize
+        get() = DateTimeViewSize.valueOf(
+            sharedPreferences.getString(
+                keys.clockSize,
+                null,
+            ) ?: context.getString(R.string.default_clock_size)
+        )
+
     /**
      * The pair of latitude and longitude that describes the location where the user wants
      * the weather info of.
@@ -67,7 +75,7 @@ internal class DateTimePreferenceManager @Inject constructor(
             ?.toLong()
             ?: context.getString(R.string.default_check_weather_frequency).toLong()
 
-     /**
+    /**
      * Changes the weather location described by the given LatLong.
      */
     fun changeWeatherLocation(latLong: LatLong, displayName: String) {
@@ -81,6 +89,7 @@ internal class DateTimePreferenceManager @Inject constructor(
 
 internal class DateTimePrefKeys(context: Context) {
     val use24HrClock by lazy { context.getString(R.string.date_time_use_24hr_clock) }
+    val clockSize by lazy { context.getString(R.string.date_time_clock_size) }
     val showWeather by lazy { context.getString(R.string.date_time_show_weather) }
     val weatherUnit by lazy { context.getString(R.string.date_time_weather_unit) }
     val weatherLocationLat by lazy { context.getString(R.string.date_time_weather_location_lat) }

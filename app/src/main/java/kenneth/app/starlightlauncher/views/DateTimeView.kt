@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
@@ -115,6 +116,7 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
 
         updateTime()
         applyTextShadow()
+        applyClockSize()
         if (dateTimePreferenceManager.shouldShowWeather) {
             showWeather()
         }
@@ -166,6 +168,9 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
             dateTimePreferenceManager.keys.use24HrClock -> {
                 updateTime()
             }
+            dateTimePreferenceManager.keys.clockSize -> {
+                applyClockSize()
+            }
             dateTimePreferenceManager.keys.weatherLocationLat,
             dateTimePreferenceManager.keys.weatherLocationLong -> {
                 currentWeatherLocation = dateTimePreferenceManager.weatherLocation
@@ -199,6 +204,18 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
         }
     }
 
+    private fun applyClockSize() {
+        val clockSize = dateTimePreferenceManager.dateTimeViewSize.clockSize.toFloat()
+        val dateSize = dateTimePreferenceManager.dateTimeViewSize.dateSize.toFloat()
+        binding.apply {
+            clock.setTextSize(TypedValue.COMPLEX_UNIT_SP, clockSize)
+            date.setTextSize(TypedValue.COMPLEX_UNIT_SP, dateSize)
+            dateTimeWeatherSeparator.setTextSize(TypedValue.COMPLEX_UNIT_SP, dateSize)
+            temp.setTextSize(TypedValue.COMPLEX_UNIT_SP, dateSize)
+            refreshWeatherBtn
+        }
+    }
+
     private fun onResume() {
         registerTimeTickListener()
         updateTime()
@@ -206,10 +223,6 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) :
 
     private fun onPause() {
         unregisterTimeTickListener()
-    }
-
-    private fun onSharedPreferencesChanged(key: String) {
-
     }
 
     private fun registerTimeTickListener() {

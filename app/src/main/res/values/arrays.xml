@@ -76,4 +76,21 @@
         <item>43200000</item>
         <item>86400000</item>
     </string-array>
+
+    <!-- Clock size preference -->
+    <string-array name="clock_size_entries">
+        <item>Giga small</item>
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>Giga big</item>
+    </string-array>
+
+    <string-array name="clock_size_values">
+        <item>GIGA_SMALL</item>
+        <item>SMALL</item>
+        <item>NORMAL</item>
+        <item>BIG</item>
+        <item>GIGA_BIG</item>
+    </string-array>
 </resources>

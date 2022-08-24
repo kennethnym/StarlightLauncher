@@ -9,4 +9,5 @@
     <bool name="default_use_auto_weather_location">false</bool>
     <string name="default_check_weather_frequency">3600000</string>
     <string name="default_weather_unit">CELSIUS</string>
+    <string name="default_clock_size">NORMAL</string>
 </resources>
