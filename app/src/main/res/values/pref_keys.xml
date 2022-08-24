@@ -45,6 +45,7 @@
     <string name="date_time_pref_key" translatable="false">date_time</string>
     <string name="date_time_use_24hr_clock">date_time_use_24hr_clock</string>
     <string name="date_time_show_weather">date_time_show_weather</string>
+    <string name="date_time_clock_size">date_time_clock_size</string>
     <string name="date_time_location_search_box">date_time_location_search_box</string>
     <string name="date_time_use_current_location">date_time_use_current_location</string>
     <string name="date_time_use_auto_location">date_time_use_auto_location</string>
