@@ -149,7 +149,7 @@
         <entry key="notes-widget/src/main/res/drawable/ic_trash_alt.xml" value="0.21302083333333333" />
         <entry key="notes-widget/src/main/res/drawable/note_card_background.xml" value="0.3703125" />
         <entry key="notes-widget/src/main/res/drawable/notes_widget_settings_icon.xml" value="0.159" />
-        <entry key="notes-widget/src/main/res/layout/all_notes.xml" value="0.3536458333333333" />
+        <entry key="notes-widget/src/main/res/layout/all_notes.xml" value="0.1" />
         <entry key="notes-widget/src/main/res/layout/file_name_dialog_content.xml" value="0.3428442028985507" />
         <entry key="notes-widget/src/main/res/layout/note_card.xml" value="0.12222222222222222" />
         <entry key="notes-widget/src/main/res/layout/notes_widget.xml" value="0.3390625" />
