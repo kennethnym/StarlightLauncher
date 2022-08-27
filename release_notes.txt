@@ -1,7 +1,7 @@
 # Version 1.0.0-beta.6
 
 - Quick notes widget:
-  - The add note text field is now cleared automatically when a new note is added:
+  - The add note text field is now cleared automatically when a new note is added
   - All notes overlay:
     - Top padding no longer clips content
     - Add note button no longer blocks the note cards
