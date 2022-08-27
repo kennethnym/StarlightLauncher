@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 33
-        versionCode 1006
-        versionName "1.0.0-beta.6"
+        versionCode 10016
+        versionName "1.0.0-internal.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
