@@ -25,7 +25,7 @@ This is still a work in progress.
 
 # Support the development
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gbraad)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/kennethnym)
 
 The versions published on the Play Store are limited in features which can be unlocked by purchasing Plus package from the Play Store.
 
