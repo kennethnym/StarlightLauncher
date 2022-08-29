@@ -1,0 +1,22 @@
+<i>Starlight Launcher</i> offers a reimagined home screen experience on Android. It is built around a search-focused experience to help you get things done faster. No more looking through walls of icons. Everything is right at your fingertip.
+
+<br><b>Features:</b>
+
+* Completely open source (https://www.github.com/kennethnym/StarlightLauncher)
+* A clean, minimal home screen.
+* Play/pause music, skip tracks, right on the home screen.
+* Pin any widget you need on the home screen.
+* Built-in widgets such as notes and unit conversion; more are planned (weather, audio recording, translate)
+* A rich search experience, including apps, contacts, math expressions, common controls like Wifi and Bluetooth, and even opening URLs!
+* Fuzzy search
+
+<i>Starlight Launcher</i> is still in beta. Expect bugs and major changes before release.
+
+<br><b>Starlight Launcher Plus:</b>
+
+While <i>Starlight Launcher</i> is completely ad-free in the free version, you can unlock extra features with the Plus version, including:
+
+* Unlimited widgets pinning
+* (Planned) Extension support
+
+As a way of saying thank you, <b>early beta testers (i.e. people who joined the beta program before the first public release) will get the Plus version for free!</b>
