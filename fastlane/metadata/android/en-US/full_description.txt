@@ -8,7 +8,7 @@
 * Pin any widget you need on the home screen.
 * Built-in widgets such as notes and unit conversion; more are planned (weather, audio recording, translate)
 * A rich search experience, including apps, contacts, math expressions, common controls like Wifi and Bluetooth, and even opening URLs!
-* Fuzzy search<
+* Fuzzy search
 
 <i>Starlight Launcher</i> is still in beta. Expect bugs and major changes before release.
 
