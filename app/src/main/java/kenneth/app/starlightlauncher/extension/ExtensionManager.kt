@@ -23,6 +23,7 @@ import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
+import kenneth.app.starlightlauncher.websearchmodule.WebSearch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,6 +72,10 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.urlopener" to Extension(
             name = "kenneth.app.starlightlauncher.urlopener",
             searchModule = UrlOpener(context),
+        ),
+        "kenneth.app.starlightlauncher.websearchmodule" to Extension(
+            name = "kenneth.app.starlightlauncher.websearchmodule",
+            searchModule = WebSearch(context),
         ),
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
