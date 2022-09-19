@@ -3,13 +3,18 @@ package kenneth.app.starlightlauncher
 import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.preference.Preference
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "starlightLauncherSettings")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "starlightLauncherSettings",
+    produceMigrations = {
+        listOf(SharedPreferencesMigration(it, "${it.packageName}_preferences"))
+    }
+)
 
 // TODO: add support for gesture navigation animation
 //

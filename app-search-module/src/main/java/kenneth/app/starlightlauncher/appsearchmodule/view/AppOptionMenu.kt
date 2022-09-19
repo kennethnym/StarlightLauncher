@@ -2,19 +2,22 @@ package kenneth.app.starlightlauncher.appsearchmodule.view
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.*
+import android.content.pm.LauncherActivityInfo
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Process
-import android.view.LayoutInflater
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuItem
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.R
-import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * A menu that is shown after long pressing an app icon to present to the user
@@ -24,16 +27,18 @@ import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBi
 internal class AppOptionMenu(
     private val context: Context,
     private val app: LauncherActivityInfo,
+    private val launcher: StarlightLauncherApi,
     private val menu: OptionMenu
 ) {
     //    private val binding = AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true)
     private val launcherApps =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-    private val prefs = AppSearchModulePreferences.getInstance(context)
-    private var isAppPinned = prefs.isAppPinned(app)
+    private val prefs = AppSearchModulePreferences.getInstance(launcher)
 
     private val maxAppShortcutsShown =
         context.resources.getInteger(R.integer.max_app_shortcuts_shown)
+
+    private var pinAppMenuItem: OptionMenuItem? = null
 
     init {
         loadMenu()
@@ -44,20 +49,9 @@ internal class AppOptionMenu(
             loadShortcutList()
         }
 
-        menu.addItem(
-            if (isAppPinned) null
-            else ResourcesCompat.getDrawable(
-                context.resources,
-                R.drawable.ic_favorite,
-                context.theme
-            ),
-            context.getString(
-                if (isAppPinned) R.string.app_option_menu_item_label_unpin_app
-                else R.string.app_option_menu_item_label_pin_app
-            ),
-            applyIconTint = true,
-            ::pinOrUnpinApp
-        )
+        launcher.coroutineScope.launch {
+            updatePinAppMenuItem()
+        }
 
         menu.addItem(
             ResourcesCompat.getDrawable(context.resources, R.drawable.ic_trash_alt, context.theme),
@@ -115,6 +109,48 @@ internal class AppOptionMenu(
         launcherApps.startShortcut(shortcutInfo, sourceBound, null)
     }
 
+    /**
+     * Subscribes to whether the app is pinned or not,
+     * and automatically update the pin app menu item accordingly.
+     */
+    private suspend fun updatePinAppMenuItem() {
+        prefs.isAppPinned(app).collect { isPinned ->
+            pinAppMenuItem?.let {
+                if (isPinned) {
+                    it.apply {
+                        itemIcon = null
+                        itemLabel =
+                            context.getString(R.string.app_option_menu_item_label_unpin_app)
+                    }
+                } else {
+                    it.apply {
+                        itemIcon = ResourcesCompat.getDrawable(
+                            context.resources,
+                            R.drawable.ic_favorite,
+                            context.theme
+                        )
+                        itemLabel =
+                            context.getString(R.string.app_option_menu_item_label_pin_app)
+                    }
+                }
+            } ?: menu.addItem(
+                if (isPinned) null
+                else ResourcesCompat.getDrawable(
+                    context.resources,
+                    R.drawable.ic_favorite,
+                    context.theme
+                ),
+                context.getString(
+                    if (isPinned) R.string.app_option_menu_item_label_unpin_app
+                    else R.string.app_option_menu_item_label_pin_app
+                ),
+                applyIconTint = true,
+            ) {
+                pinOrUnpinApp(shouldPin = !isPinned)
+            }.also { pinAppMenuItem = it }
+        }
+    }
+
     private fun uninstallApp() {
         context.startActivity(
             Intent(
@@ -125,26 +161,18 @@ internal class AppOptionMenu(
         menu.hide()
     }
 
-    private fun pinOrUnpinApp(item: OptionMenuItem) {
-        if (isAppPinned) {
-            isAppPinned = false
-            prefs.removePinnedApp(app)
-            item.apply {
-                itemIcon = ResourcesCompat.getDrawable(
-                    context.resources,
-                    R.drawable.ic_favorite,
-                    context.theme
-                )
-                itemLabel = context.getString(R.string.app_option_menu_item_label_pin_app)
-            }
-        } else {
-            isAppPinned = true
-            prefs.addPinnedApp(app)
-            item.apply {
-                itemIcon = null
-                itemLabel = context.getString(R.string.app_option_menu_item_label_unpin_app)
+    /**
+     * Pin or unpin the app.
+     *
+     * @param shouldPin whether the app should be pinned or not.
+     */
+    private fun pinOrUnpinApp(shouldPin: Boolean) {
+        launcher.coroutineScope.launch {
+            if (shouldPin) {
+                prefs.addPinnedApp(app)
+            } else {
+                prefs.removePinnedApp(app)
             }
         }
-        menu.hide()
     }
 }

@@ -1,12 +1,10 @@
 package kenneth.app.starlightlauncher
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.os.Build
+import android.os.Process
 import android.os.UserHandle
 import android.os.UserManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -29,10 +27,11 @@ internal class AppManager @Inject constructor(
     /**
      * Stores all apps installed on the device.
      */
-    private val allApps = mutableListOf<LauncherActivityInfo>()
+    private val allApps =
+        mutableMapOf<UserHandle, MutableMap<ComponentName, LauncherActivityInfo>>()
 
     val installedApps
-        get() = allApps.toList()
+        get() = allApps.values.flatMap { it.values }
 
     /**
      * Maps app package names to their corresponding labels.
@@ -59,7 +58,7 @@ internal class AppManager @Inject constructor(
                         else
                             UserHandle(intent.getParcelableExtra(Intent.EXTRA_USER))
 
-                    allApps.removeAll { it.user == removedUser }
+                    allApps.remove(removedUser)
                 }
             }
         }
@@ -68,7 +67,8 @@ internal class AppManager @Inject constructor(
     private val launcherAppsCallback = object : LauncherApps.Callback() {
         override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
-            allApps.removeAll { it.applicationInfo.packageName == packageName && it.user == user }
+
+            allApps[user]?.entries?.removeIf { it.key.packageName == packageName }
             appLabels.remove(packageName)
 
             launcherEventChannel.add(LauncherEvent.AppRemoved(packageName))
@@ -76,10 +76,16 @@ internal class AppManager @Inject constructor(
 
         override fun onPackageAdded(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
+            // get the apps for the user
+            // if it doesn't exist, create a new map to store the apps
+            val userApps =
+                allApps[user] ?: mutableMapOf<ComponentName, LauncherActivityInfo>().also {
+                    allApps[user] = it
+                }
 
             val activities = launcherApps.getActivityList(packageName, user)
-            allApps.addAll(activities)
             activities.forEach {
+                userApps[it.componentName] = it
                 appLabels[it.applicationInfo.packageName] = it.label.toString()
             }
 
@@ -88,14 +94,13 @@ internal class AppManager @Inject constructor(
 
         override fun onPackageChanged(packageName: String?, user: UserHandle?) {
             if (packageName == null || user == null) return
-
+            val userApps = allApps[user] ?: return
             val activities = launcherApps.getActivityList(packageName, user)
-            allApps.apply {
-                removeAll { it.applicationInfo.packageName == packageName && it.user == user }
-                addAll(activities)
-            }
+
+            userApps.entries.removeIf { it.key.packageName == packageName }
             appLabels.remove(packageName)
             activities.forEach {
+                userApps[it.componentName] = it
                 appLabels[it.applicationInfo.packageName] = it.label.toString()
             }
         }
@@ -106,14 +111,13 @@ internal class AppManager @Inject constructor(
             replacing: Boolean
         ) {
             if (packageNames == null || user == null) return
+            val userApps = allApps[user] ?: return
 
             packageNames.forEach { packageName ->
                 val activities = launcherApps.getActivityList(packageName, user)
-                allApps.apply {
-                    removeAll { it.applicationInfo.packageName == packageName && it.user == user }
-                    addAll(activities)
-                }
+                userApps.entries.removeIf { it.key.packageName == packageName }
                 activities.forEach {
+                    userApps[it.componentName] = it
                     appLabels[it.applicationInfo.packageName] = it.label.toString()
                 }
             }
@@ -126,7 +130,7 @@ internal class AppManager @Inject constructor(
         ) {
             if (packageNames == null || user == null) return
 
-            allApps.removeAll { it.user == user && packageNames.contains(it.applicationInfo.packageName) }
+            allApps[user]?.entries?.removeIf { packageNames.contains(it.key.packageName) }
             packageNames.forEach { appLabels.remove(it) }
         }
     }
@@ -141,6 +145,11 @@ internal class AppManager @Inject constructor(
 
     fun appLabelOf(packageName: String) = appLabels[packageName]
 
+    fun launcherActivityInfoOf(
+        componentName: ComponentName,
+        user: UserHandle = Process.myUserHandle()
+    ) = allApps[user]?.get(componentName)
+
     private fun loadApps() {
         userManager.userProfiles.forEach { loadAppsForUser(it) }
         launcherApps.registerCallback(launcherAppsCallback)
@@ -150,10 +159,13 @@ internal class AppManager @Inject constructor(
      * Finds apps installed under [user].
      */
     private fun loadAppsForUser(user: UserHandle) {
+        val userApps = mutableMapOf<ComponentName, LauncherActivityInfo>().also {
+            allApps[user] = it
+        }
         launcherApps.getActivityList(null, user)
             .forEach {
                 val packageName = it.applicationInfo.packageName
-                allApps += it
+                userApps[it.componentName] = it
                 appLabels[packageName] = it.label.toString()
             }
     }

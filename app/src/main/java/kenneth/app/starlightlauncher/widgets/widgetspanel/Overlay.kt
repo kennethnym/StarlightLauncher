@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
@@ -12,6 +13,8 @@ import android.view.animation.PathInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.core.animation.addListener
 import androidx.core.view.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.LifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
@@ -19,6 +22,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.api.util.activity
+import kenneth.app.starlightlauncher.databinding.OverlayBinding
 import javax.inject.Inject
 
 /**
@@ -44,10 +48,8 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
     @Inject
     lateinit var blurHandler: BlurHandler
 
-    /**
-     * The [View] that this [Overlay] expanded from.
-     */
-    private lateinit var originalView: View
+    private val binding = OverlayBinding.inflate(LayoutInflater.from(context))
+
 
     /**
      * Whether the closing animation of [Overlay] is being played.
@@ -83,7 +85,6 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
      */
     fun showFrom(view: View, withContent: View) {
         isVisible = true
-        originalView = view
         content = withContent
 
         blurWith(blurHandler)
@@ -105,6 +106,12 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         displayContent(withContent)
         activity?.let {
             it.onBackPressedDispatcher.addCallback(it, onBackPressedCallback)
+        }
+    }
+
+    fun showWith(fragment: Fragment) {
+        activity?.supportFragmentManager?.commit {
+            add(R.id.overlay_container_view, fragment)
         }
     }
 

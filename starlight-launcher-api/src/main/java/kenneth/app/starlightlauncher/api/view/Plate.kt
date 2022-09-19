@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.alpha
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.preference.PreferenceManager
@@ -23,6 +24,8 @@ import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.util.activity
 
 private const val DEFAULT_USE_ROUNDED_CORNERS = true
+
+val PREF_KEY_BLUR_EFFECT_ENABLED = booleanPreferencesKey("appearance_blur_effect_enabled")
 
 open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
     SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {

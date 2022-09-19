@@ -39,7 +39,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/info_pref_category_title">
+    <PreferenceCategory app:title="">
 
         <Preference
             app:icon="@drawable/ic_info_circle"

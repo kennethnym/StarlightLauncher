@@ -20,7 +20,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
@@ -57,6 +59,10 @@ internal object AppModule {
     @Singleton
     @Named(IO_DISPATCHER)
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun provideMainScope(): CoroutineScope = MainScope()
 
     @Provides
     @Singleton

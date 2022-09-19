@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.views
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.SharedPreferences
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -21,14 +20,21 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.api.util.activity
-import kotlinx.coroutines.*
+import kenneth.app.starlightlauncher.dataStore
+import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
+import kenneth.app.starlightlauncher.prefs.PREF_MEDIA_CONTROL_ENABLED
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -39,9 +45,6 @@ import javax.inject.Named
 @AndroidEntryPoint
 internal class MediaControlCard(context: Context, attrs: AttributeSet) :
     LinearLayout(context, attrs), LifecycleEventObserver {
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
     @Inject
     lateinit var mediaSessionManager: MediaSessionManager
 
@@ -94,10 +97,8 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
     /**
      * Gets from SharedPreferences whether media control is enabled by the user
      */
-    private val isMediaControlEnabled: Boolean
-        get() = sharedPreferences.getBoolean(
-            context.getString(R.string.pref_key_media_control_enabled), true
-        )
+    private var isMediaControlEnabled: Boolean =
+        context.resources.getBoolean(R.bool.default_media_control_enabled)
 
     /**
      * Listens to changes to the current active media session.
@@ -142,7 +143,19 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
             dateTimeViewContainer?.gravity = Gravity.CENTER
         }
 
-        activity?.lifecycle?.addObserver(this)
+        activity?.let {
+            it.lifecycle.addObserver(this)
+            it.lifecycleScope.launch {
+                context.dataStore.data
+                    .map { preferences ->
+                        preferences[PREF_MEDIA_CONTROL_ENABLED]
+                            ?: context.resources.getBoolean(R.bool.default_media_control_enabled)
+                    }.collect { isMediaControlEnabled ->
+                        this@MediaControlCard.isMediaControlEnabled = isMediaControlEnabled
+                        onMediaControlPreferencesChanged()
+                    }
+            }
+        }
         binding.mediaControlBlurBackground.blurWith(blurHandler)
     }
 
@@ -162,6 +175,18 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
                 Lifecycle.Event.ON_RESUME -> checkNotificationListenerAndUpdate()
                 else -> {}
             }
+        }
+    }
+
+    /**
+     * Called when user changed whether media control should be enabled.
+     */
+    private fun onMediaControlPreferencesChanged() {
+        if (isMediaControlEnabled) {
+            checkNotificationListenerAndUpdate()
+            attachListeners()
+        } else {
+            hideControl()
         }
     }
 
@@ -195,18 +220,6 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
         binding.playPauseButton.setOnClickListener { togglePlayPause() }
         binding.skipBackwardButton.setOnClickListener { skipBackward() }
         binding.skipForwardButton.setOnClickListener { skipForward() }
-        sharedPreferences.registerOnSharedPreferenceChangeListener(::onSharedPreferenceChanged)
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == context.getString(R.string.pref_key_media_control_enabled)) {
-            if (isMediaControlEnabled) {
-                checkNotificationListenerAndUpdate()
-                attachListeners()
-            } else {
-                hideControl()
-            }
-        }
     }
 
     /**

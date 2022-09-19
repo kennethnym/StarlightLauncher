@@ -148,7 +148,7 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         label: String,
         applyIconTint: Boolean = true,
         onClick: OptionMenuItemOnClickListener
-    ) {
+    ): OptionMenuItem {
         val item = OptionMenuItem(context).apply {
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -169,6 +169,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             setOnClickListener { onClick(this) }
         }
         addView(item)
+
+        return item
     }
 
     /**

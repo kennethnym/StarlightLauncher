@@ -29,7 +29,7 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kenneth.app.starlightlauncher.prefs.PREF_TUTORIAL_FINISHED
+import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
@@ -163,7 +163,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     override fun onGlobalLayout() {
         lifecycleScope.launch {
-            val isTutorialFinished = dataStore.data.first()[PREF_TUTORIAL_FINISHED] ?: false
+            val isTutorialFinished = dataStore.data.first()[PREF_KEY_TUTORIAL_FINISHED] ?: false
             // only show spotlight after layout is complete
             // because spotlight relies on the global position of views
             // in order to position itself correctly to point to views

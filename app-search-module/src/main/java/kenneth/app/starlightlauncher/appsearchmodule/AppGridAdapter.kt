@@ -1,22 +1,16 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.LauncherActivityInfo
-import android.content.pm.LauncherApps
-import android.content.pm.ResolveInfo
 import android.graphics.Rect
-import android.os.UserHandle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
-import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,8 +18,7 @@ import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
 import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -48,8 +41,7 @@ internal class AppGridAdapter(
      * Whether an option menu should be shown when an item is long pressed. Defaults to true.
      */
     private val enableLongPressMenu: Boolean = true,
-) : RecyclerView.Adapter<AppGridItem>(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+) : RecyclerView.Adapter<AppGridItem>() {
     /**
      * Whether the grid is in dnd mode.
      */
@@ -59,8 +51,8 @@ internal class AppGridAdapter(
 
     private val visibleApps = mutableListOf<LauncherActivityInfo>()
 
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val appSearchModulePreferences = AppSearchModulePreferences.getInstance(context)
+    private val appSearchModulePreferences =
+        AppSearchModulePreferences.getInstance(launcher)
     private val inputMethodManager = context.getSystemService<InputMethodManager>()
 
     private lateinit var selectedApp: LauncherActivityInfo
@@ -68,26 +60,13 @@ internal class AppGridAdapter(
     private var gridSpanCount = 0
 
     init {
-        CoroutineScope(Dispatchers.Main).launch {
-            launcher.addLauncherEventListener {
-                when (it) {
-                    is LauncherEvent.AppRemoved -> {
-                        removeAppFromGrid(it.packageName)
-                    }
-
-                    is LauncherEvent.AppsChanged -> {
-                        it.apps.forEach { app ->
-                            changeAppInGrid(app)
-                        }
-                    }
-                }
-            }
+        launcher.coroutineScope.run {
+            launch { listenToLauncherEvents() }
         }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         this.recyclerView = recyclerView
         recyclerView.layoutManager.let {
             if (it is GridLayoutManager) {
@@ -103,7 +82,6 @@ internal class AppGridAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         this.recyclerView = null
         visibleApps.clear()
     }
@@ -156,6 +134,18 @@ internal class AppGridAdapter(
 
     fun refresh() {
         notifyItemRangeChanged(0, visibleApps.size)
+    }
+
+    fun update(apps: AppList) {
+        val diffResult = DiffUtil.calculateDiff(
+            AppListDiffCallback(this.apps, apps)
+        )
+
+        this.apps.apply {
+            clear()
+            addAll(apps)
+        }
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun addAppToGrid(app: LauncherActivityInfo) {
@@ -235,13 +225,17 @@ internal class AppGridAdapter(
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            appSearchModulePreferences.keys.showAppNames -> {
-                if (appSearchModulePreferences.shouldShowAppNames) {
-                    showAppLabels()
-                } else {
-                    hideAppLabels()
+    private suspend fun listenToLauncherEvents() {
+        launcher.addLauncherEventListener {
+            when (it) {
+                is LauncherEvent.AppRemoved -> {
+                    removeAppFromGrid(it.packageName)
+                }
+
+                is LauncherEvent.AppsChanged -> {
+                    it.apps.forEach { app ->
+                        changeAppInGrid(app)
+                    }
                 }
             }
         }
@@ -267,7 +261,9 @@ internal class AppGridAdapter(
         recyclerView?.let {
             inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
         }
-        launcher.showOptionMenu { menu -> AppOptionMenu(context, selectedApp, menu) }
+        launcher.showOptionMenu { menu ->
+            AppOptionMenu(context, selectedApp, launcher, menu)
+        }
         return true
     }
 

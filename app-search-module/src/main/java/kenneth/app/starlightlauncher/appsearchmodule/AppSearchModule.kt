@@ -21,8 +21,6 @@ private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.appsearchmodul
 
 typealias AppList = List<LauncherActivityInfo>
 
-// TODO: use PackageManager.getUserBadgedIcon to get work profile badge
-
 class AppSearchModule(context: Context) : SearchModule(context) {
     override val metadata: Metadata = Metadata(
         extensionName = context.getString(R.string.app_search_module_name),
@@ -35,7 +33,6 @@ class AppSearchModule(context: Context) : SearchModule(context) {
 
     private lateinit var launcher: StarlightLauncherApi
     private lateinit var launcherContext: Context
-    private lateinit var preferences: AppSearchModulePreferences
     private lateinit var userManager: UserManager
     private var defaultUserNo: Long = -1
 
@@ -44,7 +41,6 @@ class AppSearchModule(context: Context) : SearchModule(context) {
         launcherContext = launcher.context
         userManager = launcher.context.getSystemService(Context.USER_SERVICE) as UserManager
         adapter = AppSearchResultAdapter(launcher.context, launcher)
-        preferences = AppSearchModulePreferences.getInstance(launcher.context)
         defaultUserNo = userManager.getSerialNumberForUser(Process.myUserHandle())
     }
 

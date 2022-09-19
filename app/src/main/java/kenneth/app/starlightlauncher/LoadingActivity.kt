@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 import kenneth.app.starlightlauncher.setup.PREF_SETUP_FINISHED
 import kenneth.app.starlightlauncher.setup.SetupActivity
 import kotlinx.coroutines.flow.first
@@ -27,18 +28,30 @@ internal class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
+        startActivity(Intent(this, StarlightLauncherSettingsActivity::class.java))
+        finish()
 
-            finish()
-
-            if (setupFinished) {
-                startActivity(Intent(this@LoadingActivity, MainActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                })
-            } else {
-                startActivity(Intent(this@LoadingActivity, SetupActivity::class.java))
-            }
-        }
+//        lifecycleScope.launch {
+//            val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
+//
+//            if (setupFinished) {
+//                startActivity(
+//                    Intent(
+//                        this@LoadingActivity.applicationContext,
+//                        MainActivity::class.java
+//                    ).apply {
+//                        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                    })
+//            } else {
+//                startActivity(
+//                    Intent(
+//                        this@LoadingActivity.applicationContext,
+//                        SetupActivity::class.java
+//                    )
+//                )
+//            }
+//
+//            finish()
+//        }
     }
 }

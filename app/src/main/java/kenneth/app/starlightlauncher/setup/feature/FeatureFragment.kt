@@ -5,14 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.api.WidgetCreator
+import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.databinding.FeatureItemBinding
 import kenneth.app.starlightlauncher.databinding.FragmentSetupFeatureBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -33,46 +38,56 @@ internal class FeatureFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentSetupFeatureBinding.inflate(inflater).run {
-        AVAILABLE_FEATURES.forEach {
-            val featurePrefKey = getString(it.key)
+    ): View? = context?.let { context ->
+        FragmentSetupFeatureBinding.inflate(inflater).run {
+            AVAILABLE_FEATURES.forEach { feature ->
+                FeatureItemBinding.inflate(inflater, root, true).apply {
+                    name = getString(feature.name)
+                    description = getString(feature.description)
 
-            FeatureItemBinding.inflate(inflater, root, true).apply {
-                name = getString(it.name)
-                description = getString(it.description)
-                enableFeatureCheckbox.isChecked =
-                    sharedPreferences.getBoolean(featurePrefKey, false)
+                    root.setOnClickListener {
+                        enableFeatureCheckbox.isChecked = !enableFeatureCheckbox.isChecked
+                    }
+                    enableFeatureCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                        setFeatureEnabled(feature.key, enabled = isChecked)
+                    }
 
-                root.setOnClickListener { _ -> toggleFeature(getString(it.key), this) }
-                enableFeatureCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                    setFeatureEnabled(featurePrefKey, enabled = isChecked)
+                    lifecycleScope.launch {
+                        context.dataStore.data.map {
+                            it[feature.key] ?: context.resources.getBoolean(feature.defaultEnabled)
+                        }.collect {
+                            enableFeatureCheckbox.isChecked = it
+                        }
+                    }
                 }
             }
-        }
 
-        extensionManager.installedWidgets.forEach {
-            FeatureItemBinding.inflate(inflater, root, true).apply {
-                name = it.metadata.displayName
-                description = it.metadata.description
+            extensionManager.installedWidgets.forEach {
+                FeatureItemBinding.inflate(inflater, root, true).apply {
+                    name = it.metadata.displayName
+                    description = it.metadata.description
 
-                enableFeatureCheckbox.isChecked =
-                    widgetPreferenceManager.isStarlightWidgetAdded(it.metadata.extensionName)
+                    enableFeatureCheckbox.isChecked =
+                        widgetPreferenceManager.isStarlightWidgetAdded(it.metadata.extensionName)
 
-                root.setOnClickListener { _ ->
-                    enableFeatureCheckbox.isChecked = !enableFeatureCheckbox.isChecked
-                }
-                enableFeatureCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                    toggleWidget(it, isChecked)
+                    root.setOnClickListener {
+                        enableFeatureCheckbox.isChecked = !enableFeatureCheckbox.isChecked
+                    }
+                    enableFeatureCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                        toggleWidget(it, isChecked)
+                    }
                 }
             }
-        }
 
-        root
+            root
+        }
     }
 
-    private fun setFeatureEnabled(prefKey: String, enabled: Boolean) {
-        sharedPreferences.edit(commit = true) {
-            putBoolean(prefKey, enabled)
+    private fun setFeatureEnabled(prefKey: Preferences.Key<Boolean>, enabled: Boolean) {
+        lifecycleScope.launch {
+            context?.dataStore?.edit {
+                it[prefKey] = enabled
+            }
         }
     }
 
@@ -82,11 +97,5 @@ internal class FeatureFragment : Fragment() {
         } else {
             widgetPreferenceManager.removeStarlightWidget(widget.metadata.extensionName)
         }
-    }
-
-    private fun toggleFeature(prefKey: String, binding: FeatureItemBinding) {
-        binding.enableFeatureCheckbox.isChecked = !binding.enableFeatureCheckbox.isChecked
-        val isFeatureEnabled = binding.enableFeatureCheckbox.isChecked
-        setFeatureEnabled(prefKey, isFeatureEnabled)
     }
 }

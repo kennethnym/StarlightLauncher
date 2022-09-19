@@ -1,12 +1,18 @@
 package kenneth.app.starlightlauncher.api
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import android.view.LayoutInflater
 import android.view.View
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleCoroutineScope
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
+import kotlinx.coroutines.CoroutineScope
 
 typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
 
@@ -28,6 +34,8 @@ interface StarlightLauncherApi {
      */
     val context: Context
 
+    val dataStore: DataStore<Preferences>
+
     /**
      * The [BlurHandler] that is handling the blur effects of this launcher.
      */
@@ -35,7 +43,11 @@ interface StarlightLauncherApi {
 
     val installedApps: List<LauncherActivityInfo>
 
+    val coroutineScope: CoroutineScope
+
     fun appLabelOf(packageName: String): String?
+
+    fun launcherActivityInfoOf(componentName: ComponentName): LauncherActivityInfo?
 
     /**
      * Shows the option menu with the content added by [builder].
@@ -68,6 +80,8 @@ interface StarlightLauncherApi {
      * [View] will be the content of the overlay
      */
     fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View)
+
+    fun showOverlay(fragment: Fragment)
 
     /**
      * Hides the current overlay.

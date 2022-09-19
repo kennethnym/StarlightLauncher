@@ -1,9 +1,5 @@
 package kenneth.app.starlightlauncher.appsearchmodule.widget
 
-import android.content.Context
-import android.content.pm.LauncherApps
-import android.os.Process
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,11 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
-import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
-import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferenceChanged
-import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
+import kenneth.app.starlightlauncher.appsearchmodule.*
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
@@ -25,10 +22,7 @@ internal class PinnedAppsWidget(
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
-    private val context = rootView.context
-    private val prefs = AppSearchModulePreferences.getInstance(context)
-    private val launcherApps =
-        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+    private val prefs = AppSearchModulePreferences.getInstance(launcher)
     private var appGridAdapter: AppGridAdapter? = null
 
     private var dndTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -72,7 +66,9 @@ internal class PinnedAppsWidget(
         ): Boolean {
             val from = viewHolder.adapterPosition
             val to = target.adapterPosition
-            prefs.swapPinnedApps(viewHolder.adapterPosition, target.adapterPosition)
+            launcher.coroutineScope.launch {
+                prefs.swapPinnedApps(viewHolder.adapterPosition, target.adapterPosition)
+            }
             recyclerView.adapter?.notifyItemMoved(from, to)
             return true
         }
@@ -95,17 +91,42 @@ internal class PinnedAppsWidget(
 
     init {
         CoroutineScope(mainDispatcher).run {
-            launch { prefs.subscribe(::onPreferenceChanged) }
             launch { launcher.addLauncherEventListener(::onLauncherEvent) }
-        }
-
-        if (prefs.hasPinnedApps) {
-            showWidget()
-        } else {
-            hideWidget()
+            launch { listenToPinnedApps() }
+            launch { updatePinnedAppLabelsVisibility() }
         }
 
         dndTouchHelper.attachToRecyclerView(binding.pinnedAppsGrid)
+    }
+
+    private suspend fun listenToPinnedApps() {
+        prefs.pinnedApps
+            .map {
+                it.mapNotNull { componentName -> launcher.launcherActivityInfoOf(componentName) }
+            }
+            .collect { pinnedApps ->
+                when {
+                    pinnedApps.isEmpty() -> {
+                        hideWidget()
+                    }
+                    !rootView.isVisible -> {
+                        showWidget(pinnedApps)
+                    }
+                    else -> {
+                        appGridAdapter?.update(pinnedApps)
+                    }
+                }
+            }
+    }
+
+    private suspend fun updatePinnedAppLabelsVisibility() {
+        prefs.shouldShowPinnedAppNames.collect { shouldShowPinnedAppNames ->
+            if (shouldShowPinnedAppNames) {
+                appGridAdapter?.showAppLabels()
+            } else {
+                appGridAdapter?.hideAppLabels()
+            }
+        }
     }
 
     private fun onLauncherEvent(event: LauncherEvent) {
@@ -116,64 +137,22 @@ internal class PinnedAppsWidget(
         }
     }
 
-    private fun onPreferenceChanged(event: AppSearchModulePreferenceChanged) {
-        when (event) {
-            is AppSearchModulePreferenceChanged.PinnedAppAdded -> {
-                if (!rootView.isVisible) {
-                    showWidget()
-                } else {
-                    appGridAdapter?.addAppToGrid(event.app)
-                }
-            }
-
-            is AppSearchModulePreferenceChanged.PinnedAppRemoved -> {
-                if (prefs.hasPinnedApps) {
-                    appGridAdapter?.removeAppFromGrid(event.position)
-                } else {
-                    // no more pinned apps, hide the widget
-                    hideWidget()
-                }
-            }
-
-            is AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged -> {
-                if (event.isVisible) {
-                    appGridAdapter?.showAppLabels()
-                } else {
-                    appGridAdapter?.hideAppLabels()
-                }
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun showWidget() {
+    private fun showWidget(apps: AppList) {
         with(binding) {
             rootView.isVisible = true
-
-            val pinnedApps = prefs.pinnedApps.mapNotNull { pinnedAppName ->
-                launcherApps.getActivityList(pinnedAppName.packageName, Process.myUserHandle())
-                    .find { it.componentName == pinnedAppName }
-            }
 
             pinnedAppsGrid.apply {
                 layoutManager = GridLayoutManager(context, 5)
                 adapter =
                     AppGridAdapter(
                         context,
-                        pinnedApps,
+                        apps,
                         launcher,
-                        prefs.shouldShowPinnedAppNames,
+                        runBlocking { prefs.shouldShowAppNames.first() },
                         showAllApps = true,
                         enableLongPressMenu = false,
                     )
                         .also { appGridAdapter = it }
-            }
-
-            if (prefs.shouldShowPinnedAppNames) {
-                appGridAdapter?.showAppLabels()
-            } else {
-                appGridAdapter?.hideAppLabels()
             }
 
             pinnedAppsWidget.blurWith(launcher.blurHandler)

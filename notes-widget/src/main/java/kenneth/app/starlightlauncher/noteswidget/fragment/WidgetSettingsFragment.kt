@@ -51,7 +51,7 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
-        prefs = context?.let { NotesWidgetPreferences.getInstance(it) }
+//        prefs = context?.let { NotesWidgetPreferences.getInstance(it) }
     }
 
     private fun exportNotes() {
@@ -147,9 +147,9 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun restoreNotes(json: String) {
-        prefs?.let { prefs ->
-            prefs.restoreNotesFromJson(json)
-            showRestoreSuccessConfirmation()
-        }
+//        prefs?.let { prefs ->
+//            prefs.restoreNotesFromJson(json)
+//            showRestoreSuccessConfirmation()
+//        }
     }
 }

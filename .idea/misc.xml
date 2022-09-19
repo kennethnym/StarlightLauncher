@@ -70,6 +70,7 @@
         <entry key="app/src/main/res/layout/available_widgets_list_widget_provider_item.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/available_widgets_page.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/bluetooth_control.xml" value="0.21965579710144928" />
+        <entry key="app/src/main/res/layout/bluetooth_device_list_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/bottom_option_menu_item.xml" value="0.23550724637681159" />
         <entry key="app/src/main/res/layout/date_time_view.xml" value="0.3541666666666667" />
         <entry key="app/src/main/res/layout/edit_mode_header.xml" value="0.3319746376811594" />
@@ -91,6 +92,7 @@
         <entry key="app/src/main/res/layout/media_control_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/note_card.xml" value="0.2821557971014493" />
         <entry key="app/src/main/res/layout/open_url_control.xml" value="0.19630192502532928" />
+        <entry key="app/src/main/res/layout/overlay.xml" value="0.19701086956521738" />
         <entry key="app/src/main/res/layout/pinned_apps_card.xml" value="0.22826086956521738" />
         <entry key="app/src/main/res/layout/quick_notes_layout.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/quick_notes_list_item.xml" value="0.22509057971014493" />
@@ -101,6 +103,7 @@
         <entry key="app/src/main/res/layout/search_category_order_preference_layout.xml" value="0.45" />
         <entry key="app/src/main/res/layout/search_result_card.xml" value="0.3496376811594203" />
         <entry key="app/src/main/res/layout/search_result_layout.xml" value="0.2658514492753623" />
+        <entry key="app/src/main/res/layout/section_card.xml" value="0.1" />
         <entry key="app/src/main/res/layout/settings_activity.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/setup_permission_item.xml" value="0.30932971014492755" />
         <entry key="app/src/main/res/layout/spotlight_overlay_launcher_menu.xml" value="0.2504528985507246" />
@@ -118,13 +121,13 @@
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.218" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.218" />
         <entry key="app/src/main/res/xml/about_launcher_preferences.xml" value="0.25905797101449274" />
-        <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.335" />
+        <entry key="app/src/main/res/xml/appearance_preferences.xml" value="0.38392944335937496" />
         <entry key="app/src/main/res/xml/date_time_preferences.xml" value="0.37862548828125" />
         <entry key="app/src/main/res/xml/file_search_preferences.xml" value="0.2368659420289855" />
         <entry key="app/src/main/res/xml/icon_pack_preferences.xml" value="0.3496376811594203" />
-        <entry key="app/src/main/res/xml/media_control_preferences.xml" value="0.19630192502532928" />
+        <entry key="app/src/main/res/xml/media_control_preferences.xml" value="0.38242710813079805" />
         <entry key="app/src/main/res/xml/quick_notes_preferences.xml" value="0.37681159420289856" />
-        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.388494873046875" />
         <entry key="app/src/main/res/xml/search_layout_preferences.xml" value="0.37681159420289856" />
         <entry key="app/src/main/res/xml/weather_location_preferences.xml" value="0.26222826086956524" />
         <entry key="app/src/main/res/xml/widget_layout_preferences.xml" value="0.30570652173913043" />

@@ -1,19 +1,26 @@
 package kenneth.app.starlightlauncher.noteswidget.view
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.dp
+import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.R
 import kenneth.app.starlightlauncher.noteswidget.databinding.AllNotesBinding
+import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-class AllNotes(context: Context) : FrameLayout(context) {
-    private val binding = AllNotesBinding.inflate(LayoutInflater.from(context), this)
+internal class AllNotesFragment(launcher: StarlightLauncherApi) :
+    Fragment(),
+    NoteListChangedCallback {
+    private val binding = AllNotesBinding.inflate(LayoutInflater.from(context))
+    private val prefs = NotesWidgetPreferences.getInstance(launcher)
     private val listAdapter: AllNoteCardListAdapter
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -22,16 +29,11 @@ class AllNotes(context: Context) : FrameLayout(context) {
                 updatePadding(bottom = binding.addNoteButton.height + 24.dp)
                 smoothScrollTo(0, 0)
             }
-            viewTreeObserver.removeOnGlobalLayoutListener(this)
+            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
         }
     }
 
     init {
-        layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT,
-        )
-
         val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
 
         with(binding) {
@@ -41,16 +43,46 @@ class AllNotes(context: Context) : FrameLayout(context) {
                 clipToPadding = false
             }
             noteCardList.apply {
-                adapter = AllNoteCardListAdapter(context).also { listAdapter = it }
+                adapter = AllNoteCardListAdapter(
+                    launcher, this@AllNotesFragment
+                ).also {
+                    listAdapter = it
+                }
                 layoutManager = LinearLayoutManager(context)
             }
         }
 
-        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+
+        lifecycleScope.launch { subscribeToNoteList() }
+    }
+
+    override fun onNoteDeleted(deletedNote: Note) {
+        lifecycleScope.launch {
+            prefs.deleteNote(deletedNote)
+        }
+    }
+
+    override fun onNoteEdited(editedNote: Note) {
+        lifecycleScope.launch {
+            prefs.editNote(editedNote)
+        }
+    }
+
+    private suspend fun subscribeToNoteList() {
+        prefs.notes.collect {
+            val oldNotes = listAdapter.notes
+            listAdapter.notes = it
+            DiffUtil.calculateDiff(NoteListDiffCallback(oldNotes, it))
+                .dispatchUpdatesTo(listAdapter)
+        }
     }
 
     private fun addNote() {
         listAdapter.addNote()
+        lifecycleScope.launch {
+            prefs.addNote(Note())
+        }
         binding.noteCardListScrollView.run {
             val lastView = getChildAt(childCount - 1)
             val lastViewBottom = lastView.bottom + paddingBottom

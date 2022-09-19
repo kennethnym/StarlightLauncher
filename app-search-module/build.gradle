@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.esotericsoftware:kryo:5.2.1'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

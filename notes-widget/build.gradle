@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.datastore:datastore-preferences-core:1.0.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     implementation project(path: ':starlight-launcher-api')

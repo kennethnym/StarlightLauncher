@@ -1,19 +1,23 @@
 package kenneth.app.starlightlauncher
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,10 +36,12 @@ internal abstract class StarlightLauncherApiModule {
  */
 @Singleton
 internal class StarlightLauncherApiImpl @Inject constructor(
+    @ApplicationContext applicationContext: Context,
     private val appearancePreferenceManager: AppearancePreferenceManager,
     private val launcherEventChannel: LauncherEventChannel,
     private val bindingRegister: BindingRegister,
     private val appManager: AppManager,
+    override val coroutineScope: CoroutineScope,
     override val blurHandler: BlurHandler,
 ) : StarlightLauncherApi {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -46,6 +52,8 @@ internal class StarlightLauncherApiImpl @Inject constructor(
 
     private var requestMultiplePermissionsResultCallback: MultiplePermissionRequestCallback? = null
 
+    override val dataStore = applicationContext.dataStore
+
     override lateinit var context: Context
         private set
 
@@ -54,6 +62,9 @@ internal class StarlightLauncherApiImpl @Inject constructor(
 
     override fun appLabelOf(packageName: String): String? =
         appManager.appLabelOf(packageName)
+
+    override fun launcherActivityInfoOf(componentName: ComponentName): LauncherActivityInfo? =
+        appManager.launcherActivityInfoOf(componentName)
 
     override fun showOptionMenu(builder: OptionMenuBuilder) {
         bindingRegister.mainScreenBinding.optionMenu.show(builder)
@@ -65,6 +76,10 @@ internal class StarlightLauncherApiImpl @Inject constructor(
 
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
         bindingRegister.mainScreenBinding.overlay.showFrom(fromView, viewConstructor(context))
+    }
+
+    override fun showOverlay(fragment: Fragment) {
+        bindingRegister.mainScreenBinding.overlay.showWith(fragment)
     }
 
     override fun closeOverlay() {

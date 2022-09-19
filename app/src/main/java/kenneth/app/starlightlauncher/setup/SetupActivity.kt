@@ -10,8 +10,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.*
+import kenneth.app.starlightlauncher.api.view.PREF_KEY_BLUR_EFFECT_ENABLED
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
-import kenneth.app.starlightlauncher.prefs.PREF_BLUR_EFFECT_ENABLED
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -89,7 +89,7 @@ internal class SetupActivity : AppCompatActivity() {
 
     private suspend fun runFinalSetup() {
         dataStore.edit {
-            it[PREF_BLUR_EFFECT_ENABLED] =
+            it[PREF_KEY_BLUR_EFFECT_ENABLED] =
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
             it[PREF_SETUP_FINISHED] = true
         }

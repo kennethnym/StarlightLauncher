@@ -56,6 +56,9 @@
     <string name="action_remove">Remove</string>
     <string name="action_finish">Finish</string>
 
+    <!-- Common status -->
+    <string name="status_loading">Loading…</string>
+
     <!-- Time ago -->
     <string name="time_ago_today">Today %1$s</string>
     <string name="time_ago_yesterday">Yesterday %1$s</string>
@@ -157,11 +160,15 @@
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Customize Starlight Launcher</string>
+
     <!-- Appearance preferences -->
     <string name="appearance_title">Appearance</string>
+    <string name="appearance_subtitle">Change the appearance of Starlight</string>
     <string name="appearance_icon_category_title">Icons</string>
     <string name="appearance_icon_pack_title">Icon packs</string>
-    <string name="appearance_summary">Adjust how Starlight Launcher looks.</string>
+    <string name="appearance_summary">Clock, weather, icon pack</string>
     <string name="appearance_blur_effect_title">Enable blur effect</string>
     <string name="appearance_blur_effect_summary">Requires read storage permission to access the wallpaper.</string>
     <string name="appearance_show_pinned_apps_labels_title">Show names of pinned apps</string>
@@ -180,6 +187,10 @@
     <string name="appearance_revert_icon_pack_title">Revert to system icons</string>
     <string name="appearance_revert_icon_pack_summary">Use default app icons instead.</string>
     <string name="appearance_icon_pack_already_using_default">Default icons are already in use.</string>
+
+    <!-- Search preferences -->
+    <string name="pref_search_title">Search</string>
+    <string name="pref_search_summary">Search result order, search engine</string>
 
     <!-- Search layout preferences -->
     <string name="search_layout_title">Layout</string>
@@ -261,7 +272,8 @@
     </string>
 
     <!-- Info preferences -->
-    <string name="info_pref_category_title">Info</string>
+    <string name="pref_info_title">Launcher info</string>
+    <string name="pref_info_summary">Version, feedback, source code</string>
     <string name="about_launcher_title">About Starlight Launcher</string>
     <string name="launcher_version_title">Launcher version</string>
     <string name="launcher_source_code_title">Source code</string>
