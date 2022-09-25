@@ -20,6 +20,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
@@ -49,6 +50,7 @@ private interface AvailableWidgetListAdapterEntryPoint {
 internal class AvailableAndroidWidgetListAdapter(
     private val context: Context,
     private val listView: ExpandableListView,
+    private var iconPack: IconPack,
 ) : BaseExpandableListAdapter() {
     private var providerPackageNames = mutableListOf<String>()
     private var providers: Map<String, List<AppWidgetProviderInfo>> = emptyMap()
@@ -133,7 +135,7 @@ internal class AvailableAndroidWidgetListAdapter(
         parent: ViewGroup
     ): View {
         val packageName = providerPackageNames[groupPosition]
-        val icon = appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
+        val icon = iconPack.getIconOf(appInfos[packageName]!!)
         val iconSize =
             context.resources.getDimensionPixelSize(R.dimen.available_widgets_list_app_icon_size)
         val iconPaddingEnd =
@@ -201,7 +203,7 @@ internal class AvailableAndroidWidgetListAdapter(
                 }
             } ?: setCompoundDrawablesRelativeWithIntrinsicBounds(
                 null,
-                appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!),
+                iconPack.getIconOf(appInfos[packageName]!!),
                 null,
                 null,
             )
@@ -211,7 +213,11 @@ internal class AvailableAndroidWidgetListAdapter(
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean = true
 
-    @SuppressLint("NotifyDataSetChanged")
+    fun changeIconPack(iconPack: IconPack) {
+        this.iconPack = iconPack
+        notifyDataSetChanged()
+    }
+
     fun showAvailableWidgets(
         providers: Map<String, List<AppWidgetProviderInfo>>,
         infos: Map<String, ApplicationInfo>,

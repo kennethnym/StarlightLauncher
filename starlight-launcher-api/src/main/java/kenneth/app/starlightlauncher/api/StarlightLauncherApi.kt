@@ -13,6 +13,7 @@ import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 
 typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
 
@@ -44,6 +45,8 @@ interface StarlightLauncherApi {
     val installedApps: List<LauncherActivityInfo>
 
     val coroutineScope: CoroutineScope
+
+    val iconPack: Flow<IconPack>
 
     fun appLabelOf(packageName: String): String?
 
@@ -87,11 +90,6 @@ interface StarlightLauncherApi {
      * Hides the current overlay.
      */
     fun closeOverlay()
-
-    /**
-     * Get the currently applied icon pack.
-     */
-    fun getIconPack(): IconPack
 
     /**
      * Request [permission] to be granted. The result is passed to the given [callback].

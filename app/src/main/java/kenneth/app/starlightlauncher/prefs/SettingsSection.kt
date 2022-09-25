@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             title,

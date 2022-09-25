@@ -37,7 +37,7 @@ internal abstract class StarlightLauncherApiModule {
 @Singleton
 internal class StarlightLauncherApiImpl @Inject constructor(
     @ApplicationContext applicationContext: Context,
-    private val appearancePreferenceManager: AppearancePreferenceManager,
+    appearancePreferenceManager: AppearancePreferenceManager,
     private val launcherEventChannel: LauncherEventChannel,
     private val bindingRegister: BindingRegister,
     private val appManager: AppManager,
@@ -53,6 +53,8 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     private var requestMultiplePermissionsResultCallback: MultiplePermissionRequestCallback? = null
 
     override val dataStore = applicationContext.dataStore
+
+    override val iconPack = appearancePreferenceManager.iconPack
 
     override lateinit var context: Context
         private set
@@ -85,8 +87,6 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     override fun closeOverlay() {
         bindingRegister.mainScreenBinding.overlay.close()
     }
-
-    override fun getIconPack(): IconPack = appearancePreferenceManager.iconPack
 
     override fun requestPermission(permission: String, callback: PermissionRequestCallback) {
         requestPermissionResultCallback = callback

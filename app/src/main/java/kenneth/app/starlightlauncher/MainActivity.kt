@@ -34,11 +34,8 @@ import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManage
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.util.calculateDominantColor
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -155,8 +152,10 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         setContentView(binding.root)
         setWallpaper()
-        appearancePreferenceManager.iconPack.let {
-            if (it is InstalledIconPack) it.load()
+        runBlocking {
+            appearancePreferenceManager.iconPack.first().let {
+                if (it is InstalledIconPack) it.load()
+            }
         }
         attachListeners()
     }

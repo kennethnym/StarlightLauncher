@@ -49,6 +49,7 @@ class AppSearchResultAdapter(
                         }
                     }
             }
+            launch { listenToIconPack() }
         }
     }
 
@@ -67,6 +68,12 @@ class AppSearchResultAdapter(
     ) {
         if (holder is AppSearchResultViewHolder && searchResult is AppSearchModule.Result) {
             onBindSearchResult(holder, searchResult)
+        }
+    }
+
+    private suspend fun listenToIconPack() {
+        launcher.iconPack.collect {
+            appGridAdapter?.changeIconPack(it)
         }
     }
 
@@ -97,7 +104,8 @@ class AppSearchResultAdapter(
                         context,
                         appList,
                         launcher,
-                        shouldShowAppNames = runBlocking { prefs.shouldShowAppNames.first() }
+                        shouldShowAppNames = runBlocking { prefs.shouldShowAppNames.first() },
+                        iconPack = runBlocking { launcher.iconPack.first() }
                     )
                         .also { appGridAdapter = it }
 

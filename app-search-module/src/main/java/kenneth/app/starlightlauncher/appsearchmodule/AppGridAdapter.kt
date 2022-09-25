@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
@@ -29,6 +30,7 @@ internal class AppGridAdapter(
     private val context: Context,
     apps: AppList,
     private val launcher: StarlightLauncherApi,
+    private var iconPack: IconPack,
     /**
      * Whether app names should be shown underneath each app icon.
      */
@@ -101,7 +103,7 @@ internal class AppGridAdapter(
                     context.getString(R.string.app_icon_content_description, appName)
 
                 Glide.with(context)
-                    .load(launcher.getIconPack().getIconOf(app, app.user))
+                    .load(iconPack.getIconOf(app, app.user))
                     .into(this)
             }
 
@@ -223,6 +225,11 @@ internal class AppGridAdapter(
             selectedApp = apps[position]
             showAppOptionMenu()
         }
+    }
+
+    fun changeIconPack(iconPack: IconPack) {
+        this.iconPack = iconPack
+        notifyItemRangeChanged(0, visibleApps.size)
     }
 
     private suspend fun listenToLauncherEvents() {

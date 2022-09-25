@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.map
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
     private val launcher: StarlightLauncherApi,
-    mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
@@ -90,13 +89,20 @@ internal class PinnedAppsWidget(
     })
 
     init {
-        CoroutineScope(mainDispatcher).run {
+        launcher.coroutineScope.run {
             launch { launcher.addLauncherEventListener(::onLauncherEvent) }
             launch { listenToPinnedApps() }
+            launch { listenToIconPack() }
             launch { updatePinnedAppLabelsVisibility() }
         }
 
         dndTouchHelper.attachToRecyclerView(binding.pinnedAppsGrid)
+    }
+
+    private suspend fun listenToIconPack() {
+        launcher.iconPack.collect {
+            appGridAdapter?.changeIconPack(it)
+        }
     }
 
     private suspend fun listenToPinnedApps() {
@@ -148,7 +154,8 @@ internal class PinnedAppsWidget(
                         context,
                         apps,
                         launcher,
-                        runBlocking { prefs.shouldShowAppNames.first() },
+                        iconPack = runBlocking { launcher.iconPack.first() },
+                        shouldShowAppNames = runBlocking { prefs.shouldShowAppNames.first() },
                         showAllApps = true,
                         enableLongPressMenu = false,
                     )

@@ -24,7 +24,11 @@ private const val RES_TYPE_XML = "xml"
 /**
  * Represents an icon pack installed on the device.
  */
-internal class InstalledIconPack(context: Context, val packageName: String) : IconPack {
+internal class InstalledIconPack(
+    val packageName: String,
+    private val packageManager: PackageManager,
+    private val resources: Resources
+) : IconPack {
     private val packageInfo by lazy {
         packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
     }
@@ -48,9 +52,6 @@ internal class InstalledIconPack(context: Context, val packageName: String) : Ic
             .loadLabel(packageManager)
             .toString()
     }
-
-    private val packageManager = context.packageManager
-    private val resources = context.resources
 
     private val backImages = mutableListOf<Bitmap>()
     private var maskImage: Bitmap? = null
