@@ -24,8 +24,9 @@ fun RootSettingsScreen(
             SettingsListItem(
                 icon = painterResource(R.drawable.ic_swatchbook),
                 title = stringResource(R.string.appearance_title),
-                summary = stringResource(R.string.appearance_summary)
-            ) { navController.navigate(SETTINGS_ROUTE_APPEARANCE) }
+                summary = stringResource(R.string.appearance_summary),
+                onTap = { navController.navigate(SETTINGS_ROUTE_APPEARANCE) }
+            )
 
             SettingsListItem(
                 icon = painterResource(R.drawable.ic_file_search_alt),

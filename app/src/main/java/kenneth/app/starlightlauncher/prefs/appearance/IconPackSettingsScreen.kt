@@ -86,7 +86,8 @@ internal fun InstalledIconPacksSection(
                     SettingsListItem(
                         icon = BitmapPainter(it.icon.asImageBitmap()),
                         title = it.name,
-                    ) { onChangeIconPack(it) }
+                        onTap = { onChangeIconPack(it) }
+                    )
                 }
             }
     }

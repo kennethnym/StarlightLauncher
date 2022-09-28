@@ -4,11 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.core.content.edit
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
+import kenneth.app.starlightlauncher.api.view.PREF_KEY_BLUR_EFFECT_ENABLED
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_ICON_PACK
 import kotlinx.coroutines.flow.map
@@ -21,10 +21,7 @@ import javax.inject.Singleton
 @Singleton
 internal class AppearancePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val sharedPreferences: SharedPreferences,
 ) {
-    private val prefKeys = AppearancePreferenceKeys(context)
-
     private val defaultIconPack = DefaultIconPack(context)
     private var currentIconPack: IconPack? = null
 
@@ -33,11 +30,10 @@ internal class AppearancePreferenceManager @Inject constructor(
      * is whether the launcher has read external storage permission.
      * If the launcher has permission, then blur effect is enabled by default.
      */
-    val isBlurEffectEnabled
-        get() = sharedPreferences.getBoolean(
-            prefKeys.blurEffectEnabled,
-            context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-        )
+    val isBlurEffectEnabled = context.dataStore.data.map {
+        it[PREF_KEY_BLUR_EFFECT_ENABLED]
+            ?: (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+    }
 
     /**
      * The icon pack to use, if user has picked any. null if user has not picked any icon pack.
@@ -66,15 +62,15 @@ internal class AppearancePreferenceManager @Inject constructor(
      *
      * @param enabled Whether blur effect should be enabled
      */
-    fun setBlurEffectEnabled(enabled: Boolean) {
+    suspend fun setBlurEffectEnabled(enabled: Boolean) {
         val value =
             if (enabled)
                 context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
             else
                 false
 
-        sharedPreferences.edit(commit = true) {
-            putBoolean(prefKeys.blurEffectEnabled, value)
+        context.dataStore.edit {
+            it[PREF_KEY_BLUR_EFFECT_ENABLED] = value
         }
     }
 
@@ -94,10 +90,4 @@ internal class AppearancePreferenceManager @Inject constructor(
         }
         currentIconPack = defaultIconPack
     }
-}
-
-internal class AppearancePreferenceKeys(context: Context) {
-    val iconPack = context.getString(R.string.appearance_icon_pack)
-
-    val blurEffectEnabled = context.getString(R.string.pref_key_appearance_blur_effect_enabled)
 }
