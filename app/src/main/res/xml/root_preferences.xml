@@ -6,18 +6,18 @@
         app:summary="@string/appearance_summary"
         app:title="@string/appearance_title" />
 
-    <PreferenceCategory
-        app:key="@string/pref_category_search_behavior"
-        app:title="@string/search_header">
+<!--    <PreferenceCategory-->
+<!--        app:key="@string/pref_category_search_behavior"-->
+<!--        app:title="@string/search_header">-->
 
-        <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.searching.SearchLayoutSettingsFragment"
-            app:icon="@drawable/ic_window_grid"
-            app:key="@string/search_layout_pref_key"
-            app:summary="@string/search_layout_summary"
-            app:title="@string/search_layout_title" />
+<!--        <Preference-->
+<!--            app:fragment="kenneth.app.starlightlauncher.prefs.searching.SearchLayoutSettingsFragment"-->
+<!--            app:icon="@drawable/ic_window_grid"-->
+<!--            app:key="@string/search_layout_pref_key"-->
+<!--            app:summary="@string/search_layout_summary"-->
+<!--            app:title="@string/search_layout_title" />-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
 
     <PreferenceCategory
         app:key="@string/pref_category_widgets"

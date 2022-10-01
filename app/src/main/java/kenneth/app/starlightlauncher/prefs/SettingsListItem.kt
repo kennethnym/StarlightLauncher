@@ -23,6 +23,7 @@ val SETTINGS_LIST_ITEM_ICON_SIZE = 24.dp
 @Composable
 fun SettingsListItem(
     icon: Painter? = null,
+    emptyIcon: Boolean = icon == null,
     title: String,
     summary: String? = null,
     onTap: (() -> Unit)? = null,
@@ -61,24 +62,26 @@ fun SettingsListItem(
         modifier = Modifier
             .scale(scale)
             .fillMaxWidth()
-            .pointerInteropFilter {
-                onTouchEvent(it)
-            }
+            .then(
+                if (onTap != null)
+                    Modifier.pointerInteropFilter { onTouchEvent(it) }
+                else Modifier
+            )
     ) {
-        if (icon != null)
-            Image(
+        when {
+            icon != null -> Image(
                 painter = icon,
                 contentDescription = title,
                 modifier = Modifier
                     .width(SETTINGS_LIST_ITEM_ICON_SIZE)
                     .height(SETTINGS_LIST_ITEM_ICON_SIZE)
             )
-        else
-            Spacer(
+            emptyIcon -> Spacer(
                 modifier = Modifier
                     .width(SETTINGS_LIST_ITEM_ICON_SIZE)
                     .height(SETTINGS_LIST_ITEM_ICON_SIZE)
             )
+        }
 
         Column(
             horizontalAlignment = Alignment.Start,

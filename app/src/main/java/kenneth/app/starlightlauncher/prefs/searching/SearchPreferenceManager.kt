@@ -2,14 +2,20 @@ package kenneth.app.starlightlauncher.prefs.searching
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
+import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.InternalLauncherEvent
 import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
+import kenneth.app.starlightlauncher.api.util.swap
+import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.extension.Extension
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.prefs.PREF_SEARCH_MODULE_ORDER
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,6 +53,7 @@ internal class SearchPreferenceManager @Inject constructor(
     @ApplicationContext context: Context,
 ) {
     private val keys = SearchPreferencesPrefKeys(context)
+    private val dataStore = context.dataStore
 
     private var enabledSearchModules = mutableSetOf<String>()
 
@@ -58,6 +65,11 @@ internal class SearchPreferenceManager @Inject constructor(
      */
     val categoryOrder
         get() = _categoryOrder as List<String>
+
+    val searchModuleOrder = context.dataStore.data.map { preferences ->
+        preferences[PREF_SEARCH_MODULE_ORDER]?.split(CATEGORY_ORDER_LIST_SEPARATOR)
+            ?: extensionManager.installedSearchModules.map { it.metadata.extensionName }
+    }
 
     init {
         getSearchModuleOrder(extensionManager.installedExtensions)
@@ -72,15 +84,19 @@ internal class SearchPreferenceManager @Inject constructor(
      */
     fun orderOf(searchModuleName: String) = categoryOrder.indexOf(searchModuleName)
 
-    fun changeSearchCategoryOrder(fromIndex: Int, toIndex: Int, newOrder: List<String>) {
-        _categoryOrder = newOrder.toMutableList()
-        saveOrderList()
-        launcherEventChannel.add(
-            SearchPreferenceChanged.SearchCategoryOrderChanged(
-                fromIndex,
-                toIndex
-            )
-        )
+    suspend fun changeSearchCategoryOrder(fromPosition: Int, toPosition: Int) {
+        dataStore.edit { preferences ->
+            val currentOrder =
+                preferences[PREF_SEARCH_MODULE_ORDER]?.split(CATEGORY_ORDER_LIST_SEPARATOR)
+                    ?: extensionManager.installedSearchModules.map { it.metadata.extensionName }
+
+            preferences[PREF_SEARCH_MODULE_ORDER] = currentOrder.run {
+                val newList = toMutableList()
+                newList
+                    .apply { swap(fromPosition, toPosition) }
+                    .joinToString(CATEGORY_ORDER_LIST_SEPARATOR)
+            }
+        }
     }
 
     private fun getSearchModuleOrder(extensions: Collection<Extension>) {

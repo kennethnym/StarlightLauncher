@@ -190,15 +190,16 @@
 
     <!-- Search preferences -->
     <string name="pref_search_title">Search</string>
+    <string name="pref_search_subtitle">Tweak how searching works in Starlight</string>
     <string name="pref_search_summary">Search result order, search engine</string>
 
     <!-- Search layout preferences -->
-    <string name="search_layout_title">Layout</string>
+    <string name="pref_search_layout_title">Search Layout</string>
     <string name="search_layout_summary">Adjust the layout of the search result screen.</string>
     <string name="search_category_order_title">Search category order</string>
-    <string name="search_category_order_summary">
+    <string name="pref_search_layout_subtitle">
         Rearrange the order that different search categories show up on the search result page
-        by long pressing then dragging them.
+        by long pressing and dragging them.
     </string>
 
     <!-- Widget layout preferences -->

@@ -14,7 +14,7 @@ val PREF_MEDIA_CONTROL_ENABLED = booleanPreferencesKey("media_control_enabled")
 val PREF_NOTE_WIDGET_ENABLED = booleanPreferencesKey("note_widget_enabled")
 val PREF_UNIT_CONVERTED_ENABLED = booleanPreferencesKey("unit_converted_enabled")
 
-val PREF_SEARCH_CATEGORY_ORDER = stringPreferencesKey("pref_key_search_category_order")
+val PREF_SEARCH_MODULE_ORDER = stringPreferencesKey("pref_key_search_category_order")
 
 val PREF_WIDGET_ORDER = stringPreferencesKey("pref_key_widget_order")
 val PREF_ADDED_WIDGETS = stringPreferencesKey("pref_key_added_widgets")
