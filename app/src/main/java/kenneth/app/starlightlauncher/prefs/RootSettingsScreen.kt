@@ -1,11 +1,8 @@
 package kenneth.app.starlightlauncher.prefs
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kenneth.app.starlightlauncher.R
 
@@ -35,8 +32,9 @@ fun RootSettingsScreen(
 
             SettingsListItem(
                 icon = painterResource(R.drawable.ic_info_circle),
-                title = stringResource(R.string.pref_info_title),
-                summary = stringResource(R.string.pref_info_summary)
+                title = stringResource(R.string.launcher_info_title),
+                summary = stringResource(R.string.launcher_info_summary),
+                onTap = { navController.navigate(SETTINGS_ROUTE_INFO) }
             )
         }
     }

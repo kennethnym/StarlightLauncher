@@ -273,8 +273,8 @@
     </string>
 
     <!-- Info preferences -->
-    <string name="pref_info_title">Launcher info</string>
-    <string name="pref_info_summary">Version, feedback, source code</string>
+    <string name="launcher_info_title">Launcher info</string>
+    <string name="launcher_info_summary">Version, feedback, source code</string>
     <string name="about_launcher_title">About Starlight Launcher</string>
     <string name="launcher_version_title">Launcher version</string>
     <string name="launcher_source_code_title">Source code</string>

@@ -21,16 +21,18 @@ import javax.inject.Inject
 class StarlightLauncherSettingsActivity : ComponentActivity() {
     // Tree layout of the settings screens
     //
-    // RootSettingsScreen
+    // RootSettingsScreen                     Route name
     // ├── AppearanceSettingsScreen           (appearance)
     // │   ├── Blur effect
     // │   └── Icon pack
     // │       └── IconPackSettingsScreen     (appearance/icon_pack)
     // └── SearchSettingsScreen               (search)
-    //     ├── Search layout
-    //     │   └── SearchLayoutSettingsScreen (search/layout)
-    //     └── Search engine
-    //         └── SearchEngineSettingsScreen
+    // │   ├── Search layout
+    // │   │   └── SearchLayoutSettingsScreen (search/layout)
+    // │   └── Search engine
+    // │       └── SearchEngineSettingsScreen
+    // └── Info
+    //     └── InfoSettingsScreen              (info)
 
     @Inject
     internal lateinit var extensionManager: ExtensionManager
@@ -48,6 +50,8 @@ class StarlightLauncherSettingsActivity : ComponentActivity() {
 
                     composable(SETTINGS_ROUTE_SEARCH) { SearchSettingsScreen(navController) }
                     composable(SETTINGS_ROUTE_SEARCH_LAYOUT) { SearchLayoutSettingsScreen() }
+
+                    composable(SETTINGS_ROUTE_INFO) { InfoSettingsScreen() }
                 }
             }
         }

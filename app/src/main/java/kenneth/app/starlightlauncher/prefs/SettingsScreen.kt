@@ -18,7 +18,7 @@ import kenneth.app.starlightlauncher.R
 @Composable
 fun SettingsScreen(
     title: String,
-    description: String,
+    description: String? = null,
     gutter: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -49,7 +49,9 @@ fun SettingsScreen(
                 title,
                 style = MaterialTheme.typography.h1
             )
-            Text(description)
+            description?.let {
+                Text(it)
+            }
         }
 
         Box(
