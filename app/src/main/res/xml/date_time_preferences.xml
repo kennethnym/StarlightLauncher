@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/date_time_pref_title">
+<!--    <PreferenceCategory app:title="@string/date_time_pref_title">-->
 
-        <ListPreference
-            app:defaultValue="@string/default_clock_size"
-            app:entries="@array/clock_size_entries"
-            app:entryValues="@array/clock_size_values"
-            app:key="@string/date_time_clock_size"
-            app:title="@string/date_time_clock_size_title"
-            app:useSimpleSummaryProvider="true" />
+<!--        <ListPreference-->
+<!--            app:defaultValue="@string/default_clock_size"-->
+<!--            app:entries="@array/clock_size_entries"-->
+<!--            app:entryValues="@array/clock_size_values"-->
+<!--            app:key="@string/date_time_clock_size"-->
+<!--            app:title="@string/date_time_clock_size_title"-->
+<!--            app:useSimpleSummaryProvider="true" />-->
 
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="@string/date_time_use_24hr_clock"
-            app:title="@string/date_time_use_24hr_clock_title" />
+<!--        <SwitchPreference-->
+<!--            app:defaultValue="false"-->
+<!--            app:key="@string/date_time_use_24hr_clock"-->
+<!--            app:title="@string/date_time_use_24hr_clock_title" />-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
 
-    <PreferenceCategory app:title="@string/date_time_weather_category">
+    <PreferenceCategory app:title="@string/pref_weather_section_title">
 
         <SwitchPreference
             app:defaultValue="@bool/default_show_weather"
@@ -32,13 +32,13 @@
             app:summary="@string/date_time_use_auto_location_summary"
             app:title="@string/date_time_use_auto_location_title" />
 
-        <ListPreference
-            app:defaultValue="@string/default_check_weather_frequency"
-            app:entries="@array/date_time_auto_weather_check_frequency_entries"
-            app:entryValues="@array/date_time_auto_weather_check_frequency_values"
-            app:key="@string/date_time_auto_location_check_frequency"
-            app:summary="@string/date_time_use_auto_location_check_frequency_summary"
-            app:title="@string/date_time_use_auto_location_check_frequency_title" />
+<!--        <ListPreference-->
+        <!--            app:defaultValue="@string/default_check_weather_frequency"-->
+        <!--            app:entries="@array/weather_check_frequency_labels"-->
+        <!--            app:entryValues="@array/date_time_auto_weather_check_frequency_values"-->
+        <!--            app:key="@string/date_time_auto_location_check_frequency"-->
+        <!--            app:summary="@string/date_time_use_auto_location_check_frequency_summary"-->
+        <!--            app:title="@string/date_time_use_auto_location_check_frequency_title" />-->
 
         <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.datetime.WeatherLocationPickerFragment"
@@ -48,7 +48,7 @@
 
         <ListPreference
             app:defaultValue="@string/default_weather_unit"
-            app:entries="@array/weather_unit_entries"
+            app:entries="@array/weather_unit_labels"
             app:entryValues="@array/weather_unit_values"
             app:key="@string/date_time_weather_unit"
             app:title="@string/date_time_weather_unit_title"

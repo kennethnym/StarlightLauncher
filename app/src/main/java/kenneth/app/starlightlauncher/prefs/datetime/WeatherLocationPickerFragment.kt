@@ -18,6 +18,7 @@ import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.NominatimApi
+import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -139,8 +140,8 @@ internal class WeatherLocationPickerFragment : PreferenceFragmentCompat() {
     }
 
     private fun setWeatherLocation(latLong: LatLong, displayName: String) {
-        dateTimePreferenceManager.changeWeatherLocation(latLong, displayName)
-        parentFragmentManager.popBackStack()
+//        dateTimePreferenceManager.changeWeatherLocation(latLong, displayName)
+//        parentFragmentManager.popBackStack()
     }
 
     private fun changeToolbarTitle() {

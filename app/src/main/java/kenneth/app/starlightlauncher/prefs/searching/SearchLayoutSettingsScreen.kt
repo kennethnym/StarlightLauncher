@@ -1,7 +1,5 @@
 package kenneth.app.starlightlauncher.prefs.searching
 
-import android.util.Log
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.prefs.SettingsListItem
-import kenneth.app.starlightlauncher.prefs.SettingsScreen
+import kenneth.app.starlightlauncher.prefs.component.SettingsListItem
+import kenneth.app.starlightlauncher.prefs.component.SettingsScreen
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState

@@ -12,6 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -81,20 +82,20 @@ internal class DateTimeSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showCurrentPreferences() {
-        showPickedLocation()
-        val shouldShowWeather = dateTimePreferenceManager.shouldShowWeather
-        use24HrClockPref.isChecked = dateTimePreferenceManager.shouldUse24HrClock
-        useAutoWeatherLocationPref.isChecked =
-            dateTimePreferenceManager.shouldUseAutoWeatherLocation
-        showWeatherPref.isChecked = shouldShowWeather
-        weatherLocationPickerPref.isEnabled =
-            shouldShowWeather && !useAutoWeatherLocationPref.isChecked
-        useAutoWeatherLocationPref.isEnabled = shouldShowWeather
+//        showPickedLocation()
+//        val shouldShowWeather = dateTimePreferenceManager.shouldShowWeather
+//        use24HrClockPref.isChecked = dateTimePreferenceManager.shouldUse24HrClock
+//        useAutoWeatherLocationPref.isChecked =
+//            dateTimePreferenceManager.shouldUseAutoWeatherLocation
+//        showWeatherPref.isChecked = shouldShowWeather
+//        weatherLocationPickerPref.isEnabled =
+//            shouldShowWeather && !useAutoWeatherLocationPref.isChecked
+//        useAutoWeatherLocationPref.isEnabled = shouldShowWeather
     }
 
     private fun changeToolbarTitle() {
-        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
-            getString(R.string.date_time_pref_title)
+//        activity?.findViewById<MaterialToolbar>(R.id.settings_toolbar)?.title =
+//            getString(R.string.date_time_pref_title)
     }
 
     private fun showPickedLocation() {

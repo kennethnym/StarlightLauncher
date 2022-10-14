@@ -6,9 +6,9 @@
         app:summary="@string/appearance_summary"
         app:title="@string/appearance_title" />
 
-<!--    <PreferenceCategory-->
-<!--        app:key="@string/pref_category_search_behavior"-->
-<!--        app:title="@string/search_header">-->
+    <PreferenceCategory
+        app:key="@string/pref_category_search_behavior"
+        app:title="@string/search_header">
 
 <!--        <Preference-->
 <!--            app:fragment="kenneth.app.starlightlauncher.prefs.searching.SearchLayoutSettingsFragment"-->
@@ -17,18 +17,18 @@
 <!--            app:summary="@string/search_layout_summary"-->
 <!--            app:title="@string/search_layout_title" />-->
 
-<!--    </PreferenceCategory>-->
+    </PreferenceCategory>
 
     <PreferenceCategory
         app:key="@string/pref_category_widgets"
         app:title="@string/widgets_header">
 
-        <Preference
-            app:fragment="kenneth.app.starlightlauncher.prefs.datetime.DateTimeSettingsFragment"
-            app:icon="@drawable/ic_clock"
-            app:key="@string/date_time_pref_key"
-            app:summary="@string/date_time_pref_summary"
-            app:title="@string/date_time_pref_title" />
+<!--        <Preference-->
+        <!--            app:fragment="kenneth.app.starlightlauncher.prefs.datetime.DateTimeSettingsFragment"-->
+        <!--            app:icon="@drawable/ic_clock"-->
+        <!--            app:key="@string/date_time_pref_key"-->
+        <!--            app:summary="@string/date_time_pref_summary"-->
+        <!--            app:title="@string/date_time_pref_title" />-->
 
         <Preference
             app:fragment="kenneth.app.starlightlauncher.prefs.MediaControlSettingsFragment"

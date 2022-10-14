@@ -1,7 +1,7 @@
 package kenneth.app.starlightlauncher
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Typography
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -17,16 +17,30 @@ val Manrope = FontFamily(
     Font(R.font.manrope_extrabold, FontWeight.ExtraBold),
 )
 
-val Typography = Typography(
-    h1 = TextStyle(
+val typography = Typography(
+    headlineLarge = TextStyle(
         fontWeight = FontWeight.ExtraBold,
         fontFamily = Manrope,
         fontSize = 36.sp
     ),
-    body1 = TextStyle(
+    titleMedium = TextStyle(
+        fontWeight = FontWeight.SemiBold,
         fontFamily = Manrope,
-        fontSize = 16.sp
+        fontSize = 20.sp,
     ),
+    bodyMedium = TextStyle(
+        fontFamily = Manrope,
+        fontSize = 16.sp,
+    ),
+    bodySmall = TextStyle(
+        fontFamily = Manrope,
+        fontSize = 14.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Manrope,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+    )
 )
 
 @Composable
@@ -34,10 +48,10 @@ fun LauncherTheme(
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        typography = Typography,
-        content = content,
-        colors = MaterialTheme.colors.copy(
+        typography = typography,
+        colorScheme = MaterialTheme.colorScheme.copy(
             primary = Color(0xFF009DFF)
-        )
+        ),
+        content = content,
     )
 }

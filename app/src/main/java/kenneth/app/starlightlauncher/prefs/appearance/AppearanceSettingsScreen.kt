@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -15,9 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.prefs.SETTINGS_ROUTE_ICON_PACK
-import kenneth.app.starlightlauncher.prefs.SettingsListItem
-import kenneth.app.starlightlauncher.prefs.SettingsScreen
+import kenneth.app.starlightlauncher.prefs.component.*
 
 @Composable
 internal fun AppearanceSettingsScreen(
@@ -27,7 +24,7 @@ internal fun AppearanceSettingsScreen(
     val context = LocalContext.current
     val permissionRequestLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            viewModel.setIsBlurEffectEnabled(isGranted)
+            viewModel.changeIsBlurEffectEnabled(isGranted)
         }
 
     fun toggleBlurEffect(isEnabled: Boolean) {
@@ -37,7 +34,7 @@ internal fun AppearanceSettingsScreen(
         if (isEnabled && !hasPermission) {
             permissionRequestLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         } else {
-            viewModel.setIsBlurEffectEnabled(isEnabled)
+            viewModel.changeIsBlurEffectEnabled(isEnabled)
         }
     }
 
@@ -55,18 +52,18 @@ internal fun AppearanceSettingsScreen(
             )
 
             SettingsListItem(
+                icon = painterResource(R.drawable.ic_clock),
+                title = stringResource(R.string.pref_clock_settings_title),
+                summary = stringResource(R.string.pref_clock_settings_summary),
+                onTap = { navController.navigate(SETTINGS_ROUTE_CLOCK) }
+            )
+
+            SwitchSettingsListItem(
                 icon = null,
                 title = stringResource(R.string.appearance_blur_effect_title),
                 summary = stringResource(R.string.appearance_blur_effect_summary),
-                control = {
-                    Switch(
-                        checked = viewModel.isBlurEffectEnabled,
-                        onCheckedChange = { toggleBlurEffect(it) }
-                    )
-                },
-                onTap = {
-                    toggleBlurEffect(!viewModel.isBlurEffectEnabled)
-                }
+                checked = viewModel.isBlurEffectEnabled,
+                onCheckedChange = { toggleBlurEffect(it) }
             )
         }
     }

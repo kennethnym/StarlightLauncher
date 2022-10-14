@@ -1,15 +1,18 @@
-package kenneth.app.starlightlauncher.prefs
+package kenneth.app.starlightlauncher.prefs.component
 
 import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +30,8 @@ fun SettingsListItem(
     title: String,
     summary: String? = null,
     onTap: (() -> Unit)? = null,
-    control: @Composable (() -> Unit)? = null
+    control: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
 ) {
     var isTapped by remember { mutableStateOf(false) }
 
@@ -63,18 +67,20 @@ fun SettingsListItem(
             .scale(scale)
             .fillMaxWidth()
             .then(
-                if (onTap != null)
+                if (onTap != null && enabled)
                     Modifier.pointerInteropFilter { onTouchEvent(it) }
                 else Modifier
             )
+            .alpha(if (enabled) 1f else 0.5f)
     ) {
         when {
             icon != null -> Image(
                 painter = icon,
                 contentDescription = title,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .width(SETTINGS_LIST_ITEM_ICON_SIZE)
-                    .height(SETTINGS_LIST_ITEM_ICON_SIZE)
+                    .height(SETTINGS_LIST_ITEM_ICON_SIZE),
             )
             emptyIcon -> Spacer(
                 modifier = Modifier
@@ -87,9 +93,9 @@ fun SettingsListItem(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.weight(1F)
         ) {
-            Text(title, fontFamily = Manrope, fontWeight = FontWeight.Bold)
+            Text(title, style = MaterialTheme.typography.titleMedium)
             summary?.let {
-                Text(it, fontFamily = Manrope, fontSize = 14.sp)
+                Text(it, style = MaterialTheme.typography.bodySmall)
             }
         }
 

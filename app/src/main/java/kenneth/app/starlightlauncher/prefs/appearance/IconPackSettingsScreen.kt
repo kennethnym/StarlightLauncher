@@ -2,12 +2,10 @@ package kenneth.app.starlightlauncher.prefs.appearance
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.painterResource
@@ -16,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
-import kenneth.app.starlightlauncher.prefs.SettingsListItem
-import kenneth.app.starlightlauncher.prefs.SettingsScreen
-import kenneth.app.starlightlauncher.prefs.SettingsSection
+import kenneth.app.starlightlauncher.prefs.component.SettingsListItem
+import kenneth.app.starlightlauncher.prefs.component.SettingsScreen
+import kenneth.app.starlightlauncher.prefs.component.SettingsSection
 
 @Composable
 internal fun IconPackSettingsScreen(viewModel: IconPackSettingsScreenViewModel = hiltViewModel()) {
@@ -53,9 +51,15 @@ fun SelectedIconPackSection(
 ) {
     SettingsSection(title = stringResource(R.string.appearance_current_icon_pack)) {
         when (iconPack) {
-            null -> Text(stringResource(R.string.status_loading))
+            null -> Text(
+                stringResource(R.string.status_loading),
+                style = MaterialTheme.typography.bodySmall
+            )
             is DefaultIconPack ->
-                Text(stringResource(R.string.appearance_no_current_icon_pack))
+                Text(
+                    stringResource(R.string.appearance_no_current_icon_pack),
+                    style = MaterialTheme.typography.bodySmall
+                )
             is InstalledIconPack ->
                 SettingsListItem(
                     icon = BitmapPainter(iconPack.icon.asImageBitmap()),
@@ -79,7 +83,10 @@ internal fun InstalledIconPacksSection(
 
     SettingsSection(title = stringResource(R.string.appearance_installed_icon_pack)) {
         if (iconPacks.isEmpty() || availableIconPacks.isEmpty())
-            Text(stringResource(R.string.appearance_no_supported_icon_packs))
+            Text(
+                stringResource(R.string.appearance_no_supported_icon_packs),
+                style = MaterialTheme.typography.bodySmall
+            )
         else
             Column {
                 availableIconPacks.forEach {

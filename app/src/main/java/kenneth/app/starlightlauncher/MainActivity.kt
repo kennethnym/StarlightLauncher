@@ -29,6 +29,7 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.home.HomeScreenViewPagerAdapter
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
@@ -96,6 +97,9 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     @Inject
     lateinit var bindingRegister: BindingRegister
 
+    @Inject
+    lateinit var launcherFragmentFactory: LauncherFragmentFactory
+
     private lateinit var binding: ActivityMainBinding
 
     private var currentWallpaper: Bitmap? = null
@@ -117,6 +121,8 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        supportFragmentManager.fragmentFactory = launcherFragmentFactory
+
         super.onCreate(savedInstanceState)
 
         getCurrentWallpaper()
@@ -142,7 +148,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             bindingRegister.activityMainBinding = it
         }
 
-        binding.homeScreenViewPager.adapter = HomeScreenViewPagerAdapter(this, bindingRegister)
+        binding.homeScreenViewPager.adapter = HomeScreenViewPagerAdapter(this)
 
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)

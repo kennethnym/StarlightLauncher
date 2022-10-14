@@ -24,7 +24,7 @@ internal class AppearanceSettingsScreenViewModel @Inject constructor(
         }
     }
 
-    fun setIsBlurEffectEnabled(enabled: Boolean) {
+    fun changeIsBlurEffectEnabled(enabled: Boolean) {
         viewModelScope.launch {
             appearancePreferenceManager.setBlurEffectEnabled(enabled)
         }

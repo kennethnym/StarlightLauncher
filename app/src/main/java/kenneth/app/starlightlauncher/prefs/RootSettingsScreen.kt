@@ -5,6 +5,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.prefs.component.*
 
 @Composable
 fun RootSettingsScreen(

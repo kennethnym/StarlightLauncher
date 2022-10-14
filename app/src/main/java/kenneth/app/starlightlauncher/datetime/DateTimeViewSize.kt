@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.prefs.datetime
+package kenneth.app.starlightlauncher.datetime
 
 /**
  * Defines different sizes of [DateTimeView]

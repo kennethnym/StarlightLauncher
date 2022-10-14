@@ -55,9 +55,12 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_remove">Remove</string>
     <string name="action_finish">Finish</string>
+    <string name="action_close">Close</string>
 
     <!-- Common status -->
     <string name="status_loading">Loading…</string>
+    <string name="status_not_selected">Not selected</string>
+    <string name="status_selected">Selected</string>
 
     <!-- Time ago -->
     <string name="time_ago_today">Today %1$s</string>
@@ -161,7 +164,7 @@
     <string name="sync_header">Sync</string>
 
     <string name="settings_title">Settings</string>
-    <string name="settings_subtitle">Customize Starlight Launcher</string>
+    <string name="settings_subtitle">Customize StarlightLauncher</string>
 
     <!-- Appearance preferences -->
     <string name="appearance_title">Appearance</string>
@@ -222,13 +225,16 @@
     <string name="file_add_path_title">Add path…</string>
 
     <!-- Date time preferences -->
-    <string name="date_time_pref_title">Clock</string>
+    <string name="pref_clock_settings_title">Clock settings</string>
+    <string name="pref_clock_settings_summary">Clock size, weather, 24hr</string>
+    <string name="pref_clock_settings_screen_title">Clock</string>
+    <string name="pref_clock_settings_screen_subtitle">Change how the clock looks and behaves</string>
     <string name="date_time_use_24hr_clock_title">Use 24-hour format</string>
     <string name="date_time_clock_size_title">Clock size</string>
     <string name="date_time_pref_summary">
         Adjust appearance of the clock on the home screen: 12/24 hours, weather info, etc.
     </string>
-    <string name="date_time_weather_category">Weather</string>
+    <string name="pref_weather_section_title">Weather</string>
     <string name="date_time_show_weather_title">
         Show current weather
     </string>
@@ -237,18 +243,20 @@
     </string>
     <string name="date_time_pick_location_title">Pick a location…</string>
     <string name="date_time_pick_location_summary">
-        Shows current weather of the specified location.
+        Starlight will show weather at the specified location: %1$s
     </string>
-    <string name="date_time_use_auto_location_title">Use your location</string>
-    <string name="date_time_use_auto_location_summary">Shows current weather of your location.</string>
-    <string name="date_time_use_auto_location_check_frequency_title">Location check frequency</string>
-    <string name="date_time_use_auto_location_check_frequency_summary">
-        How often should Starlight Launcher check device location to obtain relevant weather
+    <string name="weather_location_not_set">Location not set.</string>
+    <string name="date_time_use_auto_location_title">Use device location</string>
+    <string name="date_time_use_auto_location_summary">Shows current weather of device location. Requires location permission.</string>
+    <string name="date_time_weather_check_frequency_title">Weather check frequency</string>
+    <string name="date_time_weather_check_frequency_summary">
+        Starlight will check the latest weather every %1$s
     </string>
+    <string name="weather_location_picker_no_location">No location found.</string>
     <string name="date_time_picked_location_label">Picked location: %1$s</string>
     <string name="date_time_unknown_location">Unknown</string>
     <string name="date_time_location_picker_title">Weather location</string>
-    <string name="date_time_location_search_box_hint">Search for a place…</string>
+    <string name="weather_location_picker_title">Search for a location…</string>
     <string name="date_time_use_current_location_title">Use my location</string>
     <string name="date_time_use_current_location_summary">Requires one-time location permission</string>
     <string name="date_time_current_location_unavailable_title">Location unavailable</string>

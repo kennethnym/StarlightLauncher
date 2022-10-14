@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.prefs
+package kenneth.app.starlightlauncher.prefs.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
