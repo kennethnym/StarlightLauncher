@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="hasPermission"
+            type="Boolean" />
+    </data>
+
+    <kenneth.app.starlightlauncher.api.view.Plate
+        android:id="@+id/card_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/no_permission_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="@{hasPermission ? View.GONE : View.VISIBLE}">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/permission_required_title"
+                android:textAppearance="?attr/textAppearanceOverline"
+                android:textColor="?colorOnBackground" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/sms_permission_required_description"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?colorOnBackground" />
+
+            <kenneth.app.starlightlauncher.api.view.TextButton
+                android:id="@+id/grant_permission"
+                style="@style/Style.StarlightLauncher.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/search_result_card_padding"
+                android:text="@string/grant_permission_label"
+                android:textColor="?attr/colorOnBackground" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/message_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{hasPermission ? View.VISIBLE : View.GONE}"/>
+    </kenneth.app.starlightlauncher.api.view.Plate>
+</layout>

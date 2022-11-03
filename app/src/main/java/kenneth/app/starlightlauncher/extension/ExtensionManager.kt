@@ -20,6 +20,7 @@ import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
+import kenneth.app.starlightlauncher.smssearchmodule.SmsSearchModule
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
@@ -76,6 +77,10 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.websearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.websearchmodule",
             searchModule = WebSearch(context),
+        ),
+        "kenneth.app.starlightlauncher.smssearchmodule" to Extension(
+            name = "kenneth.app.starlightlaucher.websearchmodule",
+            searchModule = SmsSearchModule(context),
         ),
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
