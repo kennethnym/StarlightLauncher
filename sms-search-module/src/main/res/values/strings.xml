@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sms_search_display_name">SMS</string>
+    <string name="sms_search_module_description">Searches through your SMS.</string>
+
+    <string name="permission_required_title">Permission required</string>
+    <string name="sms_permission_required_description">Permission to read your SMS is required to provide search results for them.</string>
+    <string name="grant_permission_label">Grant permission</string>
+</resources>
