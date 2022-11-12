@@ -24,6 +24,7 @@ val PREF_KEY_USE_AUTO_LOCATION = booleanPreferencesKey("date_time_use_auto_locat
 val PREF_AUTO_LOCATION_CHECK_FREQUENCY =
     stringPreferencesKey("date_time_auto_location_check_frequency")
 val PREF_KEY_WEATHER_CHECK_FREQUENCY = longPreferencesKey("weather_check_frequency")
+val PREF_KEY_LOCATION_CHECK_FREQUENCY = longPreferencesKey("location_check_frequency")
 val PREF_KEY_WEATHER_LOCATION_LAT = floatPreferencesKey("date_time_weather_location_lat")
 val PREF_KEY_WEATHER_LOCATION_LONG = floatPreferencesKey("date_time_weather_location_lat")
 val PREF_KEY_WEATHER_LOCATION_NAME = stringPreferencesKey("date_time_weather_location_name")

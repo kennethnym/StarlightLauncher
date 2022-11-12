@@ -33,6 +33,9 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
     var weatherCheckFrequency by mutableStateOf(DEFAULT_WEATHER_CHECK_FREQUENCY)
         private set
 
+    var locationCheckFrequency by mutableStateOf(DEFAULT_LOCATION_CHECK_FREQUENCY)
+        private set
+
     var weatherUnit by mutableStateOf(DEFAULT_WEATHER_UNIT)
         private set
 
@@ -64,6 +67,11 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
             launch {
                 dateTimePreferenceManager.weatherCheckFrequency.collectLatest {
                     weatherCheckFrequency = it
+                }
+            }
+            launch {
+                dateTimePreferenceManager.locationCheckFrequency.collectLatest {
+                    locationCheckFrequency = it
                 }
             }
             launch {
@@ -100,6 +108,12 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
     fun changeDateTimeViewSize(size: DateTimeViewSize) {
         viewModelScope.launch {
             dateTimePreferenceManager.changeDateTimeViewSize(size)
+        }
+    }
+
+    fun changeLocationCheckFrequency(frequency: Long) {
+        viewModelScope.launch {
+            dateTimePreferenceManager.changeLocationCheckFrequency(frequency)
         }
     }
 

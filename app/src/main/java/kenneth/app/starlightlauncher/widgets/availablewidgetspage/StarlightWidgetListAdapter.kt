@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.widgets.availablewidgetspage
 
 import android.content.Context
+import android.telecom.Call
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +22,17 @@ private interface StarlightWidgetListAdapterEntryPoint {
     fun widgetPreferenceManager(): WidgetPreferenceManager
 }
 
-internal class StarlightWidgetListAdapter(context: Context) :
+internal class StarlightWidgetListAdapter(
+    context: Context,
+    private val callback: Callback
+) :
     RecyclerView.Adapter<StarlightWidgetListItem>() {
+    interface Callback {
+        fun onRequestAddWidget(extensionName: String)
+
+        fun onRequestRemoveWidget(extensionName: String)
+    }
+
     private val widgets: List<WidgetCreator>
 
     private val widgetPreferenceManager: WidgetPreferenceManager
@@ -68,9 +78,9 @@ internal class StarlightWidgetListAdapter(context: Context) :
 
     private fun toggleWidget(extensionName: String, enabled: Boolean) {
         if (enabled) {
-            widgetPreferenceManager.addStarlightWidget(extensionName)
+            callback.onRequestAddWidget(extensionName)
         } else {
-            widgetPreferenceManager.removeStarlightWidget(extensionName)
+            callback.onRequestRemoveWidget(extensionName)
         }
     }
 

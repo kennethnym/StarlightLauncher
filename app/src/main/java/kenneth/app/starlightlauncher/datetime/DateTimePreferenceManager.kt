@@ -66,6 +66,10 @@ internal class DateTimePreferenceManager @Inject constructor(
         it[PREF_KEY_WEATHER_CHECK_FREQUENCY] ?: DEFAULT_WEATHER_CHECK_FREQUENCY
     }
 
+    val locationCheckFrequency = context.dataStore.data.map {
+        it[PREF_KEY_LOCATION_CHECK_FREQUENCY] ?: DEFAULT_LOCATION_CHECK_FREQUENCY
+    }
+
     /**
      * Changes the weather location described by the given LatLong.
      */
@@ -98,6 +102,12 @@ internal class DateTimePreferenceManager @Inject constructor(
     suspend fun changeShouldUseAutoWeatherLocation(shouldUse: Boolean) {
         context.dataStore.edit {
             it[PREF_KEY_USE_AUTO_LOCATION] = shouldUse
+        }
+    }
+
+    suspend fun changeLocationCheckFrequency(frequency: Long) {
+        context.dataStore.edit {
+            it[PREF_KEY_LOCATION_CHECK_FREQUENCY] = frequency
         }
     }
 

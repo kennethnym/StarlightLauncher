@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher
 
+import android.appwidget.AppWidgetManager
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,6 +12,7 @@ import android.net.wifi.WifiManager
 import android.os.UserManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.FragmentFactory
 import androidx.preference.PreferenceManager
 import dagger.Binds
 import dagger.Module
@@ -59,10 +61,6 @@ internal object AppModule {
     @Singleton
     @Named(IO_DISPATCHER)
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    @Singleton
-    fun provideMainScope(): CoroutineScope = MainScope()
 
     @Provides
     @Singleton
@@ -125,6 +123,15 @@ internal object AppModule {
     @Provides
     @Singleton
     fun provideSecureRandom() = SecureRandom()
+
+    @Provides
+    @Singleton
+    fun provideAppWidgetManager(@ApplicationContext context: Context) =
+        AppWidgetManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideApplicationScope() = MainScope()
 }
 
 @Module
@@ -132,4 +139,11 @@ internal object AppModule {
 abstract class RandomProvider {
     @Binds
     abstract fun bindRandom(impl: SecureRandom): Random
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class FragmentFactoryProvider {
+    @Binds
+    abstract fun bindFragmentFactory(impl: LauncherFragmentFactory): FragmentFactory
 }

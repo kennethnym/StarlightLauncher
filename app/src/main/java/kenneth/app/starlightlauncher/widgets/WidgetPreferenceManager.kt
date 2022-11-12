@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.*
 import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.appsearchmodule.PREF_KEY_PINNED_APPS
+import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.PREF_ADDED_WIDGETS
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -24,19 +25,10 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
-    data class WidgetOrderChanged(
-        val fromPosition: Int,
-        val toPosition: Int,
-    ) : WidgetPreferenceChanged()
-
     data class NewAndroidWidgetAdded(
         val addedWidget: AddedWidget.AndroidWidget,
 
         val appWidgetProviderInfo: AppWidgetProviderInfo,
-    ) : WidgetPreferenceChanged()
-
-    data class NewStarlightWidgetAdded(
-        val addedWidget: AddedWidget.StarlightWidget,
     ) : WidgetPreferenceChanged()
 
     data class WidgetRemoved(
@@ -48,22 +40,26 @@ internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
 @Singleton
 internal class WidgetPreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
-
-    @Named(MAIN_DISPATCHER)
-    private val dispatcher: CoroutineDispatcher,
-
+    private val extensionManager: ExtensionManager,
     private val launcherEventChannel: LauncherEventChannel,
     private val random: Random,
 ) {
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
-    private val coroutineScope = CoroutineScope(dispatcher)
-
     private var _addedWidgets = runBlocking {
         context.dataStore.data.map { preferences ->
             preferences[PREF_KEY_PINNED_APPS]?.let {
                 Json.decodeFromString<List<AddedWidget>>(it).toMutableList()
-            } ?: mutableListOf()
+            } ?: mutableListOf<AddedWidget>().apply {
+                extensionManager.installedExtensions.forEach { ext ->
+                    if (ext.widget != null) add(
+                        AddedWidget.StarlightWidget(
+                            random.nextInt(),
+                            ext.name,
+                        )
+                    )
+                }
+            }
         }.first()
     }
 
@@ -76,13 +72,12 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
     }
 
-    val addedWidgets
-        get() = _addedWidgets.toList()
+    val addedWidgets: List<AddedWidget> = _addedWidgets
 
     fun isStarlightWidgetAdded(extensionName: String) =
         addedStarlightWidgets.contains(extensionName)
 
-    fun addStarlightWidget(extensionName: String) {
+    suspend fun addStarlightWidget(extensionName: String): AddedWidget.StarlightWidget {
         val widgetId = random.nextInt()
         val newWidget = AddedWidget.StarlightWidget(
             internalId = widgetId,
@@ -90,44 +85,34 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
         _addedWidgets += newWidget
         addedStarlightWidgets += extensionName
-        coroutineScope.launch {
-            saveAddedWidgets()
-            launcherEventChannel.add(WidgetPreferenceChanged.NewStarlightWidgetAdded(newWidget))
-        }
+
+        saveAddedWidgets()
+
+        return newWidget
     }
 
-    fun removeStarlightWidget(extensionName: String) {
+    suspend fun removeStarlightWidget(extensionName: String) {
         val widgetPos =
             _addedWidgets.indexOfFirst { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
         if (widgetPos < 0) return
 
         val removedWidget = _addedWidgets.removeAt(widgetPos)
         addedStarlightWidgets.remove((removedWidget as AddedWidget.StarlightWidget).extensionName)
-        coroutineScope.launch {
-            saveAddedWidgets()
-            launcherEventChannel.add(
-                WidgetPreferenceChanged.WidgetRemoved(
-                    removedWidget,
-                    widgetPos
-                )
+        saveAddedWidgets()
+        launcherEventChannel.add(
+            WidgetPreferenceChanged.WidgetRemoved(
+                removedWidget,
+                widgetPos
             )
-        }
+        )
     }
 
-    fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
+    suspend fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
         _addedWidgets.swap(fromPosition, toPosition)
-        coroutineScope.launch {
-            saveAddedWidgets()
-            launcherEventChannel.add(
-                WidgetPreferenceChanged.WidgetOrderChanged(
-                    fromPosition,
-                    toPosition
-                )
-            )
-        }
+        saveAddedWidgets()
     }
 
-    fun addAndroidWidget(appWidgetId: Int, appWidgetProviderInfo: AppWidgetProviderInfo) {
+    suspend fun addAndroidWidget(appWidgetId: Int, appWidgetProviderInfo: AppWidgetProviderInfo) {
         val newWidget = AddedWidget.AndroidWidget(
             appWidgetProviderInfo.provider,
             appWidgetId,
@@ -135,29 +120,27 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
         _addedWidgets += newWidget
 
-        coroutineScope.launch {
-            saveAddedWidgets()
-            launcherEventChannel.add(
-                WidgetPreferenceChanged.NewAndroidWidgetAdded(
-                    newWidget,
-                    appWidgetProviderInfo
-                )
+        saveAddedWidgets()
+        launcherEventChannel.add(
+            WidgetPreferenceChanged.NewAndroidWidgetAdded(
+                newWidget,
+                appWidgetProviderInfo
             )
-        }
+        )
     }
 
     /**
      * Change the height of [addedWidget]. [newHeight] must be specified in dp.
      */
-    fun changeWidgetHeight(addedWidget: AddedWidget, newHeight: Int) {
+    suspend fun changeWidgetHeight(addedWidget: AddedWidget, newHeight: Int) {
         if (addedWidget is AddedWidget.AndroidWidget) {
             val widgetPos = _addedWidgets.indexOfFirst { it.id == addedWidget.id }
             _addedWidgets[widgetPos] = addedWidget.copy(height = newHeight)
-            coroutineScope.launch { saveAddedWidgets() }
+            saveAddedWidgets()
         }
     }
 
-    fun removeAndroidWidget(appWidgetId: Int) {
+    suspend fun removeAndroidWidget(appWidgetId: Int) {
         val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
         val widgetPos =
             _addedWidgets.indexOfFirst { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
@@ -165,15 +148,13 @@ internal class WidgetPreferenceManager @Inject constructor(
 
         val removedWidget = _addedWidgets.removeAt(widgetPos)
 
-        coroutineScope.launch {
-            saveAddedWidgets()
-            launcherEventChannel.add(
-                WidgetPreferenceChanged.WidgetRemoved(
-                    removedWidget,
-                    widgetPos
-                )
+        saveAddedWidgets()
+        launcherEventChannel.add(
+            WidgetPreferenceChanged.WidgetRemoved(
+                removedWidget,
+                widgetPos
             )
-        }
+        )
     }
 
     private suspend fun saveAddedWidgets() {

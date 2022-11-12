@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import android.view.View
+import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,10 @@ import androidx.fragment.app.Fragment
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.*
 import kenneth.app.starlightlauncher.api.util.BlurHandler
@@ -22,7 +26,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 internal abstract class StarlightLauncherApiModule {
     @Binds
     abstract fun bindStarlightLauncherApi(
@@ -34,9 +38,9 @@ internal abstract class StarlightLauncherApiModule {
  * An implementation of [StarlightLauncherApi] which extensions can use to provide
  * additional features for the launcher.
  */
-@Singleton
+@ActivityScoped
 internal class StarlightLauncherApiImpl @Inject constructor(
-    @ApplicationContext applicationContext: Context,
+    @ActivityContext private val activityContext: Context,
     appearancePreferenceManager: AppearancePreferenceManager,
     private val launcherEventChannel: LauncherEventChannel,
     private val bindingRegister: BindingRegister,
@@ -44,20 +48,36 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     override val coroutineScope: CoroutineScope,
     override val blurHandler: BlurHandler,
 ) : StarlightLauncherApi {
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private val requestPermissionLauncher =
+        (activityContext as ComponentActivity).registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { result ->
+            requestPermissionResultCallback?.let {
+                it(result)
+                requestPermissionResultCallback = null
+            }
+        }
 
-    private lateinit var requestMultiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
+    private val requestMultiplePermissionsLauncher =
+        (activityContext as ComponentActivity).registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions(),
+        ) { result ->
+            requestMultiplePermissionsResultCallback?.let {
+                it(result)
+                requestMultiplePermissionsResultCallback = null
+            }
+        }
+
 
     private var requestPermissionResultCallback: PermissionRequestCallback? = null
 
     private var requestMultiplePermissionsResultCallback: MultiplePermissionRequestCallback? = null
 
-    override val dataStore = applicationContext.dataStore
+    override val dataStore = activityContext.dataStore
 
     override val iconPack = appearancePreferenceManager.iconPack
 
-    override lateinit var context: Context
-        private set
+    override val context = activityContext
 
     override val installedApps: List<LauncherActivityInfo>
         get() = appManager.installedApps
@@ -77,15 +97,19 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     }
 
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {
-        bindingRegister.mainScreenBinding.overlay.showFrom(fromView, viewConstructor(context))
+//        bindingRegister.mainScreenBinding.overlay.showFrom(fromView, viewConstructor(context))
     }
 
     override fun showOverlay(fragment: Fragment) {
-        bindingRegister.mainScreenBinding.overlay.showWith(fragment)
+        if (activityContext is MainActivity) {
+            activityContext.showOverlay(fragment)
+        }
     }
 
     override fun closeOverlay() {
-        bindingRegister.mainScreenBinding.overlay.close()
+        if (activityContext is MainActivity) {
+            activityContext.closeOverlay()
+        }
     }
 
     override fun requestPermission(permission: String, callback: PermissionRequestCallback) {
@@ -103,29 +127,4 @@ internal class StarlightLauncherApiImpl @Inject constructor(
 
     override suspend fun addLauncherEventListener(listener: LauncherEventListener) =
         launcherEventChannel.subscribePublic(listener)
-
-    internal fun setContext(context: Context) {
-        this.context = context
-        if (context is AppCompatActivity) {
-            requestPermissionLauncher =
-                context.registerForActivityResult(
-                    ActivityResultContracts.RequestPermission(),
-                ) { result ->
-                    requestPermissionResultCallback?.let {
-                        it(result)
-                        requestPermissionResultCallback = null
-                    }
-                }
-
-            requestMultiplePermissionsLauncher =
-                context.registerForActivityResult(
-                    ActivityResultContracts.RequestMultiplePermissions(),
-                ) { result ->
-                    requestMultiplePermissionsResultCallback?.let {
-                        it(result)
-                        requestMultiplePermissionsResultCallback = null
-                    }
-                }
-        }
-    }
 }

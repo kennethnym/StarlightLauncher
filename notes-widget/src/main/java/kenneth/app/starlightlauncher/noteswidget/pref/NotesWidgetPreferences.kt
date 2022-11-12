@@ -1,5 +1,7 @@
 package kenneth.app.starlightlauncher.noteswidget.pref
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.EventChannel
@@ -20,27 +22,21 @@ internal sealed class NoteListModified {
 }
 
 internal class NotesWidgetPreferences
-private constructor(launcher: StarlightLauncherApi) : EventChannel<NoteListModified>() {
+private constructor(private val dataStore: DataStore<Preferences>) :
+    EventChannel<NoteListModified>() {
     companion object {
         private var instance: NotesWidgetPreferences? = null
 
-        fun getInstance(launcher: StarlightLauncherApi) =
-            instance ?: NotesWidgetPreferences(launcher)
+        fun getInstance(dataStore: DataStore<Preferences>) =
+            instance ?: NotesWidgetPreferences(dataStore)
                 .also { instance = it }
     }
 
-    private val dataStore = launcher.dataStore
-
-    val notes = dataStore.data
-        .map { preferences ->
-            preferences[PREF_KEY_NOTE_LIST]?.let {
-                Json.decodeFromString<List<Note>>(it)
-            } ?: emptyList()
-        }.shareIn(
-            scope = launcher.coroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            replay = 1,
-        )
+    val notes = dataStore.data.map { preferences ->
+        preferences[PREF_KEY_NOTE_LIST]?.let {
+            Json.decodeFromString<List<Note>>(it)
+        } ?: emptyList()
+    }
 
     suspend fun addNote(note: Note) {
         dataStore.edit {

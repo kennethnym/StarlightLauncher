@@ -9,6 +9,8 @@ import android.os.UserHandle
 import android.os.UserManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.api.LauncherEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,6 +25,7 @@ internal class AppManager @Inject constructor(
     private val launcherApps: LauncherApps,
     private val userManager: UserManager,
     private val launcherEventChannel: LauncherEventChannel,
+    private val applicationScope: CoroutineScope,
 ) {
     /**
      * Stores all apps installed on the device.
@@ -71,7 +74,9 @@ internal class AppManager @Inject constructor(
             allApps[user]?.entries?.removeIf { it.key.packageName == packageName }
             appLabels.remove(packageName)
 
-            launcherEventChannel.add(LauncherEvent.AppRemoved(packageName))
+            applicationScope.launch {
+                launcherEventChannel.add(LauncherEvent.AppRemoved(packageName))
+            }
         }
 
         override fun onPackageAdded(packageName: String?, user: UserHandle?) {
@@ -89,7 +94,9 @@ internal class AppManager @Inject constructor(
                 appLabels[it.applicationInfo.packageName] = it.label.toString()
             }
 
-            launcherEventChannel.add(LauncherEvent.NewAppsInstalled(activities))
+            applicationScope.launch {
+                launcherEventChannel.add(LauncherEvent.NewAppsInstalled(activities))
+            }
         }
 
         override fun onPackageChanged(packageName: String?, user: UserHandle?) {

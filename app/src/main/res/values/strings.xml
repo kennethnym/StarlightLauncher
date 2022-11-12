@@ -224,7 +224,7 @@
     </string>
     <string name="file_add_path_title">Add path…</string>
 
-    <!-- Date time preferences -->
+    <!-- Clock settings -->
     <string name="pref_clock_settings_title">Clock settings</string>
     <string name="pref_clock_settings_summary">Clock size, weather, 24hr</string>
     <string name="pref_clock_settings_screen_title">Clock</string>
@@ -248,6 +248,10 @@
     <string name="weather_location_not_set">Location not set.</string>
     <string name="date_time_use_auto_location_title">Use device location</string>
     <string name="date_time_use_auto_location_summary">Shows current weather of device location. Requires location permission.</string>
+    <string name="date_time_location_check_frequency_title">Location check frequency</string>
+    <string name="date_time_location_check_frequency_summary">
+        Starlight will request device location every %1$s.
+    </string>
     <string name="date_time_weather_check_frequency_title">Weather check frequency</string>
     <string name="date_time_weather_check_frequency_summary">
         Starlight will check the latest weather every %1$s

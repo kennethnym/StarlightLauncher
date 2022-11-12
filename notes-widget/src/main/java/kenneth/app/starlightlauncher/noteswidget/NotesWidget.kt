@@ -14,7 +14,6 @@ import kenneth.app.starlightlauncher.noteswidget.view.AllNotesFragment
 import kenneth.app.starlightlauncher.noteswidget.view.NoteListDiffCallback
 import kenneth.app.starlightlauncher.noteswidget.view.QuickNoteListAdapter
 import kenneth.app.starlightlauncher.noteswidget.view.QuickNoteListAdapterCallback
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
@@ -28,7 +27,7 @@ internal class NotesWidget(
     private val binding: NotesWidgetBinding,
     private val launcher: StarlightLauncherApi,
 ) : WidgetHolder, QuickNoteListAdapterCallback {
-    private val prefs = NotesWidgetPreferences.getInstance(launcher)
+    private val prefs = NotesWidgetPreferences.getInstance(launcher.dataStore)
 
     private val quickNoteListAdapter: QuickNoteListAdapter
 

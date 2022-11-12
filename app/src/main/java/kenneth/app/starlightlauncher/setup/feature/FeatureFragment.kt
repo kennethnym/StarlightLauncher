@@ -93,9 +93,13 @@ internal class FeatureFragment : Fragment() {
 
     private fun toggleWidget(widget: WidgetCreator, enabled: Boolean) {
         if (enabled) {
-            widgetPreferenceManager.addStarlightWidget(widget.metadata.extensionName)
+            lifecycleScope.launch {
+                widgetPreferenceManager.addStarlightWidget(widget.metadata.extensionName)
+            }
         } else {
-            widgetPreferenceManager.removeStarlightWidget(widget.metadata.extensionName)
+            lifecycleScope.launch {
+                widgetPreferenceManager.removeStarlightWidget(widget.metadata.extensionName)
+            }
         }
     }
 }

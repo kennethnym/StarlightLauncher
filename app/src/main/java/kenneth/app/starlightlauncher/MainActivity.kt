@@ -13,16 +13,20 @@ import android.os.Build
 import android.os.Bundle
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -106,14 +110,12 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     private var isDarkModeActive = false
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.action == Intent.ACTION_MAIN) {
-            intent.getBundleExtra(EXTRA_GESTURE_NAV_CONTRACT_V1)?.let {
-                handleGestureNav(it)
-            }
-        }
-    }
+    /**
+     * The current back pressed callback that will be called
+     * when overlay is visible and the back button is pressed.
+     * This is only set when overlay is visible.
+     */
+    private var overlayBackPressedCallback: OverlayOnBackPressedCallback? = null
 
     override fun onStart() {
         super.onStart()
@@ -121,20 +123,22 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.fragmentFactory = launcherFragmentFactory
+        supportFragmentManager.fragmentFactory = EntryPointAccessors
+            .fromActivity(
+                this,
+                LauncherFragmentFactoryEntryPoint::class.java
+            )
+            .launcherFragmentFactory()
 
         super.onCreate(savedInstanceState)
 
         getCurrentWallpaper()
         updateAdaptiveColors()
 
-        launcherApi.let {
-            // set the context of the API entry point
-            // the context will be this activity.
-            if (it is StarlightLauncherApiImpl) it.setContext(this)
+        extensionManager.run {
+            launcherApi = this@MainActivity.launcherApi
+            loadExtensions()
         }
-
-        extensionManager.loadExtensions()
 
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -186,6 +190,24 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     override fun onDestroy() {
         cleanup()
         super.onDestroy()
+    }
+
+    fun showOverlay(fragment: Fragment) {
+        binding.overlay.show()
+        supportFragmentManager.commit {
+            add(binding.overlay.contentContainerId, fragment)
+        }
+        onBackPressedDispatcher.addCallback(
+            OverlayOnBackPressedCallback(true).also {
+                overlayBackPressedCallback = it
+            }
+        )
+    }
+
+    fun closeOverlay() {
+        overlayBackPressedCallback?.remove()
+        overlayBackPressedCallback = null
+        binding.overlay.close()
     }
 
     private fun cleanup() {
@@ -284,5 +306,15 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     private fun handleGestureNav(bundle: Bundle) {
 
+    }
+
+    /**
+     * Called when overlay is visible and the back button is pressed.
+     */
+    private inner class OverlayOnBackPressedCallback(enabled: Boolean) :
+        OnBackPressedCallback(enabled) {
+        override fun handleOnBackPressed() {
+            binding.overlay.close()
+        }
     }
 }

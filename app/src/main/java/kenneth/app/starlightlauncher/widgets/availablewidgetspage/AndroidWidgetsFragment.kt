@@ -1,6 +1,8 @@
 package kenneth.app.starlightlauncher.widgets.availablewidgetspage
 
+import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProviderInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -12,42 +14,35 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.FragmentComponent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.databinding.AvailableWidgetsPageBinding
 import kenneth.app.starlightlauncher.databinding.FragmentAndroidWidgetListBinding
+import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-@EntryPoint
-@InstallIn(FragmentComponent::class)
-private interface AndroidWidgetsFragmentEntryPoint {
-    fun launcher(): StarlightLauncherApi
-}
-
-internal class AndroidWidgetsFragment(
-    private val availableWidgetsPageBinding: AvailableWidgetsPageBinding,
-) : Fragment() {
+internal class AndroidWidgetsFragment @Inject constructor(
+    private val launcher: StarlightLauncherApi,
+    private val widgetsPreferenceManager: WidgetPreferenceManager,
+    private val appWidgetHost: AppWidgetHost,
+) : Fragment(), AvailableAndroidWidgetListAdapter.Callback {
+    private var binding: FragmentAndroidWidgetListBinding? = null
     private var listAdapter: AvailableAndroidWidgetListAdapter? = null
-    private val launcher: StarlightLauncherApi
 
     private val appLabels = mutableMapOf<String, String>()
     private val appIcons = mutableMapOf<String, Drawable>()
     private val appInfos = mutableMapOf<String, ApplicationInfo>()
 
-    init {
-        EntryPointAccessors.fromFragment(this, AndroidWidgetsFragmentEntryPoint::class.java).run {
-            launcher = launcher()
+    var bottomPadding: Int = 0
+        set(value) {
+            field = value
+            binding?.availableWidgetList?.updatePadding(
+                bottom = value
+            )
         }
-
-        lifecycleScope.launch { listenToIconPack() }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,13 +50,16 @@ internal class AndroidWidgetsFragment(
         savedInstanceState: Bundle?
     ): View? = context?.let { context ->
         FragmentAndroidWidgetListBinding.inflate(inflater).run {
+            binding = this
+
             availableWidgetList.apply {
                 clipToPadding = false
                 setAdapter(
                     AvailableAndroidWidgetListAdapter(
                         context,
                         listView = this,
-                        iconPack = runBlocking { launcher.iconPack.first() }
+                        iconPack = runBlocking { launcher.iconPack.first() },
+                        this@AndroidWidgetsFragment,
                     ).also {
                         listAdapter = it
                         loadInstalledWidgets()
@@ -74,12 +72,22 @@ internal class AndroidWidgetsFragment(
                     .getInsets(WindowInsetsCompat.Type.systemBars())
                 availableWidgetList.updatePadding(
                     top = insetsCompat.top,
-                    bottom = availableWidgetsPageBinding.tabBar.height,
+                    bottom = bottomPadding
                 )
                 insets
             }
 
             root
+        }
+    }
+
+    override fun onRequestAddAndroidWidget(appWidgetInfo: AppWidgetProviderInfo) {
+        lifecycleScope.launch {
+            widgetsPreferenceManager.addAndroidWidget(
+                appWidgetHost.allocateAppWidgetId(),
+                appWidgetInfo,
+            )
+            launcher.closeOverlay()
         }
     }
 

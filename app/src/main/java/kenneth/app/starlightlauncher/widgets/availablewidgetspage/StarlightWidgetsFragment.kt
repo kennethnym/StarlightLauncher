@@ -7,20 +7,34 @@ import android.view.ViewGroup
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import kenneth.app.starlightlauncher.databinding.AvailableWidgetsPageBinding
 import kenneth.app.starlightlauncher.databinding.FragmentStarlightWidgetListBinding
+import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-internal class StarlightWidgetsFragment(
-    private val availableWidgetsPageBinding: AvailableWidgetsPageBinding,
-) : Fragment() {
+internal class StarlightWidgetsFragment @Inject constructor(
+    private val widgetPreferenceManager: WidgetPreferenceManager
+) : Fragment(),
+    StarlightWidgetListAdapter.Callback {
+    private var binding: FragmentStarlightWidgetListBinding? = null
+
+    var bottomPadding: Int = 0
+        set(value) {
+            field = value
+            binding?.widgetList?.updatePadding(
+                bottom = value
+            )
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = FragmentStarlightWidgetListBinding.inflate(inflater).run {
         widgetList.apply {
-            adapter = StarlightWidgetListAdapter(context)
+            adapter = StarlightWidgetListAdapter(context, this@StarlightWidgetsFragment)
             layoutManager = LinearLayoutManager(context)
         }
 
@@ -29,11 +43,23 @@ internal class StarlightWidgetsFragment(
                 .getInsets(WindowInsetsCompat.Type.systemBars())
             widgetList.updatePadding(
                 top = insetsCompat.top,
-                bottom = availableWidgetsPageBinding.tabBar.height,
+                bottom = bottomPadding,
             )
             insets
         }
 
         root
+    }
+
+    override fun onRequestAddWidget(extensionName: String) {
+        lifecycleScope.launch {
+            widgetPreferenceManager.addStarlightWidget(extensionName)
+        }
+    }
+
+    override fun onRequestRemoveWidget(extensionName: String) {
+        lifecycleScope.launch {
+            widgetPreferenceManager.removeStarlightWidget(extensionName)
+        }
     }
 }

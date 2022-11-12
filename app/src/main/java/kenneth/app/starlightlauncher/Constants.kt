@@ -13,11 +13,11 @@ internal const val HANDLED = true
 internal const val NOT_HANDLED = false
 
 /**
- * Defines how long delay between each choreographer frame should be.
+ * Defines how long the delay between each choreographer frame should be.
  */
 internal const val ANIMATION_FRAME_DELAY = 1000 / 120L
 
 /**
- * How far should a gesture travel in order to activate certain actions
+ * How far a gesture should travel in order to activate certain actions
  */
 internal const val GESTURE_ACTION_THRESHOLD = 100

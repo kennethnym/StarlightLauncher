@@ -2,17 +2,53 @@ package kenneth.app.starlightlauncher
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import kenneth.app.starlightlauncher.api.OpenWeatherApi
+import dagger.Binds
+import dagger.MapKey
+import dagger.Module
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoMap
 import kenneth.app.starlightlauncher.home.MainScreenFragment
-import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
+import kotlin.reflect.KClass
 
+// credit to this medium article
+// https://medium.com/supercharges-mobile-product-guide/fragmentfactory-with-dagger-and-hilt-31ee17babf73
+
+@MapKey
+@Retention(AnnotationRetention.RUNTIME)
+internal annotation class FragmentKey(val value: KClass<out Fragment>)
+
+@EntryPoint
+@InstallIn(ActivityComponent::class)
+internal interface LauncherFragmentFactoryEntryPoint {
+    fun launcherFragmentFactory(): LauncherFragmentFactory
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class LauncherFragmentFactoryModule {
+    @Binds
+    @IntoMap
+    @FragmentKey(MainScreenFragment::class)
+    abstract fun bindMainScreenFragment(impl: MainScreenFragment): Fragment
+}
+
+@Singleton
 internal class LauncherFragmentFactory @Inject constructor(
-    private val bindingRegister: BindingRegister,
+    private val providerMap: Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>>
 ) : FragmentFactory() {
-    override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
-        when (className) {
-            MainScreenFragment::class.java.name -> MainScreenFragment(bindingRegister)
-            else -> super.instantiate(classLoader, className)
-        }
+    override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+        val fragmentClass = loadFragmentClass(classLoader, className)
+
+        val creator = providerMap[fragmentClass] ?: providerMap.entries.firstOrNull {
+            fragmentClass.isAssignableFrom(it.key)
+        }?.value
+
+        return creator?.get() ?: super.instantiate(classLoader, className)
+    }
 }

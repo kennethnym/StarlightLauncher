@@ -28,30 +28,30 @@ internal class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        startActivity(Intent(this, StarlightLauncherSettingsActivity::class.java))
-        finish()
+//        startActivity(Intent(this, StarlightLauncherSettingsActivity::class.java))
+//        finish()
 
-//        lifecycleScope.launch {
-//            val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
-//
-//            if (setupFinished) {
-//                startActivity(
-//                    Intent(
-//                        this@LoadingActivity.applicationContext,
-//                        MainActivity::class.java
-//                    ).apply {
-//                        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//                    })
-//            } else {
-//                startActivity(
-//                    Intent(
-//                        this@LoadingActivity.applicationContext,
-//                        SetupActivity::class.java
-//                    )
-//                )
-//            }
-//
-//            finish()
-//        }
+        lifecycleScope.launch {
+            val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
+
+            if (setupFinished) {
+                startActivity(
+                    Intent(
+                        this@LoadingActivity.applicationContext,
+                        MainActivity::class.java
+                    ).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    })
+            } else {
+                startActivity(
+                    Intent(
+                        this@LoadingActivity.applicationContext,
+                        SetupActivity::class.java
+                    )
+                )
+            }
+
+            finish()
+        }
     }
 }

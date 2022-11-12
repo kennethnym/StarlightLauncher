@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.content.PackageManagerCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
@@ -41,7 +43,6 @@ internal typealias InstalledExtensions = Collection<Extension>
 @Singleton
 internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val launcherApi: StarlightLauncherApi,
 ) {
     /**
      * A map of extensions loaded into memory.
@@ -156,6 +157,8 @@ internal class ExtensionManager @Inject constructor(
         )
     )
 
+    var launcherApi: StarlightLauncherApi? = null
+
     val installedExtensions
         get() = extensions.values as InstalledExtensions
 
@@ -211,10 +214,15 @@ internal class ExtensionManager @Inject constructor(
             tryToLoadExtensionInfo(resolveInfo)
         }
 
-        extensions.forEach { (_, ext) ->
-            if (!initializedWidgets.contains(ext.name)) {
-                ext.searchModule?.initialize(launcherApi)
-                initializedWidgets += ext.name
+        launcherApi?.let { api ->
+            extensions.forEach { (_, ext) ->
+                if (!initializedWidgets.contains(ext.name)) {
+                    with(ext) {
+                        searchModule?.initialize(api)
+                        widget?.initialize(api)
+                    }
+                    initializedWidgets += ext.name
+                }
             }
         }
     }

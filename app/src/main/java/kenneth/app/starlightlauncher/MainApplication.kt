@@ -8,6 +8,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import javax.inject.Inject
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = "starlightLauncherSettings",
@@ -33,8 +37,16 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 
 @HiltAndroidApp
 internal class MainApplication : Application() {
+    @Inject
+    lateinit var applicationScope: CoroutineScope
+
     override fun onCreate() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         super.onCreate()
+    }
+
+    override fun onTerminate() {
+        applicationScope.cancel()
+        super.onTerminate()
     }
 }

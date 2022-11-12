@@ -65,6 +65,17 @@
         <item>1 day</item>
     </string-array>
 
+    <string-array name="location_check_frequency_labels">
+        <item>5 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>5 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+
     <!-- Defined as strings because for some reason ListPreference doesn't support integer-array -->
     <string-array name="date_time_auto_weather_check_frequency_values">
         <item>300000</item>

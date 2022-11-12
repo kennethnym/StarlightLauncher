@@ -20,8 +20,6 @@ open class EventChannel<TEvent>(
 ) {
     protected val eventFlow = MutableSharedFlow<TEvent>()
 
-    private val addEventCoroutineScope = CoroutineScope(defaultDispatcher)
-
     /**
      * Subscribes to events emitted by Starlight Launcher.
      * [subscriber] will be notified whenever a new event is emitted.
@@ -32,7 +30,7 @@ open class EventChannel<TEvent>(
     /**
      * Adds [event] to the channel. Subscribers of the channel will be notified of the event.
      */
-    fun add(event: TEvent) {
-        addEventCoroutineScope.launch { eventFlow.emit(event) }
+    suspend fun add(event: TEvent) {
+        eventFlow.emit(event)
     }
 }

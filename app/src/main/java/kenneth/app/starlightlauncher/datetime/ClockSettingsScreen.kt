@@ -5,13 +5,8 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -105,20 +100,37 @@ internal fun ClockSettingsScreen(
                                 ),
                                 onTap = { isLocationPickerOpen = true }
                             )
+
+                            val locationCheckFrequencyLabels =
+                                stringArrayResource(R.array.location_check_frequency_labels)
+
+                            SingleChoiceSettingsListItem(
+                                labels = locationCheckFrequencyLabels.asIterable(),
+                                values = LOCATION_UPDATE_FREQUENCY_VALUES,
+                                choice = viewModel.locationCheckFrequency,
+                                title = stringResource(R.string.date_time_location_check_frequency_title),
+                                summary = stringResource(
+                                    R.string.date_time_location_check_frequency_summary,
+                                    locationCheckFrequencyLabels[LOCATION_UPDATE_FREQUENCY_VALUES.indexOf(
+                                        viewModel.locationCheckFrequency
+                                    )]
+                                ),
+                                onChoiceSelected = { viewModel.changeLocationCheckFrequency(it) }
+                            )
                         }
 
-                        val weatherFrequencyLabels =
+                        val weatherCheckFrequencyLabels =
                             stringArrayResource(R.array.weather_check_frequency_labels)
 
                         SingleChoiceSettingsListItem(
-                            labels = weatherFrequencyLabels.asIterable(),
+                            labels = weatherCheckFrequencyLabels.asIterable(),
                             values = WEATHER_UPDATE_FREQUENCY_VALUES,
                             choice = viewModel.weatherCheckFrequency,
                             icon = painterResource(R.drawable.ic_clock),
                             title = stringResource(R.string.date_time_weather_check_frequency_title),
                             summary = stringResource(
                                 R.string.date_time_weather_check_frequency_summary,
-                                weatherFrequencyLabels[WEATHER_UPDATE_FREQUENCY_VALUES.indexOf(
+                                weatherCheckFrequencyLabels[WEATHER_UPDATE_FREQUENCY_VALUES.indexOf(
                                     viewModel.weatherCheckFrequency
                                 )]
                             ),

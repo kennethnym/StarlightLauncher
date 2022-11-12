@@ -1,37 +1,71 @@
 package kenneth.app.starlightlauncher.home
 
+import android.app.Activity
+import android.appwidget.AppWidgetHost
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProviderInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.databinding.FragmentMainScreenBinding
+import kenneth.app.starlightlauncher.widgets.AddedWidget
+import kenneth.app.starlightlauncher.widgets.WidgetListView
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class MainScreenFragment @Inject constructor(
     private val bindingRegister: BindingRegister,
+    private val appWidgetManager: AppWidgetManager,
+    private val appWidgetHost: AppWidgetHost,
 ) : Fragment() {
     private var binding: FragmentMainScreenBinding? = null
     private val viewModel: MainScreenViewModel by viewModels()
 
+    private val requestBindWidgetLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        ::onRequestBindWidgetResult
+    )
+
+    private val configureWidgetActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        ::onConfigureWidgetResult
+    )
+
     /**
      * A BroadcastReceiver that receives broadcast of Intent.ACTION_TIME_TICK.
-     * Must register this receiver in activity, or the time will not update.
      */
     private val timeTickBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context != null && intent?.action == Intent.ACTION_TIME_TICK) {
                 updateDateTime(Calendar.getInstance().time)
             }
+        }
+    }
+
+    private val widgetListChangedListener = object : WidgetListView.OnChangedListener {
+        override fun onRequestRemoveWidget(removedWidget: AddedWidget) {
+            viewModel.removeWidget(removedWidget)
+        }
+
+        override fun onWidgetResized(widget: AddedWidget, newHeight: Int) {
+            viewModel.resizeWidget(widget, newHeight)
+        }
+
+        override fun onWidgetSwapped(oldPosition: Int, newPosition: Int) {
+            viewModel.swapWidget(oldPosition, newPosition)
         }
     }
 
@@ -54,16 +88,123 @@ internal class MainScreenFragment @Inject constructor(
             binding = this
             bindingRegister.mainScreenBinding = this
 
-            // show the current time
-            dateTimeView.dateTime = Calendar.getInstance().time
-
-            viewModel.clockSize.observe(viewLifecycleOwner) {
-                dateTimeView.clockSize = it
+            dateTimeView.apply {
+                // show the current time
+                dateTime = Calendar.getInstance().time
+                onRefreshWeatherRequested = {
+                    viewModel.refreshWeather()
+                }
             }
 
-            observeWeatherInfo()
-
             root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        observeWeatherInfo()
+
+        with(viewModel) {
+            clockSize.observe(viewLifecycleOwner) {
+                binding?.dateTimeView?.clockSize = it
+            }
+            shouldUse24HrClock.observe(viewLifecycleOwner) {
+                binding?.dateTimeView?.shouldUse24HrClock = it
+            }
+            addedWidgets.observe(viewLifecycleOwner) {
+                Log.d("starlight", "$it")
+                binding?.widgetsPanel?.widgetListView?.widgets = it
+            }
+        }
+
+        binding?.widgetsPanel?.widgetListView?.onWidgetListChangedListener =
+            widgetListChangedListener
+
+        viewModel.addedAndroidWidget.observe(viewLifecycleOwner) {
+            bindAndroidWidget(it)
+        }
+    }
+
+    /**
+     * Bind the given android widget with [AppWidgetManager].
+     * Added android widgets must be bound before they can be displayed.
+     */
+    private fun bindAndroidWidget(widget: AddedWidget.AndroidWidget) {
+        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
+        // first, check if permission is granted to bind widgets
+        val bindAllowed = appWidgetManager.bindAppWidgetIdIfAllowed(
+            widget.appWidgetId,
+            appWidgetProviderInfo.provider
+        )
+
+        if (bindAllowed) {
+            // permission is granted, configure widget for display
+            configureAndroidWidget(widget.appWidgetId, appWidgetProviderInfo)
+        } else {
+            // no permission, prompt user to allow widgets to be displayed
+            // in Starlight
+            requestBindWidgetLauncher.launch(Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, appWidgetProviderInfo.provider)
+            })
+        }
+    }
+
+    /**
+     * Called when the user has answered the prompt to allow widgets to be displayed in Starlight.
+     */
+    private fun onRequestBindWidgetResult(result: ActivityResult?) {
+        val data = result?.data ?: return
+        val extras = data.extras
+        val appWidgetId =
+            extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: return
+        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                configureAndroidWidget(appWidgetId, appWidgetProviderInfo)
+            }
+            Activity.RESULT_CANCELED -> {
+                // user did not allow Starlight to show widgets
+                // delete the widget
+                appWidgetHost.deleteAppWidgetId(appWidgetId)
+                viewModel.removeAndroidWidget(appWidgetId)
+            }
+        }
+    }
+
+    private fun onConfigureWidgetResult(result: ActivityResult?) {
+        val data = result?.data ?: return
+        val extras = data.extras
+        val appWidgetId =
+            extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: return
+
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                viewModel.refreshWidgetList()
+            }
+            Activity.RESULT_CANCELED -> {
+                appWidgetHost.deleteAppWidgetId(appWidgetId)
+                viewModel.removeAndroidWidget(appWidgetId)
+            }
+        }
+    }
+
+    private fun configureAndroidWidget(
+        appWidgetId: Int,
+        appWidgetInfo: AppWidgetProviderInfo
+    ) {
+        // check if the added widget has a configure activity
+        // that lets user configure/customize the widget
+        // before being added to the launcher
+        if (appWidgetInfo.configure != null) {
+            Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).run {
+                component = appWidgetInfo.configure
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+
+                configureWidgetActivityLauncher.launch(this)
+            }
+        } else {
+            viewModel.refreshWidgetList()
         }
     }
 
