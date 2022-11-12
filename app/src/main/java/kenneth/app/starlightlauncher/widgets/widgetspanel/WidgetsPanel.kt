@@ -11,18 +11,10 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.*
-import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
-import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.NOT_HANDLED
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.GestureMover
-import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
-import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
+import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.views.SearchBox
-import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
 import java.lang.Integer.max
 import javax.inject.Inject
@@ -54,12 +46,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var appState: AppState
-
-    @Inject
-    lateinit var searcher: Searcher
-
-    @Inject
-    lateinit var launcher: StarlightLauncherApi
 
     @Inject
     lateinit var bindingRegister: BindingRegister

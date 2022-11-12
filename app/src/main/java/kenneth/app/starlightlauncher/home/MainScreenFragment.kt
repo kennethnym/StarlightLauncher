@@ -140,7 +140,6 @@ internal class MainScreenFragment @Inject constructor(
                 binding?.dateTimeView?.shouldUse24HrClock = it
             }
             addedWidgets.observe(viewLifecycleOwner) {
-                Log.d("starlight", "$it")
                 binding?.widgetsPanel?.widgetListView?.widgets = it
             }
         }
@@ -159,7 +158,6 @@ internal class MainScreenFragment @Inject constructor(
                 binding?.widgetsPanel?.run {
                     expand()
                     hideWidgets()
-                    binding?.widgetsPanel?.searchBox?.showTopPadding()
                 }
                 false
             }
@@ -167,8 +165,7 @@ internal class MainScreenFragment @Inject constructor(
             binding?.widgetsPanel?.searchBox?.hasQueryText == false -> {
                 binding?.widgetsPanel?.run {
                     retract()
-                    showWidgets()
-                    binding?.widgetsPanel?.searchBox?.removeTopPadding()
+                    showWidgetList()
                 }
                 true
             }
