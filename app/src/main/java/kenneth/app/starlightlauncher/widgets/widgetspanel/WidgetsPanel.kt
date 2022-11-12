@@ -21,6 +21,7 @@ import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
+import kenneth.app.starlightlauncher.views.SearchBox
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
 import java.lang.Integer.max
@@ -90,6 +91,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     private val keyboardAnimation = KeyboardAnimation()
 
     val widgetListView: WidgetListView
+    val searchBox: SearchBox
 
     init {
         translationY = appState.halfScreenHeight.toFloat()
@@ -97,6 +99,9 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
             bindingRegister.widgetsPanelBinding = it
             widgetListView = it.widgetListView
+            searchBox = it.searchBox
+        }.apply {
+            searchBox.isWidgetsPanelExpanded = isExpanded
         }
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -127,10 +132,14 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
     }
 
-    fun hideSearchResults() {
-        with(binding) {
-            searchResultView.isVisible = false
-            widgetListView.isVisible = true
+    fun clearSearchResults() {
+        binding.searchResultView.isVisible = false
+    }
+
+    fun showWidgetList() {
+        widgetListView.run {
+            isVisible = true
+            showWidgets()
         }
     }
 

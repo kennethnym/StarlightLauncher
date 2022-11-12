@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.databinding.FragmentMainScreenBinding
+import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
 import java.util.*
@@ -69,6 +71,22 @@ internal class MainScreenFragment @Inject constructor(
         }
     }
 
+    private val searchBoxActionDelegate = object : SearchBoxActionDelegate {
+        override fun retractWidgetsPanel() {
+            binding?.run {
+                widgetsPanel.retract()
+                widgetsPanel.searchBox.isWidgetsPanelExpanded = false
+            }
+        }
+
+        override fun expandWidgetsPanel() {
+            binding?.run {
+                widgetsPanel.expand()
+                widgetsPanel.searchBox.isWidgetsPanelExpanded = true
+            }
+        }
+    }
+
     override fun onAttach(context: Context) {
         context.registerReceiver(timeTickBroadcastReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
         super.onAttach(context)
@@ -93,6 +111,17 @@ internal class MainScreenFragment @Inject constructor(
                 dateTime = Calendar.getInstance().time
                 onRefreshWeatherRequested = {
                     viewModel.refreshWeather()
+                }
+            }
+
+            widgetsPanel.searchBox.apply {
+                actionDelegate = searchBoxActionDelegate
+                onFocusChanged = View.OnFocusChangeListener { v, hasFocus ->
+                    onSearchBoxFocusChanged(hasFocus)
+                }
+
+                addTextChangedListener {
+                    handleSearchQuery(it)
                 }
             }
 
@@ -121,6 +150,40 @@ internal class MainScreenFragment @Inject constructor(
 
         viewModel.addedAndroidWidget.observe(viewLifecycleOwner) {
             bindAndroidWidget(it)
+        }
+    }
+
+    private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
+        binding?.widgetsPanel?.canBeSwiped = when {
+            hasFocus -> {
+                binding?.widgetsPanel?.run {
+                    expand()
+                    hideWidgets()
+                    binding?.widgetsPanel?.searchBox?.showTopPadding()
+                }
+                false
+            }
+
+            binding?.widgetsPanel?.searchBox?.hasQueryText == false -> {
+                binding?.widgetsPanel?.run {
+                    retract()
+                    showWidgets()
+                    binding?.widgetsPanel?.searchBox?.removeTopPadding()
+                }
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    private fun handleSearchQuery(query: Editable?) {
+        if (query == null || query.isBlank()) {
+            viewModel.cancelPendingSearch()
+            binding?.widgetsPanel?.clearSearchResults()
+        } else {
+            binding?.widgetsPanel?.searchBox?.showClearSearchBoxButton()
+            viewModel.requestSearch(query.toString())
         }
     }
 

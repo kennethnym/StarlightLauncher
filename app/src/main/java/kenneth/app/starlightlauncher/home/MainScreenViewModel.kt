@@ -20,6 +20,7 @@ import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
+import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
@@ -48,6 +49,7 @@ internal class MainScreenViewModel @Inject constructor(
     private val widgetPreferenceManager: WidgetPreferenceManager,
     private val openWeatherApi: OpenWeatherApi,
     private val launcherEventChannel: LauncherEventChannel,
+    private val searcher: Searcher,
 ) : ViewModel(), LocationListener {
     private val weatherCheckTimer = Timer()
 
@@ -152,6 +154,14 @@ internal class MainScreenViewModel @Inject constructor(
 
     override fun onLocationChanged(location: Location) {
         currentDeviceLocation = location
+    }
+
+    fun requestSearch(query: String) {
+        searcher.requestSearch(query)
+    }
+
+    fun cancelPendingSearch() {
+        searcher.cancelPendingSearch()
     }
 
     fun refreshWeather() {
