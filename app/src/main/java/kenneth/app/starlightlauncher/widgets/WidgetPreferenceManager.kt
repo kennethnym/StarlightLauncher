@@ -3,25 +3,24 @@ package kenneth.app.starlightlauncher.widgets
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.*
+import kenneth.app.starlightlauncher.InternalLauncherEvent
+import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.swap
-import kenneth.app.starlightlauncher.appsearchmodule.PREF_KEY_PINNED_APPS
+import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.PREF_ADDED_WIDGETS
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
@@ -48,18 +47,15 @@ internal class WidgetPreferenceManager @Inject constructor(
 
     private var _addedWidgets = runBlocking {
         context.dataStore.data.map { preferences ->
-            preferences[PREF_KEY_PINNED_APPS]?.let {
-                Json.decodeFromString<List<AddedWidget>>(it).toMutableList()
-            } ?: mutableListOf<AddedWidget>().apply {
-                extensionManager.installedExtensions.forEach { ext ->
-                    if (ext.widget != null) add(
-                        AddedWidget.StarlightWidget(
-                            random.nextInt(),
-                            ext.name,
-                        )
-                    )
-                }
-            }
+            preferences[PREF_ADDED_WIDGETS]?.let {
+                Json.decodeFromString<List<AddedWidget>>(it).mapNotNull { widget ->
+                    if (widget is AddedWidget.StarlightWidget) {
+                        extensionManager.lookupWidget(widget.extensionName)?.let { creator ->
+                            widget.copy(widgetCreator = creator)
+                        }
+                    } else widget
+                }.toMutableList()
+            } ?: defaultWidgets()
         }.first()
     }
 
@@ -72,7 +68,8 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
     }
 
-    val addedWidgets: List<AddedWidget> = _addedWidgets
+    val addedWidgets: List<AddedWidget>
+        get() = _addedWidgets.toList()
 
     fun isStarlightWidgetAdded(extensionName: String) =
         addedStarlightWidgets.contains(extensionName)
@@ -120,6 +117,8 @@ internal class WidgetPreferenceManager @Inject constructor(
         )
         _addedWidgets += newWidget
 
+        Log.d("starlight", "added widgets $_addedWidgets")
+
         saveAddedWidgets()
         launcherEventChannel.add(
             WidgetPreferenceChanged.NewAndroidWidgetAdded(
@@ -155,6 +154,18 @@ internal class WidgetPreferenceManager @Inject constructor(
                 widgetPos
             )
         )
+    }
+
+    private fun defaultWidgets() = mutableListOf<AddedWidget>().apply {
+        extensionManager.installedExtensions.forEach { ext ->
+            if (ext.widget != null) add(
+                AddedWidget.StarlightWidget(
+                    random.nextInt(),
+                    ext.name,
+                    ext.widget
+                )
+            )
+        }
     }
 
     private suspend fun saveAddedWidgets() {

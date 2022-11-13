@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.prefs.searching
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -97,6 +96,12 @@ internal class SearchPreferenceManager @Inject constructor(
                     .joinToString(CATEGORY_ORDER_LIST_SEPARATOR)
             }
         }
+        launcherEventChannel.add(
+            SearchPreferenceChanged.SearchCategoryOrderChanged(
+                fromPosition,
+                toPosition
+            )
+        )
     }
 
     private fun getSearchModuleOrder(extensions: Collection<Extension>) {

@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher.widgets
 
 import android.animation.ObjectAnimator
+import android.appwidget.AppWidgetHost
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -13,7 +14,6 @@ import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.views.ReorderableList
-import kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -35,6 +35,9 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
 
     @Inject
     lateinit var bindingRegister: BindingRegister
+
+    @Inject
+    lateinit var appWidgetHost: AppWidgetHost
 
     private val showAnimator = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
         duration = 200
@@ -75,7 +78,8 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
         updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.widget_list_space_between))
 
         layoutManager = LinearLayoutManager(context)
-        adapter = WidgetListAdapter(context, widgets, this).also { widgetListAdapter = it }
+        adapter =
+            WidgetListAdapter(context, widgets, appWidgetHost, this).also { widgetListAdapter = it }
 
         addOnOrderChangedListener { fromPosition, toPosition ->
             onWidgetListChangedListener?.onWidgetSwapped(fromPosition, toPosition)

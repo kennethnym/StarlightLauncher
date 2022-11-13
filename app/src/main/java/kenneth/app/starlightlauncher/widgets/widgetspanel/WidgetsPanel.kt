@@ -88,7 +88,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         translationY = appState.halfScreenHeight.toFloat()
 
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
-            bindingRegister.widgetsPanelBinding = it
             widgetListView = it.widgetListView
             searchBox = it.searchBox
             searchResultView = it.searchResultView

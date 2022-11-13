@@ -8,8 +8,6 @@ import android.widget.LinearLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.BindingRegister
 import javax.inject.Inject
 import kotlin.math.max
@@ -27,19 +25,9 @@ internal class DateTimeViewContainer(context: Context, attrs: AttributeSet) :
     lateinit var appState: AppState
 
     @Inject
-    lateinit var launcher: StarlightLauncherApi
-
-    @Inject
     lateinit var bindingRegister: BindingRegister
 
     private val choreographer = Choreographer.getInstance()
-
-    init {
-        setOnLongClickListener {
-            launcher.showOptionMenu { LauncherOptionMenu(context, launcher, bindingRegister, it) }
-            HANDLED
-        }
-    }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

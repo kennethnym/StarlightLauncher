@@ -8,12 +8,10 @@ import dagger.Module
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoMap
 import kenneth.app.starlightlauncher.home.MainScreenFragment
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 // credit to this medium article
@@ -30,7 +28,7 @@ internal interface LauncherFragmentFactoryEntryPoint {
 }
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 internal abstract class LauncherFragmentFactoryModule {
     @Binds
     @IntoMap
@@ -38,7 +36,6 @@ internal abstract class LauncherFragmentFactoryModule {
     abstract fun bindMainScreenFragment(impl: MainScreenFragment): Fragment
 }
 
-@Singleton
 internal class LauncherFragmentFactory @Inject constructor(
     private val providerMap: Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>>
 ) : FragmentFactory() {

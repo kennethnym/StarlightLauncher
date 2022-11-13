@@ -4,32 +4,19 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
-import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.util.toDp
 import kenneth.app.starlightlauncher.util.toPx
 import kotlin.math.max
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-internal interface WidgetListAdapterEntryPoint {
-    fun extensionManager(): ExtensionManager
-    fun appWidgetHost(): AppWidgetHost
-}
 
 private const val VIEW_TYPE_ANDROID_WIDGET = 0
 private const val VIEW_TYPE_STARLIGHT_WIDGET = 1
@@ -40,6 +27,7 @@ private const val VIEW_TYPE_STARLIGHT_WIDGET = 1
 internal class WidgetListAdapter(
     context: Context,
     var widgets: List<AddedWidget>,
+    private val appWidgetHost: AppWidgetHost,
     private val eventListener: WidgetListEventListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     interface WidgetListEventListener {
@@ -52,10 +40,6 @@ internal class WidgetListAdapter(
 
     private val context = context.applicationContext
 
-    private val extensionManager: ExtensionManager
-
-    private val appWidgetHost: AppWidgetHost
-
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
     private var widgetListView: WidgetListView? = null
@@ -64,16 +48,6 @@ internal class WidgetListAdapter(
      * IDs of [AddedWidget]s that are in layout.
      */
     private var widgetsInLayout = mutableSetOf<Int>()
-
-    init {
-        EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            WidgetListAdapterEntryPoint::class.java
-        ).run {
-            extensionManager = extensionManager()
-            appWidgetHost = appWidgetHost()
-        }
-    }
 
     override fun getItemViewType(position: Int): Int = when (widgets[position]) {
         is AddedWidget.AndroidWidget -> VIEW_TYPE_ANDROID_WIDGET
@@ -166,7 +140,7 @@ internal class WidgetListAdapter(
         widget: AddedWidget.StarlightWidget,
         holder: StarlightWidgetListAdapterItem,
     ) {
-        extensionManager.lookupWidget(widget.extensionName)?.let { creator ->
+        widget.widgetCreator?.let { creator ->
             creator.createWidget(holder.binding.widgetFrame).also {
                 holder.binding.widgetFrame.addView(it.rootView)
             }

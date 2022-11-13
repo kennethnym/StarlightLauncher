@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
@@ -83,13 +84,14 @@ internal class MainScreenViewModel @Inject constructor(
     val weatherInfo: LiveData<Pair<TemperatureUnit, OpenWeatherApi.Response>?> = _weatherInfo
 
     private val _addedAndroidWidget by lazy {
-        MutableLiveData<AddedWidget.AndroidWidget>()
+        MutableLiveData<Pair<AddedWidget.AndroidWidget, AppWidgetProviderInfo>>()
     }
 
     /**
      * The most recently added android widget.
      */
-    val addedAndroidWidget: LiveData<AddedWidget.AndroidWidget> = _addedAndroidWidget
+    val addedAndroidWidget: LiveData<Pair<AddedWidget.AndroidWidget, AppWidgetProviderInfo>> =
+        _addedAndroidWidget
 
     private val _addedWidgets by lazy {
         MutableLiveData<List<AddedWidget>>()
@@ -145,7 +147,12 @@ internal class MainScreenViewModel @Inject constructor(
                 launcherEventChannel.subscribe {
                     when (it) {
                         is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
-                            _addedAndroidWidget.postValue(it.addedWidget)
+                            _addedAndroidWidget.postValue(
+                                Pair(
+                                    it.addedWidget,
+                                    it.appWidgetProviderInfo
+                                )
+                            )
                         }
 
                         is WidgetPreferenceChanged.WidgetRemoved -> {

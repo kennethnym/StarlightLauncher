@@ -5,7 +5,6 @@ import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -148,9 +147,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             screenHeight = resources.displayMetrics.heightPixels
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater).also {
-            bindingRegister.activityMainBinding = it
-        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
 
         binding.homeScreenViewPager.adapter = HomeScreenViewPagerAdapter(this)
 

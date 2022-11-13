@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,14 +21,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.FragmentMainScreenBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
 import kenneth.app.starlightlauncher.searching.Searcher
+import kenneth.app.starlightlauncher.views.LauncherOptionMenu
 import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
@@ -41,6 +45,7 @@ internal class MainScreenFragment @Inject constructor(
     private val appWidgetManager: AppWidgetManager,
     private val appWidgetHost: AppWidgetHost,
     private val searcher: Searcher,
+    private val launcher: StarlightLauncherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val extensionManager: ExtensionManager,
 ) : Fragment() {
@@ -138,6 +143,18 @@ internal class MainScreenFragment @Inject constructor(
 
             widgetsPanel.searchResultView.searchModules = extensionManager.installedSearchModules
 
+            dateTimeViewContainer.setOnLongClickListener {
+                launcher.showOptionMenu {
+                    LauncherOptionMenu(
+                        it.context,
+                        launcher,
+                        bindingRegister,
+                        it
+                    )
+                }
+                HANDLED
+            }
+
             root
         }
     }
@@ -163,8 +180,8 @@ internal class MainScreenFragment @Inject constructor(
         binding?.widgetsPanel?.widgetListView?.onWidgetListChangedListener =
             widgetListChangedListener
 
-        viewModel.addedAndroidWidget.observe(viewLifecycleOwner) {
-            bindAndroidWidget(it)
+        viewModel.addedAndroidWidget.observe(viewLifecycleOwner) { (widget, appWidgetInfo) ->
+            bindAndroidWidget(widget, appWidgetInfo)
         }
 
         searcher.addSearchResultListener { result, searchModule ->
@@ -234,23 +251,26 @@ internal class MainScreenFragment @Inject constructor(
      * Bind the given android widget with [AppWidgetManager].
      * Added android widgets must be bound before they can be displayed.
      */
-    private fun bindAndroidWidget(widget: AddedWidget.AndroidWidget) {
-        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
+    private fun bindAndroidWidget(
+        widget: AddedWidget.AndroidWidget,
+        appWidgetInfo: AppWidgetProviderInfo
+    ) {
         // first, check if permission is granted to bind widgets
         val bindAllowed = appWidgetManager.bindAppWidgetIdIfAllowed(
             widget.appWidgetId,
-            appWidgetProviderInfo.provider
+            widget.provider
         )
 
         if (bindAllowed) {
+            Log.d("starlight", "bind allowed")
             // permission is granted, configure widget for display
-            configureAndroidWidget(widget.appWidgetId, appWidgetProviderInfo)
+            configureAndroidWidget(widget.appWidgetId, appWidgetInfo)
         } else {
             // no permission, prompt user to allow widgets to be displayed
             // in Starlight
             requestBindWidgetLauncher.launch(Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, appWidgetProviderInfo.provider)
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, appWidgetInfo.provider)
             })
         }
     }
@@ -310,6 +330,8 @@ internal class MainScreenFragment @Inject constructor(
                 configureWidgetActivityLauncher.launch(this)
             }
         } else {
+            // no configuration required
+            // refresh the widget list to show the newly added widget
             viewModel.refreshWidgetList()
         }
     }
