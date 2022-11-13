@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +17,21 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.api.LauncherEvent
+import kenneth.app.starlightlauncher.api.SearchModule
+import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.databinding.FragmentMainScreenBinding
+import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
+import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -32,6 +40,9 @@ internal class MainScreenFragment @Inject constructor(
     private val bindingRegister: BindingRegister,
     private val appWidgetManager: AppWidgetManager,
     private val appWidgetHost: AppWidgetHost,
+    private val searcher: Searcher,
+    private val launcherEventChannel: LauncherEventChannel,
+    private val extensionManager: ExtensionManager,
 ) : Fragment() {
     private var binding: FragmentMainScreenBinding? = null
     private val viewModel: MainScreenViewModel by viewModels()
@@ -116,7 +127,7 @@ internal class MainScreenFragment @Inject constructor(
 
             widgetsPanel.searchBox.apply {
                 actionDelegate = searchBoxActionDelegate
-                onFocusChanged = View.OnFocusChangeListener { v, hasFocus ->
+                onFocusChanged = View.OnFocusChangeListener { _, hasFocus ->
                     onSearchBoxFocusChanged(hasFocus)
                 }
 
@@ -124,6 +135,8 @@ internal class MainScreenFragment @Inject constructor(
                     handleSearchQuery(it)
                 }
             }
+
+            widgetsPanel.searchResultView.searchModules = extensionManager.installedSearchModules
 
             root
         }
@@ -142,6 +155,9 @@ internal class MainScreenFragment @Inject constructor(
             addedWidgets.observe(viewLifecycleOwner) {
                 binding?.widgetsPanel?.widgetListView?.widgets = it
             }
+            searchResultOrder.observe(viewLifecycleOwner) {
+                binding?.widgetsPanel?.searchResultView?.searchModuleOrder = it
+            }
         }
 
         binding?.widgetsPanel?.widgetListView?.onWidgetListChangedListener =
@@ -149,6 +165,27 @@ internal class MainScreenFragment @Inject constructor(
 
         viewModel.addedAndroidWidget.observe(viewLifecycleOwner) {
             bindAndroidWidget(it)
+        }
+
+        searcher.addSearchResultListener { result, searchModule ->
+            onSearchResultAvailable(result, searchModule)
+        }
+
+        lifecycleScope.launch {
+            launcherEventChannel.subscribe {
+                onLauncherEvent(it)
+            }
+        }
+    }
+
+    private fun onLauncherEvent(event: LauncherEvent) {
+        when (event) {
+            is SearchPreferenceChanged.SearchCategoryOrderChanged -> {
+                binding?.widgetsPanel?.searchResultView?.swapPosition(
+                    event.fromIndex,
+                    event.toIndex
+                )
+            }
         }
     }
 
@@ -181,6 +218,15 @@ internal class MainScreenFragment @Inject constructor(
         } else {
             binding?.widgetsPanel?.searchBox?.showClearSearchBoxButton()
             viewModel.requestSearch(query.toString())
+        }
+    }
+
+    private fun onSearchResultAvailable(result: SearchResult, searchModule: SearchModule) {
+        binding?.let { binding ->
+            if (!binding.widgetsPanel.isSearchResultsVisible) {
+                binding.widgetsPanel.showSearchResults()
+            }
+            binding.widgetsPanel.searchResultView.showSearchResult(result, searchModule)
         }
     }
 

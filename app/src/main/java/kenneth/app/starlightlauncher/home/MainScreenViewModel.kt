@@ -20,13 +20,16 @@ import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
+import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -47,6 +50,7 @@ internal class MainScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dateTimePreferenceManager: DateTimePreferenceManager,
     private val widgetPreferenceManager: WidgetPreferenceManager,
+    private val searchPreferenceManager: SearchPreferenceManager,
     private val openWeatherApi: OpenWeatherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val searcher: Searcher,
@@ -107,6 +111,12 @@ internal class MainScreenViewModel @Inject constructor(
 
     val shouldUse24HrClock: LiveData<Boolean> = _shouldUse24HrClock
 
+    private val _searchResultOrder by lazy {
+        MutableLiveData<List<String>>()
+    }
+
+    val searchResultOrder: LiveData<List<String>> = _searchResultOrder
+
     private val locationManager = context.getSystemService(LocationManager::class.java)
 
     /**
@@ -142,6 +152,12 @@ internal class MainScreenViewModel @Inject constructor(
                             _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
                         }
                     }
+                }
+            }
+
+            launch {
+                searchPreferenceManager.searchModuleOrder.collectLatest {
+                    _searchResultOrder.postValue(it)
                 }
             }
         }
