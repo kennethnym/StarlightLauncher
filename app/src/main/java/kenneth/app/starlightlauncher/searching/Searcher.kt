@@ -60,7 +60,7 @@ internal class Searcher @Inject constructor(
      * Cancels any pending search requests
      */
     fun cancelPendingSearch() {
-        searchScope.cancel()
+        searchScope.coroutineContext.cancelChildren()
     }
 
     private fun performSearch(keyword: String) {

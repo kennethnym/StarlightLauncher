@@ -27,6 +27,7 @@ import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -136,7 +137,6 @@ internal class MainScreenViewModel @Inject constructor(
                     initializeWeather()
                     attachWeatherSettingsListeners()
                 } else {
-                    weatherScope.cancel()
                     _weatherInfo.postValue(null)
                 }
             }
@@ -269,6 +269,7 @@ internal class MainScreenViewModel @Inject constructor(
                         initializeWeather()
                     } else {
                         currentDeviceLocation = null
+                        weatherScope.coroutineContext.cancelChildren()
                         locationManager.removeUpdates(this@MainScreenViewModel)
                     }
                 }
