@@ -147,6 +147,7 @@ internal class AppOptionMenu(
                 applyIconTint = true,
             ) {
                 pinOrUnpinApp(shouldPin = !isPinned)
+                menu.hide()
             }.also { pinAppMenuItem = it }
         }
     }
