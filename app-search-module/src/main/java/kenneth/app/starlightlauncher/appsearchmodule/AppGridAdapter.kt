@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherActivityInfo
 import android.graphics.Rect
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,6 @@ import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
 import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -94,6 +94,8 @@ internal class AppGridAdapter(
     }
 
     override fun onBindViewHolder(holder: AppGridItem, position: Int) {
+        Log.d("starlight", "app")
+
         val app = apps[position]
         val appName = app.label
 
@@ -147,6 +149,15 @@ internal class AppGridAdapter(
             clear()
             addAll(apps)
         }
+
+        visibleApps.apply {
+            clear()
+            addAll(
+                if (showAllApps) apps
+                else apps.subList(0, min(apps.size, gridSpanCount))
+            )
+        }
+
         diffResult.dispatchUpdatesTo(this)
     }
 

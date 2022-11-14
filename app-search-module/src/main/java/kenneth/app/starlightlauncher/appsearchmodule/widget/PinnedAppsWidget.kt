@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.appsearchmodule.widget
 
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -8,12 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.WidgetHolder
-import kenneth.app.starlightlauncher.appsearchmodule.*
+import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
+import kenneth.app.starlightlauncher.appsearchmodule.AppList
+import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 internal class PinnedAppsWidget(
     private val binding: PinnedAppsWidgetBinding,
@@ -111,6 +115,7 @@ internal class PinnedAppsWidget(
                 it.mapNotNull { componentName -> launcher.launcherActivityInfoOf(componentName) }
             }
             .collect { pinnedApps ->
+                Log.d("starlight", "pinned apps $pinnedApps")
                 when {
                     pinnedApps.isEmpty() -> {
                         hideWidget()
@@ -144,6 +149,7 @@ internal class PinnedAppsWidget(
     }
 
     private fun showWidget(apps: AppList) {
+        Log.d("starlight", "show widget $apps")
         with(binding) {
             rootView.isVisible = true
 
