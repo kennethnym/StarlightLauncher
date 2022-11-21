@@ -13,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.prefs.component.SettingsListItem
-import kenneth.app.starlightlauncher.prefs.component.SettingsScreen
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsListItem
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsScreen
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState

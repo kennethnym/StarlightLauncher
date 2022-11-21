@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
-import kenneth.app.starlightlauncher.prefs.component.SettingsListItem
-import kenneth.app.starlightlauncher.prefs.component.SettingsScreen
-import kenneth.app.starlightlauncher.prefs.component.SettingsSection
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsListItem
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsScreen
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsSection
 
 @Composable
 internal fun IconPackSettingsScreen(viewModel: IconPackSettingsScreenViewModel = hiltViewModel()) {

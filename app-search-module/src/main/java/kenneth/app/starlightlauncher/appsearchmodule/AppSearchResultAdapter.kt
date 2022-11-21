@@ -10,10 +10,10 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Defines how many apps are shown when the app grid is displayed initially.
@@ -29,7 +29,7 @@ class AppSearchResultAdapter(
     private lateinit var currentViewHolder: AppSearchResultViewHolder
 
     private var appGridAdapter: AppGridAdapter? = null
-    private val prefs = AppSearchModulePreferences.getInstance(launcher)
+    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
 
     init {
         launcher.coroutineScope.run {

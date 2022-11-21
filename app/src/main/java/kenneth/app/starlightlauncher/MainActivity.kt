@@ -149,7 +149,10 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
-        binding.homeScreenViewPager.adapter = HomeScreenViewPagerAdapter(this)
+        binding.homeScreenViewPager.apply {
+            isUserInputEnabled = false
+            adapter = HomeScreenViewPagerAdapter(this@MainActivity)
+        }
 
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)

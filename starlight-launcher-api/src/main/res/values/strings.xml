@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_activity_title">Settings</string>
+    <string name="status_item_selected">%1$s selected</string>
 </resources>

@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -14,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.TemperatureUnit
-import kenneth.app.starlightlauncher.prefs.component.*
+import kenneth.app.starlightlauncher.api.compose.pref.*
 
 @ExperimentalMaterialApi
 @Composable
@@ -91,32 +93,34 @@ internal fun ClockSettingsScreen(
                             enter = expandVertically(),
                             exit = shrinkVertically()
                         ) {
-                            SettingsListItem(
-                                title = stringResource(R.string.date_time_pick_location_title),
-                                summary = stringResource(
-                                    R.string.date_time_pick_location_summary,
-                                    viewModel.weatherLocationName
-                                        ?: stringResource(R.string.weather_location_not_set)
-                                ),
-                                onTap = { isLocationPickerOpen = true }
-                            )
+                            SettingsList {
+                                SettingsListItem(
+                                    title = stringResource(R.string.date_time_pick_location_title),
+                                    summary = stringResource(
+                                        R.string.date_time_pick_location_summary,
+                                        viewModel.weatherLocationName
+                                            ?: stringResource(R.string.weather_location_not_set)
+                                    ),
+                                    onTap = { isLocationPickerOpen = true }
+                                )
 
-                            val locationCheckFrequencyLabels =
-                                stringArrayResource(R.array.location_check_frequency_labels)
+                                val locationCheckFrequencyLabels =
+                                    stringArrayResource(R.array.location_check_frequency_labels)
 
-                            SingleChoiceSettingsListItem(
-                                labels = locationCheckFrequencyLabels.asIterable(),
-                                values = LOCATION_UPDATE_FREQUENCY_VALUES,
-                                choice = viewModel.locationCheckFrequency,
-                                title = stringResource(R.string.date_time_location_check_frequency_title),
-                                summary = stringResource(
-                                    R.string.date_time_location_check_frequency_summary,
-                                    locationCheckFrequencyLabels[LOCATION_UPDATE_FREQUENCY_VALUES.indexOf(
-                                        viewModel.locationCheckFrequency
-                                    )]
-                                ),
-                                onChoiceSelected = { viewModel.changeLocationCheckFrequency(it) }
-                            )
+                                SingleChoiceSettingsListItem(
+                                    labels = locationCheckFrequencyLabels.asIterable(),
+                                    values = LOCATION_UPDATE_FREQUENCY_VALUES,
+                                    choice = viewModel.locationCheckFrequency,
+                                    title = stringResource(R.string.date_time_location_check_frequency_title),
+                                    summary = stringResource(
+                                        R.string.date_time_location_check_frequency_summary,
+                                        locationCheckFrequencyLabels[LOCATION_UPDATE_FREQUENCY_VALUES.indexOf(
+                                            viewModel.locationCheckFrequency
+                                        )]
+                                    ),
+                                    onChoiceSelected = { viewModel.changeLocationCheckFrequency(it) }
+                                )
+                            }
                         }
 
                         val weatherCheckFrequencyLabels =

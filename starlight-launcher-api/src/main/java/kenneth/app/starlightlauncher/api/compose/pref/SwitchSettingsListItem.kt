@@ -1,11 +1,8 @@
-package kenneth.app.starlightlauncher.prefs.component
+package kenneth.app.starlightlauncher.api.compose.pref
 
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.stringResource
-import kenneth.app.starlightlauncher.R
 
 @Composable
 fun SwitchSettingsListItem(

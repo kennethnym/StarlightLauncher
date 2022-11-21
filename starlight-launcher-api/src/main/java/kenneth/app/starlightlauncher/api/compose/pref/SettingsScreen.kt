@@ -1,7 +1,9 @@
-package kenneth.app.starlightlauncher.prefs.component
+package kenneth.app.starlightlauncher.api.compose.pref
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,8 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kenneth.app.starlightlauncher.Manrope
-import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.R
 
 @Composable
 fun SettingsScreen(
@@ -21,9 +22,14 @@ fun SettingsScreen(
     gutter: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .verticalScroll(scrollState)
+            .padding(8.dp)
+            .systemBarsPadding()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

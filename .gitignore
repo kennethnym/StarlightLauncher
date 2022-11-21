@@ -13,3 +13,8 @@ apikey.properties
 /captures
 .externalNativeBuild
 .cxx
+/base64
+/DebugKeystore.jks
+/ReleaseKeystore.jks
+/app/release/app-release.apk
+/app/release/output-metadata.json

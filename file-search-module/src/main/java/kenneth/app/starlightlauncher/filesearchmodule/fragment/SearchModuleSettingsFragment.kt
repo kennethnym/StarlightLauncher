@@ -12,7 +12,7 @@ import kenneth.app.starlightlauncher.filesearchmodule.R
 import kenneth.app.starlightlauncher.filesearchmodule.UriAuthority
 
 class SearchModuleSettingsFragment : PreferenceFragmentCompat() {
-    private lateinit var filePickerLauncher: ActivityResultLauncher<Uri>
+    private lateinit var filePickerLauncher: ActivityResultLauncher<Uri?>
     private lateinit var pathPrefCategory: PreferenceCategory
 
     private var fileSearchModulePreferences: FileSearchModulePreferences? = null

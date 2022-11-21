@@ -14,7 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.prefs.component.*
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsListItem
+import kenneth.app.starlightlauncher.api.compose.pref.SettingsScreen
+import kenneth.app.starlightlauncher.api.compose.pref.SwitchSettingsListItem
+import kenneth.app.starlightlauncher.prefs.SETTINGS_ROUTE_ICON_PACK
 
 @Composable
 internal fun AppearanceSettingsScreen(
@@ -49,13 +52,6 @@ internal fun AppearanceSettingsScreen(
                 title = stringResource(R.string.appearance_change_icon_pack_title),
                 summary = stringResource(R.string.appearance_change_icon_pack_summary),
                 onTap = { navController.navigate(SETTINGS_ROUTE_ICON_PACK) }
-            )
-
-            SettingsListItem(
-                icon = painterResource(R.drawable.ic_clock),
-                title = stringResource(R.string.pref_clock_settings_title),
-                summary = stringResource(R.string.pref_clock_settings_summary),
-                onTap = { navController.navigate(SETTINGS_ROUTE_CLOCK) }
             )
 
             SwitchSettingsListItem(

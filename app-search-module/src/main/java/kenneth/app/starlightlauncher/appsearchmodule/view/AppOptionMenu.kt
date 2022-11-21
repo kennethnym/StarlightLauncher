@@ -16,7 +16,6 @@ import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuItem
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.R
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -33,7 +32,7 @@ internal class AppOptionMenu(
     //    private val binding = AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true)
     private val launcherApps =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-    private val prefs = AppSearchModulePreferences.getInstance(launcher)
+    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
 
     private val maxAppShortcutsShown =
         context.resources.getInteger(R.integer.max_app_shortcuts_shown)

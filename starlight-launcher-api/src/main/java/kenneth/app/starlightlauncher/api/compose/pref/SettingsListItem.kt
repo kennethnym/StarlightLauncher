@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.prefs.component
+package kenneth.app.starlightlauncher.api.compose.pref
 
 import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,10 +15,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kenneth.app.starlightlauncher.Manrope
 
 val SETTINGS_LIST_ITEM_ICON_SIZE = 24.dp
 

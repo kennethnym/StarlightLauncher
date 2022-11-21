@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
-import androidx.core.content.PackageManagerCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.SearchModule
@@ -16,6 +14,7 @@ import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModuleSettingsProvider
 import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
 import kenneth.app.starlightlauncher.appshortcutsearchmodule.AppShortcutSearchModule
 import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
@@ -52,6 +51,7 @@ internal class ExtensionManager @Inject constructor(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(context),
             widget = PinnedAppsWidgetCreator(context),
+            settingsProvider = AppSearchModuleSettingsProvider(context)
         ),
         "kenneth.app.starlightlauncher.contactsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.contactsearchmodule",
@@ -110,7 +110,7 @@ internal class ExtensionManager @Inject constructor(
                 description = context.getString(R.string.app_search_module_search_module_settings_description),
                 icon = AppCompatResources.getDrawable(
                     context,
-                    R.drawable.app_search_module_search_module_settings_icon
+                    R.drawable.app_search_module_settings_icon
                 ),
                 intent = Intent(
                     context,

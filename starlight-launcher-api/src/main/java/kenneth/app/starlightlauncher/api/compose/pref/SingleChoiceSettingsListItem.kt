@@ -1,11 +1,10 @@
-package kenneth.app.starlightlauncher.prefs.component
+package kenneth.app.starlightlauncher.api.compose.pref
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +12,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.R
 
 @Composable
 fun <T> SingleChoiceSettingsListItem(
@@ -62,7 +61,10 @@ fun <T> SingleChoiceSettingsListItem(
                             if (choiceValue == choice)
                                 Image(
                                     painter = painterResource(R.drawable.ic_check),
-                                    contentDescription = stringResource(R.string.status_selected),
+                                    contentDescription = stringResource(
+                                        R.string.status_item_selected,
+                                        choiceLabel
+                                    ),
                                     modifier = Modifier
                                         .width(24.dp)
                                         .height(24.dp)

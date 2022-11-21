@@ -1,49 +1,22 @@
 package kenneth.app.starlightlauncher.views
 
-import android.Manifest
-import android.content.*
-import android.content.pm.PackageManager
+import android.content.Context
 import android.graphics.Color
-import android.location.Location
-import android.location.LocationManager
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.IO_DISPATCHER
-import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
-import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
-import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.api.view.IconButton
+import kenneth.app.starlightlauncher.databinding.DateTimeViewBinding
 import kenneth.app.starlightlauncher.datetime.*
-import kenneth.app.starlightlauncher.datetime.DEFAULT_DATE_TIME_VIEW_SIZE
-import kenneth.app.starlightlauncher.datetime.DEFAULT_SHOW_WEATHER
-import kenneth.app.starlightlauncher.datetime.DEFAULT_USE_24HR_CLOCK
-import kenneth.app.starlightlauncher.datetime.DEFAULT_WEATHER_UNIT
-import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
-import kenneth.app.starlightlauncher.prefs.datetime.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 internal class DateTimeView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -103,6 +76,10 @@ internal class DateTimeView(context: Context, attrs: AttributeSet) : LinearLayou
         }
 
     var shouldUse24HrClock = DEFAULT_USE_24HR_CLOCK
+        set(value) {
+            field = value
+            dateTime = Calendar.getInstance().time
+        }
 
     var onRefreshWeatherRequested: (() -> Unit)? = null
 

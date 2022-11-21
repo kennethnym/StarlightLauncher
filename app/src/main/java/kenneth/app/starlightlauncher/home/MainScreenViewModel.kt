@@ -89,6 +89,9 @@ internal class MainScreenViewModel @Inject constructor(
 
     /**
      * The most recently added android widget.
+     * The first element of the pair is the [AddedWidget.AndroidWidget]
+     * representing the added widget, and the second element is the [AppWidgetProviderInfo]
+     * of the added android widget.
      */
     val addedAndroidWidget: LiveData<Pair<AddedWidget.AndroidWidget, AppWidgetProviderInfo>> =
         _addedAndroidWidget
@@ -133,6 +136,18 @@ internal class MainScreenViewModel @Inject constructor(
         _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
 
         with(viewModelScope) {
+            launch {
+                dateTimePreferenceManager.shouldUse24HrClock.collectLatest {
+                    _shouldUse24HrClock.postValue(it)
+                }
+            }
+
+            launch {
+                dateTimePreferenceManager.dateTimeViewSize.collectLatest {
+                    _clockSize.postValue(it)
+                }
+            }
+
             launch {
                 val shouldShowWeather = dateTimePreferenceManager.shouldShowWeather.first()
                 if (shouldShowWeather) {
@@ -325,18 +340,6 @@ internal class MainScreenViewModel @Inject constructor(
                             weatherUnit,
                         )
                     }
-                }
-            }
-
-            launch {
-                dateTimePreferenceManager.dateTimeViewSize.collectLatest {
-                    _clockSize.postValue(it)
-                }
-            }
-
-            launch {
-                dateTimePreferenceManager.shouldUse24HrClock.collectLatest {
-                    _shouldUse24HrClock.postValue(it)
                 }
             }
         }

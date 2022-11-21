@@ -8,6 +8,7 @@
         <entry key="../../.gradle/caches/transforms-3/ecb7a6fbae1c4f5b73aff186ec126e91/transformed/preference-1.1.1/res/layout/image_frame.xml" value="0.3496376811594203" />
         <entry key="../../Library/Android/sdk/platforms/android-31/data/res/layout/preference_category.xml" value="0.353713768115942" />
         <entry key="app-search-module/src/main/res/drawable/app_search_module_search_module_settings_icon.xml" value="0.3703125" />
+        <entry key="app-search-module/src/main/res/drawable/app_search_module_settings_icon.xml" value="0.1445" />
         <entry key="app-search-module/src/main/res/drawable/app_search_module_widget_settings_icon.xml" value="0.3703125" />
         <entry key="app-search-module/src/main/res/drawable/ic_apps.xml" value="0.3703125" />
         <entry key="app-search-module/src/main/res/drawable/ic_favorite.xml" value="0.4197916666666667" />
@@ -16,7 +17,7 @@
         <entry key="app-search-module/src/main/res/layout/app_option_menu.xml" value="0.3496376811594203" />
         <entry key="app-search-module/src/main/res/layout/app_search_result_card.xml" value="0.37681159420289856" />
         <entry key="app-search-module/src/main/res/layout/apps_search_result_card.xml" value="0.3496376811594203" />
-        <entry key="app-search-module/src/main/res/layout/pinned_apps_widget.xml" value="0.3111413043478261" />
+        <entry key="app-search-module/src/main/res/layout/pinned_apps_widget.xml" value="0.2476780185758514" />
         <entry key="app-search-module/src/main/res/layout/search_module_settings_activity.xml" value="0.3541666666666667" />
         <entry key="app-search-module/src/main/res/layout/settings_activity.xml" value="0.3736413043478261" />
         <entry key="app-search-module/src/main/res/layout/widget_settings_activity.xml" value="0.3541666666666667" />
@@ -166,11 +167,16 @@
         <entry key="spotlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3736413043478261" />
         <entry key="spotlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3496376811594203" />
         <entry key="starlight-launcher-api/src/main/res/drawable/edit_text_on_plate_bg.xml" value="0.159" />
+        <entry key="starlight-launcher-api/src/main/res/drawable/ic_angle_down.xml" value="0.171" />
+        <entry key="starlight-launcher-api/src/main/res/drawable/ic_check.xml" value="0.171" />
         <entry key="starlight-launcher-api/src/main/res/drawable/plate_background.xml" value="0.3703125" />
+        <entry key="starlight-launcher-api/src/main/res/font/manrope.xml" value="0.31666666666666665" />
         <entry key="starlight-launcher-api/src/main/res/layout/file_name_dialog_content.xml" value="0.335" />
         <entry key="starlight-launcher-api/src/main/res/layout/option_menu_item.xml" value="0.3536458333333333" />
         <entry key="starlight-launcher-api/src/main/res/layout/search_result_card_layout.xml" value="0.3170289855072464" />
         <entry key="starlight-launcher-api/src/main/res/layout/settings_activity.xml" value="0.19630192502532928" />
+        <entry key="starlight-launcher-api/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1445" />
+        <entry key="starlight-launcher-api/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1445" />
         <entry key="unit-converter-widget/src/main/res/drawable/blur_view_edit_text_bg.xml" value="0.159" />
         <entry key="unit-converter-widget/src/main/res/drawable/ic_angle_down.xml" value="0.159" />
         <entry key="unit-converter-widget/src/main/res/drawable/ic_check.xml" value="0.2295" />

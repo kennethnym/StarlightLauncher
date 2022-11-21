@@ -13,7 +13,6 @@ import kenneth.app.starlightlauncher.appsearchmodule.AppGridAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.AppList
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.PinnedAppsWidgetBinding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ internal class PinnedAppsWidget(
 ) : WidgetHolder {
     override val rootView: View = binding.root
 
-    private val prefs = AppSearchModulePreferences.getInstance(launcher)
+    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
     private var appGridAdapter: AppGridAdapter? = null
 
     private var dndTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -115,7 +114,6 @@ internal class PinnedAppsWidget(
                 it.mapNotNull { componentName -> launcher.launcherActivityInfoOf(componentName) }
             }
             .collect { pinnedApps ->
-                Log.d("starlight", "pinned apps $pinnedApps")
                 when {
                     pinnedApps.isEmpty() -> {
                         hideWidget()

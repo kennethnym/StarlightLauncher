@@ -169,7 +169,7 @@
     <!-- Appearance preferences -->
     <string name="appearance_title">Appearance</string>
     <string name="appearance_subtitle">Change the appearance of Starlight</string>
-    <string name="appearance_icon_category_title">Icons</string>
+    <string name="appearance_icons_section_title">Icons</string>
     <string name="appearance_icon_pack_title">Icon packs</string>
     <string name="appearance_summary">Clock, weather, icon pack</string>
     <string name="appearance_blur_effect_title">Enable blur effect</string>
@@ -225,7 +225,7 @@
     <string name="file_add_path_title">Add path…</string>
 
     <!-- Clock settings -->
-    <string name="pref_clock_settings_title">Clock settings</string>
+    <string name="pref_clock_settings_title">Clock</string>
     <string name="pref_clock_settings_summary">Clock size, weather, 24hr</string>
     <string name="pref_clock_settings_screen_title">Clock</string>
     <string name="pref_clock_settings_screen_subtitle">Change how the clock looks and behaves</string>
