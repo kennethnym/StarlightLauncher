@@ -272,8 +272,8 @@
     <!-- Media control preferences -->
     <string name="media_control_title">Media control</string>
     <string name="media_control_summary">Adjust behavior of media control widget</string>
-    <string name="enable_media_control">Enable media control widget</string>
-    <string name="enable_media_control_description">
+    <string name="enable_media_control_title">Enable media control widget</string>
+    <string name="enable_media_control_summary">
         Show a media control widget on the home screen when there is media currently playing.
     </string>
     <string name="media_control_notification_listener_perm_title">
@@ -281,7 +281,7 @@
     </string>
     <string name="media_control_notification_listener_perm_summary">
         Notification access is required for the media control widget to work.
-        The app does NOT and will NEVER monitor and collect device notifications.
+        Starlight does NOT and will NEVER monitor and collect device notifications.
     </string>
 
     <!-- Info preferences -->

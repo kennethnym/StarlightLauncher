@@ -7,6 +7,7 @@ const val SETTINGS_ROUTE_ICON_PACK = "appearance/icon_pack"
 const val SETTINGS_ROUTE_SEARCH = "search"
 const val SETTINGS_ROUTE_SEARCH_LAYOUT = "search/layout"
 const val SETTINGS_ROUTE_INFO = "info"
+const val SETTINGS_ROUTE_MEDIA_CONTROL = "media_control"
 
 fun baseExtensionRoute(extensionName: String) = "extension/$extensionName"
 

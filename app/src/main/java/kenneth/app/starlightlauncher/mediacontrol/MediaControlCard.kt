@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.views
+package kenneth.app.starlightlauncher.mediacontrol
 
 import android.content.ComponentName
 import android.content.Context
@@ -7,7 +7,6 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.provider.Settings
-import android.service.notification.NotificationListenerService
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -30,6 +29,7 @@ import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
 import kenneth.app.starlightlauncher.prefs.PREF_MEDIA_CONTROL_ENABLED
+import kenneth.app.starlightlauncher.views.DateTimeViewContainer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -230,7 +230,7 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
         val notificationListenerStr =
             Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
 
-        return notificationListenerStr != null && notificationListenerStr.contains(context.packageName)
+        return notificationListenerStr != null && notificationListenerStr == notificationListenerStubComponent.flattenToString()
     }
 
     /**
@@ -412,11 +412,3 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
         }
     }
 }
-
-/**
- * A NotificationListenerService stub is required in order to register this app
- * as a notification listener, which enables access to the currently playing media.
- *
- * This app does NOT monitor or track device notifications.
- */
-class NotificationListenerStub : NotificationListenerService()

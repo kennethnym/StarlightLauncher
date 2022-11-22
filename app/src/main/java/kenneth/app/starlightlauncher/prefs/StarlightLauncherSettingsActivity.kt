@@ -14,6 +14,7 @@ import kenneth.app.starlightlauncher.api.compose.LocalDataStore
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.datetime.ClockSettingsScreen
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.mediacontrol.settings.MediaControlSettingsScreen
 import kenneth.app.starlightlauncher.prefs.appearance.AppearanceSettingsScreen
 import kenneth.app.starlightlauncher.prefs.appearance.IconPackSettingsScreen
 import kenneth.app.starlightlauncher.prefs.searching.SearchLayoutSettingsScreen
@@ -64,6 +65,8 @@ class StarlightLauncherSettingsActivity : ComponentActivity() {
 
                     composable(SETTINGS_ROUTE_SEARCH) { SearchSettingsScreen(navController) }
                     composable(SETTINGS_ROUTE_SEARCH_LAYOUT) { SearchLayoutSettingsScreen() }
+
+                    composable(SETTINGS_ROUTE_MEDIA_CONTROL) { MediaControlSettingsScreen() }
 
                     composable(SETTINGS_ROUTE_INFO) { InfoSettingsScreen() }
 

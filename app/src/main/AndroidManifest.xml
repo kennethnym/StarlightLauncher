@@ -33,7 +33,7 @@
         <!-- This notification listener service is required in order to obtain info
           of the currently playing media. The registered listener class is empty. -->
         <service
-            android:name="kenneth.app.starlightlauncher.views.NotificationListenerStub"
+            android:name="kenneth.app.starlightlauncher.mediacontrol.NotificationListenerStub"
             android:exported="false"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>

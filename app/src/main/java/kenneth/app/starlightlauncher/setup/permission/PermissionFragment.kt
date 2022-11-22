@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.databinding.FragmentSetupPermissionBinding
 import kenneth.app.starlightlauncher.databinding.SetupPermissionItemBinding
-import kenneth.app.starlightlauncher.views.NotificationListenerStub
+import kenneth.app.starlightlauncher.mediacontrol.NotificationListenerStub
 
 /**
  * This setup fragment informs the users the permissions Starlight Launcher needs for some features to work.

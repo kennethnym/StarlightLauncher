@@ -21,6 +21,7 @@ import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
+import kenneth.app.starlightlauncher.mediacontrol.settings.MediaControlPreferenceManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
@@ -53,6 +54,7 @@ internal class MainScreenViewModel @Inject constructor(
     private val dateTimePreferenceManager: DateTimePreferenceManager,
     private val widgetPreferenceManager: WidgetPreferenceManager,
     private val searchPreferenceManager: SearchPreferenceManager,
+    private val mediaControlPreferenceManager: MediaControlPreferenceManager,
     private val openWeatherApi: OpenWeatherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val searcher: Searcher,
@@ -111,6 +113,15 @@ internal class MainScreenViewModel @Inject constructor(
      */
     val clockSize: LiveData<DateTimeViewSize> = _clockSize
 
+    private val _isMediaControlEnabled by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    /**
+     * Whether the media control widget is enabled.
+     */
+    val isMediaControlEnabled: LiveData<Boolean> = _isMediaControlEnabled
+
     private val _shouldUse24HrClock by lazy {
         MutableLiveData<Boolean>()
     }
@@ -145,6 +156,12 @@ internal class MainScreenViewModel @Inject constructor(
             launch {
                 dateTimePreferenceManager.dateTimeViewSize.collectLatest {
                     _clockSize.postValue(it)
+                }
+            }
+
+            launch {
+                mediaControlPreferenceManager.isMediaControlEnabled.collectLatest {
+                    _isMediaControlEnabled.postValue(it)
                 }
             }
 
