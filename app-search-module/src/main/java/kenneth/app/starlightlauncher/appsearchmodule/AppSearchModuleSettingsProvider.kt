@@ -18,10 +18,7 @@ class AppSearchModuleSettingsProvider(context: Context) : ExtensionSettingsProvi
 
     override val settingsIconRes = R.drawable.app_search_module_settings_icon
 
-    override val settingsRoutes: Map<String, @Composable () -> Unit> =
-        mutableMapOf<String, @Composable () -> Unit>().apply {
-            put("root") {
-                MainSettingsScreen()
-            }
-        }
+    override val settingsRoutes: Map<String, @Composable () -> Unit> = mapOf(
+        "root" to { MainSettingsScreen() }
+    )
 }

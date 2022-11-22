@@ -3,13 +3,11 @@ package kenneth.app.starlightlauncher.noteswidget.pref
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.EventChannel
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.PREF_KEY_NOTE_LIST
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -73,7 +71,7 @@ private constructor(private val dataStore: DataStore<Preferences>) :
         }
     }
 
-    fun exportNotesToJson(): String = Json.encodeToString(notes)
+    suspend fun exportNotesToJson(): String = Json.encodeToString(notes.first())
 
     suspend fun restoreNotesFromJson(json: String) {
         val restoredNotes = Json.decodeFromString<List<Note>>(json)

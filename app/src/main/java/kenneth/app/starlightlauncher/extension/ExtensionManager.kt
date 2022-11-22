@@ -21,6 +21,7 @@ import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
+import kenneth.app.starlightlauncher.noteswidget.NotesWidgetSettingsProvider
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
@@ -76,6 +77,7 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
             widget = NotesWidgetCreator(context),
+            settingsProvider = NotesWidgetSettingsProvider(context)
         ),
         "kenneth.app.starlightlauncher.unitconverterwidget" to Extension(
             name = "kenneth.app.starlightlauncher.unitconverterwidget",
@@ -140,18 +142,6 @@ internal class ExtensionManager @Inject constructor(
                 intent = Intent(
                     context,
                     kenneth.app.starlightlauncher.appsearchmodule.activity.WidgetSettingsActivity::class.java,
-                )
-            ),
-            "kenneth.app.starlightlauncher.noteswidget" to ExtensionSettings(
-                title = context.getString(R.string.notes_widget_settings_title),
-                description = context.getString(R.string.notes_widget_settings_description),
-                icon = AppCompatResources.getDrawable(
-                    context,
-                    R.drawable.notes_widget_settings_icon,
-                ),
-                intent = Intent(
-                    context,
-                    kenneth.app.starlightlauncher.noteswidget.activity.WidgetSettingsActivity::class.java,
                 )
             )
         )

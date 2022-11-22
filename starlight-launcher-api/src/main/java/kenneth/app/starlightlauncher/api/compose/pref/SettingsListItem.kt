@@ -4,6 +4,7 @@ import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -29,7 +30,9 @@ fun SettingsListItem(
     onTap: (() -> Unit)? = null,
     control: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
+    loading: Boolean = false,
 ) {
+    val isEnabled = enabled && !loading
     var isTapped by remember { mutableStateOf(false) }
 
     val scale: Float by animateFloatAsState(
@@ -64,11 +67,11 @@ fun SettingsListItem(
             .scale(scale)
             .fillMaxWidth()
             .then(
-                if (onTap != null && enabled)
+                if (onTap != null && isEnabled)
                     Modifier.pointerInteropFilter { onTouchEvent(it) }
                 else Modifier
             )
-            .alpha(if (enabled) 1f else 0.5f)
+            .alpha(if (isEnabled) 1f else 0.5f)
     ) {
         when {
             icon != null -> Image(
@@ -96,6 +99,17 @@ fun SettingsListItem(
             }
         }
 
-        control?.let { it() }
+        when {
+            loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp)
+                )
+            }
+            control != null -> {
+                control()
+            }
+        }
     }
 }
