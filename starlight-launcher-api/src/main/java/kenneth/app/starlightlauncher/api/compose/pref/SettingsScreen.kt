@@ -20,6 +20,7 @@ fun SettingsScreen(
     title: String,
     description: String? = null,
     gutter: Boolean = true,
+    scrollable: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -27,7 +28,10 @@ fun SettingsScreen(
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .verticalScroll(scrollState)
+            .run {
+                if (scrollable) verticalScroll(scrollState)
+                else this
+            }
             .padding(8.dp)
             .systemBarsPadding()
     ) {

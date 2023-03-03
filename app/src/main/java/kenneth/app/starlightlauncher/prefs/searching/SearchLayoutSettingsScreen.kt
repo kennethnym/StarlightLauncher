@@ -30,7 +30,8 @@ internal fun SearchLayoutSettingsScreen(
 
     SettingsScreen(
         title = stringResource(R.string.pref_search_layout_title),
-        description = stringResource(R.string.pref_search_layout_subtitle)
+        description = stringResource(R.string.pref_search_layout_subtitle),
+        scrollable = false,
     ) {
         LazyColumn(
             state = listState.listState,
