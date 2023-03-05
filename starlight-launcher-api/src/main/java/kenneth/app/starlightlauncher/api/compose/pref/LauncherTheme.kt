@@ -1,8 +1,11 @@
 package kenneth.app.starlightlauncher.api.compose.pref
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -49,11 +52,19 @@ val typography = Typography(
 fun LauncherTheme(
     content: @Composable () -> Unit,
 ) {
+    val currentContentColor =
+        if (isSystemInDarkTheme()) Color.White else Color.Black
+
     MaterialTheme(
-        typography = typography,
+        typography = typography.copy(
+
+        ),
         colorScheme = MaterialTheme.colorScheme.copy(
             primary = Color(0xFF009DFF)
         ),
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(LocalContentColor provides currentContentColor) {
+            content()
+        }
+    }
 }
