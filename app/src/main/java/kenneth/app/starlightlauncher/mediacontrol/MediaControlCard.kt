@@ -1,42 +1,25 @@
 package kenneth.app.starlightlauncher.mediacontrol
 
-import android.content.ComponentName
 import android.content.Context
 import android.media.MediaMetadata
 import android.media.session.MediaController
-import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
-import android.provider.Settings
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleObserver
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.MAIN_DISPATCHER
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.api.util.activity
-import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.databinding.MediaControlCardBinding
-import kenneth.app.starlightlauncher.prefs.PREF_MEDIA_CONTROL_ENABLED
-import kenneth.app.starlightlauncher.views.DateTimeViewContainer
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Displays a media control card on the home screen when media is playing.
@@ -44,25 +27,26 @@ import javax.inject.Named
  */
 @AndroidEntryPoint
 internal class MediaControlCard(context: Context, attrs: AttributeSet) :
-    LinearLayout(context, attrs), LifecycleEventObserver {
-    @Inject
-    lateinit var mediaSessionManager: MediaSessionManager
-
+    LinearLayout(context, attrs), LifecycleObserver {
     @Inject
     lateinit var blurHandler: BlurHandler
 
-    @Inject
-    @Named(MAIN_DISPATCHER)
-    lateinit var mainDispatcher: CoroutineDispatcher
+    var mediaSession: MediaController? = null
+        set(value) {
+            field?.unregisterCallback(mediaSessionListener)
+            field = value?.also {
+                it.registerCallback(mediaSessionListener)
+                pollMediaProgress = true
+            }
 
-    /**
-     * The ComponentName of the notification listener stub
-     */
-    private val notificationListenerStubComponent =
-        ComponentName(context, NotificationListenerStub::class.java)
+            value?.metadata?.let { showMediaMetadata(it) }
+            value?.playbackState?.let { showPlaybackState(it) }
+        }
 
     private val playButtonDrawable = ContextCompat.getDrawable(context, R.drawable.ic_play)!!
     private val pauseButtonDrawable = ContextCompat.getDrawable(context, R.drawable.ic_pause)!!
+
+    private var lifecycleScope: LifecycleCoroutineScope? = null
 
     /**
      * True when user seeks to another position. Used by the polling function to prevent
@@ -76,12 +60,7 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
      */
     private var newProgressSet = false
 
-    private var activeMediaSession: MediaController? = null
-
     private val binding = MediaControlCardBinding.inflate(LayoutInflater.from(context), this, true)
-
-    private val dateTimeViewContainer
-        get() = parent as DateTimeViewContainer?
 
     /**
      * Determines if this widget should poll media progress every second.
@@ -95,15 +74,9 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
         }
 
     /**
-     * Gets from SharedPreferences whether media control is enabled by the user
-     */
-    private var isMediaControlEnabled: Boolean =
-        context.resources.getBoolean(R.bool.default_media_control_enabled)
-
-    /**
      * Listens to changes to the current active media session.
      */
-    private val activeMediaSessionListener = object : MediaController.Callback() {
+    private val mediaSessionListener = object : MediaController.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             metadata?.let { showMediaMetadata(it) }
         }
@@ -113,8 +86,8 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
         }
 
         override fun onSessionDestroyed() {
-            activeMediaSession?.unregisterCallback(this)
-            activeMediaSession = null
+            mediaSession?.unregisterCallback(this)
+            mediaSession = null
         }
     }
 
@@ -129,170 +102,44 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
             newProgressSet = true
             pollMediaProgress = true
             seekBar?.let {
-                activeMediaSession?.transportControls?.seekTo(it.progress.toLong())
+                mediaSession?.transportControls?.seekTo(it.progress.toLong())
             }
         }
     }
 
     init {
-        if (isMediaControlEnabled) {
-            checkNotificationListenerAndUpdate()
-            attachListeners()
-        } else {
-            isVisible = false
-            dateTimeViewContainer?.gravity = Gravity.CENTER
-        }
-
-        activity?.let {
-            it.lifecycle.addObserver(this)
-            it.lifecycleScope.launch {
-                context.dataStore.data
-                    .map { preferences ->
-                        preferences[PREF_MEDIA_CONTROL_ENABLED]
-                            ?: context.resources.getBoolean(R.bool.default_media_control_enabled)
-                    }.collect { isMediaControlEnabled ->
-                        this@MediaControlCard.isMediaControlEnabled = isMediaControlEnabled
-                        onMediaControlPreferencesChanged()
-                    }
-            }
-        }
-        binding.mediaControlBlurBackground.blurWith(blurHandler)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-
-        dateTimeViewContainer.apply {
-            gravity =
-                if (this@MediaControlCard.isVisible) Gravity.CENTER or Gravity.BOTTOM
-                else Gravity.CENTER
+        with(binding) {
+            playPauseButton.setOnClickListener { togglePlayPause() }
+            skipBackwardButton.setOnClickListener { skipBackward() }
+            skipForwardButton.setOnClickListener { skipForward() }
+            mediaControlBlurBackground.blurWith(blurHandler)
         }
     }
 
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if (source is AppCompatActivity) {
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> checkNotificationListenerAndUpdate()
-                else -> {}
-            }
-        }
+    fun setLifecycleScope(scope: LifecycleCoroutineScope) {
+        lifecycleScope = scope
     }
 
-    /**
-     * Called when user changed whether media control should be enabled.
-     */
-    private fun onMediaControlPreferencesChanged() {
-        if (isMediaControlEnabled) {
-            checkNotificationListenerAndUpdate()
-            attachListeners()
-        } else {
-            hideControl()
-        }
-    }
-
-    /**
-     * Check if notification listener is enabled for this app.
-     * If it is enabled, then check if there is any media currently playing and updates the
-     * UI accordingly. Otherwise, hide control.
-     *
-     * Call this method when the app resumes, because user may have revoked
-     * notification listener for this app when the app is in background.
-     */
-    private fun checkNotificationListenerAndUpdate() {
-        if (isMediaControlEnabled && isNotificationListenerEnabled()) {
-            val activeMediaSessions = mediaSessionManager.getActiveSessions(
-                notificationListenerStubComponent
-            )
-
-            updateActiveMediaSession(
-                if (activeMediaSessions.isNotEmpty())
-                    activeMediaSessions.first()
-                else null
-            )
-
-            addMediaSessionListener()
-        } else {
-            hideControl()
-        }
-    }
-
-    private fun attachListeners() {
-        binding.playPauseButton.setOnClickListener { togglePlayPause() }
-        binding.skipBackwardButton.setOnClickListener { skipBackward() }
-        binding.skipForwardButton.setOnClickListener { skipForward() }
-    }
-
-    /**
-     * Determines if the registered notification listener is enabled.
-     * If true, then the currently playing media is accessible.
-     */
-    private fun isNotificationListenerEnabled(): Boolean {
-        val notificationListenerStr =
-            Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-
-        return notificationListenerStr != null && notificationListenerStr == notificationListenerStubComponent.flattenToString()
-    }
-
-    /**
-     * Attaches a listener to MediaSessionManager that updates the instance of
-     * the currently active MediaController when active session changes.
-     */
-    private fun addMediaSessionListener() {
-        mediaSessionManager.addOnActiveSessionsChangedListener(
-            { sessions ->
-                if (sessions != null && sessions.isNotEmpty()) {
-                    updateActiveMediaSession(sessions.first())
-                }
-            },
-            ComponentName(context, NotificationListenerStub::class.java)
-        )
+    override fun onDetachedFromWindow() {
+        mediaSession?.unregisterCallback(mediaSessionListener)
+        super.onDetachedFromWindow()
     }
 
     private fun skipForward() {
         binding.playPauseButton.isEnabled = false
-        activeMediaSession?.transportControls?.skipToNext()
+        mediaSession?.transportControls?.skipToNext()
     }
 
     private fun skipBackward() {
         binding.playPauseButton.isEnabled = false
-        activeMediaSession?.transportControls?.skipToPrevious()
-    }
-
-    /**
-     * Hide media control. Can be one of the following reasons:
-     * - there is no media currently playing
-     * - notification listener is revoked manually by the user
-     */
-    private fun hideControl() {
-        isVisible = false
-        pollMediaProgress = false
-        activeMediaSession?.unregisterCallback(activeMediaSessionListener)
-        activeMediaSession = null
-        dateTimeViewContainer?.gravity = Gravity.CENTER
-//        binding.mediaControlBlurBackgr ound.pauseBlur()
-    }
-
-    /**
-     * Updates the instance of the currently active MediaController.
-     * Also reflects the changes in the UI.
-     */
-    private fun updateActiveMediaSession(newSession: MediaController?) {
-        activeMediaSession = newSession
-
-        if (activeMediaSession != null) {
-            showMediaControl()
-            activeMediaSession?.registerCallback(activeMediaSessionListener)
-            pollMediaProgress = true
-        } else {
-            hideControl()
-        }
+        mediaSession?.transportControls?.skipToPrevious()
     }
 
     /**
      * Toggles media play pause based on the current playback state
      */
     private fun togglePlayPause() {
-        activeMediaSession?.let {
+        mediaSession?.let {
             when (it.playbackState?.state) {
                 PlaybackState.STATE_PLAYING -> {
                     it.transportControls.pause()
@@ -307,21 +154,6 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
     }
 
     /**
-     * Shows media control and info for the currently playing media.
-     */
-    private fun showMediaControl() {
-        isInvisible = false
-        dateTimeViewContainer?.gravity = Gravity.CENTER or Gravity.BOTTOM
-
-        activeMediaSession?.let {
-            it.metadata?.let(::showMediaMetadata)
-            it.playbackState?.let(::showPlaybackState)
-        }
-
-//        binding.mediaControlBlurBackground.startBlur()
-    }
-
-    /**
      * Reflects the given MediaMetadata to the UI.
      */
     private fun showMediaMetadata(mediaMetadata: MediaMetadata) {
@@ -332,7 +164,7 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
             mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
                 ?: context.getString(R.string.no_artist_label)
 
-        mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+        mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             ?.let {
                 binding.mediaCover.isVisible = true
                 Glide.with(context)
@@ -342,6 +174,17 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
             ?: run {
                 binding.mediaCover.isVisible = false
             }
+
+//        mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
+//            ?.let {
+//                binding.mediaCover.isVisible = true
+//                Glide.with(context)
+//                    .load(it)
+//                    .into(binding.mediaCover)
+//            }
+//            ?: run {
+//                binding.mediaCover.isVisible = false
+//            }
 
         mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
             if (it != 0L) {
@@ -396,9 +239,9 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
      * Continuously poll and show currently media progress every second.
      */
     private fun pollAndShowMediaProgress() {
-        CoroutineScope(mainDispatcher).launch {
+        lifecycleScope?.launch {
             while (pollMediaProgress) {
-                activeMediaSession?.playbackState?.position?.toInt()?.let {
+                mediaSession?.playbackState?.position?.toInt()?.let {
                     if (newProgressSet) {
                         if (it == binding.mediaSeekBar.progress) {
                             newProgressSet = false

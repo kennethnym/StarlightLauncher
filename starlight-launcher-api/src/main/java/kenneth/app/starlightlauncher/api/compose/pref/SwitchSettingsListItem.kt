@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.painter.Painter
 fun SwitchSettingsListItem(
     icon: Painter? = null,
     emptyIcon: Boolean = icon == null,
+    enabled: Boolean = true,
     title: String,
     summary: String? = null,
     checked: Boolean,
@@ -16,10 +17,12 @@ fun SwitchSettingsListItem(
     SettingsListItem(
         icon = icon,
         emptyIcon = emptyIcon,
+        enabled = enabled,
         title = title,
         summary = summary,
         control = {
             Switch(
+                enabled = enabled,
                 checked = checked,
                 onCheckedChange = onCheckedChange,
             )

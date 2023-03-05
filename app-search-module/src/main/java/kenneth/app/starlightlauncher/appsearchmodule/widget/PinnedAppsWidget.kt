@@ -1,6 +1,5 @@
 package kenneth.app.starlightlauncher.appsearchmodule.widget
 
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -147,7 +146,6 @@ internal class PinnedAppsWidget(
     }
 
     private fun showWidget(apps: AppList) {
-        Log.d("starlight", "show widget $apps")
         with(binding) {
             rootView.isVisible = true
 

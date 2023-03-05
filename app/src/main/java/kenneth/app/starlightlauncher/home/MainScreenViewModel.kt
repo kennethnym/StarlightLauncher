@@ -3,12 +3,16 @@ package kenneth.app.starlightlauncher.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetProviderInfo
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.session.MediaController
+import android.media.session.MediaSessionManager
+import android.provider.Settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +25,7 @@ import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
+import kenneth.app.starlightlauncher.mediacontrol.NotificationListenerStub
 import kenneth.app.starlightlauncher.mediacontrol.settings.MediaControlPreferenceManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
@@ -58,8 +63,17 @@ internal class MainScreenViewModel @Inject constructor(
     private val openWeatherApi: OpenWeatherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val searcher: Searcher,
-) : ViewModel(), LocationListener {
+    private val mediaSessionManager: MediaSessionManager,
+) : ViewModel(),
+    LocationListener,
+    MediaSessionManager.OnActiveSessionsChangedListener {
     private val weatherCheckTimer = Timer()
+
+    /**
+     * The ComponentName of the notification listener stub
+     */
+    private val notificationListenerStubComponent =
+        ComponentName(context, NotificationListenerStub::class.java)
 
     private var weatherCheckTimerTask: WeatherCheckTimerTask? = null
 
@@ -134,6 +148,12 @@ internal class MainScreenViewModel @Inject constructor(
 
     val searchResultOrder: LiveData<List<String>> = _searchResultOrder
 
+    private val _activeMediaSession by lazy {
+        MutableLiveData<MediaController?>(null)
+    }
+
+    val activeMediaSession: LiveData<MediaController?> = _activeMediaSession
+
     private val locationManager = context.getSystemService(LocationManager::class.java)
 
     /**
@@ -161,7 +181,15 @@ internal class MainScreenViewModel @Inject constructor(
 
             launch {
                 mediaControlPreferenceManager.isMediaControlEnabled.collectLatest {
-                    _isMediaControlEnabled.postValue(it)
+                    val shouldMediaControlBeEnabled = it && isNotificationListenerEnabled()
+
+                    if (shouldMediaControlBeEnabled) {
+                        onMediaControlEnabled()
+                    } else {
+                        onMediaControlDisabled()
+                    }
+
+                    _isMediaControlEnabled.postValue(shouldMediaControlBeEnabled)
                 }
             }
 
@@ -209,6 +237,13 @@ internal class MainScreenViewModel @Inject constructor(
 
     override fun onLocationChanged(location: Location) {
         currentDeviceLocation = location
+    }
+
+    override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
+        _activeMediaSession.postValue(
+            if (controllers?.isEmpty() == true) null
+            else controllers?.first()
+        )
     }
 
     fun requestSearch(query: String) {
@@ -262,6 +297,18 @@ internal class MainScreenViewModel @Inject constructor(
                 _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
             }
         }
+    }
+
+    fun recheckNotificationListener() {
+        val shouldMediaControlBeEnabled = isNotificationListenerEnabled()
+
+        if (shouldMediaControlBeEnabled) {
+            onMediaControlEnabled()
+        } else {
+            onMediaControlDisabled()
+        }
+
+        _isMediaControlEnabled.postValue(shouldMediaControlBeEnabled)
     }
 
     /**
@@ -416,6 +463,35 @@ internal class MainScreenViewModel @Inject constructor(
                 )
             }
             ?: _weatherInfo.postValue(null)
+    }
+
+    private fun onMediaControlEnabled() {
+        mediaSessionManager.addOnActiveSessionsChangedListener(
+            this,
+            notificationListenerStubComponent
+        )
+
+        val activeMediaSessions = mediaSessionManager.getActiveSessions(
+            notificationListenerStubComponent
+        )
+
+        if (activeMediaSessions.isNotEmpty()) {
+            _activeMediaSession.postValue(activeMediaSessions.first())
+        }
+    }
+
+    private fun onMediaControlDisabled() {
+        mediaSessionManager.removeOnActiveSessionsChangedListener(this)
+        _activeMediaSession.postValue(null)
+    }
+
+    private fun isNotificationListenerEnabled(): Boolean {
+        val notificationListenerStr =
+            Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+
+        return notificationListenerStr != null && notificationListenerStr.contains(
+            notificationListenerStubComponent.flattenToString()
+        )
     }
 
     private inner class WeatherCheckTimerTask : TimerTask() {

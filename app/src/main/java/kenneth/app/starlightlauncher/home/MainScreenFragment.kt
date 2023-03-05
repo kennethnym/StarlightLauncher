@@ -11,6 +11,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -123,6 +124,8 @@ internal class MainScreenFragment @Inject constructor(
             binding = this
             bindingRegister.mainScreenBinding = this
 
+            mediaControlCard.setLifecycleScope(lifecycleScope)
+
             dateTimeView.apply {
                 // show the current time
                 dateTime = Calendar.getInstance().time
@@ -177,7 +180,10 @@ internal class MainScreenFragment @Inject constructor(
                 binding?.widgetsPanel?.searchResultView?.searchModuleOrder = it
             }
             isMediaControlEnabled.observe(viewLifecycleOwner) {
-                binding?.mediaControlCard?.isVisible = it
+                toggleMediaControlCardVisibility(it)
+            }
+            activeMediaSession.observe(viewLifecycleOwner) {
+                binding?.mediaControlCard?.mediaSession = it
             }
         }
 
@@ -199,6 +205,11 @@ internal class MainScreenFragment @Inject constructor(
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.recheckNotificationListener()
+    }
+
     private fun onLauncherEvent(event: LauncherEvent) {
         when (event) {
             is SearchPreferenceChanged.SearchCategoryOrderChanged -> {
@@ -208,6 +219,13 @@ internal class MainScreenFragment @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun toggleMediaControlCardVisibility(isEnabled: Boolean) {
+        binding?.mediaControlCard?.isVisible = isEnabled
+        binding?.dateTimeViewContainer?.gravity =
+            if (isEnabled) Gravity.CENTER or Gravity.BOTTOM
+            else Gravity.CENTER
     }
 
     private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
