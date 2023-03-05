@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.prefs.appearance
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -56,8 +57,19 @@ internal fun AppearanceSettingsScreen(
 
             SwitchSettingsListItem(
                 icon = null,
+                // WallpaperManager.getDrawable still requires READ_EXTERNAL_STORAGE
+                // but upon requesting the permission the system automatically rejects it
+                // without prompting the user
+                // so this option is disabled for Android 13+ until the bug is fixed
+                // https://issuetracker.google.com/issues/237124750
+                enabled = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU,
                 title = stringResource(R.string.appearance_blur_effect_title),
-                summary = stringResource(R.string.appearance_blur_effect_summary),
+                summary = stringResource(
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+                        R.string.appearance_blur_effect_summary
+                    else
+                        R.string.appearance_blur_effect_disabled_summary
+                ),
                 checked = viewModel.isBlurEffectEnabled,
                 onCheckedChange = { toggleBlurEffect(it) }
             )

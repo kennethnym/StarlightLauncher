@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ internal class AppearanceSettingsScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            isBlurEffectEnabled = appearancePreferenceManager.isBlurEffectEnabled.first()
             appearancePreferenceManager.isBlurEffectEnabled
                 .collectLatest { isBlurEffectEnabled = it }
         }
