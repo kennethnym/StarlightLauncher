@@ -3,28 +3,19 @@ package kenneth.app.starlightlauncher.widgets.widgetspanel
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowInsets
 import android.view.animation.PathInterpolator
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
 import androidx.core.animation.addListener
 import androidx.core.view.*
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.lifecycle.LifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
-import kenneth.app.starlightlauncher.api.util.activity
-import kenneth.app.starlightlauncher.databinding.OverlayBinding
 import javax.inject.Inject
 
 /**
@@ -133,11 +124,6 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         }
 
         return insets
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        viewTreeObserver.removeOnGlobalFocusChangeListener(this)
-        super.onDestroy(owner)
     }
 
     override fun onGlobalFocusChanged(oldFocus: View?, newFocus: View?) {
