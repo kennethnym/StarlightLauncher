@@ -22,7 +22,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.serialization.json.Json
@@ -108,10 +107,6 @@ internal object AppModule {
 
     @Provides
     @Singleton
-    fun provideBlurHandler(@ApplicationContext context: Context) = BlurHandler(context)
-
-    @Provides
-    @Singleton
     fun provideLauncherApps(@ApplicationContext context: Context) =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
@@ -139,6 +134,14 @@ internal object AppModule {
 abstract class RandomProvider {
     @Binds
     abstract fun bindRandom(impl: SecureRandom): Random
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class BlurHandlerProvider {
+    @Binds
+    @Singleton
+    abstract fun bindBlurHandler(impl: BlurHandlerImpl): BlurHandler
 }
 
 @Module

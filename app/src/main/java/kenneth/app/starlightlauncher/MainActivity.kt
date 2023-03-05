@@ -39,6 +39,7 @@ import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.util.calculateDominantColor
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Named
@@ -168,6 +169,16 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             }
         }
         attachListeners()
+
+        // handle blur effect preference
+        lifecycleScope.launch {
+            appearancePreferenceManager.isBlurEffectEnabled.collectLatest {
+                blurHandler.let { blurHandler ->
+                    if (blurHandler is BlurHandlerImpl)
+                        blurHandler.isBlurEffectEnabled = it
+                }
+            }
+        }
     }
 
     override fun onGlobalLayout() {
@@ -298,9 +309,11 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     private fun setWallpaper() {
-        currentWallpaper?.let {
-            binding.wallpaperImage.setImageBitmap(it)
-            blurHandler.changeWallpaper(it)
+        currentWallpaper?.let { wallpaper ->
+            binding.wallpaperImage.setImageBitmap(wallpaper)
+            blurHandler.let {
+                if (it is BlurHandlerImpl) it.changeWallpaper(wallpaper)
+            }
         }
     }
 

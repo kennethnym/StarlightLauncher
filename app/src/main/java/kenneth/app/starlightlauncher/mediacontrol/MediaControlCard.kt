@@ -175,17 +175,6 @@ internal class MediaControlCard(context: Context, attrs: AttributeSet) :
                 binding.mediaCover.isVisible = false
             }
 
-//        mediaMetadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI)
-//            ?.let {
-//                binding.mediaCover.isVisible = true
-//                Glide.with(context)
-//                    .load(it)
-//                    .into(binding.mediaCover)
-//            }
-//            ?: run {
-//                binding.mediaCover.isVisible = false
-//            }
-
         mediaMetadata.getLong(MediaMetadata.METADATA_KEY_DURATION).let {
             if (it != 0L) {
                 binding.mediaSeekBar.apply {

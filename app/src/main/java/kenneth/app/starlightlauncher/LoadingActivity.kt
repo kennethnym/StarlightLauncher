@@ -1,20 +1,14 @@
 package kenneth.app.starlightlauncher
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 import kenneth.app.starlightlauncher.setup.PREF_SETUP_FINISHED
 import kenneth.app.starlightlauncher.setup.SetupActivity
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * A NoDisplay activity that determines whether to launch setup activity or main launcher activity
@@ -22,14 +16,8 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 internal class LoadingActivity : AppCompatActivity() {
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        startActivity(Intent(this, StarlightLauncherSettingsActivity::class.java))
-//        finish()
 
         lifecycleScope.launch {
             val setupFinished = dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
