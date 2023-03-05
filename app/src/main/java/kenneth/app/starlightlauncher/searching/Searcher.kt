@@ -25,7 +25,7 @@ internal class Searcher @Inject constructor(
     @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher,
     @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
-    private val searchScope = CoroutineScope(SupervisorJob())
+    private val searchScope = MainScope()
 
     private val resultCallbacks = mutableListOf<ResultCallback>()
 
@@ -37,6 +37,8 @@ internal class Searcher @Inject constructor(
     private var numberOfLoadedModules = 0
 
     private var searchTimer: TimerTask? = null
+
+    private val pendingSearchJobs = mutableListOf<Job>()
 
     /**
      * Adds a listener that is called when search result is available.
@@ -60,13 +62,15 @@ internal class Searcher @Inject constructor(
      * Cancels any pending search requests
      */
     fun cancelPendingSearch() {
-        searchScope.coroutineContext.cancelChildren()
+        searchTimer?.cancel()
+        pendingSearchJobs.forEach { it.cancel() }
     }
 
     private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         extensionManager.installedSearchModules.forEach { module ->
+            lateinit var job: Job
             searchScope.launch {
                 val result = withContext(ioDispatcher) {
                     module.search(keyword, searchRegex)
@@ -76,6 +80,13 @@ internal class Searcher @Inject constructor(
                     resultCallbacks.forEach { cb -> cb(result, module) }
                 }
             }
+                .also {
+                    job = it
+                    pendingSearchJobs += it
+                }
+                .invokeOnCompletion {
+                    pendingSearchJobs.remove(job)
+                }
         }
     }
 }
