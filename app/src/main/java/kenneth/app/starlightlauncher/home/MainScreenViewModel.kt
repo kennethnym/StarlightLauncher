@@ -13,10 +13,8 @@ import android.location.LocationManager
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.provider.Settings
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.util.Log
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.LauncherEventChannel
@@ -32,12 +30,9 @@ import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -149,10 +144,20 @@ internal class MainScreenViewModel @Inject constructor(
     val searchResultOrder: LiveData<List<String>> = _searchResultOrder
 
     private val _activeMediaSession by lazy {
-        MutableLiveData<MediaController?>(null)
+        MutableLiveData<MediaController?>()
     }
 
     val activeMediaSession: LiveData<MediaController?> = _activeMediaSession
+
+    private val isNotificationListenerEnabled by lazy {
+        MutableLiveData(isNotificationListenerEnabled())
+    }
+
+    private val _shouldMediaControlBeVisible by lazy {
+        MediatorLiveData<Boolean>()
+    }
+
+    val shouldMediaControlBeVisible: LiveData<Boolean> = _shouldMediaControlBeVisible
 
     private val locationManager = context.getSystemService(LocationManager::class.java)
 
@@ -165,6 +170,26 @@ internal class MainScreenViewModel @Inject constructor(
 
     init {
         _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
+
+        if (isNotificationListenerEnabled.value == true) {
+            observeActiveMediaSession()
+        }
+
+        with(_shouldMediaControlBeVisible) {
+            addSource(isMediaControlEnabled) {
+                _shouldMediaControlBeVisible.postValue(it)
+            }
+            addSource(isNotificationListenerEnabled) {
+                _shouldMediaControlBeVisible.postValue(
+                    it && _activeMediaSession.value != null && isMediaControlEnabled.value == true
+                )
+            }
+            addSource(activeMediaSession) {
+                _shouldMediaControlBeVisible.postValue(
+                    it != null && isNotificationListenerEnabled.value == true && isMediaControlEnabled.value == true
+                )
+            }
+        }
 
         with(viewModelScope) {
             launch {
@@ -181,15 +206,7 @@ internal class MainScreenViewModel @Inject constructor(
 
             launch {
                 mediaControlPreferenceManager.isMediaControlEnabled.collectLatest {
-                    val shouldMediaControlBeEnabled = it && isNotificationListenerEnabled()
-
-                    if (shouldMediaControlBeEnabled) {
-                        onMediaControlEnabled()
-                    } else {
-                        onMediaControlDisabled()
-                    }
-
-                    _isMediaControlEnabled.postValue(shouldMediaControlBeEnabled)
+                    _isMediaControlEnabled.postValue(it)
                 }
             }
 
@@ -240,6 +257,7 @@ internal class MainScreenViewModel @Inject constructor(
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
+        Log.d("MainScreenViewModel", "on active sessions changed $controllers")
         _activeMediaSession.postValue(
             if (controllers?.isEmpty() == true) null
             else controllers?.first()
@@ -300,15 +318,9 @@ internal class MainScreenViewModel @Inject constructor(
     }
 
     fun recheckNotificationListener() {
-        val shouldMediaControlBeEnabled = isNotificationListenerEnabled()
-
-        if (shouldMediaControlBeEnabled) {
-            onMediaControlEnabled()
-        } else {
-            onMediaControlDisabled()
-        }
-
-        _isMediaControlEnabled.postValue(shouldMediaControlBeEnabled)
+        isNotificationListenerEnabled.postValue(
+            isNotificationListenerEnabled()
+        )
     }
 
     /**
@@ -465,7 +477,7 @@ internal class MainScreenViewModel @Inject constructor(
             ?: _weatherInfo.postValue(null)
     }
 
-    private fun onMediaControlEnabled() {
+    private fun observeActiveMediaSession() {
         mediaSessionManager.addOnActiveSessionsChangedListener(
             this,
             notificationListenerStubComponent
@@ -476,13 +488,10 @@ internal class MainScreenViewModel @Inject constructor(
         )
 
         if (activeMediaSessions.isNotEmpty()) {
-            _activeMediaSession.postValue(activeMediaSessions.first())
+            _activeMediaSession.value = activeMediaSessions.first()
+        } else {
+            _activeMediaSession.value = null
         }
-    }
-
-    private fun onMediaControlDisabled() {
-        mediaSessionManager.removeOnActiveSessionsChangedListener(this)
-        _activeMediaSession.postValue(null)
     }
 
     private fun isNotificationListenerEnabled(): Boolean {

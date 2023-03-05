@@ -29,7 +29,7 @@
                 android:layout_marginHorizontal="@dimen/widget_list_padding"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="32dp"
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
         </kenneth.app.starlightlauncher.views.DateTimeViewContainer>
 

@@ -179,7 +179,7 @@ internal class MainScreenFragment @Inject constructor(
             searchResultOrder.observe(viewLifecycleOwner) {
                 binding?.widgetsPanel?.searchResultView?.searchModuleOrder = it
             }
-            isMediaControlEnabled.observe(viewLifecycleOwner) {
+            shouldMediaControlBeVisible.observe(viewLifecycleOwner) {
                 toggleMediaControlCardVisibility(it)
             }
             activeMediaSession.observe(viewLifecycleOwner) {
