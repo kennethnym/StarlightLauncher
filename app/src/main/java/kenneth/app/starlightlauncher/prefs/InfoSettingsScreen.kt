@@ -37,6 +37,15 @@ fun InfoSettingsScreen() {
         )
     }
 
+    fun openFeedbackLink() {
+        context.startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(context.getString(R.string.starlight_launcher_feedback_url))
+            )
+        )
+    }
+
     SettingsScreen(
         title = stringResource(R.string.launcher_info_title),
     ) {
@@ -58,6 +67,12 @@ fun InfoSettingsScreen() {
                 title = stringResource(R.string.launcher_provide_feedback_title),
                 summary = stringResource(R.string.launcher_provide_feedback_summary),
                 icon = painterResource(R.drawable.ic_comment_dots),
+                onTap = { openFeedbackLink() }
+            )
+
+            SettingsListItem(
+                title = stringResource(R.string.launcher_author_title),
+                summary = stringResource(R.string.launcher_author_summary),
                 onTap = { openSendEmailActivity() }
             )
         }
