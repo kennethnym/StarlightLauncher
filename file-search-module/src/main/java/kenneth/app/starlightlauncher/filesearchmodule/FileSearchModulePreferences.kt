@@ -29,9 +29,6 @@ private constructor(private val dataStore: DataStore<Preferences>) {
 
     /**
      * Include a path and save it to SharedPreference.
-     *
-     * @return true if the path is added, or false if it's not, possibly because the path is
-     * already included
      */
     suspend fun includeNewPath(uri: Uri) {
         val path = uri.path
@@ -54,9 +51,6 @@ private constructor(private val dataStore: DataStore<Preferences>) {
 
     /**
      * Remove a path from being included, then save the changes to SharedPreferences.
-     *
-     * @return true if the path is removed, or false if it's not, possibly because the path is
-     * not included in the first place.
      */
     suspend fun removePath(uri: Uri) {
         val uriString = uri.toString()
