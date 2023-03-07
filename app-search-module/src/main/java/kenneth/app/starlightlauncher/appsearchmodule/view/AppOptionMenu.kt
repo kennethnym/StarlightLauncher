@@ -29,7 +29,6 @@ internal class AppOptionMenu(
     private val launcher: StarlightLauncherApi,
     private val menu: OptionMenu
 ) {
-    //    private val binding = AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true)
     private val launcherApps =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
     private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)

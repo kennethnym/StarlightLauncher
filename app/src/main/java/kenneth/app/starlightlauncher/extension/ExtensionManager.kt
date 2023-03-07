@@ -19,6 +19,7 @@ import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCrea
 import kenneth.app.starlightlauncher.appshortcutsearchmodule.AppShortcutSearchModule
 import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
+import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModuleSettingsProvider
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetSettingsProvider
@@ -61,6 +62,7 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.filesearchmodule",
             searchModule = FileSearchModule(context),
+            settingsProvider = FileSearchModuleSettingsProvider(context),
         ),
         "kenneth.app.starlightlauncher.mathsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.mathsearchmodule",
@@ -119,18 +121,6 @@ internal class ExtensionManager @Inject constructor(
                     kenneth.app.starlightlauncher.appsearchmodule.activity.SearchModuleSettingsActivity::class.java
                 )
             ),
-            "kenneth.app.starlightlauncher.filesearchmodule" to ExtensionSettings(
-                title = context.getString(R.string.file_search_module_search_module_settings_title),
-                description = context.getString(R.string.file_search_module_search_module_settings_description),
-                icon = AppCompatResources.getDrawable(
-                    context,
-                    R.drawable.file_search_module_search_module_settings_icon
-                ),
-                intent = Intent(
-                    context,
-                    kenneth.app.starlightlauncher.filesearchmodule.activity.SearchModuleSettingsActivity::class.java
-                )
-            )
         ),
         StarlightLauncherIntent.CATEGORY_WIDGET_SETTINGS to mutableMapOf(
             "kenneth.app.starlightlauncher.appsearchmodule" to ExtensionSettings(

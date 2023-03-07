@@ -19,18 +19,6 @@
 
         </activity>
 
-        <activity
-            android:name=".activity.SearchModuleSettingsActivity"
-            android:exported="true"
-            android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="kenneth.app.starlightlauncher.intent.category.SEARCH_MODULE_SETTINGS" />
-            </intent-filter>
-
-        </activity>
-
     </application>
 
 </manifest>

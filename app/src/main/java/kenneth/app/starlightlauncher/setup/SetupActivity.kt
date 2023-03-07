@@ -7,13 +7,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.*
 import kenneth.app.starlightlauncher.api.view.PREF_KEY_BLUR_EFFECT_ENABLED
 import kenneth.app.starlightlauncher.databinding.ActivitySetupBinding
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -71,7 +71,7 @@ internal class SetupActivity : AppCompatActivity() {
 
     private fun goToNextStep() {
         if (binding.setupPager.currentItem == SETUP_STEP_COUNT - 1) {
-            CoroutineScope(mainDispatcher).launch {
+            lifecycleScope.launch {
                 withContext(ioDispatcher) {
                     runFinalSetup()
                 }

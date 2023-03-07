@@ -1,15 +1,10 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.LauncherActivityInfo
-import android.content.pm.LauncherApps
 import android.content.res.Resources
 import android.os.Build
 import android.os.Process
-import android.os.UserHandle
 import android.os.UserManager
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult

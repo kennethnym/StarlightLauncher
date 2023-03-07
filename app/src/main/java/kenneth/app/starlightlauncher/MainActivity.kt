@@ -283,7 +283,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      */
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
-        CoroutineScope(mainDispatcher).launch {
+        lifecycleScope.launch {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 val isWallpaperChanged = withContext(ioDispatcher) {
                     val wallpaper =
