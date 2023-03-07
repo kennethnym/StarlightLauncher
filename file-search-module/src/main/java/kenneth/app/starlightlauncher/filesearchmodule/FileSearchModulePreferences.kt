@@ -60,12 +60,6 @@ private constructor(private val dataStore: DataStore<Preferences>) {
      */
     suspend fun removePath(uri: Uri) {
         val uriString = uri.toString()
-
-//                context.contentResolver.releasePersistableUriPermission(
-//                    uri,
-//                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                )
-
         dataStore.edit {
             it[PREF_KEY_INCLUDED_SEARCH_PATHS]?.let { searchPaths ->
                 it[PREF_KEY_INCLUDED_SEARCH_PATHS] = searchPaths - uriString

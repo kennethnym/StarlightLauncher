@@ -51,6 +51,20 @@ fun MainSettingsScreen() {
         filePicker.launch(Uri.EMPTY)
     }
 
+    fun removeSearchPath(uri: Uri) {
+        try {
+            context.contentResolver.releasePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        } catch (ex: Exception) {
+            // the uri was not previously persisted (should not happen but you never know)
+            // we pretend nothing happened
+        } finally {
+            viewModel.removeSearchPath(uri)
+        }
+    }
+
     SettingsScreen(
         title = stringResource(R.string.file_search_module_search_module_settings_title),
         description = stringResource(R.string.file_search_module_settings_screen_description),
@@ -62,7 +76,8 @@ fun MainSettingsScreen() {
                     title = path ?: "/",
                     summary = DocumentProviderName.fromUri(searchPathUri)?.displayName?.let {
                         stringResource(it)
-                    }
+                    },
+                    onTap = { removeSearchPath(searchPathUri) }
                 )
             }
 
