@@ -205,9 +205,14 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     fun showOverlay(fragment: Fragment) {
         binding.overlay.show()
+
+        val currentFragment =
+            supportFragmentManager.findFragmentById(binding.overlay.contentContainerId)
         supportFragmentManager.commit {
+            if (currentFragment != null) remove(currentFragment)
             add(binding.overlay.contentContainerId, fragment)
         }
+
         onBackPressedDispatcher.addCallback(
             OverlayOnBackPressedCallback(true).also {
                 overlayBackPressedCallback = it

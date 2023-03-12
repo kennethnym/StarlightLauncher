@@ -3,7 +3,6 @@ package kenneth.app.starlightlauncher.widgets
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
-import android.util.Log
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.InternalLauncherEvent
@@ -13,6 +12,8 @@ import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.PREF_ADDED_WIDGETS
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -46,30 +47,32 @@ internal class WidgetPreferenceManager @Inject constructor(
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
     private var _addedWidgets = runBlocking {
-        context.dataStore.data.map { preferences ->
-            preferences[PREF_ADDED_WIDGETS]?.let {
-                Json.decodeFromString<List<AddedWidget>>(it).mapNotNull { widget ->
-                    if (widget is AddedWidget.StarlightWidget) {
-                        extensionManager.lookupWidget(widget.extensionName)?.let { creator ->
-                            widget.copy(widgetCreator = creator)
-                        }
-                    } else widget
-                }.toMutableList()
-            } ?: defaultWidgets()
-        }.first()
+        MutableStateFlow(
+            context.dataStore.data.map { preferences ->
+                preferences[PREF_ADDED_WIDGETS]?.let {
+                    Json.decodeFromString<List<AddedWidget>>(it).mapNotNull { widget ->
+                        if (widget is AddedWidget.StarlightWidget) {
+                            extensionManager.lookupWidget(widget.extensionName)?.let { creator ->
+                                widget.copy(widgetCreator = creator)
+                            }
+                        } else widget
+                    }
+                } ?: defaultWidgets()
+            }.first()
+        )
     }
+
+    val addedWidgets: Flow<List<AddedWidget>> = _addedWidgets
 
     private var addedStarlightWidgets = mutableSetOf<String>().apply {
         addAll(
             _addedWidgets
+                .value
                 .asSequence()
                 .filterIsInstance<AddedWidget.StarlightWidget>()
                 .map { it.extensionName }
         )
     }
-
-    val addedWidgets: List<AddedWidget>
-        get() = _addedWidgets.toList()
 
     fun isStarlightWidgetAdded(extensionName: String) =
         addedStarlightWidgets.contains(extensionName)
@@ -80,7 +83,8 @@ internal class WidgetPreferenceManager @Inject constructor(
             internalId = widgetId,
             extensionName,
         )
-        _addedWidgets += newWidget
+
+        _addedWidgets.emit(_addedWidgets.value + newWidget)
         addedStarlightWidgets += extensionName
 
         saveAddedWidgets()
@@ -89,23 +93,21 @@ internal class WidgetPreferenceManager @Inject constructor(
     }
 
     suspend fun removeStarlightWidget(extensionName: String) {
-        val widgetPos =
-            _addedWidgets.indexOfFirst { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
-        if (widgetPos < 0) return
+        val currentAddedWidgets = _addedWidgets.value
+        val newWidgetList =
+            currentAddedWidgets.filterNot { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
 
-        val removedWidget = _addedWidgets.removeAt(widgetPos)
-        addedStarlightWidgets.remove((removedWidget as AddedWidget.StarlightWidget).extensionName)
+        addedStarlightWidgets.remove(extensionName)
         saveAddedWidgets()
-        launcherEventChannel.add(
-            WidgetPreferenceChanged.WidgetRemoved(
-                removedWidget,
-                widgetPos
-            )
-        )
+
+        _addedWidgets.emit(newWidgetList)
     }
 
     suspend fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
-        _addedWidgets.swap(fromPosition, toPosition)
+        _addedWidgets.value.toMutableList().run {
+            swap(fromPosition, toPosition)
+            _addedWidgets.emit(this)
+        }
         saveAddedWidgets()
     }
 
@@ -115,9 +117,7 @@ internal class WidgetPreferenceManager @Inject constructor(
             appWidgetId,
             appWidgetProviderInfo.minHeight,
         )
-        _addedWidgets += newWidget
-
-        Log.d("starlight", "added widgets $_addedWidgets")
+        _addedWidgets.emit(_addedWidgets.value + newWidget)
 
         saveAddedWidgets()
         launcherEventChannel.add(
@@ -133,27 +133,25 @@ internal class WidgetPreferenceManager @Inject constructor(
      */
     suspend fun changeWidgetHeight(addedWidget: AddedWidget, newHeight: Int) {
         if (addedWidget is AddedWidget.AndroidWidget) {
-            val widgetPos = _addedWidgets.indexOfFirst { it.id == addedWidget.id }
-            _addedWidgets[widgetPos] = addedWidget.copy(height = newHeight)
+            val newWidgetList = _addedWidgets.value.map {
+                if (it.id == addedWidget.id)
+                    addedWidget.copy(height = newHeight)
+                else
+                    it
+            }
+
+            _addedWidgets.emit(newWidgetList)
             saveAddedWidgets()
         }
     }
 
     suspend fun removeAndroidWidget(appWidgetId: Int) {
-        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-        val widgetPos =
-            _addedWidgets.indexOfFirst { it is AddedWidget.AndroidWidget && it.provider == appWidgetProviderInfo.provider }
-        if (widgetPos < 0) return
+        val newWidgetList =
+            _addedWidgets.value.filterNot { it is AddedWidget.AndroidWidget && it.appWidgetId == appWidgetId }
 
-        val removedWidget = _addedWidgets.removeAt(widgetPos)
+        _addedWidgets.emit(newWidgetList)
 
         saveAddedWidgets()
-        launcherEventChannel.add(
-            WidgetPreferenceChanged.WidgetRemoved(
-                removedWidget,
-                widgetPos
-            )
-        )
     }
 
     private fun defaultWidgets() = mutableListOf<AddedWidget>().apply {
@@ -170,7 +168,7 @@ internal class WidgetPreferenceManager @Inject constructor(
 
     private suspend fun saveAddedWidgets() {
         context.dataStore.edit {
-            it[PREF_ADDED_WIDGETS] = Json.encodeToString(_addedWidgets)
+            it[PREF_ADDED_WIDGETS] = Json.encodeToString(_addedWidgets.value)
         }
     }
 }

@@ -128,8 +128,7 @@ class AppSearchResultAdapter(
     private fun showMoreApps() {
         appGridAdapter?.let {
             it.showMore()
-            currentViewHolder.binding
-                .showMoreButton.isVisible = it.hasMore()
+            currentViewHolder.binding.showMoreButton.isVisible = it.hasMore()
         }
     }
 }

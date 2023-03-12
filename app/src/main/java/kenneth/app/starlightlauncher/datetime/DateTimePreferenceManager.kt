@@ -8,6 +8,7 @@ import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.prefs.*
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,56 +20,77 @@ import javax.inject.Singleton
 internal class DateTimePreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    val shouldUse24HrClock = context.dataStore.data.map {
-        it[PREF_KEY_USE_24HR_CLOCK] ?: DEFAULT_USE_24HR_CLOCK
-    }
+    val shouldUse24HrClock = context.dataStore.data
+        .map {
+            it[PREF_KEY_USE_24HR_CLOCK] ?: DEFAULT_USE_24HR_CLOCK
+        }
+        .distinctUntilChanged()
 
-    val dateTimeViewSize = context.dataStore.data.map { preferences ->
-        preferences[PREF_KEY_CLOCK_SIZE]?.let {
-            DateTimeViewSize.valueOf(it)
-        } ?: DEFAULT_DATE_TIME_VIEW_SIZE
-    }
+    val dateTimeViewSize = context.dataStore.data
+        .map { preferences ->
+            preferences[PREF_KEY_CLOCK_SIZE]?.let {
+                DateTimeViewSize.valueOf(it)
+            } ?: DEFAULT_DATE_TIME_VIEW_SIZE
+        }
+        .distinctUntilChanged()
 
     /**
      * The pair of latitude and longitude that describes the location where the user wants
      * the weather info of.
      */
-    val weatherLocation = context.dataStore.data.map {
-        val lat = it[PREF_KEY_WEATHER_LOCATION_LAT]
-        val long = it[PREF_KEY_WEATHER_LOCATION_LONG]
+    val weatherLocation = context.dataStore.data
+        .map {
+            val lat = it[PREF_KEY_WEATHER_LOCATION_LAT]
+            val long = it[PREF_KEY_WEATHER_LOCATION_LONG]
 
-        if (lat == null || long == null) null
-        else LatLong(lat, long)
-    }
+            if (lat == null || long == null) null
+            else LatLong(lat, long)
+        }
+        .distinctUntilChanged()
 
-    val weatherLocationName = context.dataStore.data.map {
-        it[PREF_KEY_WEATHER_LOCATION_NAME]
-    }
+    val weatherLocationName = context.dataStore.data
+        .map {
+            it[PREF_KEY_WEATHER_LOCATION_NAME]
+        }
+        .distinctUntilChanged()
 
-    val shouldShowWeather = context.dataStore.data.map {
-        it[PREF_KEY_SHOW_WEATHER] ?: DEFAULT_SHOW_WEATHER
-    }
+    val shouldShowWeather = context.dataStore.data
+        .map {
+            it[PREF_KEY_SHOW_WEATHER] ?: DEFAULT_SHOW_WEATHER
+        }
+        .distinctUntilChanged()
 
-    val weatherUnit = context.dataStore.data.map {
-        it[PREF_KEY_WEATHER_UNIT]?.let { unit -> TemperatureUnit.valueOf(unit) }
-            ?: DEFAULT_WEATHER_UNIT
-    }
+    val weatherUnit = context.dataStore.data
+        .map {
+            it[PREF_KEY_WEATHER_UNIT]?.let { unit -> TemperatureUnit.fromCode(unit) }
+                ?: DEFAULT_WEATHER_UNIT
+        }
+        .distinctUntilChanged()
 
-    val shouldUseAutoWeatherLocation = context.dataStore.data.map {
-        it[PREF_KEY_USE_AUTO_LOCATION] ?: DEFAULT_USE_AUTO_LOCATION
-    }
+    val shouldUseAutoWeatherLocation = context.dataStore.data
+        .map {
+            it[PREF_KEY_USE_AUTO_LOCATION] ?: DEFAULT_USE_AUTO_LOCATION
+        }
+        .distinctUntilChanged()
 
-    val autoWeatherLocationCheckFrequency = context.dataStore.data.map {
-        it[PREF_AUTO_LOCATION_CHECK_FREQUENCY]?.toLong() ?: DEFAULT_AUTO_LOCATION_CHECK_FREQUENCY
-    }
+    val autoWeatherLocationCheckFrequency = context.dataStore.data
+        .map {
+            it[PREF_AUTO_LOCATION_CHECK_FREQUENCY]?.toLong()
+                ?: DEFAULT_AUTO_LOCATION_CHECK_FREQUENCY
+        }
+        .distinctUntilChanged()
 
-    val weatherCheckFrequency = context.dataStore.data.map {
-        it[PREF_KEY_WEATHER_CHECK_FREQUENCY] ?: DEFAULT_WEATHER_CHECK_FREQUENCY
-    }
+    val weatherCheckFrequency = context.dataStore.data
+        .map {
+            it[PREF_KEY_WEATHER_CHECK_FREQUENCY] ?: DEFAULT_WEATHER_CHECK_FREQUENCY
+        }
+        .distinctUntilChanged()
 
-    val locationCheckFrequency = context.dataStore.data.map {
-        it[PREF_KEY_LOCATION_CHECK_FREQUENCY] ?: DEFAULT_LOCATION_CHECK_FREQUENCY
-    }
+    val locationCheckFrequency = context.dataStore.data
+        .map {
+            it[PREF_KEY_LOCATION_CHECK_FREQUENCY] ?: DEFAULT_LOCATION_CHECK_FREQUENCY
+        }
+        .distinctUntilChanged()
 
     /**
      * Changes the weather location described by the given LatLong.

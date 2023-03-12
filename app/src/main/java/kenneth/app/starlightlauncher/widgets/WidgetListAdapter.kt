@@ -129,8 +129,14 @@ internal class WidgetListAdapter(
                 holder.binding.widgetFrame.addView(this)
             }
 
-        holder.binding.removeWidgetBtn.setOnClickListener {
-            eventListener.onWidgetRemoved(addedWidget)
+        holder.binding.apply {
+            resizable = true
+            removeWidgetBtn.setOnClickListener {
+                eventListener.onWidgetRemoved(addedWidget)
+            }
+            cancelBtn.setOnClickListener {
+                isEditing = false
+            }
         }
 
         widgetsInLayout.add(addedWidget.id)

@@ -53,8 +53,6 @@ internal class AppGridAdapter(
 
     private val visibleApps = mutableListOf<LauncherActivityInfo>()
 
-    private val appSearchModulePreferences =
-        AppSearchModulePreferences.getInstance(launcher.dataStore)
     private val inputMethodManager = context.getSystemService<InputMethodManager>()
 
     private lateinit var selectedApp: LauncherActivityInfo

@@ -1,22 +1,16 @@
 package kenneth.app.starlightlauncher.home
 
-import android.app.Activity
 import android.appwidget.AppWidgetHost
-import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProviderInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,25 +38,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 internal class MainScreenFragment @Inject constructor(
     private val bindingRegister: BindingRegister,
-    private val appWidgetManager: AppWidgetManager,
-    private val appWidgetHost: AppWidgetHost,
     private val searcher: Searcher,
     private val launcher: StarlightLauncherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val extensionManager: ExtensionManager,
+    private val appWidgetHost: AppWidgetHost,
 ) : Fragment() {
     private var binding: FragmentMainScreenBinding? = null
     private val viewModel: MainScreenViewModel by viewModels()
-
-    private val requestBindWidgetLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-        ::onRequestBindWidgetResult
-    )
-
-    private val configureWidgetActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-        ::onConfigureWidgetResult
-    )
 
     /**
      * A BroadcastReceiver that receives broadcast of Intent.ACTION_TIME_TICK.
@@ -77,6 +60,9 @@ internal class MainScreenFragment @Inject constructor(
 
     private val widgetListChangedListener = object : WidgetListView.OnChangedListener {
         override fun onRequestRemoveWidget(removedWidget: AddedWidget) {
+            if (removedWidget is AddedWidget.AndroidWidget) {
+                appWidgetHost.deleteAppWidgetId(removedWidget.appWidgetId)
+            }
             viewModel.removeWidget(removedWidget)
         }
 
@@ -190,10 +176,6 @@ internal class MainScreenFragment @Inject constructor(
         binding?.widgetsPanel?.widgetListView?.onWidgetListChangedListener =
             widgetListChangedListener
 
-        viewModel.addedAndroidWidget.observe(viewLifecycleOwner) { (widget, appWidgetInfo) ->
-            bindAndroidWidget(widget, appWidgetInfo)
-        }
-
         searcher.addSearchResultListener { result, searchModule ->
             onSearchResultAvailable(result, searchModule)
         }
@@ -266,95 +248,6 @@ internal class MainScreenFragment @Inject constructor(
                 binding.widgetsPanel.showSearchResults()
             }
             binding.widgetsPanel.searchResultView.showSearchResult(result, searchModule)
-        }
-    }
-
-    /**
-     * Bind the given android widget with [AppWidgetManager].
-     * Added android widgets must be bound before they can be displayed.
-     */
-    private fun bindAndroidWidget(
-        widget: AddedWidget.AndroidWidget,
-        appWidgetInfo: AppWidgetProviderInfo
-    ) {
-        // first, check if permission is granted to bind widgets
-        val bindAllowed = appWidgetManager.bindAppWidgetIdIfAllowed(
-            widget.appWidgetId,
-            widget.provider
-        )
-
-        if (bindAllowed) {
-            Log.d("starlight", "bind allowed")
-            // permission is granted, configure widget for display
-            configureAndroidWidget(widget.appWidgetId, appWidgetInfo)
-        } else {
-            // no permission, prompt user to allow widgets to be displayed
-            // in Starlight
-            requestBindWidgetLauncher.launch(Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, appWidgetInfo.provider)
-            })
-        }
-    }
-
-    /**
-     * Called when the user has answered the prompt to allow widgets to be displayed in Starlight.
-     */
-    private fun onRequestBindWidgetResult(result: ActivityResult?) {
-        val data = result?.data ?: return
-        val extras = data.extras
-        val appWidgetId =
-            extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: return
-        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-
-        when (result.resultCode) {
-            Activity.RESULT_OK -> {
-                configureAndroidWidget(appWidgetId, appWidgetProviderInfo)
-            }
-            Activity.RESULT_CANCELED -> {
-                // user did not allow Starlight to show widgets
-                // delete the widget
-                appWidgetHost.deleteAppWidgetId(appWidgetId)
-                viewModel.removeAndroidWidget(appWidgetId)
-            }
-        }
-    }
-
-    private fun onConfigureWidgetResult(result: ActivityResult?) {
-        val data = result?.data ?: return
-        val extras = data.extras
-        val appWidgetId =
-            extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) ?: return
-
-        when (result.resultCode) {
-            Activity.RESULT_OK -> {
-                viewModel.refreshWidgetList()
-            }
-            Activity.RESULT_CANCELED -> {
-                appWidgetHost.deleteAppWidgetId(appWidgetId)
-                viewModel.removeAndroidWidget(appWidgetId)
-            }
-        }
-    }
-
-    private fun configureAndroidWidget(
-        appWidgetId: Int,
-        appWidgetInfo: AppWidgetProviderInfo
-    ) {
-        // check if the added widget has a configure activity
-        // that lets user configure/customize the widget
-        // before being added to the launcher
-        if (appWidgetInfo.configure != null) {
-            Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).run {
-                component = appWidgetInfo.configure
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-
-                configureWidgetActivityLauncher.launch(this)
-            }
-        } else {
-            // no configuration required
-            // refresh the widget list to show the newly added widget
-            viewModel.refreshWidgetList()
         }
     }
 

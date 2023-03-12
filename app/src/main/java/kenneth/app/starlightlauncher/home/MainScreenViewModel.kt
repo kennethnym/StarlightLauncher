@@ -17,7 +17,6 @@ import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
@@ -28,7 +27,6 @@ import kenneth.app.starlightlauncher.mediacontrol.settings.MediaControlPreferenc
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -56,7 +54,6 @@ internal class MainScreenViewModel @Inject constructor(
     private val searchPreferenceManager: SearchPreferenceManager,
     private val mediaControlPreferenceManager: MediaControlPreferenceManager,
     private val openWeatherApi: OpenWeatherApi,
-    private val launcherEventChannel: LauncherEventChannel,
     private val searcher: Searcher,
     private val mediaSessionManager: MediaSessionManager,
 ) : ViewModel(),
@@ -168,9 +165,9 @@ internal class MainScreenViewModel @Inject constructor(
      */
     private var currentDeviceLocation: Location? = null
 
-    init {
-        _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
+    private var isLoadingWeather = false
 
+    init {
         if (isNotificationListenerEnabled.value == true) {
             observeActiveMediaSession()
         }
@@ -192,6 +189,12 @@ internal class MainScreenViewModel @Inject constructor(
         }
 
         with(viewModelScope) {
+            launch {
+                widgetPreferenceManager.addedWidgets.collectLatest {
+                    _addedWidgets.postValue(it)
+                }
+            }
+
             launch {
                 dateTimePreferenceManager.shouldUse24HrClock.collectLatest {
                     _shouldUse24HrClock.postValue(it)
@@ -221,25 +224,6 @@ internal class MainScreenViewModel @Inject constructor(
             }
 
             launch {
-                launcherEventChannel.subscribe {
-                    when (it) {
-                        is WidgetPreferenceChanged.NewAndroidWidgetAdded -> {
-                            _addedAndroidWidget.postValue(
-                                Pair(
-                                    it.addedWidget,
-                                    it.appWidgetProviderInfo
-                                )
-                            )
-                        }
-
-                        is WidgetPreferenceChanged.WidgetRemoved -> {
-                            _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
-                        }
-                    }
-                }
-            }
-
-            launch {
                 searchPreferenceManager.searchModuleOrder.collectLatest {
                     _searchResultOrder.postValue(it)
                 }
@@ -257,7 +241,6 @@ internal class MainScreenViewModel @Inject constructor(
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
-        Log.d("MainScreenViewModel", "on active sessions changed $controllers")
         _activeMediaSession.postValue(
             if (controllers?.isEmpty() == true) null
             else controllers?.first()
@@ -281,7 +264,7 @@ internal class MainScreenViewModel @Inject constructor(
     }
 
     fun refreshWidgetList() {
-        _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
+//        _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
     }
 
     fun removeAndroidWidget(appWidgetId: Int) {
@@ -307,12 +290,10 @@ internal class MainScreenViewModel @Inject constructor(
         when (widget) {
             is AddedWidget.AndroidWidget -> viewModelScope.launch {
                 widgetPreferenceManager.removeAndroidWidget(widget.appWidgetId)
-                _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
             }
 
             is AddedWidget.StarlightWidget -> viewModelScope.launch {
                 widgetPreferenceManager.removeStarlightWidget(widget.extensionName)
-                _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
             }
         }
     }
@@ -355,6 +336,7 @@ internal class MainScreenViewModel @Inject constructor(
         with(weatherScope) {
             launch {
                 dateTimePreferenceManager.weatherLocation.collectLatest {
+                    Log.d("MainScreenViewModel", "weather location $it")
                     if (it != null) {
                         loadWeather(location = it)
                     }
@@ -410,6 +392,7 @@ internal class MainScreenViewModel @Inject constructor(
 
             launch {
                 dateTimePreferenceManager.weatherUnit.collectLatest { weatherUnit ->
+                    Log.d("MainScreenViewModel", "weather unit $weatherUnit")
                     bestWeatherLocation()?.let {
                         loadWeather(
                             location = it,
@@ -462,6 +445,10 @@ internal class MainScreenViewModel @Inject constructor(
     }
 
     private suspend fun loadWeather(location: LatLong, weatherUnit: TemperatureUnit? = null) {
+        if (isLoadingWeather) return
+
+        isLoadingWeather = true
+
         openWeatherApi
             .run {
                 latLong = location
@@ -470,11 +457,14 @@ internal class MainScreenViewModel @Inject constructor(
             }
             .getOrNull()
             ?.let {
+                Log.d("MainScreenViewModel", "location $location, response $it")
                 _weatherInfo.postValue(
                     Pair(openWeatherApi.unit, it)
                 )
             }
             ?: _weatherInfo.postValue(null)
+
+        isLoadingWeather = false
     }
 
     private fun observeActiveMediaSession() {

@@ -24,9 +24,10 @@ internal class LauncherAppWidgetHostView(
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean =
         if (bindingRegister.mainScreenBinding.widgetsPanel.isEditModeEnabled)
             true
-        else
+        else {
             scrollingParent?.let {
                 it.requestDisallowInterceptTouchEvent(true)
-                false
-            } ?: false
+            }
+            false
+        }
 }
