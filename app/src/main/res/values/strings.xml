@@ -55,6 +55,12 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_remove">Remove</string>
     <string name="action_finish">Finish</string>
+    <string name="action_close">Close</string>
+
+    <!-- Common status -->
+    <string name="status_loading">Loading…</string>
+    <string name="status_not_selected">Not selected</string>
+    <string name="status_selected">Selected</string>
 
     <!-- Time ago -->
     <string name="time_ago_today">Today %1$s</string>
@@ -157,13 +163,18 @@
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Customize StarlightLauncher</string>
+
     <!-- Appearance preferences -->
     <string name="appearance_title">Appearance</string>
-    <string name="appearance_icon_category_title">Icons</string>
+    <string name="appearance_subtitle">Change the appearance of Starlight</string>
+    <string name="appearance_icons_section_title">Icons</string>
     <string name="appearance_icon_pack_title">Icon packs</string>
-    <string name="appearance_summary">Adjust how Starlight Launcher looks.</string>
+    <string name="appearance_summary">Clock, weather, icon pack</string>
     <string name="appearance_blur_effect_title">Enable blur effect</string>
     <string name="appearance_blur_effect_summary">Requires read storage permission to access the wallpaper.</string>
+    <string name="appearance_blur_effect_disabled_summary">There is a bug on Android 13+ that prevents Starlight from accessing the wallpaper. Blur effect cannot be enabled.</string>
     <string name="appearance_show_pinned_apps_labels_title">Show names of pinned apps</string>
     <string name="appearance_show_pinned_apps_labels_summary">Show names of pinned apps under their icons</string>
     <string name="appearance_show_app_names_in_search_result_title">Show app names in search result</string>
@@ -181,13 +192,18 @@
     <string name="appearance_revert_icon_pack_summary">Use default app icons instead.</string>
     <string name="appearance_icon_pack_already_using_default">Default icons are already in use.</string>
 
+    <!-- Search preferences -->
+    <string name="pref_search_title">Search</string>
+    <string name="pref_search_subtitle">Tweak how searching works in Starlight</string>
+    <string name="pref_search_summary">Search result order, search engine</string>
+
     <!-- Search layout preferences -->
-    <string name="search_layout_title">Layout</string>
+    <string name="pref_search_layout_title">Search Layout</string>
     <string name="search_layout_summary">Adjust the layout of the search result screen.</string>
     <string name="search_category_order_title">Search category order</string>
-    <string name="search_category_order_summary">
+    <string name="pref_search_layout_subtitle">
         Rearrange the order that different search categories show up on the search result page
-        by long pressing then dragging them.
+        by long pressing and dragging them.
     </string>
 
     <!-- Widget layout preferences -->
@@ -209,14 +225,17 @@
     </string>
     <string name="file_add_path_title">Add path…</string>
 
-    <!-- Date time preferences -->
-    <string name="date_time_pref_title">Clock</string>
+    <!-- Clock settings -->
+    <string name="pref_clock_settings_title">Clock</string>
+    <string name="pref_clock_settings_summary">Clock size, weather, 24hr</string>
+    <string name="pref_clock_settings_screen_title">Clock</string>
+    <string name="pref_clock_settings_screen_subtitle">Change how the clock looks and behaves</string>
     <string name="date_time_use_24hr_clock_title">Use 24-hour format</string>
     <string name="date_time_clock_size_title">Clock size</string>
     <string name="date_time_pref_summary">
         Adjust appearance of the clock on the home screen: 12/24 hours, weather info, etc.
     </string>
-    <string name="date_time_weather_category">Weather</string>
+    <string name="pref_weather_section_title">Weather</string>
     <string name="date_time_show_weather_title">
         Show current weather
     </string>
@@ -225,18 +244,24 @@
     </string>
     <string name="date_time_pick_location_title">Pick a location…</string>
     <string name="date_time_pick_location_summary">
-        Shows current weather of the specified location.
+        Starlight will show weather at the specified location: %1$s
     </string>
-    <string name="date_time_use_auto_location_title">Use your location</string>
-    <string name="date_time_use_auto_location_summary">Shows current weather of your location.</string>
-    <string name="date_time_use_auto_location_check_frequency_title">Location check frequency</string>
-    <string name="date_time_use_auto_location_check_frequency_summary">
-        How often should Starlight Launcher check device location to obtain relevant weather
+    <string name="weather_location_not_set">Location not set.</string>
+    <string name="date_time_use_auto_location_title">Use device location</string>
+    <string name="date_time_use_auto_location_summary">Shows current weather of device location. Requires location permission.</string>
+    <string name="date_time_location_check_frequency_title">Location check frequency</string>
+    <string name="date_time_location_check_frequency_summary">
+        Starlight will request device location every %1$s.
     </string>
+    <string name="date_time_weather_check_frequency_title">Weather check frequency</string>
+    <string name="date_time_weather_check_frequency_summary">
+        Starlight will check the latest weather every %1$s
+    </string>
+    <string name="weather_location_picker_no_location">No location found.</string>
     <string name="date_time_picked_location_label">Picked location: %1$s</string>
     <string name="date_time_unknown_location">Unknown</string>
     <string name="date_time_location_picker_title">Weather location</string>
-    <string name="date_time_location_search_box_hint">Search for a place…</string>
+    <string name="weather_location_picker_title">Search for a location…</string>
     <string name="date_time_use_current_location_title">Use my location</string>
     <string name="date_time_use_current_location_summary">Requires one-time location permission</string>
     <string name="date_time_current_location_unavailable_title">Location unavailable</string>
@@ -248,8 +273,8 @@
     <!-- Media control preferences -->
     <string name="media_control_title">Media control</string>
     <string name="media_control_summary">Adjust behavior of media control widget</string>
-    <string name="enable_media_control">Enable media control widget</string>
-    <string name="enable_media_control_description">
+    <string name="enable_media_control_title">Enable media control widget</string>
+    <string name="enable_media_control_summary">
         Show a media control widget on the home screen when there is media currently playing.
     </string>
     <string name="media_control_notification_listener_perm_title">
@@ -257,11 +282,12 @@
     </string>
     <string name="media_control_notification_listener_perm_summary">
         Notification access is required for the media control widget to work.
-        The app does NOT and will NEVER monitor and collect device notifications.
+        Starlight does NOT and will NEVER monitor and collect device notifications.
     </string>
 
     <!-- Info preferences -->
-    <string name="info_pref_category_title">Info</string>
+    <string name="launcher_info_title">Launcher info</string>
+    <string name="launcher_info_summary">Version, feedback, source code</string>
     <string name="about_launcher_title">About Starlight Launcher</string>
     <string name="launcher_version_title">Launcher version</string>
     <string name="launcher_source_code_title">Source code</string>

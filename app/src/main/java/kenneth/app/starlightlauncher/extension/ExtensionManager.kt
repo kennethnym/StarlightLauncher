@@ -14,12 +14,15 @@ import kenneth.app.starlightlauncher.api.WidgetCreator
 import kenneth.app.starlightlauncher.api.intent.StarlightLauncherIntent
 import kenneth.app.starlightlauncher.api.res.StarlightLauncherStringRes
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModule
+import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModuleSettingsProvider
 import kenneth.app.starlightlauncher.appsearchmodule.widget.PinnedAppsWidgetCreator
 import kenneth.app.starlightlauncher.appshortcutsearchmodule.AppShortcutSearchModule
 import kenneth.app.starlightlauncher.contactsearchmodule.ContactSearchModule
 import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModule
+import kenneth.app.starlightlauncher.filesearchmodule.FileSearchModuleSettingsProvider
 import kenneth.app.starlightlauncher.mathsearchmodule.MathSearchModule
 import kenneth.app.starlightlauncher.noteswidget.NotesWidgetCreator
+import kenneth.app.starlightlauncher.noteswidget.NotesWidgetSettingsProvider
 import kenneth.app.starlightlauncher.unitconverterwidget.UnitConverterWidgetCreator
 import kenneth.app.starlightlauncher.urlopener.UrlOpener
 import kenneth.app.starlightlauncher.wificontrolmodule.WifiControlModule
@@ -42,7 +45,6 @@ internal typealias InstalledExtensions = Collection<Extension>
 @Singleton
 internal class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val launcherApi: StarlightLauncherApi,
 ) {
     /**
      * A map of extensions loaded into memory.
@@ -52,6 +54,7 @@ internal class ExtensionManager @Inject constructor(
             name = "kenneth.app.starlightlauncher.appsearchmodule",
             searchModule = AppSearchModule(context),
             widget = PinnedAppsWidgetCreator(context),
+            settingsProvider = AppSearchModuleSettingsProvider(context)
         ),
         "kenneth.app.starlightlauncher.contactsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.contactsearchmodule",
@@ -60,6 +63,7 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.filesearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.filesearchmodule",
             searchModule = FileSearchModule(context),
+            settingsProvider = FileSearchModuleSettingsProvider(context),
         ),
         "kenneth.app.starlightlauncher.mathsearchmodule" to Extension(
             name = "kenneth.app.starlightlauncher.mathsearchmodule",
@@ -80,6 +84,7 @@ internal class ExtensionManager @Inject constructor(
         "kenneth.app.starlightlauncher.noteswidget" to Extension(
             name = "kenneth.app.starlightlauncher.noteswidget",
             widget = NotesWidgetCreator(context),
+            settingsProvider = NotesWidgetSettingsProvider(context)
         ),
         "kenneth.app.starlightlauncher.unitconverterwidget" to Extension(
             name = "kenneth.app.starlightlauncher.unitconverterwidget",
@@ -114,25 +119,13 @@ internal class ExtensionManager @Inject constructor(
                 description = context.getString(R.string.app_search_module_search_module_settings_description),
                 icon = AppCompatResources.getDrawable(
                     context,
-                    R.drawable.app_search_module_search_module_settings_icon
+                    R.drawable.app_search_module_settings_icon
                 ),
                 intent = Intent(
                     context,
                     kenneth.app.starlightlauncher.appsearchmodule.activity.SearchModuleSettingsActivity::class.java
                 )
             ),
-            "kenneth.app.starlightlauncher.filesearchmodule" to ExtensionSettings(
-                title = context.getString(R.string.file_search_module_search_module_settings_title),
-                description = context.getString(R.string.file_search_module_search_module_settings_description),
-                icon = AppCompatResources.getDrawable(
-                    context,
-                    R.drawable.file_search_module_search_module_settings_icon
-                ),
-                intent = Intent(
-                    context,
-                    kenneth.app.starlightlauncher.filesearchmodule.activity.SearchModuleSettingsActivity::class.java
-                )
-            )
         ),
         StarlightLauncherIntent.CATEGORY_WIDGET_SETTINGS to mutableMapOf(
             "kenneth.app.starlightlauncher.appsearchmodule" to ExtensionSettings(
@@ -145,21 +138,11 @@ internal class ExtensionManager @Inject constructor(
                     context,
                     kenneth.app.starlightlauncher.appsearchmodule.activity.WidgetSettingsActivity::class.java,
                 )
-            ),
-            "kenneth.app.starlightlauncher.noteswidget" to ExtensionSettings(
-                title = context.getString(R.string.notes_widget_settings_title),
-                description = context.getString(R.string.notes_widget_settings_description),
-                icon = AppCompatResources.getDrawable(
-                    context,
-                    R.drawable.notes_widget_settings_icon,
-                ),
-                intent = Intent(
-                    context,
-                    kenneth.app.starlightlauncher.noteswidget.activity.WidgetSettingsActivity::class.java,
-                )
             )
         )
     )
+
+    var launcherApi: StarlightLauncherApi? = null
 
     val installedExtensions
         get() = extensions.values as InstalledExtensions
@@ -216,10 +199,15 @@ internal class ExtensionManager @Inject constructor(
             tryToLoadExtensionInfo(resolveInfo)
         }
 
-        extensions.forEach { (_, ext) ->
-            if (!initializedWidgets.contains(ext.name)) {
-                ext.searchModule?.initialize(launcherApi)
-                initializedWidgets += ext.name
+        launcherApi?.let { api ->
+            extensions.forEach { (_, ext) ->
+                if (!initializedWidgets.contains(ext.name)) {
+                    with(ext) {
+                        searchModule?.initialize(api)
+                        widget?.initialize(api)
+                    }
+                    initializedWidgets += ext.name
+                }
             }
         }
     }

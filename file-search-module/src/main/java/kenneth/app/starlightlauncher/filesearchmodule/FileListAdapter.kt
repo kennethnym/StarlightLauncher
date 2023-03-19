@@ -1,9 +1,12 @@
 package kenneth.app.starlightlauncher.filesearchmodule
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.filesearchmodule.databinding.FileListItemBinding
@@ -13,7 +16,9 @@ internal class FileListAdapter(
     private val context: Context,
     private val files: List<DocumentFile>,
 ) : RecyclerView.Adapter<FileListItem>() {
-    private val visibleFiles = files.subList(0, INITIAL_LIST_ITEM_COUNT).toMutableList()
+    private val visibleFiles =
+        if (files.size <= INITIAL_LIST_ITEM_COUNT) files.toMutableList()
+        else files.subList(0, INITIAL_LIST_ITEM_COUNT).toMutableList()
 
     val hasMore: Boolean
         get() = visibleFiles.size < files.size
@@ -52,9 +57,22 @@ internal class FileListAdapter(
     }
 
     private fun openFile(documentFile: DocumentFile) {
-        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-            data = documentFile.uri
-        })
+        try {
+            Log.d("FileListAdapter", "uri: ${documentFile.uri}")
+            context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                data = documentFile.uri
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            })
+        } catch (ex: ActivityNotFoundException) {
+            // no activity found to view the file.
+            notifyUserCantOpenFile()
+        }
+    }
+
+    private fun notifyUserCantOpenFile() {
+        Toast.makeText(
+            context, context.getString(R.string.no_app_to_open_file), Toast.LENGTH_LONG
+        ).show()
     }
 }
 

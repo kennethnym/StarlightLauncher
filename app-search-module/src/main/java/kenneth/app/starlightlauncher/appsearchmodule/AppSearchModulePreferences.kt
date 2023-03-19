@@ -1,205 +1,112 @@
 package kenneth.app.starlightlauncher.appsearchmodule
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.LauncherActivityInfo
-import android.content.pm.PackageManager
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import kenneth.app.starlightlauncher.api.util.EventChannel
-import kenneth.app.starlightlauncher.api.util.swap
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.Collections.swap
 
-sealed class AppSearchModulePreferenceChanged {
-    /**
-     * A pinned app is added by the user.
-     */
-    data class PinnedAppAdded(val app: LauncherActivityInfo) : AppSearchModulePreferenceChanged()
-
-    /**
-     * A pinned app is removed by the user.
-     */
-    data class PinnedAppRemoved(val app: LauncherActivityInfo, val position: Int) :
-        AppSearchModulePreferenceChanged()
-
-    /**
-     * User has changed the visibility of labels of apps in search result.
-     */
-    data class AppLabelVisibilityChanged(val isVisible: Boolean) :
-        AppSearchModulePreferenceChanged()
-
-    /**
-     * User has changed the visibility of labels of pinned apps.
-     */
-    data class PinnedAppLabelVisibilityChanged(val isVisible: Boolean) :
-        AppSearchModulePreferenceChanged()
-}
+const val DEFAULT_SHOW_APP_NAMES = true
+const val DEFAULT_SHOW_PINNED_APP_NAMES = true
 
 /**
  * Manages preferences of [AppSearchModule]
  */
 internal class AppSearchModulePreferences
-private constructor(private val context: Context) :
-    EventChannel<AppSearchModulePreferenceChanged>(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+private constructor(private val dataStore: DataStore<Preferences>) {
     companion object {
-        @SuppressLint("StaticFieldLeak")
         private var instance: AppSearchModulePreferences? = null
 
-        fun getInstance(context: Context) =
-            instance ?: AppSearchModulePreferences(context.applicationContext)
+        fun getInstance(dataStore: DataStore<Preferences>) =
+            instance ?: AppSearchModulePreferences(dataStore)
                 .also { instance = it }
     }
 
-    /**
-     * Stores preferences keys used by these preferences.
-     */
-    val keys = PrefKeys(context)
-
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private val _pinnedApps = mutableListOf<ComponentName>()
+    val pinnedApps = dataStore.data
+        .map { preferences ->
+            preferences[PREF_KEY_PINNED_APPS]?.let { json ->
+                Json.decodeFromString<List<String>>(json)
+                    .mapNotNull { ComponentName.unflattenFromString(it) }
+            } ?: emptyList()
+        }
 
     /**
      * Whether app labels should be visible.
      *
      * Key: `"pref_key_show_app_names"`
      */
-    var shouldShowAppNames = sharedPreferences.getBoolean(
-        keys.showAppNames,
-        context.resources.getBoolean(R.bool.def_pref_show_app_names)
-    )
-        private set
+    val shouldShowAppNames = dataStore.data
+        .map {
+            it[PREF_KEY_SHOW_APP_NAMES] ?: DEFAULT_SHOW_APP_NAMES
+        }
 
     /**
      * Whether app labels should be visible.
      *
      * Key: `"pref_key_show_pinned_app_names"`
      */
-    var shouldShowPinnedAppNames = sharedPreferences.getBoolean(
-        keys.showPinnedAppNames,
-        context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
-    )
-        private set
-
-    val pinnedApps
-        get() = _pinnedApps.toList()
-
-    val hasPinnedApps
-        get() = pinnedApps.isNotEmpty()
-
-    init {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        loadPinnedApps()
-    }
+    val shouldShowPinnedAppNames = dataStore.data
+        .map {
+            it[PREF_KEY_SHOW_PINNED_APP_NAMES] ?: DEFAULT_SHOW_PINNED_APP_NAMES
+        }
 
     fun isAppPinned(app: LauncherActivityInfo) =
-        _pinnedApps.find { it == app.componentName } != null
+        pinnedApps.map { apps -> apps.find { it == app.componentName } != null }
 
-    fun addPinnedApp(app: LauncherActivityInfo) {
-        _pinnedApps += app.componentName
-        savePinnedApps()
-        add(AppSearchModulePreferenceChanged.PinnedAppAdded(app))
-    }
-
-    fun removePinnedApp(app: LauncherActivityInfo) {
-        val position = _pinnedApps.indexOfFirst { it == app.componentName }
-        _pinnedApps.removeAt(position)
-        savePinnedApps()
-        add(AppSearchModulePreferenceChanged.PinnedAppRemoved(app, position))
-    }
-
-    fun swapPinnedApps(fromPosition: Int, toPosition: Int) {
-        _pinnedApps.swap(fromPosition, toPosition)
-        savePinnedApps()
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (sharedPreferences == null) return
-
-        when (key) {
-            keys.showAppNames -> {
-                shouldShowAppNames = sharedPreferences.getBoolean(
-                    key,
-                    context.resources.getBoolean(R.bool.def_pref_show_app_names)
-                ).also {
-                    add(AppSearchModulePreferenceChanged.AppLabelVisibilityChanged(it))
-                }
+    suspend fun addPinnedApp(app: LauncherActivityInfo) {
+        dataStore.edit { preferences ->
+            preferences[PREF_KEY_PINNED_APPS]?.let {
+                preferences[PREF_KEY_PINNED_APPS] = Json.encodeToString(
+                    Json.decodeFromString<List<String>>(it) + app.componentName.flattenToString()
+                )
+            } ?: kotlin.run {
+                preferences[PREF_KEY_PINNED_APPS] = Json.encodeToString(
+                    listOf(app.componentName.flattenToString())
+                )
             }
-            keys.showPinnedAppNames -> {
-                shouldShowPinnedAppNames = sharedPreferences.getBoolean(
-                    key,
-                    context.resources.getBoolean(R.bool.def_pref_show_pinned_app_names)
-                ).also {
-                    add(AppSearchModulePreferenceChanged.PinnedAppLabelVisibilityChanged(it))
-                }
-            }
+
         }
     }
 
-    /**
-     * Loads pinned apps from storage and checks if they are still installed.
-     * If not, update the list.
-     */
-    private fun loadPinnedApps() {
-        var needsUpdate = false
-
-        sharedPreferences.getString(keys.pinnedApps, null)
-            ?.let { Json.decodeFromString<List<String>>(it) }
-            ?.forEach {
-                needsUpdate = ComponentName.unflattenFromString(it)
-                    ?.let { componentName ->
-                        try {
-                            context.packageManager.getPackageInfo(componentName.packageName, 0)
-                            _pinnedApps += componentName
-                            false
-                        } catch (ex: PackageManager.NameNotFoundException) {
-                            true
-                        }
+    suspend fun removePinnedApp(app: LauncherActivityInfo) {
+        dataStore.edit { preferences ->
+            preferences[PREF_KEY_PINNED_APPS]?.let { json ->
+                preferences[PREF_KEY_PINNED_APPS] = Json.encodeToString(
+                    Json.decodeFromString<List<String>>(json).filter {
+                        app.componentName.flattenToString() != it
                     }
-                    ?: true
+                )
             }
 
-        if (needsUpdate) savePinnedApps()
-    }
-
-    private fun savePinnedApps() {
-        sharedPreferences.edit(commit = true) {
-            putString(
-                keys.pinnedApps,
-                Json.encodeToString(_pinnedApps.map { it.flattenToString() })
-            )
         }
     }
-}
 
-internal class PrefKeys(context: Context) {
-    /**
-     * Key: `"pref_key_show_app_names"`
-     */
-    val showAppNames by lazy {
-        context.getString(R.string.pref_key_show_app_names)
+    suspend fun swapPinnedApps(fromPosition: Int, toPosition: Int) {
+        dataStore.edit { preferences ->
+            preferences[PREF_KEY_PINNED_APPS]?.let { json ->
+                preferences[PREF_KEY_PINNED_APPS] = Json.encodeToString(
+                    Json.decodeFromString<List<String>>(json).apply {
+                        swap(this, fromPosition, toPosition)
+                    }
+                )
+            }
+        }
     }
 
-    /**
-     * Key: `"pref_key_show_pinned_app_names"`
-     */
-    val showPinnedAppNames by lazy {
-        context.getString(R.string.pref_key_show_pinned_app_names)
+    suspend fun setAppNamesVisibility(isVisible: Boolean) {
+        dataStore.edit {
+            it[PREF_KEY_SHOW_APP_NAMES] = isVisible
+        }
     }
 
-    /**
-     * Key: `"pref_key_pinned_apps"`
-     */
-    val pinnedApps by lazy {
-        context.getString(R.string.pref_key_pinned_apps)
-    }
-
-    val pinnedAppsCount by lazy {
-        context.getString(R.string.pref_key_pinned_apps_count)
+    suspend fun setPinnedAppNamesVisibility(isVisible: Boolean) {
+        dataStore.edit {
+            it[PREF_KEY_SHOW_PINNED_APP_NAMES] = isVisible
+        }
     }
 }

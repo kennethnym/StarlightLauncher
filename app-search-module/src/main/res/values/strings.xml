@@ -22,6 +22,18 @@
     <string name="app_option_menu_item_label_unpin_app">Unpin this app</string>
     <string name="app_option_menu_item_label_uninstall">Uninstall</string>
 
+    <string name="app_search_module_settings_title">App search</string>
+    <string name="app_search_module_settings_summary">App searching, pinned apps</string>
+
+    <string name="app_search_module_settings_screen_description">Customize behavior of app searching</string>
+
+    <string name="app_search_module_settings_show_pinned_app_labels">
+        Show labels of pinned apps
+    </string>
+    <string name="app_search_module_settings_show_app_labels">
+        Show labels of apps in search result.
+    </string>
+
     <string name="settings_activity_title">Settings</string>
 
     <string name="appearance_preference_category_title">Appearance</string>

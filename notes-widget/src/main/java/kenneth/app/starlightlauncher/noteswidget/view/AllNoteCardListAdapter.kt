@@ -5,35 +5,34 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.RecyclerView
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.NoteCardBinding
-import kenneth.app.starlightlauncher.noteswidget.pref.NoteListModified
 import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
+interface NoteListChangedCallback {
+    /**
+     * User deleted the given [Note].
+     */
+    fun onNoteDeleted(deletedNote: Note)
+
+    /**
+     * User edited the given [Note].
+     */
+    fun onNoteEdited(editedNote: Note)
+}
 
 internal class AllNoteCardListAdapter(
-    private val context: Context,
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    launcher: StarlightLauncherApi,
+    private val callback: NoteListChangedCallback
 ) :
     RecyclerView.Adapter<NoteCard>() {
-    private val prefs = NotesWidgetPreferences.getInstance(context)
-    private val notes = mutableListOf<Note>()
+    private val inputMethodManager =
+        launcher.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
     private var newNoteCreated = false
 
-    init {
-        notes += prefs.notes
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        CoroutineScope(mainDispatcher).launch {
-            prefs.subscribe(::onNoteListChanged)
-        }
-    }
+    var notes = emptyList<Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteCard {
         val binding = NoteCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -42,7 +41,15 @@ internal class AllNoteCardListAdapter(
 
     override fun onBindViewHolder(holder: NoteCard, position: Int) {
         val currentNote = notes[position]
+
+        // whether the note at this position is a newly created note.
+        // newly created note is always appended to the end of the list
+        // and newNoteCreated is set to true when the user presses the add note button
+        //
+        // if this note is newly created, it should immediately go into edit mode
+        // so that the user can start writing to it.
         val isNewlyCreatedNote = position == notes.size - 1 && newNoteCreated
+
         with(holder.binding) {
             note = currentNote
             inEditMode = isNewlyCreatedNote
@@ -59,7 +66,7 @@ internal class AllNoteCardListAdapter(
             noteCardCancelEdit.setOnClickListener {
                 if (isNewlyCreatedNote) {
                     newNoteCreated = false
-                    prefs.deleteNote(currentNote)
+                    callback.onNoteDeleted(currentNote)
                 } else {
                     turnOffEditMode(holder)
                 }
@@ -71,49 +78,19 @@ internal class AllNoteCardListAdapter(
     override fun getItemCount(): Int = notes.size
 
     internal fun addNote() {
-        val emptyNote = Note()
         newNoteCreated = true
-        prefs.addNote(emptyNote)
-    }
-
-    private fun onNoteListChanged(event: NoteListModified) {
-        when (event) {
-            is NoteListModified.NoteAdded -> {
-                notes += event.note
-                notifyItemInserted(notes.size - 1)
-            }
-            is NoteListModified.NoteChanged -> {
-                val index = notes.indexOfFirst { it.id == event.note.id }
-                if (index >= 0) {
-                    notes[index] = event.note
-                    notifyItemChanged(index)
-                }
-            }
-            is NoteListModified.NoteRemoved -> {
-                val index = notes.indexOfFirst { it.id == event.note.id }
-                if (index >= 0) {
-                    notes.removeAt(index)
-                    notifyItemRemoved(index)
-                }
-            }
-            is NoteListModified.ListChanged -> {
-                notes.clear()
-                notes += event.notes
-                notifyItemRangeChanged(0, notes.size)
-            }
-        }
     }
 
     private fun deleteNote(holder: NoteCard, note: Note) {
         holder.binding.areControlsEnabled = false
-        prefs.deleteNote(note)
+        callback.onNoteDeleted(note)
     }
 
     private fun turnOnEditMode(holder: NoteCard) {
         with(holder.binding) {
             inEditMode = true
             if (noteContentEditText.requestFocus()) {
-                (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                inputMethodManager
                     .showSoftInput(noteContentEditText, InputMethodManager.SHOW_IMPLICIT)
             }
         }
@@ -122,7 +99,7 @@ internal class AllNoteCardListAdapter(
     private fun turnOffEditMode(holder: NoteCard) {
         with(holder.binding) {
             inEditMode = false
-            (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            inputMethodManager
                 .hideSoftInputFromWindow(noteContentEditText.windowToken, 0)
         }
     }
@@ -133,8 +110,8 @@ internal class AllNoteCardListAdapter(
         }
         val newNoteContent = holder.binding.noteContentEditText.text.toString()
         val newNote = note.copy(content = newNoteContent)
-        prefs.editNote(newNote)
         turnOffEditMode(holder)
+        callback.onNoteEdited(newNote)
     }
 }
 

@@ -3,41 +3,44 @@ package kenneth.app.starlightlauncher
 import android.Manifest
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
-import android.content.*
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.UserHandle
-import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.home.HomeScreenViewPagerAdapter
+import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
 import kenneth.app.starlightlauncher.util.calculateDominantColor
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -82,9 +85,6 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     lateinit var launcherApi: StarlightLauncherApi
 
     @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
-    @Inject
     @Named(MAIN_DISPATCHER)
     lateinit var mainDispatcher: CoroutineDispatcher
 
@@ -98,20 +98,24 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     @Inject
     lateinit var tutorialOverlay: TutorialOverlay
 
+    @Inject
+    lateinit var bindingRegister: BindingRegister
+
+    @Inject
+    lateinit var launcherFragmentFactory: LauncherFragmentFactory
+
     private lateinit var binding: ActivityMainBinding
 
     private var currentWallpaper: Bitmap? = null
 
     private var isDarkModeActive = false
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.action == Intent.ACTION_MAIN) {
-            intent.getBundleExtra(EXTRA_GESTURE_NAV_CONTRACT_V1)?.let {
-                handleGestureNav(it)
-            }
-        }
-    }
+    /**
+     * The current back pressed callback that will be called
+     * when overlay is visible and the back button is pressed.
+     * This is only set when overlay is visible.
+     */
+    private var overlayBackPressedCallback: OverlayOnBackPressedCallback? = null
 
     override fun onStart() {
         super.onStart()
@@ -119,18 +123,22 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        supportFragmentManager.fragmentFactory = EntryPointAccessors
+            .fromActivity(
+                this,
+                LauncherFragmentFactoryEntryPoint::class.java
+            )
+            .launcherFragmentFactory()
+
         super.onCreate(savedInstanceState)
 
         getCurrentWallpaper()
         updateAdaptiveColors()
 
-        launcherApi.let {
-            // set the context of the API entry point
-            // the context will be this activity.
-            if (it is StarlightLauncherApiImpl) it.setContext(this)
+        extensionManager.run {
+            launcherApi = this@MainActivity.launcherApi
+            loadExtensions()
         }
-
-        extensionManager.loadExtensions()
 
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -140,11 +148,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             screenHeight = resources.displayMetrics.heightPixels
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater).also {
-            BindingRegister.apply {
-                activityMainBinding = it
-            }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        binding.homeScreenViewPager.apply {
+            isUserInputEnabled = false
+            adapter = HomeScreenViewPagerAdapter(this@MainActivity)
         }
+
         isDarkModeActive =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 resources.configuration.isNightModeActive
@@ -153,23 +163,34 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         setContentView(binding.root)
         setWallpaper()
-        appearancePreferenceManager.iconPack.let {
-            if (it is InstalledIconPack) it.load()
+        runBlocking {
+            appearancePreferenceManager.iconPack.first().let {
+                if (it is InstalledIconPack) it.load()
+            }
         }
         attachListeners()
+
+        // handle blur effect preference
+        lifecycleScope.launch {
+            appearancePreferenceManager.isBlurEffectEnabled.collectLatest {
+                blurHandler.let { blurHandler ->
+                    if (blurHandler is BlurHandlerImpl)
+                        blurHandler.isBlurEffectEnabled = it
+                }
+            }
+        }
     }
 
     override fun onGlobalLayout() {
-        val isTutorialFinished = sharedPreferences.getBoolean(
-            getString(R.string.pref_key_tutorial_finished),
-            false,
-        )
-        // only show spotlight after layout is complete
-        // because spotlight relies on the global position of views
-        // in order to position itself correctly to point to views
-        if (!isTutorialFinished) showSpotlight()
+        lifecycleScope.launch {
+            val isTutorialFinished = dataStore.data.first()[PREF_KEY_TUTORIAL_FINISHED] ?: false
+            // only show spotlight after layout is complete
+            // because spotlight relies on the global position of views
+            // in order to position itself correctly to point to views
+            if (!isTutorialFinished) showSpotlight()
 
-        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this@MainActivity)
+        }
     }
 
     override fun onResume() {
@@ -180,6 +201,29 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     override fun onDestroy() {
         cleanup()
         super.onDestroy()
+    }
+
+    fun showOverlay(fragment: Fragment) {
+        binding.overlay.show()
+
+        val currentFragment =
+            supportFragmentManager.findFragmentById(binding.overlay.contentContainerId)
+        supportFragmentManager.commit {
+            if (currentFragment != null) remove(currentFragment)
+            add(binding.overlay.contentContainerId, fragment)
+        }
+
+        onBackPressedDispatcher.addCallback(
+            OverlayOnBackPressedCallback(true).also {
+                overlayBackPressedCallback = it
+            }
+        )
+    }
+
+    fun closeOverlay() {
+        overlayBackPressedCallback?.remove()
+        overlayBackPressedCallback = null
+        binding.overlay.close()
     }
 
     private fun cleanup() {
@@ -244,7 +288,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      */
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
-        CoroutineScope(mainDispatcher).launch {
+        lifecycleScope.launch {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 val isWallpaperChanged = withContext(ioDispatcher) {
                     val wallpaper =
@@ -270,13 +314,25 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     private fun setWallpaper() {
-        currentWallpaper?.let {
-            binding.wallpaperImage.setImageBitmap(it)
-            blurHandler.changeWallpaper(it)
+        currentWallpaper?.let { wallpaper ->
+            binding.wallpaperImage.setImageBitmap(wallpaper)
+            blurHandler.let {
+                if (it is BlurHandlerImpl) it.changeWallpaper(wallpaper)
+            }
         }
     }
 
     private fun handleGestureNav(bundle: Bundle) {
 
+    }
+
+    /**
+     * Called when overlay is visible and the back button is pressed.
+     */
+    private inner class OverlayOnBackPressedCallback(enabled: Boolean) :
+        OnBackPressedCallback(enabled) {
+        override fun handleOnBackPressed() {
+            binding.overlay.close()
+        }
     }
 }

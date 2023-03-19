@@ -1,8 +1,24 @@
 package kenneth.app.starlightlauncher
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.SharedPreferencesMigration
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
+import kenneth.app.starlightlauncher.searching.Searcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import javax.inject.Inject
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "starlightLauncherSettings",
+    produceMigrations = {
+        listOf(SharedPreferencesMigration(it, "${it.packageName}_preferences"))
+    }
+)
 
 // TODO: add support for gesture navigation animation
 //
@@ -21,8 +37,20 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 internal class MainApplication : Application() {
+    @Inject
+    lateinit var applicationScope: CoroutineScope
+
+    @Inject
+    lateinit var searcher: Searcher
+
     override fun onCreate() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         super.onCreate()
+    }
+
+    override fun onTerminate() {
+        searcher.cancelPendingSearch()
+        applicationScope.cancel()
+        super.onTerminate()
     }
 }

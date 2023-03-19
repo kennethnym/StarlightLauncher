@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:defaultValue="true"
-        app:key="@string/pref_key_media_control_enabled"
-        app:summary="@string/enable_media_control_description"
-        app:title="@string/enable_media_control" />
+<!--    <SwitchPreferenceCompat-->
+<!--        app:defaultValue="true"-->
+<!--        app:key="@string/pref_key_media_control_enabled"-->
+<!--        app:summary="@string/enable_media_control_description_summary"-->
+<!--        app:title="@string/enable_media_control_title" />-->
 
     <Preference
         app:key="@string/pref_key_media_control_notification_listener_permission"

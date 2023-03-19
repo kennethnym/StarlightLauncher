@@ -4,6 +4,7 @@
     <string name="action_archive">Archive</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_done">Done</string>
+    <string name="action_continue">Continue</string>
 
     <string name="notes_widget_display_name">Quick Notes</string>
     <string name="notes_widget_description">Take notes right from the home screen.</string>
@@ -27,12 +28,12 @@
     <string name="pref_summary_export_to_json">Export your notes to a JSON file.</string>
     <string name="pref_title_restore_from_backup">Restore from backup…</string>
     <string name="pref_summary_restore_from_backup">Restore notes from a JSON backup file.</string>
-    <string name="file_name_dialog_title">Give the file a name</string>
-    <string name="file_name_dialog_message">You can also use the default name: %1$s</string>
-    <string name="file_name_dialog_file_name_edit_text_hint">Name</string>
-    <string name="file_name_dialog_positive_label">Use my file name</string>
-    <string name="file_name_dialog_negative_label">Use default name</string>
-    <string name="file_name_dialog_empty_name_error">You need to give it a name.</string>
+    <string name="export_dialog_title">Give the file a name</string>
+    <string name="export_dialog_message">You can also use the default name: %1$s</string>
+    <string name="export_dialog_file_name_edit_text_hint">Name</string>
+    <string name="export_dialog_positive_label">Use my file name</string>
+    <string name="export_dialog_negative_label">Use default name</string>
+    <string name="export_dialog_empty_name_error">You need to give it a name.</string>
     <string name="restore_failed_dialog_title">Invalid backup file</string>
     <string name="restore_failed_dialog_message">The backup file selected is not in a correct format.</string>
     <string name="restore_failed_dialog_positive_btn_label">Select another file</string>

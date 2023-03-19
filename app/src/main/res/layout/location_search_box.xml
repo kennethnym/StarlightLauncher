@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="@string/date_time_location_search_box_hint"
+            android:hint=""
             android:imeOptions="actionSearch"
             android:importantForAutofill="no"
             android:inputType="text"

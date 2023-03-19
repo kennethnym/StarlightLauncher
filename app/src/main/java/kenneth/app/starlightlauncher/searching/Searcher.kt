@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.searching
 
 import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
+import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.*
@@ -13,7 +14,10 @@ import kotlin.concurrent.schedule
 
 private const val SEARCH_DELAY: Long = 500
 
-typealias ResultCallback = (SearchResult) -> Unit
+/**
+ * Callback function that is called when search result produced by the given [SearchModule] is available.
+ */
+typealias ResultCallback = (SearchResult, SearchModule) -> Unit
 
 @Singleton
 internal class Searcher @Inject constructor(
@@ -21,9 +25,9 @@ internal class Searcher @Inject constructor(
     @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher,
     @Named(IO_DISPATCHER) private val ioDispatcher: CoroutineDispatcher
 ) {
-    private val resultCallbacks = mutableListOf<ResultCallback>()
+    private val searchScope = MainScope()
 
-    private val searchCoroutineScopes = mutableListOf<CoroutineScope>()
+    private val resultCallbacks = mutableListOf<ResultCallback>()
 
     /**
      * Counts the number of search categories that have finished loading.
@@ -33,6 +37,8 @@ internal class Searcher @Inject constructor(
     private var numberOfLoadedModules = 0
 
     private var searchTimer: TimerTask? = null
+
+    private val pendingSearchJobs = mutableListOf<Job>()
 
     /**
      * Adds a listener that is called when search result is available.
@@ -56,23 +62,30 @@ internal class Searcher @Inject constructor(
      * Cancels any pending search requests
      */
     fun cancelPendingSearch() {
-        searchCoroutineScopes.forEach { it.cancel() }
         searchTimer?.cancel()
-        numberOfLoadedModules = 0
+        pendingSearchJobs.forEach { it.cancel() }
     }
 
     private fun performSearch(keyword: String) {
         val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
 
         extensionManager.installedSearchModules.forEach { module ->
-            CoroutineScope(mainDispatcher)
-                .also { searchCoroutineScopes.add(it) }
-                .launch {
-                    val result = withContext(ioDispatcher) {
-                        module.search(keyword, searchRegex)
-                    }
-                    numberOfLoadedModules++
-                    resultCallbacks.forEach { cb -> cb(result) }
+            lateinit var job: Job
+            searchScope.launch {
+                val result = withContext(ioDispatcher) {
+                    module.search(keyword, searchRegex)
+                }
+                numberOfLoadedModules++
+                withContext(mainDispatcher) {
+                    resultCallbacks.forEach { cb -> cb(result, module) }
+                }
+            }
+                .also {
+                    job = it
+                    pendingSearchJobs += it
+                }
+                .invokeOnCompletion {
+                    pendingSearchJobs.remove(job)
                 }
         }
     }

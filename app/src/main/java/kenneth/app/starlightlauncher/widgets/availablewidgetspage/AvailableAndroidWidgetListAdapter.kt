@@ -1,7 +1,5 @@
 package kenneth.app.starlightlauncher.widgets.availablewidgetspage
 
-import android.annotation.SuppressLint
-import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -15,32 +13,11 @@ import android.widget.ExpandableListView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
-import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.util.toPx
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlin.math.roundToInt
-
-private const val ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET =
-    "ACTIVITY_RESULT_REGISTRY_KEY_REQUEST_BIND_WIDGET"
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-private interface AvailableWidgetListAdapterEntryPoint {
-    fun appearancePreferenceManager(): AppearancePreferenceManager
-
-    fun widgetPreferenceManager(): WidgetPreferenceManager
-
-    fun appWidgetHost(): AppWidgetHost
-
-    fun launcherApi(): StarlightLauncherApi
-}
 
 /**
  * Shows available widgets on the phone to an expandable list.
@@ -49,7 +26,13 @@ private interface AvailableWidgetListAdapterEntryPoint {
 internal class AvailableAndroidWidgetListAdapter(
     private val context: Context,
     private val listView: ExpandableListView,
+    private var iconPack: IconPack,
+    private val callback: Callback,
 ) : BaseExpandableListAdapter() {
+    interface Callback {
+        fun onRequestAddAndroidWidget(appWidgetInfo: AppWidgetProviderInfo)
+    }
+
     private var providerPackageNames = mutableListOf<String>()
     private var providers: Map<String, List<AppWidgetProviderInfo>> = emptyMap()
     private var appLabels: Map<String, String> = emptyMap()
@@ -59,11 +42,6 @@ internal class AvailableAndroidWidgetListAdapter(
     // some drawables for list items
     private val groupIndicatorExpanded: Drawable?
     private val groupIndicatorEmpty: Drawable?
-
-    private val appearancePreferenceManager: AppearancePreferenceManager
-    private val widgetPreferenceManager: WidgetPreferenceManager
-    private val launcher: StarlightLauncherApi
-    private val appWidgetHost: AppWidgetHost
 
     init {
         val groupIndicatorSize =
@@ -87,16 +65,6 @@ internal class AvailableAndroidWidgetListAdapter(
                     setTint(indicatorColor)
                     setBounds(0, 0, groupIndicatorSize, groupIndicatorSize)
                 }
-
-        EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            AvailableWidgetListAdapterEntryPoint::class.java
-        ).run {
-            appearancePreferenceManager = appearancePreferenceManager()
-            widgetPreferenceManager = widgetPreferenceManager()
-            launcher = launcherApi()
-            appWidgetHost = appWidgetHost()
-        }
     }
 
     override fun getGroupCount(): Int = providers.size
@@ -133,7 +101,7 @@ internal class AvailableAndroidWidgetListAdapter(
         parent: ViewGroup
     ): View {
         val packageName = providerPackageNames[groupPosition]
-        val icon = appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!)
+        val icon = iconPack.getIconOf(appInfos[packageName]!!)
         val iconSize =
             context.resources.getDimensionPixelSize(R.dimen.available_widgets_list_app_icon_size)
         val iconPaddingEnd =
@@ -201,7 +169,7 @@ internal class AvailableAndroidWidgetListAdapter(
                 }
             } ?: setCompoundDrawablesRelativeWithIntrinsicBounds(
                 null,
-                appearancePreferenceManager.iconPack.getIconOf(appInfos[packageName]!!),
+                iconPack.getIconOf(appInfos[packageName]!!),
                 null,
                 null,
             )
@@ -211,7 +179,11 @@ internal class AvailableAndroidWidgetListAdapter(
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean = true
 
-    @SuppressLint("NotifyDataSetChanged")
+    fun changeIconPack(iconPack: IconPack) {
+        this.iconPack = iconPack
+        notifyDataSetChanged()
+    }
+
     fun showAvailableWidgets(
         providers: Map<String, List<AppWidgetProviderInfo>>,
         infos: Map<String, ApplicationInfo>,
@@ -227,12 +199,8 @@ internal class AvailableAndroidWidgetListAdapter(
         notifyDataSetChanged()
     }
 
-    private fun addSelectedWidget(appWidgetProviderInfo: AppWidgetProviderInfo) {
-        widgetPreferenceManager.addAndroidWidget(
-            appWidgetHost.allocateAppWidgetId(),
-            appWidgetProviderInfo
-        )
-        launcher.closeOverlay()
+    private fun addSelectedWidget(appWidgetInfo: AppWidgetProviderInfo) {
+        callback.onRequestAddAndroidWidget(appWidgetInfo)
     }
 }
 

@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.extension
 
+import kenneth.app.starlightlauncher.api.ExtensionSettingsProvider
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.WidgetCreator
 
@@ -24,4 +25,11 @@ data class Extension(
      * This is null if this extension doesn't export one.
      */
     val widget: WidgetCreator? = null,
+
+    /**
+     * Optional settings provided by this extension.
+     * An entry will be added in the settings which will provide
+     * access to the settings screen provided by this [Extension].
+     */
+    val settingsProvider: ExtensionSettingsProvider? = null
 )

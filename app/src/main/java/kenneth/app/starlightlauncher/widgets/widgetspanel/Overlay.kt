@@ -3,23 +3,19 @@ package kenneth.app.starlightlauncher.widgets.widgetspanel
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowInsets
 import android.view.animation.PathInterpolator
-import androidx.activity.OnBackPressedCallback
+import androidx.annotation.IdRes
 import androidx.core.animation.addListener
 import androidx.core.view.*
-import androidx.lifecycle.LifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
-import kenneth.app.starlightlauncher.api.util.activity
 import javax.inject.Inject
 
 /**
@@ -39,6 +35,9 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
     Plate(context, attrs),
     ViewTreeObserver.OnGlobalFocusChangeListener,
     OnApplyWindowInsetsListener {
+    @IdRes
+    val contentContainerId = R.id.overlay_container_view
+
     @Inject
     lateinit var appState: AppState
 
@@ -46,64 +45,38 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
     lateinit var blurHandler: BlurHandler
 
     /**
-     * The [View] that this [Overlay] expanded from.
-     */
-    private lateinit var originalView: View
-
-    /**
      * Whether the closing animation of [Overlay] is being played.
      */
     private var isClosing = false
 
-    /**
-     * The content of [Overlay]
-     */
-    private var content: View? = null
+    private val root: View
 
     private var focusedView: View? = null
     private var originalTranslationY: Float? = null
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (isVisible && !isClosing) {
-                close()
-            }
-        }
-    }
-
     init {
+        root = LayoutInflater.from(context).inflate(R.layout.overlay, this)
+        backgroundAlpha = 220
+
         ViewCompat.setWindowInsetsAnimationCallback(this, InsetsAnimation())
         ViewCompat.setOnApplyWindowInsetsListener(this, this)
         viewTreeObserver.addOnGlobalFocusChangeListener(this)
     }
 
-    /**
-     * Shows this [Overlay] by animating from [view]
-     */
-    fun showFrom(view: View, withContent: View) {
+    fun show() {
         isVisible = true
-        originalView = view
-        content = withContent
+        translationY = appState.screenHeight.toFloat()
 
         blurWith(blurHandler)
-
-        translationY = appState.screenHeight.toFloat()
 
         val yAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, appState.screenHeight.toFloat(), 0f)
 
-        val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 1f)
-
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
-            playTogether(yAnimator, opacityAnimator)
+            play(yAnimator)
             start()
-        }
-
-        displayContent(withContent)
-        activity?.let {
-            it.onBackPressedDispatcher.addCallback(it, onBackPressedCallback)
         }
     }
 
@@ -112,13 +85,12 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
 
         val yAnimator =
             ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, appState.screenHeight.toFloat())
-        val opacityAnimator = ObjectAnimator.ofFloat(content, View.ALPHA, 0f)
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
 
-            playTogether(yAnimator, opacityAnimator)
+            play(yAnimator)
             addListener({
                 isVisible = false
                 isClosing = false
@@ -126,8 +98,6 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
 
             start()
         }
-
-        onBackPressedCallback.remove()
     }
 
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -156,20 +126,8 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         return insets
     }
 
-    override fun onDestroy(owner: LifecycleOwner) {
-        viewTreeObserver.removeOnGlobalFocusChangeListener(this)
-        super.onDestroy(owner)
-    }
-
     override fun onGlobalFocusChanged(oldFocus: View?, newFocus: View?) {
         focusedView = newFocus
-    }
-
-    private fun displayContent(content: View) {
-        if (childCount > 1) {
-            removeViewAt(1)
-        }
-        addView(content)
     }
 
     private inner class InsetsAnimation : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_STOP) {
@@ -177,7 +135,6 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         private var endTranslationY: Float? = null
 
         override fun onPrepare(animation: WindowInsetsAnimationCompat) {
-            Log.d("starlight", "startTranslationY $translationY")
             startTranslationY = translationY
             super.onPrepare(animation)
         }

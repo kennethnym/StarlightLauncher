@@ -31,7 +31,7 @@
         <activity
             android:name=".activity.SearchModuleSettingsActivity"
             android:exported="true"
-            android:icon="@drawable/app_search_module_search_module_settings_icon"
+            android:icon="@drawable/app_search_module_settings_icon"
             android:theme="@style/Theme.StarlightLauncher.SettingsTheme">
 
             <intent-filter>
