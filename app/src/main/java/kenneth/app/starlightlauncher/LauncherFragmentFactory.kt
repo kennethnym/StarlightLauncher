@@ -9,7 +9,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.multibindings.IntoMap
-import kenneth.app.starlightlauncher.home.AllAppsScreenFragment
+import kenneth.app.starlightlauncher.home.AppDrawerScreenFragment
 import kenneth.app.starlightlauncher.home.MainScreenFragment
 import javax.inject.Inject
 import javax.inject.Provider
@@ -38,8 +38,8 @@ internal abstract class LauncherFragmentFactoryModule {
 
     @Binds
     @IntoMap
-    @FragmentKey(AllAppsScreenFragment::class)
-    abstract fun bindAllAppsScreenFragment(impl: AllAppsScreenFragment): Fragment
+    @FragmentKey(AppDrawerScreenFragment::class)
+    abstract fun bindAppDrawerScreenFragment(impl: AppDrawerScreenFragment): Fragment
 }
 
 internal class LauncherFragmentFactory @Inject constructor(

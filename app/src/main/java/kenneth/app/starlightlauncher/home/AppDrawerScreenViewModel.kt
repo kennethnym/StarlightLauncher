@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class AllAppsScreenViewModel @Inject constructor() : ViewModel() {
+internal class AppDrawerScreenViewModel @Inject constructor() : ViewModel() {
     private val _appList = MutableLiveData<List<LauncherActivityInfo>>()
     val appList: LiveData<List<LauncherActivityInfo>> = _appList
 

@@ -36,7 +36,7 @@ import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.home.HomeScreenViewPagerAdapter
-import kenneth.app.starlightlauncher.home.POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS
+import kenneth.app.starlightlauncher.home.POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER
 import kenneth.app.starlightlauncher.home.POSITION_HOME_SCREEN_VIEW_PAGER_HOME
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
@@ -129,7 +129,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             binding.homeScreenViewPager.background.run {
                 if (this !is TransitionDrawable) return
 
-                if (position == POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS) {
+                if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
                     startTransition(BACKGROUND_TRANSITION_DURATION_MS)
                 } else {
                     reverseTransition(BACKGROUND_TRANSITION_DURATION_MS)
@@ -143,7 +143,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             positionOffsetPixels: Int
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-            if (position == POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS) {
+            if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
                 onBackPressedDispatcher.addCallback(
                     AllAppsScreenBackPressedCallback(true)
                 )

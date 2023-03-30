@@ -73,6 +73,14 @@ internal fun AppearanceSettingsScreen(
                 checked = viewModel.isBlurEffectEnabled,
                 onCheckedChange = { toggleBlurEffect(it) }
             )
+
+            SwitchSettingsListItem(
+                icon = painterResource(R.drawable.ic_apps),
+                title = stringResource(R.string.appearance_is_app_drawer_enabled_title),
+                summary = stringResource(R.string.appearance_is_app_drawer_enabled_summary),
+                checked = viewModel.isAppDrawerEnabled,
+                onCheckedChange = { viewModel.changeIsAppDrawerEnabled(it) }
+            )
         }
     }
 }

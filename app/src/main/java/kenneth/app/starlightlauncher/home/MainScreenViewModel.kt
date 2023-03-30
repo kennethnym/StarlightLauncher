@@ -24,6 +24,7 @@ import kenneth.app.starlightlauncher.datetime.DateTimePreferenceManager
 import kenneth.app.starlightlauncher.datetime.DateTimeViewSize
 import kenneth.app.starlightlauncher.mediacontrol.NotificationListenerStub
 import kenneth.app.starlightlauncher.mediacontrol.settings.MediaControlPreferenceManager
+import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceManager
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.widgets.AddedWidget
@@ -49,6 +50,7 @@ private val weatherLocationCriteria = Criteria().apply {
 @SuppressLint("StaticFieldLeak")
 internal class MainScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val appearancePreferenceManager: AppearancePreferenceManager,
     private val dateTimePreferenceManager: DateTimePreferenceManager,
     private val widgetPreferenceManager: WidgetPreferenceManager,
     private val searchPreferenceManager: SearchPreferenceManager,
@@ -156,6 +158,12 @@ internal class MainScreenViewModel @Inject constructor(
 
     val shouldMediaControlBeVisible: LiveData<Boolean> = _shouldMediaControlBeVisible
 
+    private val _isAllAppsScreenEnabled by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    val isAllAppsScreenEnabled: LiveData<Boolean> = _isAllAppsScreenEnabled
+
     private val locationManager = context.getSystemService(LocationManager::class.java)
 
     /**
@@ -226,6 +234,12 @@ internal class MainScreenViewModel @Inject constructor(
             launch {
                 searchPreferenceManager.searchModuleOrder.collectLatest {
                     _searchResultOrder.postValue(it)
+                }
+            }
+
+            launch {
+                appearancePreferenceManager.isAppDrawerEnabled.collectLatest {
+                    _isAllAppsScreenEnabled.postValue(it)
                 }
             }
         }

@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +18,7 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
+import kenneth.app.starlightlauncher.prefs.appearance.DEFAULT_APP_DRAWER_ENABLED
 import javax.inject.Inject
 
 interface SearchBoxActionDelegate {
@@ -60,6 +62,12 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
             } else {
                 showExpandWidgetPanelButton()
             }
+        }
+
+    var isAllAppsButtonShown: Boolean = DEFAULT_APP_DRAWER_ENABLED
+        set(isShown) {
+            field = isShown
+            binding.searchBoxLeftSideBtn.isInvisible = !isShown
         }
 
     /**

@@ -191,6 +191,10 @@
     <string name="appearance_revert_icon_pack_title">Revert to system icons</string>
     <string name="appearance_revert_icon_pack_summary">Use default app icons instead.</string>
     <string name="appearance_icon_pack_already_using_default">Default icons are already in use.</string>
+    <string name="appearance_is_app_drawer_enabled_title">Enable app drawer</string>
+    <string name="appearance_is_app_drawer_enabled_summary">
+        Shows an app drawer button in the search box.
+    </string>
 
     <!-- Search preferences -->
     <string name="pref_search_title">Search</string>

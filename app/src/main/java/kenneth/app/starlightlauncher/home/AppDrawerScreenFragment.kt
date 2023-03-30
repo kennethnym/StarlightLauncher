@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AppListSectionGridItemBinding
-import kenneth.app.starlightlauncher.databinding.FragmentAllAppsScreenBinding
+import kenneth.app.starlightlauncher.databinding.FragmentAppDrawerScreenBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -33,15 +33,15 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class AllAppsScreenFragment @Inject constructor(
+internal class AppDrawerScreenFragment @Inject constructor(
     private val launcher: StarlightLauncherApi,
     private val launcherApps: LauncherApps,
     private val extensionManager: ExtensionManager,
 ) : Fragment() {
-    private val viewModel: AllAppsScreenViewModel by viewModels()
+    private val viewModel: AppDrawerScreenViewModel by viewModels()
 
     private lateinit var appListAdapter: AppListAdapter
-    private var binding: FragmentAllAppsScreenBinding? = null
+    private var binding: FragmentAppDrawerScreenBinding? = null
 
     private val sectionGridItemBindings = mutableListOf<AppListSectionGridItemBinding>()
     private var availableSections: Set<String> = emptySet()
@@ -92,7 +92,7 @@ internal class AllAppsScreenFragment @Inject constructor(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = context?.let { context ->
-        FragmentAllAppsScreenBinding.inflate(inflater).run {
+        FragmentAppDrawerScreenBinding.inflate(inflater).run {
             binding = this
 
             with(appList) {

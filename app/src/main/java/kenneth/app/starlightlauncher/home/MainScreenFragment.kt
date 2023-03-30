@@ -94,7 +94,7 @@ internal class MainScreenFragment @Inject constructor(
         }
 
         override fun openAppList() {
-            homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS
+            homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER
         }
     }
 
@@ -177,6 +177,9 @@ internal class MainScreenFragment @Inject constructor(
             }
             activeMediaSession.observe(viewLifecycleOwner) {
                 binding?.mediaControlCard?.mediaSession = it
+            }
+            isAllAppsScreenEnabled.observe(viewLifecycleOwner) {
+                binding?.widgetsPanel?.searchBox?.isAllAppsButtonShown = it
             }
         }
 
