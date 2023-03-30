@@ -23,6 +23,8 @@ interface SearchBoxActionDelegate {
     fun retractWidgetsPanel()
 
     fun expandWidgetsPanel()
+
+    fun openAppList()
 }
 
 @AndroidEntryPoint
@@ -92,17 +94,8 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
                 isOpeningKeyboard = false
             }
 
-            searchBoxContainer.setOnClickListener {
-                if (binding.searchBoxEditText.hasFocus()) {
-                    isOpeningKeyboard = true
-                    binding.searchBoxEditText.clearFocus()
-                }
-                binding.searchBoxEditText.requestFocus()
-                inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
-                isOpeningKeyboard = false
-            }
-
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
+            searchBoxLeftSideBtn.setOnClickListener { actionDelegate?.openAppList() }
 
             searchBoxBg.blurWith(blurHandler)
         }

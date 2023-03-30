@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewTreeObserver
@@ -21,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +35,8 @@ import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.home.HomeScreenViewPagerAdapter
+import kenneth.app.starlightlauncher.home.POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS
+import kenneth.app.starlightlauncher.home.POSITION_HOME_SCREEN_VIEW_PAGER_HOME
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
@@ -43,6 +47,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Named
+
+private const val BACKGROUND_TRANSITION_DURATION_MS = 200
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -117,6 +123,33 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      */
     private var overlayBackPressedCallback: OverlayOnBackPressedCallback? = null
 
+    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            binding.homeScreenViewPager.background.run {
+                if (this !is TransitionDrawable) return
+
+                if (position == POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS) {
+                    startTransition(BACKGROUND_TRANSITION_DURATION_MS)
+                } else {
+                    reverseTransition(BACKGROUND_TRANSITION_DURATION_MS)
+                }
+            }
+        }
+
+        override fun onPageScrolled(
+            position: Int,
+            positionOffset: Float,
+            positionOffsetPixels: Int
+        ) {
+            super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            if (position == POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS) {
+                onBackPressedDispatcher.addCallback(
+                    AllAppsScreenBackPressedCallback(true)
+                )
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         appWidgetHost.startListening()
@@ -152,7 +185,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         binding.homeScreenViewPager.apply {
             isUserInputEnabled = false
-            adapter = HomeScreenViewPagerAdapter(this@MainActivity)
+            adapter = HomeScreenViewPagerAdapter(this@MainActivity, this)
+
+            background.let {
+                if (it is TransitionDrawable) it.reverseTransition(0)
+            }
+        }.also {
+            it.registerOnPageChangeCallback(onPageChangeCallback)
         }
 
         isDarkModeActive =
@@ -333,6 +372,14 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         OnBackPressedCallback(enabled) {
         override fun handleOnBackPressed() {
             binding.overlay.close()
+        }
+    }
+
+    private inner class AllAppsScreenBackPressedCallback(enabled: Boolean) :
+        OnBackPressedCallback(enabled) {
+        override fun handleOnBackPressed() {
+            binding.homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_HOME
+            remove()
         }
     }
 }

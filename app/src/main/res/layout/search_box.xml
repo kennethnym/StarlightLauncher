@@ -16,16 +16,26 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <kenneth.app.starlightlauncher.api.view.IconButton
+                    android:id="@+id/search_box_left_side_btn"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="start|center"
+                    android:layout_marginStart="@dimen/widget_list_padding"
+                    android:src="@drawable/ic_apps"
+                    android:tint="?colorOnPlate" />
+
                 <EditText
                     android:id="@+id/search_box_edit_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/search_box_container_padding"
+                    android:layout_weight="1"
                     android:background="@null"
                     android:hint="@string/search_box_label"
                     android:inputType="text"
@@ -45,7 +55,7 @@
                     android:src="@drawable/ic_angle_up"
                     android:tint="?colorOnPlate" />
 
-            </FrameLayout>
+            </LinearLayout>
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/search_loading_indicator"

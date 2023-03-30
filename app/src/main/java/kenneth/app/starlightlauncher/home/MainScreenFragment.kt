@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.HANDLED
@@ -44,6 +45,8 @@ internal class MainScreenFragment @Inject constructor(
     private val extensionManager: ExtensionManager,
     private val appWidgetHost: AppWidgetHost,
 ) : Fragment() {
+    lateinit var homeScreenViewPager: ViewPager2
+
     private var binding: FragmentMainScreenBinding? = null
     private val viewModel: MainScreenViewModel by viewModels()
 
@@ -88,6 +91,10 @@ internal class MainScreenFragment @Inject constructor(
                 widgetsPanel.expand()
                 widgetsPanel.searchBox.isWidgetsPanelExpanded = true
             }
+        }
+
+        override fun openAppList() {
+            homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_ALL_APPS
         }
     }
 
