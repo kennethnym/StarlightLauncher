@@ -173,6 +173,8 @@ internal class ExtensionManager @Inject constructor(
      */
     fun hasSearchModule(extName: String) = lookupSearchModule(extName) != null
 
+    fun lookupExtension(extName: String) = extensions[extName]
+
     fun lookupWidget(extName: String) = extensions[extName]?.widget
 
     fun lookupSearchModule(extName: String) = extensions[extName]?.searchModule

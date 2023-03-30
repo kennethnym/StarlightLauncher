@@ -10,6 +10,7 @@ import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,9 +38,11 @@ internal class AllAppsScreenViewModel @Inject constructor() : ViewModel() {
             }
 
             launch {
-                launcher.iconPack.collectLatest {
-                    _iconPack.postValue(it)
-                }
+                launcher.iconPack
+                    .distinctUntilChanged()
+                    .collectLatest {
+                        _iconPack.postValue(it)
+                    }
             }
         }
     }

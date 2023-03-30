@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.home
 
 import android.content.pm.LauncherActivityInfo
 import android.graphics.Rect
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -28,6 +29,8 @@ internal class AppListAdapter(
         fun onSectionClicked(availableSections: Set<String>)
 
         fun onItemClicked(app: LauncherActivityInfo, sourceBounds: Rect)
+
+        fun onItemLongClicked(app: LauncherActivityInfo)
     }
 
     var locale = locale
@@ -94,12 +97,21 @@ internal class AppListAdapter(
 
             this.appLabel.text = appLabel
 
-            root.setOnClickListener {
-                val sourceBounds = Rect().run {
-                    appIcon.getGlobalVisibleRect(this)
-                    this
+            with(root) {
+                setOnClickListener {
+                    Log.d("AppListAdapter", "on click")
+                    val sourceBounds = Rect().run {
+                        appIcon.getGlobalVisibleRect(this)
+                        this
+                    }
+                    callback.onItemClicked(app, sourceBounds)
                 }
-                callback.onItemClicked(app, sourceBounds)
+
+                setOnLongClickListener {
+                    Log.d("AppListAdapter", "on long click")
+                    callback.onItemLongClicked(app)
+                    true
+                }
             }
         }
     }
@@ -176,22 +188,18 @@ internal class AppListViewHolder(internal val binding: AppListItemBinding) :
 
                 MotionEvent.ACTION_DOWN -> {
                     binding.isClicked = true
-                    true
                 }
 
                 MotionEvent.ACTION_UP -> {
                     binding.isClicked = false
-                    v.performClick()
-                    true
                 }
 
                 MotionEvent.ACTION_CANCEL -> {
                     binding.isClicked = false
-                    true
                 }
-
-                else -> false
             }
+
+            false
         }
     }
 }

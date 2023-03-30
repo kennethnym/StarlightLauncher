@@ -17,7 +17,7 @@ const val DEFAULT_SHOW_PINNED_APP_NAMES = true
 /**
  * Manages preferences of [AppSearchModule]
  */
-internal class AppSearchModulePreferences
+class AppSearchModulePreferences
 private constructor(private val dataStore: DataStore<Preferences>) {
     companion object {
         private var instance: AppSearchModulePreferences? = null

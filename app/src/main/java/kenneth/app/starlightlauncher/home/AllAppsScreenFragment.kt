@@ -26,6 +26,7 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.AppListSectionGridItemBinding
 import kenneth.app.starlightlauncher.databinding.FragmentAllAppsScreenBinding
+import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -35,6 +36,7 @@ import javax.inject.Inject
 internal class AllAppsScreenFragment @Inject constructor(
     private val launcher: StarlightLauncherApi,
     private val launcherApps: LauncherApps,
+    private val extensionManager: ExtensionManager,
 ) : Fragment() {
     private val viewModel: AllAppsScreenViewModel by viewModels()
 
@@ -61,6 +63,10 @@ internal class AllAppsScreenFragment @Inject constructor(
 
         override fun onItemClicked(app: LauncherActivityInfo, sourceBounds: Rect) {
             launcherApps.startMainActivity(app.componentName, app.user, sourceBounds, null)
+        }
+
+        override fun onItemLongClicked(app: LauncherActivityInfo) {
+            showAppOptionMenu(app)
         }
     }
 
@@ -259,6 +265,19 @@ internal class AllAppsScreenFragment @Inject constructor(
             hideAppListSectionGrid()
 
             activity?.onBackPressedDispatcher?.addCallback(filteredAppListBackPressedCallback)
+        }
+    }
+
+    private fun showAppOptionMenu(app: LauncherActivityInfo) {
+        val context = context ?: return
+        launcher.showOptionMenu { menu ->
+            AppListOptionMenu(
+                context,
+                app,
+                launcher,
+                extensionManager,
+                menu
+            )
         }
     }
 }

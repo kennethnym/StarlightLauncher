@@ -32,6 +32,7 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
+import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
 import kenneth.app.starlightlauncher.databinding.ActivityMainBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.home.HomeScreenViewPagerAdapter
@@ -263,6 +264,14 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         overlayBackPressedCallback?.remove()
         overlayBackPressedCallback = null
         binding.overlay.close()
+    }
+
+    fun showOptionMenu(builder: OptionMenuBuilder) {
+        binding.optionMenu.show(builder)
+    }
+
+    fun closeOptionMenu() {
+        binding.optionMenu.hide()
     }
 
     private fun cleanup() {
