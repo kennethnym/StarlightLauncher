@@ -83,11 +83,15 @@ internal class StarlightLauncherApiImpl @Inject constructor(
         appManager.launcherActivityInfoOf(componentName)
 
     override fun showOptionMenu(builder: OptionMenuBuilder) {
-        bindingRegister.mainScreenBinding.optionMenu.show(builder)
+        if (activityContext is MainActivity) {
+            activityContext.showOptionMenu(builder)
+        }
     }
 
     override fun closeOptionMenu() {
-        bindingRegister.mainScreenBinding.optionMenu.hide()
+        if (activityContext is MainActivity) {
+            activityContext.closeOptionMenu()
+        }
     }
 
     override fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View) {

@@ -1,8 +1,12 @@
 package kenneth.app.starlightlauncher.prefs
 
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 
 val PREF_KEY_ICON_PACK = stringPreferencesKey("appearance_icon_pack")
+val PREF_KEY_IS_APP_DRAWER_ENABLED = booleanPreferencesKey("is_app_drawer_enabled")
 
 val PREF_KEY_TUTORIAL_FINISHED = booleanPreferencesKey("tutorial_finished")
 

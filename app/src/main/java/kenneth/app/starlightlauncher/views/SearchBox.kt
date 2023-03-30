@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,12 +18,15 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
+import kenneth.app.starlightlauncher.prefs.appearance.DEFAULT_APP_DRAWER_ENABLED
 import javax.inject.Inject
 
 interface SearchBoxActionDelegate {
     fun retractWidgetsPanel()
 
     fun expandWidgetsPanel()
+
+    fun openAppList()
 }
 
 @AndroidEntryPoint
@@ -60,6 +64,12 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
             }
         }
 
+    var isAllAppsButtonShown: Boolean = DEFAULT_APP_DRAWER_ENABLED
+        set(isShown) {
+            field = isShown
+            binding.searchBoxLeftSideBtn.isInvisible = !isShown
+        }
+
     /**
      * A delegate for handling action button click in the search box.
      */
@@ -92,17 +102,8 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
                 isOpeningKeyboard = false
             }
 
-            searchBoxContainer.setOnClickListener {
-                if (binding.searchBoxEditText.hasFocus()) {
-                    isOpeningKeyboard = true
-                    binding.searchBoxEditText.clearFocus()
-                }
-                binding.searchBoxEditText.requestFocus()
-                inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
-                isOpeningKeyboard = false
-            }
-
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
+            searchBoxLeftSideBtn.setOnClickListener { actionDelegate?.openAppList() }
 
             searchBoxBg.blurWith(blurHandler)
         }

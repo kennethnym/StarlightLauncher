@@ -18,17 +18,34 @@ internal class AppearanceSettingsScreenViewModel @Inject constructor(
     var isBlurEffectEnabled by mutableStateOf(false)
         private set
 
+    var isAppDrawerEnabled by mutableStateOf(DEFAULT_APP_DRAWER_ENABLED)
+        private set
+
     init {
-        viewModelScope.launch {
-            isBlurEffectEnabled = appearancePreferenceManager.isBlurEffectEnabled.first()
-            appearancePreferenceManager.isBlurEffectEnabled
-                .collectLatest { isBlurEffectEnabled = it }
+        with(viewModelScope) {
+            launch {
+                isBlurEffectEnabled = appearancePreferenceManager.isBlurEffectEnabled.first()
+                appearancePreferenceManager.isBlurEffectEnabled
+                    .collectLatest { isBlurEffectEnabled = it }
+            }
+
+            launch {
+                appearancePreferenceManager.isAppDrawerEnabled.collectLatest {
+                    isAppDrawerEnabled = it
+                }
+            }
         }
     }
 
     fun changeIsBlurEffectEnabled(enabled: Boolean) {
         viewModelScope.launch {
             appearancePreferenceManager.setBlurEffectEnabled(enabled)
+        }
+    }
+
+    fun changeIsAppDrawerEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appearancePreferenceManager.setAppDrawerEnabled(enabled)
         }
     }
 }
