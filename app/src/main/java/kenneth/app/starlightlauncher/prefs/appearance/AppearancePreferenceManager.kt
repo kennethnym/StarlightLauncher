@@ -11,6 +11,7 @@ import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.datetime.DEFAULT_USE_24HR_CLOCK
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_ICON_PACK
 import kenneth.app.starlightlauncher.prefs.PREF_KEY_USE_24HR_CLOCK
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,24 +43,20 @@ internal class AppearancePreferenceManager @Inject constructor(
     /**
      * The icon pack to use, if user has picked any. null if user has not picked any icon pack.
      */
-    val iconPack = context.dataStore.data.map {
-        it[PREF_KEY_ICON_PACK]?.let { packageName ->
-            // we use this as a way to detect when the icon pack change has gone through.
-            // when the package name of the icon pack is written to the data store
-            // this will be called
-            // we then send currentIconPack, which is set when changeIconPack is called,
-            // to the collectors of the flow,
-            // instead of creating a new instance of IconPack here.
-            //
-            // if currentIconPack is not set, that means this is the initial call of the flow
-            // so we create an instance of IconPack
-            currentIconPack ?: InstalledIconPack(
-                packageName,
-                context.packageManager,
-                context.resources
-            )
-        } ?: defaultIconPack
-    }
+    val iconPack = context.dataStore.data
+        .map { it[PREF_KEY_ICON_PACK] }
+        .distinctUntilChanged()
+        .map { iconPackPackageName ->
+            if (iconPackPackageName != null) {
+                InstalledIconPack(
+                    iconPackPackageName,
+                    context.packageManager,
+                    context.resources
+                ).also { it.load() }
+            } else {
+                defaultIconPack
+            }
+        }
 
     /**
      * Sets whether blur effect should be enabled.
@@ -88,7 +85,6 @@ internal class AppearancePreferenceManager @Inject constructor(
         context.dataStore.edit {
             it[PREF_KEY_ICON_PACK] = iconPack.packageName
         }
-        iconPack.load()
     }
 
     /**
