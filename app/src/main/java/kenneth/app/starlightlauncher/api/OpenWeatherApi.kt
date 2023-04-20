@@ -53,6 +53,8 @@ class OpenWeatherApi @Inject constructor(
      */
     var unit: TemperatureUnit = TemperatureUnit.CELSIUS
 
+    var apiKey = BuildConfig.OPEN_WEATHER_API_KEY
+
     /**
      * Fetches the current weather of the location specified by latLong
      */
@@ -64,7 +66,7 @@ class OpenWeatherApi @Inject constructor(
             .addQueryParameter("units", unit.code)
             .addQueryParameter("lat", lat.toString())
             .addQueryParameter("lon", long.toString())
-            .addQueryParameter("appid", BuildConfig.OPEN_WEATHER_API_KEY)
+            .addQueryParameter("appid", apiKey)
             .build()
 
         val req = Request.Builder().url(url).build()

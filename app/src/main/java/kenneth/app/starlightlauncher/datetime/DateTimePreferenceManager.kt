@@ -3,6 +3,7 @@ package kenneth.app.starlightlauncher.datetime
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.TemperatureUnit
@@ -92,6 +93,10 @@ internal class DateTimePreferenceManager @Inject constructor(
         }
         .distinctUntilChanged()
 
+    val weatherApiKey = context.dataStore.data
+        .map { it[PREF_KEY_WEATHER_API_KEY] ?: BuildConfig.OPEN_WEATHER_API_KEY }
+        .distinctUntilChanged()
+
     /**
      * Changes the weather location described by the given LatLong.
      */
@@ -142,6 +147,18 @@ internal class DateTimePreferenceManager @Inject constructor(
     suspend fun changeWeatherUnit(unit: TemperatureUnit) {
         context.dataStore.edit {
             it[PREF_KEY_WEATHER_UNIT] = unit.code
+        }
+    }
+
+    suspend fun changeWeatherApiKey(apiKey: String) {
+        context.dataStore.edit {
+            it[PREF_KEY_WEATHER_API_KEY] = apiKey
+        }
+    }
+
+    suspend fun useDefaultWeatherApiKey() {
+        context.dataStore.edit {
+            it.remove(PREF_KEY_WEATHER_API_KEY)
         }
     }
 }

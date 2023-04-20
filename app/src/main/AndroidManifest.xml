@@ -23,7 +23,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/starlight_launcher_name"
-        android:launchMode="singleTask"
+        android:launchMode="singleTop"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:stateNotNeeded="true"
         android:supportsRtl="true"
@@ -60,6 +60,7 @@
             android:name=".setup.SetupActivity"
             android:exported="false"
             android:label="@string/setup_activity_label"
+            android:launchMode="singleTop"
             android:theme="@style/DarkLauncherTheme" />
 
         <activity
@@ -73,7 +74,7 @@
             android:configChanges="uiMode"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="nosensor"
             android:windowSoftInputMode="stateVisible">
 
