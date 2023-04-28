@@ -33,5 +33,6 @@ val PREF_KEY_WEATHER_LOCATION_LAT = floatPreferencesKey("date_time_weather_locat
 val PREF_KEY_WEATHER_LOCATION_LONG = floatPreferencesKey("date_time_weather_location_lat")
 val PREF_KEY_WEATHER_LOCATION_NAME = stringPreferencesKey("date_time_weather_location_name")
 val PREF_KEY_WEATHER_UNIT = stringPreferencesKey("date_time_weather_unit")
+val PREF_KEY_WEATHER_API_KEY = stringPreferencesKey("weather_api_key")
 
 val PREF_NOTE_LIST = stringPreferencesKey("note_list")

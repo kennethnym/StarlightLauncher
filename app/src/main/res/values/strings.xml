@@ -246,6 +246,13 @@
     <string name="date_time_show_weather_summary">
         Shows current weather next to the current date.
     </string>
+    <string name="date_time_custom_api_key_title">Set API Key…</string>
+    <string name="date_time_custom_api_key_summary">
+        Use my own OpenWeatherMap API key to fetch weather data instead of the default key.
+    </string>
+    <string name="date_time_custom_api_key_dialog_title">Set OpenWeatherMap API Key</string>
+    <string name="date_time_custom_api_key_dialog_confirm_button">Save</string>
+    <string name="date_time_custom_api_key_dialog_use_default_key_button">Use default key</string>
     <string name="date_time_pick_location_title">Pick a location…</string>
     <string name="date_time_pick_location_summary">
         Starlight will show weather at the specified location: %1$s

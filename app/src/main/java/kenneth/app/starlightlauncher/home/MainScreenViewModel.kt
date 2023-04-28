@@ -17,6 +17,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.api.LatLong
 import kenneth.app.starlightlauncher.api.OpenWeatherApi
 import kenneth.app.starlightlauncher.api.TemperatureUnit
@@ -175,6 +176,8 @@ internal class MainScreenViewModel @Inject constructor(
 
     private var isLoadingWeather = false
 
+    private var weatherApiKey = BuildConfig.OPEN_WEATHER_API_KEY
+
     init {
         if (isNotificationListenerEnabled.value == true) {
             observeActiveMediaSession()
@@ -240,6 +243,12 @@ internal class MainScreenViewModel @Inject constructor(
             launch {
                 appearancePreferenceManager.isAppDrawerEnabled.collectLatest {
                     _isAllAppsScreenEnabled.postValue(it)
+                }
+            }
+
+            launch {
+                dateTimePreferenceManager.weatherApiKey.collectLatest {
+                    weatherApiKey = it
                 }
             }
         }
@@ -467,6 +476,7 @@ internal class MainScreenViewModel @Inject constructor(
             .run {
                 latLong = location
                 unit = weatherUnit ?: dateTimePreferenceManager.weatherUnit.first()
+                apiKey = weatherApiKey
                 getCurrentWeather()
             }
             .getOrNull()
