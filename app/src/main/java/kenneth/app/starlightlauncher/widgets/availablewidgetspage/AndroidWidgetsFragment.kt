@@ -88,7 +88,7 @@ internal class AndroidWidgetsFragment @Inject constructor(
                     .getInsets(WindowInsetsCompat.Type.systemBars())
                 availableWidgetList.updatePadding(
                     top = insetsCompat.top,
-                    bottom = bottomPadding
+                    bottom = availableWidgetList.paddingBottom + bottomPadding
                 )
                 insets
             }

@@ -1,6 +1,6 @@
 package kenneth.app.starlightlauncher.widgets.availablewidgetspage
 
-import android.util.Log
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +27,19 @@ class WidgetTypeViewPagerAdapter(
     private val entryPoint =
         EntryPointAccessors.fromActivity(fa, WidgetTypeViewPagerAdapterEntryPoint::class.java)
 
+    private var recyclerView: RecyclerView? = null
+
+    private val globalLayoutListener = object : OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+            val bottomPadding = availableWidgetsPageBinding.tabBar.height
+            with(entryPoint) {
+                androidWidgetsFragment().bottomPadding = bottomPadding
+                starlightWidgetsFragment().bottomPadding = bottomPadding
+            }
+            recyclerView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+        }
+    }
+
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment = when (position) {
@@ -39,11 +52,7 @@ class WidgetTypeViewPagerAdapter(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-
-        val bottomPadding = availableWidgetsPageBinding.tabBar.height
-        with(entryPoint) {
-            androidWidgetsFragment().bottomPadding = bottomPadding
-            starlightWidgetsFragment().bottomPadding = bottomPadding
-        }
+        this.recyclerView = recyclerView
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     }
 }
