@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.FragmentAndroidWidgetListBinding
+import kenneth.app.starlightlauncher.databinding.FragmentAvailableWidgetsBinding
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -52,13 +54,16 @@ internal class AndroidWidgetsFragment @Inject constructor(
     private val appIcons = mutableMapOf<String, Drawable>()
     private val appInfos = mutableMapOf<String, ApplicationInfo>()
 
-    var bottomPadding: Int = 0
-        set(value) {
-            field = value
+    var availableWidgetsPageBinding: FragmentAvailableWidgetsBinding? = null
+
+    private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
             binding?.availableWidgetList?.updatePadding(
-                bottom = value
+                bottom = availableWidgetsPageBinding?.tabBar?.height ?: 0,
             )
+            binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
         }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,12 +91,11 @@ internal class AndroidWidgetsFragment @Inject constructor(
             root.setOnApplyWindowInsetsListener { _, insets ->
                 val insetsCompat = WindowInsetsCompat.toWindowInsetsCompat(insets)
                     .getInsets(WindowInsetsCompat.Type.systemBars())
-                availableWidgetList.updatePadding(
-                    top = insetsCompat.top,
-                    bottom = availableWidgetList.paddingBottom + bottomPadding
-                )
+                availableWidgetList.updatePadding(top = insetsCompat.top)
                 insets
             }
+
+            root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
             root
         }
@@ -116,6 +120,7 @@ internal class AndroidWidgetsFragment @Inject constructor(
             Activity.RESULT_OK -> {
                 configureAndroidWidget(appWidgetId, appWidgetProviderInfo)
             }
+
             Activity.RESULT_CANCELED -> {
                 // user did not allow Starlight to show widgets
                 // delete the widget
@@ -142,6 +147,7 @@ internal class AndroidWidgetsFragment @Inject constructor(
                     appWidgetHost.deleteAppWidgetId(appWidgetId)
                 }
             }
+
             Activity.RESULT_CANCELED -> {
                 appWidgetHost.deleteAppWidgetId(appWidgetId)
             }

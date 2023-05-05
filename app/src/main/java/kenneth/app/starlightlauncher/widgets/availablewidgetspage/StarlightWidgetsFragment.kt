@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kenneth.app.starlightlauncher.databinding.FragmentAvailableWidgetsBinding
 import kenneth.app.starlightlauncher.databinding.FragmentStarlightWidgetListBinding
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
 import kotlinx.coroutines.launch
@@ -20,13 +22,16 @@ internal class StarlightWidgetsFragment @Inject constructor(
     StarlightWidgetListAdapter.Callback {
     private var binding: FragmentStarlightWidgetListBinding? = null
 
-    var bottomPadding: Int = 0
-        set(value) {
-            field = value
+    var availableWidgetsPageBinding: FragmentAvailableWidgetsBinding? = null
+
+    private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
             binding?.widgetList?.updatePadding(
-                bottom = value
+                bottom = availableWidgetsPageBinding?.tabBar?.height ?: 0,
             )
+            binding?.root?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
         }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,12 +46,11 @@ internal class StarlightWidgetsFragment @Inject constructor(
         root.setOnApplyWindowInsetsListener { _, insets ->
             val insetsCompat = WindowInsetsCompat.toWindowInsetsCompat(insets)
                 .getInsets(WindowInsetsCompat.Type.systemBars())
-            widgetList.updatePadding(
-                top = insetsCompat.top,
-                bottom = bottomPadding,
-            )
+            widgetList.updatePadding(top = insetsCompat.top)
             insets
         }
+
+        root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
         root
     }
