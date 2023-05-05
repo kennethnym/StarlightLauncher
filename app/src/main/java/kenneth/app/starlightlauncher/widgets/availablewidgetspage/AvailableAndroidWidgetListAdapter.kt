@@ -12,10 +12,8 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.ExpandableListView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
-import kenneth.app.starlightlauncher.databinding.AvailableWidgetsListHeaderBinding
 import kenneth.app.starlightlauncher.util.toPx
 import kotlin.math.roundToInt
 
@@ -119,7 +117,9 @@ internal class AvailableAndroidWidgetListAdapter(
         }.apply {
             text = label
             setCompoundDrawablesRelative(
-                icon.apply { setBounds(0, 0, iconSize, iconSize) },
+                icon.mutate().constantState
+                    ?.newDrawable()
+                    ?.apply { setBounds(0, 0, iconSize, iconSize) },
                 null,
                 indicator,
                 null
@@ -173,6 +173,7 @@ internal class AvailableAndroidWidgetListAdapter(
                 null,
                 null,
             )
+
             setOnClickListener { addSelectedWidget(appWidgetProviderInfo) }
         }
     }
@@ -203,8 +204,3 @@ internal class AvailableAndroidWidgetListAdapter(
         callback.onRequestAddAndroidWidget(appWidgetInfo)
     }
 }
-
-internal sealed class AvailableWidgetListItem(rootView: View) : RecyclerView.ViewHolder(rootView)
-
-private class ListHeader(binding: AvailableWidgetsListHeaderBinding) :
-    AvailableWidgetListItem(binding.root)
