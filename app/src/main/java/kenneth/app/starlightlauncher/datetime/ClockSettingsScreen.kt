@@ -24,6 +24,7 @@ internal fun ClockSettingsScreen(
     viewModel: ClockSettingsScreenViewModel = hiltViewModel(),
 ) {
     var isLocationPickerOpen by remember { mutableStateOf(false) }
+    var isWeatherApiKeyDialogOpen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val permissionRequestLauncher = rememberLauncherForActivityResult(
@@ -73,6 +74,13 @@ internal fun ClockSettingsScreen(
                     summary = stringResource(R.string.date_time_show_weather_summary),
                     checked = viewModel.shouldShowWeather,
                     onCheckedChange = { viewModel.changeShouldShowWeather(it) }
+                )
+
+                SettingsListItem(
+                    icon = painterResource(R.drawable.ic_key_skeleton),
+                    title = stringResource(R.string.date_time_custom_api_key_title),
+                    summary = stringResource(R.string.date_time_custom_api_key_summary),
+                    onTap = { isWeatherApiKeyDialogOpen = true }
                 )
 
                 AnimatedVisibility(
@@ -158,6 +166,14 @@ internal fun ClockSettingsScreen(
             WeatherLocationPicker(
                 onDismissRequest = { isLocationPickerOpen = false },
                 onLocationSelected = { viewModel.changeWeatherLocation(it) }
+            )
+        }
+
+        if (isWeatherApiKeyDialogOpen) {
+            WeatherApiKeyDialog(
+                onDismissRequest = { isWeatherApiKeyDialogOpen = false },
+                onApiKeySelected = { viewModel.changeWeatherApiKey(it) },
+                onDefaultApiKeySelected = { viewModel.useDefaultWeatherApiKey() }
             )
         }
     }

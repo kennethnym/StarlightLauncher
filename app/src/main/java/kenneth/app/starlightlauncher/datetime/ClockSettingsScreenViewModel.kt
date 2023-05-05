@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.api.LatLong
-import kenneth.app.starlightlauncher.api.NominatimApi
 import kenneth.app.starlightlauncher.api.Place
 import kenneth.app.starlightlauncher.api.TemperatureUnit
 import kotlinx.coroutines.flow.collectLatest
@@ -40,6 +40,9 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
         private set
 
     var weatherLocationName by mutableStateOf<String?>(null)
+        private set
+
+    var weatherApiKey by mutableStateOf(BuildConfig.OPEN_WEATHER_API_KEY)
         private set
 
     init {
@@ -82,6 +85,11 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
             launch {
                 dateTimePreferenceManager.weatherLocationName.collectLatest {
                     weatherLocationName = it
+                }
+            }
+            launch {
+                dateTimePreferenceManager.weatherApiKey.collectLatest {
+                    weatherApiKey = it
                 }
             }
         }
@@ -135,6 +143,18 @@ internal class ClockSettingsScreenViewModel @Inject constructor(
                 LatLong(place.lat, place.long),
                 place.displayName
             )
+        }
+    }
+
+    fun changeWeatherApiKey(apiKey: String) {
+        viewModelScope.launch {
+            dateTimePreferenceManager.changeWeatherApiKey(apiKey)
+        }
+    }
+
+    fun useDefaultWeatherApiKey() {
+        viewModelScope.launch {
+            dateTimePreferenceManager.useDefaultWeatherApiKey()
         }
     }
 }
