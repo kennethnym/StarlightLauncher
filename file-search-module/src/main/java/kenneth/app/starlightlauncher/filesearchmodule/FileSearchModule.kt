@@ -8,6 +8,7 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import java.util.Collections.synchronizedList
 
 private const val EXTENSION_NAME = "kenneth.app.starlightlauncher.filesearchmodule"
@@ -28,17 +29,17 @@ class FileSearchModule(
     private lateinit var preferences: FileSearchModulePreferences
 
     override fun initialize(launcher: StarlightLauncherApi) {
-        preferences = FileSearchModulePreferences.getInstance(launcher.context)
-        adapter = FileSearchResultAdapter(preferences, launcher)
+        preferences = FileSearchModulePreferences.getInstance(launcher.dataStore)
+        adapter = FileSearchResultAdapter(launcher)
     }
 
     override fun cleanup() {}
 
     override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult {
-        val paths = preferences.includedPaths
+        val paths = preferences.includedPaths.first()
         return when {
-            paths.isEmpty() -> Result(keyword, emptyList())
-            else -> Result(
+            paths.isEmpty() -> Result.NoSearchPathsAdded(keyword)
+            else -> Result.Some(
                 query = keyword,
                 files = collectAllFilesInPaths(paths, keywordRegex)
             )
@@ -79,5 +80,10 @@ class FileSearchModule(
         return files
     }
 
-    class Result(query: String, val files: List<DocumentFile>) : SearchResult(query, EXTENSION_NAME)
+    sealed class Result(query: String) :
+        SearchResult(query, EXTENSION_NAME) {
+        class Some(query: String, val files: List<DocumentFile>) : Result(query)
+
+        class NoSearchPathsAdded(query: String) : Result(query)
+    }
 }

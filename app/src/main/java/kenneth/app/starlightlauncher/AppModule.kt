@@ -1,15 +1,18 @@
 package kenneth.app.starlightlauncher
 
-import android.appwidget.AppWidgetHost
+import android.appwidget.AppWidgetManager
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.LauncherApps
 import android.location.LocationManager
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
+import android.os.UserManager
 import android.view.Choreographer
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.FragmentFactory
 import androidx.preference.PreferenceManager
 import dagger.Binds
 import dagger.Module
@@ -17,11 +20,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.api.util.EventChannel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
@@ -105,11 +107,26 @@ internal object AppModule {
 
     @Provides
     @Singleton
-    fun provideBlurHandler(@ApplicationContext context: Context) = BlurHandler(context)
+    fun provideLauncherApps(@ApplicationContext context: Context) =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+
+    @Provides
+    @Singleton
+    fun provideUserManager(@ApplicationContext context: Context) =
+        context.getSystemService(Context.USER_SERVICE) as UserManager
 
     @Provides
     @Singleton
     fun provideSecureRandom() = SecureRandom()
+
+    @Provides
+    @Singleton
+    fun provideAppWidgetManager(@ApplicationContext context: Context) =
+        AppWidgetManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideApplicationScope() = MainScope()
 }
 
 @Module
@@ -117,4 +134,19 @@ internal object AppModule {
 abstract class RandomProvider {
     @Binds
     abstract fun bindRandom(impl: SecureRandom): Random
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class BlurHandlerProvider {
+    @Binds
+    @Singleton
+    abstract fun bindBlurHandler(impl: BlurHandlerImpl): BlurHandler
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class FragmentFactoryProvider {
+    @Binds
+    abstract fun bindFragmentFactory(impl: LauncherFragmentFactory): FragmentFactory
 }

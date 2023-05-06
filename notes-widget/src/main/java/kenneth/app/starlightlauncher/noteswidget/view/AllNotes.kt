@@ -1,57 +1,94 @@
 package kenneth.app.starlightlauncher.noteswidget.view
 
-import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.dp
+import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.R
 import kenneth.app.starlightlauncher.noteswidget.databinding.AllNotesBinding
 
-class AllNotes(context: Context) : FrameLayout(context) {
-    private val binding = AllNotesBinding.inflate(LayoutInflater.from(context), this)
-    private val listAdapter: AllNoteCardListAdapter
+internal class AllNotesFragment constructor(val launcher: StarlightLauncherApi) :
+    Fragment(),
+    NoteListChangedCallback {
+    private var binding: AllNotesBinding? = null
+    private var listAdapter: AllNoteCardListAdapter? = null
+
+    private val viewModel: AllNotesPageViewModel by viewModels { AllNotesPageViewModel.Factory }
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
-            with(binding.noteCardListScrollView) {
-                updatePadding(bottom = binding.addNoteButton.height + 24.dp)
-                smoothScrollTo(0, 0)
+            binding?.let { binding ->
+                with(binding.noteCardListScrollView) {
+                    updatePadding(bottom = binding.addNoteButton.height + 24.dp)
+                    smoothScrollTo(0, 0)
+                }
+                binding.root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
             }
-            viewTreeObserver.removeOnGlobalLayoutListener(this)
         }
     }
 
-    init {
-        layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT,
-        )
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = context?.let { context ->
+        AllNotesBinding.inflate(LayoutInflater.from(context)).run {
+            val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
 
-        val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
-
-        with(binding) {
             addNoteButton.setOnClickListener { addNote() }
+
             noteCardListScrollView.apply {
                 setPadding(0, topPadding, 0, addNoteButton.height)
                 clipToPadding = false
             }
+
             noteCardList.apply {
-                adapter = AllNoteCardListAdapter(context).also { listAdapter = it }
+                adapter = AllNoteCardListAdapter(
+                    launcher, this@AllNotesFragment
+                ).also {
+                    listAdapter = it
+                }
                 layoutManager = LinearLayoutManager(context)
             }
-        }
 
-        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+            root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+
+            root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.notes.observe(viewLifecycleOwner) {
+            listAdapter?.let { listAdapter ->
+                val oldNotes = listAdapter.notes
+                listAdapter.notes = it
+                DiffUtil.calculateDiff(NoteListDiffCallback(oldNotes, it))
+                    .dispatchUpdatesTo(listAdapter)
+            }
+        }
+    }
+
+    override fun onNoteDeleted(deletedNote: Note) {
+        viewModel.deleteNote(deletedNote)
+    }
+
+    override fun onNoteEdited(editedNote: Note) {
+        viewModel.editNote(editedNote)
     }
 
     private fun addNote() {
-        listAdapter.addNote()
-        binding.noteCardListScrollView.run {
+        listAdapter?.addNote()
+        viewModel.addNote()
+        binding?.noteCardListScrollView?.run {
             val lastView = getChildAt(childCount - 1)
             val lastViewBottom = lastView.bottom + paddingBottom
             val amountToScroll = lastViewBottom - height - scrollY

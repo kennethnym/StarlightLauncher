@@ -7,6 +7,9 @@
     <bool name="default_show_weather">false</bool>
     <bool name="default_use_24hr_clock">false</bool>
     <bool name="default_use_auto_weather_location">false</bool>
+
+    <bool name="default_media_control_enabled">true</bool>
+
     <string name="default_check_weather_frequency">3600000</string>
     <string name="default_weather_unit">CELSIUS</string>
     <string name="default_clock_size">NORMAL</string>

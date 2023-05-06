@@ -10,7 +10,41 @@
         <item>reply_all</item>
     </string-array>
 
-    <string-array name="weather_unit_entries">
+    <!--
+    Maps item types returned by AppListAdapter to the appropriate label
+    The labels are shown on the left of the list, e.g. A, B, C, D, ...
+    -->
+    <string-array name="app_list_item_type_labels">
+        <item>#</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>O</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
+        <item>*</item>
+    </string-array>
+    <string-array name="weather_unit_labels">
         <item>Kelvin</item>
         <item>Celsius</item>
         <item>Imperial</item>
@@ -54,15 +88,26 @@
         <item>METRIC_TONS</item>
     </string-array>
 
-    <string-array name="date_time_auto_weather_check_frequency_entries">
-        <item>5 Minutes</item>
-        <item>15 Minutes</item>
-        <item>30 Minutes</item>
-        <item>1 Hour</item>
-        <item>2 Hours</item>
-        <item>5 Hours</item>
-        <item>12 Hours</item>
-        <item>1 Day</item>
+    <string-array name="weather_check_frequency_labels">
+        <item>5 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>5 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+
+    <string-array name="location_check_frequency_labels">
+        <item>5 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>5 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
     </string-array>
 
     <!-- Defined as strings because for some reason ListPreference doesn't support integer-array -->

@@ -7,12 +7,13 @@ import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
-import kenneth.app.starlightlauncher.util.BindingRegister
-import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsPage
+import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsFragment
 
 internal class LauncherOptionMenu(
     private val context: Context,
     private val launcher: StarlightLauncherApi,
+    private val bindingRegister: BindingRegister,
     private val menu: OptionMenu,
 ) {
     init {
@@ -22,7 +23,7 @@ internal class LauncherOptionMenu(
                 context.getString(R.string.launcher_option_menu_widgets_label),
             ) {
                 menu.hide()
-                launcher.showOverlay(it, ::AvailableWidgetsPage)
+                launcher.showOverlay(AvailableWidgetsFragment())
             }
 
             addItem(
@@ -49,6 +50,6 @@ internal class LauncherOptionMenu(
     }
 
     private fun enableWidgetEditMode() {
-        BindingRegister.activityMainBinding.widgetsPanel.editWidgets()
+        bindingRegister.mainScreenBinding.widgetsPanel.editWidgets()
     }
 }

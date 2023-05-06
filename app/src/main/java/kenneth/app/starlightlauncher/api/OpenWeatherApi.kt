@@ -1,5 +1,6 @@
 package kenneth.app.starlightlauncher.api
 
+import android.util.Log
 import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
@@ -10,7 +11,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,6 +21,12 @@ enum class TemperatureUnit(val code: String, val symbol: String) {
     KELVIN("standard", "K"),
     CELSIUS("metric", "°C"),
     IMPERIAL("imperial", "°F");
+
+    companion object {
+        private val values = TemperatureUnit.values().associateBy(TemperatureUnit::code)
+
+        fun fromCode(code: String) = values[code]
+    }
 }
 
 private const val API_URL = "https://api.openweathermap.org/data/2.5"
@@ -47,17 +53,20 @@ class OpenWeatherApi @Inject constructor(
      */
     var unit: TemperatureUnit = TemperatureUnit.CELSIUS
 
+    var apiKey = BuildConfig.OPEN_WEATHER_API_KEY
+
     /**
      * Fetches the current weather of the location specified by latLong
      */
     suspend fun getCurrentWeather() = withContext(mainDispatcher) {
         val (lat, long) = latLong
+        Log.d("OpenWeatherApi", "lat long $latLong")
         val url = "$API_URL/weather".toHttpUrlOrNull()!!
             .newBuilder()
             .addQueryParameter("units", unit.code)
             .addQueryParameter("lat", lat.toString())
             .addQueryParameter("lon", long.toString())
-            .addQueryParameter("appid", BuildConfig.OPEN_WEATHER_API_KEY)
+            .addQueryParameter("appid", apiKey)
             .build()
 
         val req = Request.Builder().url(url).build()
@@ -65,7 +74,10 @@ class OpenWeatherApi @Inject constructor(
         return@withContext runCatching {
             withContext(ioDispatcher) {
                 httpClient.newCall(req).execute().body?.string()
-                    ?.let { json.decodeFromString<Response>(it) }
+                    ?.let {
+                        Log.d("OpenWeatherApi", "response $it")
+                        json.decodeFromString<Response>(it)
+                    }
             }
         }
     }

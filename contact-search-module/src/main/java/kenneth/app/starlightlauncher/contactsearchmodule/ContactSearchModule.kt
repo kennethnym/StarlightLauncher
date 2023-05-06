@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.ContactsContract
-import android.util.Log
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -30,18 +29,26 @@ class ContactSearchModule(context: Context) : SearchModule(context) {
 
     override fun cleanup() {}
 
-    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
-        if (context.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+    override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult {
+        val specialCharactersInPhoneNumber = arrayOf('(', ')', ' ')
+        val phoneNumberSelectionQueryWithoutSpecialCharacters =
+            specialCharactersInPhoneNumber.fold(ContactsContract.CommonDataKinds.Phone.NUMBER) { query, specialChar ->
+                "REPLACE($query, '$specialChar', '')"
+            }
+
+        return if (context.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                ContactsContract.Contacts.CONTENT_URI,
                 arrayOf(
                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                     ContactsContract.Contacts.DISPLAY_NAME,
                     ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
                     ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ),
-                "${ContactsContract.Contacts.DISPLAY_NAME} LIKE ?",
-                arrayOf("%${keyword}%"),
+                "${ContactsContract.Contacts.DISPLAY_NAME} LIKE ? OR " +
+                        "$phoneNumberSelectionQueryWithoutSpecialCharacters LIKE ? OR " +
+                        "${ContactsContract.CommonDataKinds.Phone.NUMBER} LIKE ?",
+                arrayOf("%$keyword%", "%$keyword%", "%$keyword%"),
                 null,
             )?.use { cursor ->
                 val contacts = mutableListOf<Contact>()
@@ -81,6 +88,7 @@ class ContactSearchModule(context: Context) : SearchModule(context) {
             }
                 ?: SearchResult.None(keyword, EXTENSION_NAME)
         else NoPermission(keyword)
+    }
 
     internal class NoPermission(keyword: String) : SearchResult(keyword, EXTENSION_NAME)
 

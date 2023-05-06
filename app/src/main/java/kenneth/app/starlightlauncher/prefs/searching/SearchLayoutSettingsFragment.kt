@@ -48,6 +48,6 @@ internal class SearchLayoutSettingsFragment : PreferenceFragmentCompat() {
 
     private fun onSearchCategoryOrderChanged(fromIndex: Int, toIndex: Int) {
         searchModuleOrder.swap(fromIndex, toIndex)
-        searchPreferenceManager.changeSearchCategoryOrder(fromIndex, toIndex, searchModuleOrder)
+//        searchPreferenceManager.changeSearchCategoryOrder(fromIndex, toIndex, searchModuleOrder)
     }
 }

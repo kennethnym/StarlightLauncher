@@ -1,32 +1,35 @@
 package kenneth.app.starlightlauncher.api.view
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.util.AttributeSet
 import android.view.Choreographer
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.annotation.IntRange
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.preference.PreferenceManager
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.alpha
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import kenneth.app.starlightlauncher.api.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
-import kenneth.app.starlightlauncher.api.util.activity
 
 private const val DEFAULT_USE_ROUNDED_CORNERS = true
 
-open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
-    SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {
-    private var blurHandler: BlurHandler? = null
-    private val blurAmount: Int
+val PREF_KEY_BLUR_EFFECT_ENABLED = booleanPreferencesKey("appearance_blur_effect_enabled")
 
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
+    @IntRange(from = 0x00, to = 0xFF)
+    var backgroundAlpha: Int = 0
+        set(alpha) {
+            field = alpha
+            if (blurHandler?.isBlurEffectEnabled == false) {
+                plateColor = ColorUtils.setAlphaComponent(plateColor, alpha)
+                blurBackground.setBackgroundColor(plateColor)
+            }
+        }
+
+    private var blurHandler: BlurHandler? = null
 
     private val blurBackground: ImageView =
         ImageView(context).apply {
@@ -38,49 +41,17 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
             clipToOutline = true
         }.also { addView(it) }
 
-    private var shouldBlur: Boolean
-
     @ColorInt
-    private val plateColor: Int
-
-    private val lifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onResume(owner: LifecycleOwner) {
-            super.onResume(owner)
-            toggleBlurEffect()
-        }
-    }
+    private var plateColor: Int
 
     init {
-        context.obtainStyledAttributes(
-            intArrayOf(
-                R.attr.plateColor,
-                R.attr.blurAmount,
-            )
-        ).run {
+        context.obtainStyledAttributes(intArrayOf(R.attr.plateColor)).run {
             try {
                 plateColor = getColor(
                     0,
                     context.getColor(android.R.color.transparent)
                 )
-
-                // detect if the launcher has access to the wallpaper and if blur effect is enabled
-                if (
-                    context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                    sharedPreferences.getBoolean(
-                        context.getString(R.string.pref_key_appearance_blur_effect_enabled), true
-                    )
-                ) {
-                    shouldBlur = true
-                    // set color filter of the blur effect
-                    blurBackground.setColorFilter(plateColor)
-                } else {
-                    shouldBlur = false
-                    // set a simple transparent color because the launcher cannot provide blur effect
-                    blurBackground.setBackgroundColor(plateColor)
-                }
-
-                @SuppressLint("ResourceType")
-                blurAmount = getInt(1, 20)
+                backgroundAlpha = plateColor.alpha
             } finally {
                 recycle()
             }
@@ -97,69 +68,34 @@ open class Plate(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
             }
         }
 
-        activity?.lifecycle?.addObserver(lifecycleObserver)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (shouldBlur) startBlur()
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        startBlur()
     }
 
     override fun onDetachedFromWindow() {
-        shouldBlur = false
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        blurHandler?.unregisterPlate(this)
         super.onDetachedFromWindow()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (sharedPreferences == null) return
-        when (key) {
-            context.getString(R.string.pref_key_appearance_blur_effect_enabled) -> {
-                toggleBlurEffect()
-            }
-        }
-    }
-
     fun blurWith(blurHandler: BlurHandler) {
-        this.blurHandler = blurHandler
-    }
-
-    private fun toggleBlurEffect() {
-        val key = context.getString(R.string.pref_key_appearance_blur_effect_enabled)
-        if (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            val blurEffectEnabled = sharedPreferences.getBoolean(key, true)
-            if (blurEffectEnabled) {
-                startBlur()
-            } else {
-                turnOffBlur()
-            }
-        } else {
-            turnOffBlur()
-            sharedPreferences.edit(commit = true) {
-                putBoolean(key, false)
-            }
+        this.blurHandler = blurHandler.also {
+            it.registerPlate(this)
         }
     }
 
-    private fun turnOffBlur() {
-        shouldBlur = false
-        blurBackground.apply {
-            setImageBitmap(null)
-            setBackgroundColor(plateColor)
-        }
-    }
-
-    private fun startBlur() {
-        shouldBlur = true
+    fun startBlur() {
         blurBackground.setColorFilter(plateColor)
         Choreographer.getInstance().postFrameCallbackDelayed(::frameCallback, 1000 / 120)
     }
 
     private fun frameCallback(ms: Long) {
-        if (shouldBlur) {
-            blurHandler?.blurView(blurBackground, blurAmount)
+        if (blurHandler?.isBlurEffectEnabled == true) {
+            blurHandler?.blurView(blurBackground)
             Choreographer.getInstance().postFrameCallbackDelayed(::frameCallback, 1000 / 120)
+        } else {
+            blurBackground.apply {
+                setImageBitmap(null)
+                setBackgroundColor(plateColor)
+            }
         }
     }
 }

@@ -23,7 +23,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/starlight_launcher_name"
-        android:launchMode="singleTask"
+        android:launchMode="singleTop"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:stateNotNeeded="true"
         android:supportsRtl="true"
@@ -33,7 +33,7 @@
         <!-- This notification listener service is required in order to obtain info
           of the currently playing media. The registered listener class is empty. -->
         <service
-            android:name="kenneth.app.starlightlauncher.views.NotificationListenerStub"
+            android:name="kenneth.app.starlightlauncher.mediacontrol.NotificationListenerStub"
             android:exported="false"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -44,7 +44,7 @@
         <activity
             android:name=".LoadingActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@style/DarkLauncherTheme">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,6 +60,7 @@
             android:name=".setup.SetupActivity"
             android:exported="false"
             android:label="@string/setup_activity_label"
+            android:launchMode="singleTop"
             android:theme="@style/DarkLauncherTheme" />
 
         <activity
@@ -73,7 +74,7 @@
             android:configChanges="uiMode"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="nosensor"
             android:windowSoftInputMode="stateVisible">
 

@@ -1,4 +1,4 @@
-package kenneth.app.starlightlauncher.views
+package kenneth.app.starlightlauncher.widgets
 
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
@@ -10,151 +10,110 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
-import kenneth.app.starlightlauncher.api.LauncherEvent
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.WidgetFrameBinding
-import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.util.toDp
 import kenneth.app.starlightlauncher.util.toPx
-import kenneth.app.starlightlauncher.widgets.AddedWidget
-import kenneth.app.starlightlauncher.widgets.WidgetList
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceChanged
-import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import kenneth.app.starlightlauncher.widgets.LauncherAppWidgetHostView
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlin.math.max
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-internal interface WidgetListAdapterEntryPoint {
-    fun launcherApi(): StarlightLauncherApi
-    fun extensionManager(): ExtensionManager
-    fun appWidgetHost(): AppWidgetHost
-    fun launcherEventChannel(): LauncherEventChannel
-    fun widgetPreferenceManager(): WidgetPreferenceManager
-}
+private const val VIEW_TYPE_ANDROID_WIDGET = 0
+private const val VIEW_TYPE_STARLIGHT_WIDGET = 1
 
 /**
- * Adapter for [WidgetList]
+ * Adapter for [WidgetListView]
  */
 internal class WidgetListAdapter(
-    private val context: Context,
-    val widgets: List<AddedWidget>,
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-) : RecyclerView.Adapter<WidgetListAdapterItem>() {
-    private val addedWidgets = widgets.toMutableList()
+    context: Context,
+    var widgets: List<AddedWidget>,
+    private val appWidgetHost: AppWidgetHost,
+    private val eventListener: WidgetListEventListener,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    interface WidgetListEventListener {
+        fun onWidgetRemoved(removedWidget: AddedWidget)
 
-    private val extensionManager: ExtensionManager
+        fun onWidgetResizeStarted()
 
-    private val launcherApi: StarlightLauncherApi
+        fun onWidgetResized(widget: AddedWidget, newHeight: Int)
+    }
 
-    private val appWidgetHost: AppWidgetHost
-
-    private val widgetPreferenceManager: WidgetPreferenceManager
+    private val context = context.applicationContext
 
     private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
 
-    private var widgetList: WidgetList? = null
+    private var widgetListView: WidgetListView? = null
 
     /**
      * IDs of [AddedWidget]s that are in layout.
      */
     private var widgetsInLayout = mutableSetOf<Int>()
 
-    init {
-        EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            WidgetListAdapterEntryPoint::class.java
-        ).run {
-            extensionManager = extensionManager()
-            launcherApi = launcherApi()
-            appWidgetHost = appWidgetHost()
-            widgetPreferenceManager = widgetPreferenceManager()
-            CoroutineScope(mainDispatcher).launch {
-                launcherEventChannel().subscribe(::onLauncherEvent)
-            }
-        }
+    override fun getItemViewType(position: Int): Int = when (widgets[position]) {
+        is AddedWidget.AndroidWidget -> VIEW_TYPE_ANDROID_WIDGET
+        is AddedWidget.StarlightWidget -> VIEW_TYPE_STARLIGHT_WIDGET
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetListAdapterItem {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding =
             WidgetFrameBinding.inflate(LayoutInflater.from(parent.context), parent, false).apply {
                 isEditing = false
             }
-        return WidgetListAdapterItem(context, binding, widgetList)
+
+        return when (viewType) {
+            VIEW_TYPE_ANDROID_WIDGET -> AndroidWidgetListAdapterItem(binding, eventListener)
+            VIEW_TYPE_STARLIGHT_WIDGET -> StarlightWidgetListAdapterItem(binding)
+            else -> throw Error("View type $viewType not recognized by WidgetListAdapter.")
+        }
     }
 
-    override fun onBindViewHolder(holder: WidgetListAdapterItem, position: Int) {
-        when (val addedWidget = addedWidgets[position]) {
-            is AddedWidget.StarlightWidget -> {
-                showStarlightWidget(addedWidget, holder, position)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val widget = widgets[position]
+        when {
+            widget is AddedWidget.AndroidWidget && holder is AndroidWidgetListAdapterItem -> {
+                showAndroidWidget(widget, holder)
             }
-            is AddedWidget.AndroidWidget -> {
-                showAndroidWidget(addedWidget, holder)
+
+            widget is AddedWidget.StarlightWidget && holder is StarlightWidgetListAdapterItem -> {
+                showStarlightWidget(widget, holder)
             }
         }
     }
 
-    override fun getItemCount(): Int = addedWidgets.size
+    override fun getItemCount(): Int = widgets.size
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        if (recyclerView is WidgetList) {
-            widgetList = recyclerView
+        if (recyclerView is WidgetListView) {
+            widgetListView = recyclerView
         }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        widgetList = null
-    }
-
-    /**
-     * Adds the given [AddedWidget.AndroidWidget] to the end of this list.
-     */
-    fun addAndroidWidget(widget: AddedWidget.AndroidWidget) {
-        val widgetIndex = addedWidgets.size
-        addedWidgets += widget
-        notifyItemInserted(widgetIndex)
-        widgetsInLayout.add(widget.id)
-        widgetList?.scrollToPosition(widgetIndex)
-    }
-
-    private fun onLauncherEvent(event: LauncherEvent) {
-        when (event) {
-            is WidgetPreferenceChanged.WidgetRemoved ->
-                removeWidgetFromList(event.removedWidget, event.position)
-            else -> {}
-        }
+        widgetListView = null
     }
 
     private fun showAndroidWidget(
         addedWidget: AddedWidget.AndroidWidget,
-        holder: WidgetListAdapterItem,
+        holder: AndroidWidgetListAdapterItem,
     ) {
-        val appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(addedWidget.appWidgetId)
+        val appWidgetInfo = appWidgetManager.getAppWidgetInfo(addedWidget.appWidgetId)
 
-        holder.addedWidget = addedWidget
+        holder.apply {
+            this.addedWidget = addedWidget
+            this.appWidgetInfo = appWidgetInfo
+        }
+
         appWidgetHost.createView(
             context.applicationContext,
             addedWidget.appWidgetId,
-            appWidgetProviderInfo
+            appWidgetInfo
         )
             .run {
                 setAppWidget(appWidgetId, appWidgetInfo)
                 if (this is LauncherAppWidgetHostView) {
-                    scrollingParent = widgetList
+                    scrollingParent = widgetListView
                 }
 
                 holder.binding.widgetFrameContainer.layoutParams =
@@ -170,8 +129,14 @@ internal class WidgetListAdapter(
                 holder.binding.widgetFrame.addView(this)
             }
 
-        holder.binding.removeWidgetBtn.setOnClickListener {
-            removeAndroidWidget(addedWidget.appWidgetId)
+        holder.binding.apply {
+            resizable = true
+            removeWidgetBtn.setOnClickListener {
+                eventListener.onWidgetRemoved(addedWidget)
+            }
+            cancelBtn.setOnClickListener {
+                isEditing = false
+            }
         }
 
         widgetsInLayout.add(addedWidget.id)
@@ -179,73 +144,64 @@ internal class WidgetListAdapter(
 
     private fun showStarlightWidget(
         widget: AddedWidget.StarlightWidget,
-        holder: WidgetListAdapterItem,
-        position: Int,
+        holder: StarlightWidgetListAdapterItem,
     ) {
-        extensionManager.lookupWidget(widget.extensionName)?.let { creator ->
-            creator.createWidget(holder.binding.widgetFrame, launcherApi).also {
+        widget.widgetCreator?.let { creator ->
+            creator.createWidget(holder.binding.widgetFrame).also {
                 holder.binding.widgetFrame.addView(it.rootView)
             }
         }
-        holder.binding.removeWidgetBtn.setOnClickListener {
-            removeStarlightWidget(widget.extensionName)
-        }
-        widgetsInLayout.add(widget.id)
-    }
 
-    private fun removeAndroidWidget(appWidgetId: Int) {
-        widgetPreferenceManager.removeAndroidWidget(appWidgetId)
-    }
-
-    private fun removeStarlightWidget(extensionName: String) {
-        widgetPreferenceManager.removeStarlightWidget(extensionName)
-    }
-
-    private fun removeWidgetFromList(widget: AddedWidget, position: Int) {
-        if (widgetsInLayout.contains(widget.id)) {
-            addedWidgets.removeAt(position)
-            widgetsInLayout.remove(widget.id)
-            notifyItemRemoved(position)
-        }
-    }
-}
-
-internal class WidgetListAdapterItem(
-    context: Context,
-    val binding: WidgetFrameBinding,
-    private val widgetList: WidgetList?
-) :
-    RecyclerView.ViewHolder(binding.root), View.OnTouchListener {
-    private var lastY = 0f
-
-    private var appWidgetProviderInfo: AppWidgetProviderInfo? = null
-
-    private val widgetPreferenceManager: WidgetPreferenceManager
-
-    private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
-
-    var addedWidget: AddedWidget? = null
-        set(value) {
-            field = value
-            if (value is AddedWidget.AndroidWidget) {
-                appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(value.appWidgetId)
+        holder.binding.apply {
+            resizable = false
+            removeWidgetBtn.setOnClickListener {
+                eventListener.onWidgetRemoved(widget)
             }
-        }
-
-    init {
-        with(binding) {
-            widgetResizeHandle.setOnTouchListener(this@WidgetListAdapterItem)
             cancelBtn.setOnClickListener {
-                saveWidgetHeight()
                 isEditing = false
             }
         }
 
-        EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            WidgetListAdapterEntryPoint::class.java
-        ).run {
-            widgetPreferenceManager = widgetPreferenceManager()
+        widgetsInLayout.add(widget.id)
+    }
+}
+
+/**
+ * All view holders in [WidgetListAdapter] must implement this interface.
+ */
+interface WidgetListAdapterItem {
+    /**
+     * Whether this widget is being edited.
+     */
+    var isEditing: Boolean
+}
+
+internal class AndroidWidgetListAdapterItem(
+    val binding: WidgetFrameBinding,
+    private val eventListener: WidgetListAdapter.WidgetListEventListener
+) :
+    RecyclerView.ViewHolder(binding.root),
+    WidgetListAdapterItem,
+    View.OnTouchListener {
+    var appWidgetInfo: AppWidgetProviderInfo? = null
+
+    var addedWidget: AddedWidget.AndroidWidget? = null
+
+    override var isEditing: Boolean = false
+        set(value) {
+            field = value
+            binding.isEditing = value
+        }
+
+    private var lastY = 0f
+
+    init {
+        with(binding) {
+            widgetResizeHandle.setOnTouchListener(this@AndroidWidgetListAdapterItem)
+            cancelBtn.setOnClickListener {
+                saveWidgetHeight()
+                isEditing = false
+            }
         }
     }
 
@@ -257,7 +213,7 @@ internal class WidgetListAdapterItem(
                 binding.root.parent.requestDisallowInterceptTouchEvent(true)
                 // disables drag and drop of [WidgetList] temporarily so that drag-n-drop
                 // gesture will not conflict with resizing widget.
-                widgetList?.disableDragAndDrop()
+                eventListener.onWidgetResizeStarted()
                 lastY = event.rawY
                 HANDLED
             }
@@ -273,10 +229,7 @@ internal class WidgetListAdapterItem(
                 binding.widgetFrameContainer.layoutParams =
                     binding.widgetFrameContainer.layoutParams.apply {
                         val newHeight = currentHeight + delta.toInt()
-                        height =
-                            if (addedWidget is AddedWidget.AndroidWidget)
-                                max(newHeight, appWidgetProviderInfo?.minHeight ?: newHeight)
-                            else newHeight
+                        height = max(newHeight, appWidgetInfo?.minHeight ?: newHeight)
                     }
 
                 lastY = currentY
@@ -286,8 +239,7 @@ internal class WidgetListAdapterItem(
 
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
-                // resizing widget done, re-enable drag and drop.
-                widgetList?.enableDragAndDrop()
+                saveWidgetHeight()
                 HANDLED
             }
 
@@ -299,10 +251,19 @@ internal class WidgetListAdapterItem(
 
     private fun saveWidgetHeight() {
         addedWidget?.let {
-            widgetPreferenceManager.changeWidgetHeight(
+            eventListener.onWidgetResized(
                 it,
-                binding.widgetFrameContainer.height.toDp()
+                newHeight = binding.widgetFrameContainer.height.toDp()
             )
         }
     }
+}
+
+internal class StarlightWidgetListAdapterItem(val binding: WidgetFrameBinding) :
+    RecyclerView.ViewHolder(binding.root), WidgetListAdapterItem {
+    override var isEditing: Boolean = false
+        set(value) {
+            field = value
+            binding.isEditing = value
+        }
 }

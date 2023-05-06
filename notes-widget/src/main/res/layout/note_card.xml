@@ -66,7 +66,7 @@
                 android:enabled="@{areControlsEnabled}"
                 android:hint="@string/note_card_content_placeholder"
                 android:importantForAutofill="no"
-                android:inputType="text|textAutoCorrect"
+                android:inputType="textMultiLine|textAutoCorrect"
                 android:text="@{note.content}"
                 android:visibility="@{inEditMode ? View.VISIBLE : View.GONE}" />
 

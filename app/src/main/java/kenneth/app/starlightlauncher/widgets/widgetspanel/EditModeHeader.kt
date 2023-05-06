@@ -9,7 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.Plate
 import kenneth.app.starlightlauncher.databinding.EditModeHeaderBinding
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.BindingRegister
 import javax.inject.Inject
 
 /**
@@ -19,6 +19,9 @@ import javax.inject.Inject
 internal class EditModeHeader(context: Context, attrs: AttributeSet?) : Plate(context, attrs) {
     @Inject
     lateinit var launcher: StarlightLauncherApi
+
+    @Inject
+    lateinit var bindingRegister: BindingRegister
 
     private val binding = EditModeHeaderBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -34,7 +37,7 @@ internal class EditModeHeader(context: Context, attrs: AttributeSet?) : Plate(co
         }
 
         binding.exitEditModeButton.setOnClickListener {
-            BindingRegister.activityMainBinding.widgetsPanel.exitEditMode()
+            bindingRegister.mainScreenBinding.widgetsPanel.exitEditMode()
         }
     }
 }

@@ -1,11 +1,19 @@
 package kenneth.app.starlightlauncher.api
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.LauncherActivityInfo
 import android.view.LayoutInflater
 import android.view.View
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleCoroutineScope
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenu
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 
 typealias PermissionRequestCallback = (isGranted: Boolean) -> Unit
 
@@ -27,10 +35,22 @@ interface StarlightLauncherApi {
      */
     val context: Context
 
+    val dataStore: DataStore<Preferences>
+
     /**
      * The [BlurHandler] that is handling the blur effects of this launcher.
      */
     val blurHandler: BlurHandler
+
+    val installedApps: List<LauncherActivityInfo>
+
+    val coroutineScope: CoroutineScope
+
+    val iconPack: Flow<IconPack>
+
+    fun appLabelOf(packageName: String): String?
+
+    fun launcherActivityInfoOf(componentName: ComponentName): LauncherActivityInfo?
 
     /**
      * Shows the option menu with the content added by [builder].
@@ -64,15 +84,12 @@ interface StarlightLauncherApi {
      */
     fun showOverlay(fromView: View, viewConstructor: (context: Context) -> View)
 
+    fun showOverlay(fragment: Fragment)
+
     /**
      * Hides the current overlay.
      */
     fun closeOverlay()
-
-    /**
-     * Get the currently applied icon pack.
-     */
-    fun getIconPack(): IconPack
 
     /**
      * Request [permission] to be granted. The result is passed to the given [callback].

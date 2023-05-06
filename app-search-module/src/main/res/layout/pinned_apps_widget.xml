@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/widget_list_space_between"
-    android:background="@drawable/plate_background">
+    android:background="@drawable/plate_background"
+    android:visibility="gone">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pinned_apps_grid"

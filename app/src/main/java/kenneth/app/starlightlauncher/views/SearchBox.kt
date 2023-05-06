@@ -10,6 +10,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,9 +19,16 @@ import kenneth.app.starlightlauncher.AppState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
-import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
+import kenneth.app.starlightlauncher.prefs.appearance.DEFAULT_APP_DRAWER_ENABLED
 import javax.inject.Inject
+
+interface SearchBoxActionDelegate {
+    fun retractWidgetsPanel()
+
+    fun expandWidgetsPanel()
+
+    fun openAppList()
+}
 
 @AndroidEntryPoint
 internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -28,9 +37,6 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
      */
     val hasQueryText
         get() = !isQueryEmpty(binding.searchBoxEditText.text)
-
-    @Inject
-    lateinit var searcher: Searcher
 
     @Inject
     lateinit var inputMethodManager: InputMethodManager
@@ -49,44 +55,59 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
         PathInterpolator(0.16f, 1f, 0.3f, 1f)
     }
 
+    var isWidgetsPanelExpanded: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                showRetractWidgetPanelButton()
+            } else {
+                showExpandWidgetPanelButton()
+            }
+        }
+
+    var isAllAppsButtonShown: Boolean = DEFAULT_APP_DRAWER_ENABLED
+        set(isShown) {
+            field = isShown
+            binding.searchBoxLeftSideBtn.isInvisible = !isShown
+        }
+
+    /**
+     * A delegate for handling action button click in the search box.
+     */
+    var actionDelegate: SearchBoxActionDelegate? = null
+
+    var onFocusChanged: OnFocusChangeListener? = null
+        set(value) {
+            field = value
+            binding.searchBoxEditText.onFocusChangeListener = value
+        }
+
     init {
         with(binding.searchBoxEditText) {
-            setOnFocusChangeListener { _, hasFocus ->
-                onSearchBoxFocusChanged(hasFocus)
-            }
-
             setOnEditorActionListener { _, actionID, _ ->
                 if (actionID == EditorInfo.IME_ACTION_DONE) {
                     clearFocus()
                 }
                 false
             }
-
-            addTextChangedListener { text -> handleSearchQuery(text) }
         }
 
         with(binding) {
+            searchBoxEditText.setHintTextColor(
+                ColorUtils.setAlphaComponent(
+                    searchBoxEditText.currentTextColor,
+                    0x80
+                )
+            )
+
             searchBoxEditText.setOnClickListener {
-                if (hasFocus()) {
-                    isOpeningKeyboard = true
-                    clearFocus()
-                }
                 requestFocus()
                 inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
                 isOpeningKeyboard = false
             }
 
-            searchBoxContainer.setOnClickListener {
-                if (binding.searchBoxEditText.hasFocus()) {
-                    isOpeningKeyboard = true
-                    binding.searchBoxEditText.clearFocus()
-                }
-                binding.searchBoxEditText.requestFocus()
-                inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
-                isOpeningKeyboard = false
-            }
-
             searchBoxRightSideBtn.setOnClickListener { onRightSideButtonClicked() }
+            searchBoxLeftSideBtn.setOnClickListener { actionDelegate?.openAppList() }
 
             searchBoxBg.blurWith(blurHandler)
         }
@@ -100,6 +121,12 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
 
     override fun isFocused(): Boolean {
         return binding.searchBoxEditText.isFocused
+    }
+
+    fun addTextChangedListener(afterTextChanged: (text: Editable?) -> Unit = {}) {
+        binding.searchBoxEditText.addTextChangedListener {
+            afterTextChanged(it)
+        }
     }
 
     fun unfocus() {
@@ -136,66 +163,21 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
             ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_up, context.theme)
     }
 
-    private fun handleSearchQuery(query: Editable?) {
-        if (isQueryEmpty(query)) {
-            searcher.cancelPendingSearch()
-            BindingRegister.widgetsPanelBinding.searchResultView.clearSearchResults()
-            BindingRegister.activityMainBinding.widgetsPanel.hideSearchResults()
-        } else {
-            showClearSearchBoxButton()
-            searcher.requestSearch(query.toString())
-        }
-    }
-
     private fun onRightSideButtonClicked() {
         when {
             hasQueryText -> {
                 clear()
                 showRetractWidgetPanelButton()
             }
-            BindingRegister.activityMainBinding.widgetsPanel.isExpanded -> {
-                BindingRegister.activityMainBinding.widgetsPanel.retract()
+
+            isWidgetsPanelExpanded -> {
+                actionDelegate?.retractWidgetsPanel()
                 showExpandWidgetPanelButton()
             }
+
             else -> {
-                BindingRegister.activityMainBinding.widgetsPanel.expand()
+                actionDelegate?.expandWidgetsPanel()
                 showRetractWidgetPanelButton()
-            }
-        }
-    }
-
-    private fun onSearchBoxFocusChanged(hasFocus: Boolean) {
-        if (!isOpeningKeyboard) {
-            with(BindingRegister.activityMainBinding.widgetsPanel) {
-                canBeSwiped = when {
-                    hasFocus -> {
-                        expand()
-                        false
-                    }
-                    !hasQueryText -> {
-                        retract()
-                        true
-                    }
-                    else -> false
-                }
-
-                toggleSearchBoxAnimation(isActive = isExpanded)
-            }
-        }
-    }
-
-    private fun toggleSearchBoxAnimation(isActive: Boolean) {
-        if (isActive && binding.searchBoxContainer.paddingTop < appState.statusBarHeight
-            || !isActive && binding.searchBoxContainer.paddingTop > 0
-        ) {
-            createPaddingAnimation(showTopPadding = isActive).start()
-        }
-
-        with(BindingRegister.activityMainBinding.widgetsPanel) {
-            if (isActive) {
-                hideWidgets()
-            } else {
-                showWidgets()
             }
         }
     }

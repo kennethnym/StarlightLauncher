@@ -1,13 +1,13 @@
 package kenneth.app.starlightlauncher.noteswidget.pref
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import kenneth.app.starlightlauncher.api.util.EventChannel
 import kenneth.app.starlightlauncher.noteswidget.Note
-import kenneth.app.starlightlauncher.noteswidget.R
+import kenneth.app.starlightlauncher.noteswidget.PREF_KEY_NOTE_LIST
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -20,90 +20,63 @@ internal sealed class NoteListModified {
 }
 
 internal class NotesWidgetPreferences
-private constructor(context: Context) : EventChannel<NoteListModified>() {
+private constructor(private val dataStore: DataStore<Preferences>) :
+    EventChannel<NoteListModified>() {
     companion object {
-        @SuppressLint("StaticFieldLeak")
         private var instance: NotesWidgetPreferences? = null
 
-        fun getInstance(context: Context) =
-            instance ?: NotesWidgetPreferences(context.applicationContext)
+        fun getInstance(dataStore: DataStore<Preferences>) =
+            instance ?: NotesWidgetPreferences(dataStore)
                 .also { instance = it }
     }
 
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private val noteList = mutableListOf<Note>()
-
-    private val keys = PrefKeys(context)
-
-    val notes
-        get() = noteList.toList()
-
-    init {
-        loadNotes()
+    val notes = dataStore.data.map { preferences ->
+        preferences[PREF_KEY_NOTE_LIST]?.let {
+            Json.decodeFromString<List<Note>>(it)
+        } ?: emptyList()
     }
 
-    internal fun addNote(note: Note) {
-        noteList += note
-        saveNoteList()
-        notifyNoteAdded(note)
-    }
-
-    internal fun editNote(note: Note) {
-        val i = noteList.indexOfFirst { it.id == note.id }
-        noteList[i] = note
-        saveNoteList()
-        notifyNoteEdited(note)
-    }
-
-    internal fun deleteNote(note: Note) {
-        val index = noteList.indexOf(note)
-        noteList.removeAt(index)
-        saveNoteList()
-        notifyNoteRemoved(note)
-    }
-
-    internal fun exportNotesToJson(): String = Json.encodeToString(notes)
-
-    internal fun restoreNotesFromJson(json: String) {
-        noteList.clear()
-        noteList += Json.decodeFromString<List<Note>>(json)
-        saveNoteList()
-        notifyNoteListChanged()
-    }
-
-    private fun notifyNoteListChanged() {
-        add(NoteListModified.ListChanged(notes))
-    }
-
-    private fun notifyNoteAdded(noteAdded: Note) {
-        add(NoteListModified.NoteAdded(noteAdded))
-    }
-
-    private fun notifyNoteRemoved(noteRemoved: Note) {
-        add(NoteListModified.NoteRemoved(noteRemoved))
-    }
-
-    private fun notifyNoteEdited(noteEdited: Note) {
-        add(NoteListModified.NoteChanged(noteEdited))
-    }
-
-    private fun loadNotes() {
-        sharedPreferences.getString(keys.noteList, null)?.let {
-            val notes = Json.decodeFromString<List<Note>>(it)
-            noteList += notes
+    suspend fun addNote(note: Note) {
+        dataStore.edit {
+            it[PREF_KEY_NOTE_LIST]?.let { json ->
+                val notes = Json.decodeFromString<List<Note>>(json)
+                it[PREF_KEY_NOTE_LIST] = Json.encodeToString(notes + note)
+            } ?: kotlin.run {
+                it[PREF_KEY_NOTE_LIST] = Json.encodeToString(
+                    listOf(note)
+                )
+            }
         }
     }
 
-    private fun saveNoteList() {
-        sharedPreferences.edit(commit = true) {
-            putString(keys.noteList, Json.encodeToString(noteList))
+    suspend fun editNote(note: Note) {
+        dataStore.edit { preferences ->
+            preferences[PREF_KEY_NOTE_LIST]?.let { json ->
+                val notes = Json.decodeFromString<List<Note>>(json).toMutableList()
+                preferences[PREF_KEY_NOTE_LIST] = Json.encodeToString(
+                    notes.map { if (it.id == note.id) note else it }
+                )
+            }
         }
     }
-}
 
-internal class PrefKeys(context: Context) {
-    val noteList by lazy {
-        context.getString(R.string.pref_key_note_list)
+    suspend fun deleteNote(note: Note) {
+        dataStore.edit { preferences ->
+            preferences[PREF_KEY_NOTE_LIST]?.let { json ->
+                val notes = Json.decodeFromString<List<Note>>(json)
+                preferences[PREF_KEY_NOTE_LIST] = Json.encodeToString(
+                    notes.filter { it != note }
+                )
+            }
+        }
+    }
+
+    suspend fun exportNotesToJson(): String = Json.encodeToString(notes.first())
+
+    suspend fun restoreNotesFromJson(json: String) {
+        val restoredNotes = Json.decodeFromString<List<Note>>(json)
+        dataStore.edit {
+            it[PREF_KEY_NOTE_LIST] = Json.encodeToString(restoredNotes)
+        }
     }
 }

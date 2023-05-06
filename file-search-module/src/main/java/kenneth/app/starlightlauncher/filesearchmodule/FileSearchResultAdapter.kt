@@ -12,7 +12,6 @@ import kenneth.app.starlightlauncher.filesearchmodule.databinding.FileSearchResu
 internal const val INITIAL_LIST_ITEM_COUNT = 5
 
 internal class FileSearchResultAdapter(
-    private val prefs: FileSearchModulePreferences,
     private val launcher: StarlightLauncherApi,
 ) : SearchResultAdapter {
     private lateinit var currentViewHolder: FileSearchResultViewHolder
@@ -41,8 +40,8 @@ internal class FileSearchResultAdapter(
         searchResult: FileSearchModule.Result,
     ) {
         currentViewHolder = holder
-        when {
-            prefs.includedPaths.isEmpty() -> {
+        when (searchResult) {
+            is FileSearchModule.Result.NoSearchPathsAdded -> {
                 with(holder.binding) {
                     isNoIncludedPathsMessageShown = true
                     isNoFilesFoundMessageShown = false
@@ -50,29 +49,29 @@ internal class FileSearchResultAdapter(
                 fileListAdapter = null
             }
 
-            searchResult.files.isEmpty() -> {
-                with(holder.binding) {
-                    isNoIncludedPathsMessageShown = false
-                    isNoFilesFoundMessageShown = true
-                }
-                fileListAdapter = null
-            }
-
-            else -> {
-                with(holder.binding) {
-                    isNoIncludedPathsMessageShown = false
-                    isNoFilesFoundMessageShown = false
-
-                    fileList.apply {
-                        adapter = FileListAdapter(context, searchResult.files).also {
-                            fileListAdapter = it
-                        }
-                        layoutManager = LinearLayoutManager(context)
+            is FileSearchModule.Result.Some -> {
+                if (searchResult.files.isEmpty()) {
+                    with(holder.binding) {
+                        isNoIncludedPathsMessageShown = false
+                        isNoFilesFoundMessageShown = true
                     }
+                    fileListAdapter = null
+                } else {
+                    with(holder.binding) {
+                        isNoIncludedPathsMessageShown = false
+                        isNoFilesFoundMessageShown = false
 
-                    showMoreButton.apply {
-                        isVisible = searchResult.files.size > INITIAL_LIST_ITEM_COUNT
-                        setOnClickListener { showMoreFiles() }
+                        fileList.apply {
+                            adapter = FileListAdapter(context, searchResult.files).also {
+                                fileListAdapter = it
+                            }
+                            layoutManager = LinearLayoutManager(context)
+                        }
+
+                        showMoreButton.apply {
+                            isVisible = searchResult.files.size > INITIAL_LIST_ITEM_COUNT
+                            setOnClickListener { showMoreFiles() }
+                        }
                     }
                 }
             }

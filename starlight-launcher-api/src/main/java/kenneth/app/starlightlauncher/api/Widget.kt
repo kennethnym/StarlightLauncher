@@ -15,7 +15,9 @@ import android.view.ViewGroup
 abstract class WidgetCreator(private val context: Context) {
     abstract val metadata: Metadata
 
-    abstract fun createWidget(parent: ViewGroup, launcher: StarlightLauncherApi): WidgetHolder
+    abstract fun initialize(launcher: StarlightLauncherApi)
+
+    abstract fun createWidget(parent: ViewGroup): WidgetHolder
 
     data class Metadata(
         /**

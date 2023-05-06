@@ -11,59 +11,48 @@
             type="Boolean" />
     </data>
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/widgets_panel_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/widgets_panel_layout"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <kenneth.app.starlightlauncher.views.SearchBox
-                    android:id="@+id/search_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{isInEditMode ? View.GONE : View.VISIBLE}" />
-
-                <kenneth.app.starlightlauncher.widgets.widgetspanel.EditModeHeader
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}" />
-
-            </FrameLayout>
-
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <kenneth.app.starlightlauncher.widgets.WidgetList
-                    android:id="@+id/widget_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false" />
-            </androidx.core.widget.NestedScrollView>
-
-            <kenneth.app.starlightlauncher.searching.views.SearchResultView
-                android:id="@+id/search_result_view"
+            <kenneth.app.starlightlauncher.views.SearchBox
+                android:id="@+id/search_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:visibility="@{isInEditMode ? View.GONE : View.VISIBLE}" />
 
-        </LinearLayout>
+            <kenneth.app.starlightlauncher.widgets.widgetspanel.EditModeHeader
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}" />
 
-        <!--    <kenneth.app.starlightlauncher.views.widgetspanel.Overlay-->
-        <!--        android:id="@+id/overlay"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="match_parent"-->
-        <!--        android:visibility="gone" />-->
+        </FrameLayout>
 
-    </FrameLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <kenneth.app.starlightlauncher.widgets.WidgetListView
+                android:id="@+id/widget_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false" />
+        </androidx.core.widget.NestedScrollView>
+
+        <kenneth.app.starlightlauncher.searching.views.SearchResultView
+            android:id="@+id/search_result_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 </layout>

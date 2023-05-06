@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.*
@@ -12,16 +11,12 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.*
-import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
-import kenneth.app.starlightlauncher.HANDLED
-import kenneth.app.starlightlauncher.NOT_HANDLED
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.GestureMover
-import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
-import kenneth.app.starlightlauncher.searching.Searcher
-import kenneth.app.starlightlauncher.util.BindingRegister
 import kenneth.app.starlightlauncher.api.util.activity
+import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
+import kenneth.app.starlightlauncher.searching.views.SearchResultView
+import kenneth.app.starlightlauncher.views.SearchBox
+import kenneth.app.starlightlauncher.widgets.WidgetListView
 import java.lang.Integer.max
 import javax.inject.Inject
 
@@ -54,10 +49,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     lateinit var appState: AppState
 
     @Inject
-    lateinit var searcher: Searcher
-
-    @Inject
-    lateinit var launcher: StarlightLauncherApi
+    lateinit var bindingRegister: BindingRegister
 
     private var velocityTracker: VelocityTracker? = null
 
@@ -85,11 +77,22 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private val keyboardAnimation = KeyboardAnimation()
 
+    var isSearchResultsVisible: Boolean = false
+        private set
+
+    val widgetListView: WidgetListView
+    val searchBox: SearchBox
+    val searchResultView: SearchResultView
+
     init {
         translationY = appState.halfScreenHeight.toFloat()
 
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
-            BindingRegister.widgetsPanelBinding = it
+            widgetListView = it.widgetListView
+            searchBox = it.searchBox
+            searchResultView = it.searchResultView
+        }.apply {
+            searchBox.isWidgetsPanelExpanded = isExpanded
         }
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -115,24 +118,30 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     fun showSearchResults() {
         with(binding) {
-            widgetList.isVisible = false
+            widgetListView.isVisible = false
             searchResultView.isVisible = true
         }
+        isSearchResultsVisible = true
     }
 
-    fun hideSearchResults() {
-        with(binding) {
-            searchResultView.isVisible = false
-            widgetList.isVisible = true
+    fun clearSearchResults() {
+        binding.searchResultView.isVisible = false
+        isSearchResultsVisible = false
+    }
+
+    fun showWidgetList() {
+        widgetListView.run {
+            isVisible = true
+            showWidgets()
         }
     }
 
     fun showWidgets() {
-        binding.widgetList.showWidgets()
+        binding.widgetListView.showWidgets()
     }
 
     fun hideWidgets() {
-        binding.widgetList.hideWidgets()
+        binding.widgetListView.hideWidgets()
     }
 
     fun expand() {
@@ -179,7 +188,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         isEditModeEnabled = true
         expand()
         binding.isInEditMode = true
-        binding.widgetList.enableDragAndDrop()
+        binding.widgetListView.enableDragAndDrop()
     }
 
     /**
@@ -189,7 +198,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         canBeSwiped = true
         isEditModeEnabled = false
         binding.isInEditMode = false
-        with(binding.widgetList) {
+        with(binding.widgetListView) {
             exitEditMode()
             disableDragAndDrop()
         }

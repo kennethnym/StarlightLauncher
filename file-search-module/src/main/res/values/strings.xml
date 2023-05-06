@@ -8,7 +8,13 @@
     <string name="file_search_module_search_module_settings_description">
         Adjusts how Starlight Launcher searches for files.
     </string>
+    <string name="file_search_module_settings_screen_description">
+        Add paths that you want Starlight launcher to search in. Starlight Launcher will only search for files
+        in those paths.
+        To remove a path, simply tap on it.
+    </string>
 
+    <string name="add_path_label">Add path</string>
     <string name="file_search_result_card_title">Files</string>
     <string name="file_search_result_card_no_included_paths_message">
         No folders included for searching. You can add some in settings.
@@ -20,11 +26,12 @@
 
     <string name="settings_activity_title">Settings</string>
     <string name="pref_category_included_paths_title">Included paths</string>
-    <string name="pref_category_included_paths_summary">
-        Add paths that you want Starlight launcher to search in. Starlight Launcher will only search for files
-        in those paths.
-        To remove a path, simply tap on it.
-    </string>
-    <string name="add_path_label">Add path</string>
     <string name="download_folder_name">Downloads</string>
+
+    <string name="no_app_to_open_file">No apps found to open the file.</string>
+
+    <!-- DocumentProvider labels -->
+    <string name="document_provider_unknown">Unknown location</string>
+    <string name="document_provider_external_storage">External storage</string>
+    <string name="document_provider_downloads">Downloads</string>
 </resources>

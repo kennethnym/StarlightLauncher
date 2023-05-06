@@ -10,10 +10,10 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Defines how many apps are shown when the app grid is displayed initially.
@@ -23,19 +23,33 @@ private const val INITIAL_ITEM_COUNT = 10
 class AppSearchResultAdapter(
     private val context: Context,
     private val launcher: StarlightLauncherApi,
-    mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) :
     SearchResultAdapter {
     private lateinit var appList: AppList
     private lateinit var currentViewHolder: AppSearchResultViewHolder
 
     private var appGridAdapter: AppGridAdapter? = null
-    private val prefs = AppSearchModulePreferences.getInstance(context)
+    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
 
     init {
-        CoroutineScope(mainDispatcher).run {
-            launch { prefs.subscribe(::onPreferencesChanged) }
+        launcher.coroutineScope.run {
             launch { launcher.addLauncherEventListener(::onLauncherEvent) }
+            // listen to show app names visibility changes
+            launch {
+                launcher.dataStore.data
+                    .map { preferences ->
+                        preferences[PREF_KEY_SHOW_APP_NAMES]
+                            ?: context.resources.getBoolean(R.bool.def_pref_show_app_names)
+                    }
+                    .collect { shouldShowAppNames ->
+                        if (shouldShowAppNames) {
+                            appGridAdapter?.showAppLabels()
+                        } else {
+                            appGridAdapter?.hideAppLabels()
+                        }
+                    }
+            }
+            launch { listenToIconPack() }
         }
     }
 
@@ -57,24 +71,17 @@ class AppSearchResultAdapter(
         }
     }
 
+    private suspend fun listenToIconPack() {
+        launcher.iconPack.collect {
+            appGridAdapter?.changeIconPack(it)
+        }
+    }
+
     private fun onLauncherEvent(event: LauncherEvent) {
         when (event) {
             is LauncherEvent.IconPackChanged -> {
                 appGridAdapter?.refresh()
             }
-        }
-    }
-
-    private fun onPreferencesChanged(event: AppSearchModulePreferenceChanged) {
-        when (event) {
-            is AppSearchModulePreferenceChanged.AppLabelVisibilityChanged -> {
-                if (event.isVisible) {
-                    appGridAdapter?.showAppLabels()
-                } else {
-                    appGridAdapter?.hideAppLabels()
-                }
-            }
-            else -> {}
         }
     }
 
@@ -94,7 +101,11 @@ class AppSearchResultAdapter(
 
                 val appGridAdapter =
                     AppGridAdapter(
-                        context, appList, launcher, prefs.shouldShowAppNames
+                        context,
+                        appList,
+                        launcher,
+                        shouldShowAppNames = runBlocking { prefs.shouldShowAppNames.first() },
+                        iconPack = runBlocking { launcher.iconPack.first() }
                     )
                         .also { appGridAdapter = it }
 
@@ -117,8 +128,7 @@ class AppSearchResultAdapter(
     private fun showMoreApps() {
         appGridAdapter?.let {
             it.showMore()
-            currentViewHolder.binding
-                .showMoreButton.isVisible = it.hasMore()
+            currentViewHolder.binding.showMoreButton.isVisible = it.hasMore()
         }
     }
 }

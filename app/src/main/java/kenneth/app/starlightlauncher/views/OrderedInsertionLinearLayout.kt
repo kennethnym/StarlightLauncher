@@ -13,7 +13,7 @@ internal abstract class OrderedInsertionLinearLayout(context: Context, attrs: At
     /**
      * A list of all containers that may or may not be shown in [OrderedInsertionLinearLayout].
      */
-    protected abstract val allContainers: MutableList<Container?>
+    protected var allContainers: MutableList<Container?> = mutableListOf()
 
     /**
      * Contains [Container]s that are currently in layout.

@@ -9,6 +9,9 @@
             name="isEditing"
             type="Boolean" />
 
+        <variable
+            name="resizable"
+            type="Boolean" />
     </data>
 
     <FrameLayout
@@ -79,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:src="@drawable/widget_resize_handle"
-            android:visibility="@{isEditing ? View.VISIBLE : View.GONE}" />
+            android:visibility="@{isEditing &amp;&amp; resizable ? View.VISIBLE : View.GONE}" />
 
     </FrameLayout>
 </layout>
