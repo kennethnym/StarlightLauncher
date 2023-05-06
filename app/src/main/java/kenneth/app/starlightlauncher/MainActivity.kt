@@ -185,6 +185,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         binding.homeScreenViewPager.apply {
+            offscreenPageLimit = 1
             isUserInputEnabled = false
             adapter = HomeScreenViewPagerAdapter(this@MainActivity, this)
 
