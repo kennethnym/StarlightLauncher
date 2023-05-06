@@ -29,7 +29,7 @@ import kenneth.app.starlightlauncher.databinding.FragmentAppDrawerScreenBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -213,9 +213,11 @@ internal class AppDrawerScreenFragment @Inject constructor(
 
             playTogether(gridItemAnimators)
 
-            addListener {
-                binding.appList.isVisible = false
-            }
+            addListener(
+                onEnd = {
+                    binding.appList.isVisible = false
+                }
+            )
 
             start()
         }
@@ -249,9 +251,11 @@ internal class AppDrawerScreenFragment @Inject constructor(
                 ObjectAnimator.ofFloat(binding.appListSectionGrid, "alpha", 0f),
             )
 
-            addListener {
-                binding.appListSectionGrid.isVisible = false
-            }
+            addListener(
+                onEnd = {
+                    binding.appListSectionGrid.isVisible = false
+                }
+            )
 
             start()
         }
