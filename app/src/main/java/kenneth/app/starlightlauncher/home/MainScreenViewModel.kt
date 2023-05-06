@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.home
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
@@ -94,19 +93,6 @@ internal class MainScreenViewModel @Inject constructor(
      */
     val weatherInfo: LiveData<Pair<TemperatureUnit, OpenWeatherApi.Response>?> = _weatherInfo
 
-    private val _addedAndroidWidget by lazy {
-        MutableLiveData<Pair<AddedWidget.AndroidWidget, AppWidgetProviderInfo>>()
-    }
-
-    /**
-     * The most recently added android widget.
-     * The first element of the pair is the [AddedWidget.AndroidWidget]
-     * representing the added widget, and the second element is the [AppWidgetProviderInfo]
-     * of the added android widget.
-     */
-    val addedAndroidWidget: LiveData<Pair<AddedWidget.AndroidWidget, AppWidgetProviderInfo>> =
-        _addedAndroidWidget
-
     private val _addedWidgets by lazy {
         MutableLiveData<List<AddedWidget>>()
     }
@@ -185,14 +171,20 @@ internal class MainScreenViewModel @Inject constructor(
 
         with(_shouldMediaControlBeVisible) {
             addSource(isMediaControlEnabled) {
+                Log.d("MainScreenViewModel", "isMediaControlEnabled $isMediaControlEnabled")
                 _shouldMediaControlBeVisible.postValue(it)
             }
             addSource(isNotificationListenerEnabled) {
+                Log.d(
+                    "MainScreenViewModel",
+                    "isNotificationListenerEnabled $isNotificationListenerEnabled"
+                )
                 _shouldMediaControlBeVisible.postValue(
                     it && _activeMediaSession.value != null && isMediaControlEnabled.value == true
                 )
             }
             addSource(activeMediaSession) {
+                Log.d("MainScreenViewModel", "activeMediaSession $activeMediaSession")
                 _shouldMediaControlBeVisible.postValue(
                     it != null && isNotificationListenerEnabled.value == true && isMediaControlEnabled.value == true
                 )
@@ -283,17 +275,6 @@ internal class MainScreenViewModel @Inject constructor(
             bestWeatherLocation()?.let {
                 loadWeather(it)
             }
-        }
-    }
-
-    fun refreshWidgetList() {
-//        _addedWidgets.postValue(widgetPreferenceManager.addedWidgets)
-    }
-
-    fun removeAndroidWidget(appWidgetId: Int) {
-        viewModelScope.launch {
-            widgetPreferenceManager.removeAndroidWidget(appWidgetId)
-            refreshWidgetList()
         }
     }
 

@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.prefs.PREF_MEDIA_CONTROL_ENABLED
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,10 +17,12 @@ class MediaControlPreferenceManager @Inject constructor(
 ) {
     private val dataStore = context.dataStore
 
-    val isMediaControlEnabled = context.dataStore.data.map {
-        it[PREF_MEDIA_CONTROL_ENABLED]
-            ?: context.resources.getBoolean(R.bool.default_media_control_enabled)
-    }
+    val isMediaControlEnabled = context.dataStore.data
+        .map {
+            it[PREF_MEDIA_CONTROL_ENABLED]
+                ?: context.resources.getBoolean(R.bool.default_media_control_enabled)
+        }
+        .distinctUntilChanged()
 
     suspend fun enableMediaControl() {
         dataStore.edit {

@@ -1,13 +1,11 @@
 package kenneth.app.starlightlauncher.widgets
 
-import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.InternalLauncherEvent
 import kenneth.app.starlightlauncher.LauncherEventChannel
-import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.extension.ExtensionManager
@@ -20,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.*
+import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,11 +27,6 @@ internal sealed class WidgetPreferenceChanged : InternalLauncherEvent() {
         val addedWidget: AddedWidget.AndroidWidget,
 
         val appWidgetProviderInfo: AppWidgetProviderInfo,
-    ) : WidgetPreferenceChanged()
-
-    data class WidgetRemoved(
-        val removedWidget: AddedWidget,
-        val position: Int,
     ) : WidgetPreferenceChanged()
 }
 
@@ -44,8 +37,6 @@ internal class WidgetPreferenceManager @Inject constructor(
     private val launcherEventChannel: LauncherEventChannel,
     private val random: Random,
 ) {
-    private val appWidgetManager = AppWidgetManager.getInstance(context.applicationContext)
-
     private var _addedWidgets = runBlocking {
         MutableStateFlow(
             context.dataStore.data.map { preferences ->
@@ -77,19 +68,19 @@ internal class WidgetPreferenceManager @Inject constructor(
     fun isStarlightWidgetAdded(extensionName: String) =
         addedStarlightWidgets.contains(extensionName)
 
-    suspend fun addStarlightWidget(extensionName: String): AddedWidget.StarlightWidget {
+    suspend fun addStarlightWidget(extensionName: String) {
+        val widgetCreator = extensionManager.lookupWidget(extensionName) ?: return
         val widgetId = random.nextInt()
         val newWidget = AddedWidget.StarlightWidget(
             internalId = widgetId,
             extensionName,
+            widgetCreator,
         )
 
         _addedWidgets.emit(_addedWidgets.value + newWidget)
         addedStarlightWidgets += extensionName
 
         saveAddedWidgets()
-
-        return newWidget
     }
 
     suspend fun removeStarlightWidget(extensionName: String) {
@@ -98,9 +89,9 @@ internal class WidgetPreferenceManager @Inject constructor(
             currentAddedWidgets.filterNot { it is AddedWidget.StarlightWidget && it.extensionName == extensionName }
 
         addedStarlightWidgets.remove(extensionName)
-        saveAddedWidgets()
-
         _addedWidgets.emit(newWidgetList)
+
+        saveAddedWidgets()
     }
 
     suspend fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
@@ -171,10 +162,4 @@ internal class WidgetPreferenceManager @Inject constructor(
             it[PREF_ADDED_WIDGETS] = Json.encodeToString(_addedWidgets.value)
         }
     }
-}
-
-class WidgetPrefKeys(context: Context) {
-    val widgetOrder by lazy { context.getString(R.string.pref_key_widget_order) }
-
-    val addedWidgets by lazy { context.getString(R.string.pref_key_added_widgets) }
 }
