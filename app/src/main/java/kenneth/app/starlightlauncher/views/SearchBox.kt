@@ -101,10 +101,6 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
             )
 
             searchBoxEditText.setOnClickListener {
-                if (hasFocus()) {
-                    isOpeningKeyboard = true
-                    clearFocus()
-                }
                 requestFocus()
                 inputMethodManager.showSoftInput(binding.searchBoxEditText, 0)
                 isOpeningKeyboard = false
