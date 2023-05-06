@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
@@ -92,6 +93,13 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
         }
 
         with(binding) {
+            searchBoxEditText.setHintTextColor(
+                ColorUtils.setAlphaComponent(
+                    searchBoxEditText.currentTextColor,
+                    0x80
+                )
+            )
+
             searchBoxEditText.setOnClickListener {
                 if (hasFocus()) {
                     isOpeningKeyboard = true
@@ -165,10 +173,12 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
                 clear()
                 showRetractWidgetPanelButton()
             }
+
             isWidgetsPanelExpanded -> {
                 actionDelegate?.retractWidgetsPanel()
                 showExpandWidgetPanelButton()
             }
+
             else -> {
                 actionDelegate?.expandWidgetsPanel()
                 showRetractWidgetPanelButton()

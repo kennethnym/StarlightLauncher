@@ -41,7 +41,7 @@
                     android:inputType="text"
                     android:textAlignment="center"
                     android:textColor="?colorOnPlate"
-                    android:textColorHint="?colorOnPlate"
+                    android:textCursorDrawable="@drawable/search_box_cursor"
                     android:textSize="@dimen/search_box_text_size"
                     android:textStyle="bold"
                     tools:ignore="Autofill" />
