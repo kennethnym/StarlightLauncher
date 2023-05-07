@@ -1,6 +1,6 @@
 definitions:
   build_env: &build_env
-    instance_type: mac_mini
+    instance_type: mac_mini_m1
     environment:
       groups:
         - keystore_credentials # Comment this out if you are using code-signing-identities <-- Includes - CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS
