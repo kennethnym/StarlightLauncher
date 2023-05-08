@@ -38,25 +38,25 @@
 
         <Space
             android:layout_width="0dp"
-            android:layout_height="16dp" />
+            android:layout_height="24dp" />
 
-<!--        <kenneth.app.starlightlauncher.api.view.OptionMenuItem-->
-<!--            android:id="@+id/pin_app_item"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:itemIcon="@{isAppPinned ? null : @drawable/ic_favorite}"-->
-<!--            app:itemLabel="@{isAppPinned ? @string/app_option_menu_item_label_unpin_app : @string/app_option_menu_item_label_pin_app}" />-->
+        <kenneth.app.starlightlauncher.api.view.OptionMenuItem
+            android:id="@+id/pin_app_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemIcon="@{isAppPinned ? null : @drawable/ic_favorite}"
+            app:itemLabel="@{isAppPinned ? @string/app_option_menu_item_label_unpin_app : @string/app_option_menu_item_label_pin_app}" />
 
-<!--        <Space-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="24dp" />-->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="24dp" />
 
-<!--        <kenneth.app.starlightlauncher.api.view.OptionMenuItem-->
-<!--            android:id="@+id/uninstall_item"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:itemIcon="@drawable/ic_trash_alt"-->
-<!--            app:itemLabel="@string/app_option_menu_item_label_uninstall" />-->
+        <kenneth.app.starlightlauncher.api.view.OptionMenuItem
+            android:id="@+id/uninstall_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemIcon="@drawable/ic_trash_alt"
+            app:itemLabel="@string/app_option_menu_item_label_uninstall" />
 
     </merge>
 </layout>
