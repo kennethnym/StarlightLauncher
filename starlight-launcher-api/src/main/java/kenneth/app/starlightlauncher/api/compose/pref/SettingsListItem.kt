@@ -24,6 +24,7 @@ val SETTINGS_LIST_ITEM_ICON_SIZE = 24.dp
 @Composable
 fun SettingsListItem(
     icon: Painter? = null,
+    coloredIcon: Boolean = true,
     emptyIcon: Boolean = icon == null,
     title: String,
     summary: String? = null,
@@ -77,11 +78,14 @@ fun SettingsListItem(
             icon != null -> Image(
                 painter = icon,
                 contentDescription = title,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                colorFilter =
+                if (coloredIcon) ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                else null,
                 modifier = Modifier
                     .width(SETTINGS_LIST_ITEM_ICON_SIZE)
                     .height(SETTINGS_LIST_ITEM_ICON_SIZE),
             )
+
             emptyIcon -> Spacer(
                 modifier = Modifier
                     .width(SETTINGS_LIST_ITEM_ICON_SIZE)
@@ -107,6 +111,7 @@ fun SettingsListItem(
                         .height(24.dp)
                 )
             }
+
             control != null -> {
                 control()
             }

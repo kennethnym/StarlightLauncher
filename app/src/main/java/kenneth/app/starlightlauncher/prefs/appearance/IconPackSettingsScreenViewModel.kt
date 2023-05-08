@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.api.IconPack
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -72,6 +71,7 @@ internal class IconPackSettingsScreenViewModel @Inject constructor(
                 else
                     packageManager.queryIntentActivities(it, PackageManager.GET_META_DATA)
             }
+            .distinctBy { it.activityInfo.packageName }
             .map { InstalledIconPack(it.activityInfo.packageName, packageManager, resources) }
             .also { installedIconPacks = it }
     }

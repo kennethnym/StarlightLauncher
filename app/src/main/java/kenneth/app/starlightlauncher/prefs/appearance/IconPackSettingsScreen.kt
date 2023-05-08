@@ -55,14 +55,17 @@ fun SelectedIconPackSection(
                 stringResource(R.string.status_loading),
                 style = MaterialTheme.typography.bodySmall
             )
+
             is DefaultIconPack ->
                 Text(
                     stringResource(R.string.appearance_no_current_icon_pack),
                     style = MaterialTheme.typography.bodySmall
                 )
+
             is InstalledIconPack ->
                 SettingsListItem(
                     icon = BitmapPainter(iconPack.icon.asImageBitmap()),
+                    coloredIcon = false,
                     title = iconPack.name
                 )
         }
@@ -88,10 +91,13 @@ internal fun InstalledIconPacksSection(
                 style = MaterialTheme.typography.bodySmall
             )
         else
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 availableIconPacks.forEach {
                     SettingsListItem(
                         icon = BitmapPainter(it.icon.asImageBitmap()),
+                        coloredIcon = false,
                         title = it.name,
                         onTap = { onChangeIconPack(it) }
                     )
