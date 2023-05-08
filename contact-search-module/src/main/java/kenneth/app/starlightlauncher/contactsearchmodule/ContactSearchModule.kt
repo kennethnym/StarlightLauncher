@@ -38,7 +38,7 @@ class ContactSearchModule(context: Context) : SearchModule(context) {
 
         return if (context.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.query(
-                ContactsContract.Contacts.CONTENT_URI,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 arrayOf(
                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                     ContactsContract.Contacts.DISPLAY_NAME,
