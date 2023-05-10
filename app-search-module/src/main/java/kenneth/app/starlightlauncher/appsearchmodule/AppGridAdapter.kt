@@ -3,12 +3,16 @@ package kenneth.app.starlightlauncher.appsearchmodule
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.Rect
-import android.util.Log
+import android.net.Uri
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -18,9 +22,11 @@ import com.bumptech.glide.Glide
 import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
+import kenneth.app.starlightlauncher.api.view.AppOptionMenu
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppGridItemBinding
-import kenneth.app.starlightlauncher.appsearchmodule.view.AppOptionMenu
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.min
 
 /**
@@ -50,14 +56,46 @@ internal class AppGridAdapter(
     var isDraggingAndDropping = false
 
     private val apps = apps.toMutableList()
-
     private val visibleApps = mutableListOf<LauncherActivityInfo>()
 
     private val inputMethodManager = context.getSystemService<InputMethodManager>()
+    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
 
     private lateinit var selectedApp: LauncherActivityInfo
     private var recyclerView: RecyclerView? = null
     private var gridSpanCount = 0
+
+    private val appOptionMenuCallback = object : AppOptionMenu.ActionCallback {
+        override fun onUninstallApp(app: LauncherActivityInfo) {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_DELETE,
+                    Uri.fromParts("package", app.applicationInfo.packageName, null)
+                )
+            )
+        }
+
+        override fun onPinApp(app: LauncherActivityInfo) {
+            launcher.coroutineScope.launch {
+                prefs.addPinnedApp(app)
+            }
+        }
+
+        override fun onUnpinApp(app: LauncherActivityInfo) {
+            launcher.coroutineScope.launch {
+                prefs.removePinnedApp(app)
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.N_MR1)
+        override fun onOpenShortcut(shortcut: ShortcutInfo, sourceBound: Rect) {
+            (context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps).startShortcut(
+                shortcut,
+                sourceBound,
+                null
+            )
+        }
+    }
 
     init {
         launcher.coroutineScope.run {
@@ -92,8 +130,6 @@ internal class AppGridAdapter(
     }
 
     override fun onBindViewHolder(holder: AppGridItem, position: Int) {
-        Log.d("starlight", "app")
-
         val app = apps[position]
         val appName = app.label
 
@@ -157,22 +193,6 @@ internal class AppGridAdapter(
         }
 
         diffResult.dispatchUpdatesTo(this)
-    }
-
-    fun addAppToGrid(app: LauncherActivityInfo) {
-        apps += app
-        if (showAllApps) {
-            visibleApps += app
-        }
-        notifyItemInserted(itemCount - 1)
-    }
-
-    fun removeAppFromGrid(index: Int) {
-        apps.removeAt(index)
-        if (index < visibleApps.size) {
-            visibleApps.removeAt(index)
-        }
-        notifyItemRemoved(index)
     }
 
     fun showMore() {
@@ -278,18 +298,20 @@ internal class AppGridAdapter(
             inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
         }
         launcher.showOptionMenu { menu ->
-            AppOptionMenu(context, selectedApp, launcher, menu)
+            AppOptionMenu(
+                context,
+                selectedApp,
+                iconPack = runBlocking { launcher.iconPack.first() },
+                isAppPinned = runBlocking { prefs.isAppPinned(selectedApp).first() },
+                menu,
+                appOptionMenuCallback,
+            )
         }
         return true
     }
 
     private fun openSelectedApp(sourceIconView: View) {
         if (!isDraggingAndDropping) {
-            val sourceBounds = Rect().run {
-                sourceIconView.getGlobalVisibleRect(this)
-                this
-            }
-
             context.getSystemService<InputMethodManager>()
                 ?.hideSoftInputFromWindow(sourceIconView.windowToken, 0)
 

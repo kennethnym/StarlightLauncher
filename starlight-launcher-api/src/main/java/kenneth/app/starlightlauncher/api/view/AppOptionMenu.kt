@@ -1,44 +1,47 @@
-package kenneth.app.starlightlauncher.appsearchmodule.view
+package kenneth.app.starlightlauncher.api.view
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.view.LayoutInflater
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.view.OptionMenu
-import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModulePreferences
-import kenneth.app.starlightlauncher.appsearchmodule.R
-import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBinding
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kenneth.app.starlightlauncher.api.IconPack
+import kenneth.app.starlightlauncher.api.R
+import kenneth.app.starlightlauncher.api.databinding.AppOptionMenuBinding
+
+private const val MAX_APP_SHORTCUTS_SHOWN = 5
 
 /**
  * A menu that is shown after long pressing an app icon to present to the user
  * a list of actions that can be performed on the app, such as uninstalling it or pinning it.
  * App shortcuts are also shown in the list.
  */
-internal class AppOptionMenu(
-    private val context: Context,
+class AppOptionMenu(
+    val context: Context,
     private val app: LauncherActivityInfo,
-    private val launcher: StarlightLauncherApi,
-    private val menu: OptionMenu
+    private val iconPack: IconPack,
+    private val isAppPinned: Boolean,
+    private val menu: OptionMenu,
+    private val callback: ActionCallback,
 ) {
+    interface ActionCallback {
+        fun onUninstallApp(app: LauncherActivityInfo)
+
+        fun onPinApp(app: LauncherActivityInfo)
+
+        fun onUnpinApp(app: LauncherActivityInfo)
+
+        @RequiresApi(Build.VERSION_CODES.N_MR1)
+        fun onOpenShortcut(shortcut: ShortcutInfo, sourceBound: Rect)
+    }
+
     private val launcherApps =
         context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-    private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
-
-    private val maxAppShortcutsShown =
-        context.resources.getInteger(R.integer.max_app_shortcuts_shown)
 
     init {
         loadMenu()
@@ -46,8 +49,9 @@ internal class AppOptionMenu(
 
     private fun loadMenu() {
         AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true).apply {
-            val iconPack = runBlocking { launcher.iconPack.first() }
             val appIcon = iconPack.getIconOf(app)
+
+            isAppPinned = this@AppOptionMenu.isAppPinned
 
             appOptionMenuAppLabel.text = app.label
             appOptionMenuAppIcon.contentDescription =
@@ -56,6 +60,7 @@ internal class AppOptionMenu(
 
             pinAppItem.setOnClickListener {
                 pinOrUnpinApp(shouldPin = isAppPinned != true)
+                menu.hide()
             }
 
             uninstallItem.setOnClickListener {
@@ -63,20 +68,14 @@ internal class AppOptionMenu(
                 menu.hide()
             }
 
-            launcher.coroutineScope.launch {
-                prefs.isAppPinned(app).collectLatest {
-                    isAppPinned = it
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                loadShortcutList(this)
             }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            loadShortcutList()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private fun loadShortcutList() {
+    private fun loadShortcutList(binding: AppOptionMenuBinding) {
         try {
             launcherApps.getShortcuts(
                 LauncherApps.ShortcutQuery().apply {
@@ -95,23 +94,30 @@ internal class AppOptionMenu(
                         else -> shortcut1.rank - shortcut2.rank
                     }
                 }
-                ?.take(maxAppShortcutsShown)
-                ?.forEach { shortcutInfo ->
-                    val shortcutIcon = launcherApps.getShortcutIconDrawable(
-                        shortcutInfo,
-                        context.resources.displayMetrics.densityDpi
-                    )
+                ?.take(MAX_APP_SHORTCUTS_SHOWN)
+                ?.run {
+                    binding.hasAppShortcuts = isNotEmpty()
 
-                    menu.addItem(
-                        shortcutIcon,
-                        shortcutInfo.longLabel?.toString() ?: shortcutInfo.shortLabel.toString(),
-                        applyIconTint = false,
-                    ) {
-                        val sourceBounds = Rect().run {
-                            it.iconView.getGlobalVisibleRect(this)
-                            this
+                    forEach { shortcutInfo ->
+                        val shortcutIcon = launcherApps.getShortcutIconDrawable(
+                            shortcutInfo,
+                            context.resources.displayMetrics.densityDpi
+                        )
+
+                        val menuItem = menu.createItem(
+                            shortcutIcon,
+                            shortcutInfo.longLabel?.toString()
+                                ?: shortcutInfo.shortLabel.toString(),
+                            applyIconTint = false,
+                        ) {
+                            val sourceBounds = Rect().run {
+                                it.iconView.getGlobalVisibleRect(this)
+                                this
+                            }
+                            openShortcut(shortcutInfo, sourceBounds)
                         }
-                        openShortcut(shortcutInfo, sourceBounds)
+
+                        binding.appShortcutList.addView(menuItem)
                     }
                 }
         } catch (ex: SecurityException) {
@@ -122,16 +128,11 @@ internal class AppOptionMenu(
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun openShortcut(shortcutInfo: ShortcutInfo, sourceBound: Rect) {
-        launcherApps.startShortcut(shortcutInfo, sourceBound, null)
+        callback.onOpenShortcut(shortcutInfo, sourceBound)
     }
 
     private fun uninstallApp() {
-        context.startActivity(
-            Intent(
-                Intent.ACTION_DELETE,
-                Uri.fromParts("package", app.applicationInfo.packageName, null)
-            )
-        )
+        callback.onUninstallApp(app)
     }
 
     /**
@@ -140,12 +141,10 @@ internal class AppOptionMenu(
      * @param shouldPin whether the app should be pinned or not.
      */
     private fun pinOrUnpinApp(shouldPin: Boolean) {
-        launcher.coroutineScope.launch {
-            if (shouldPin) {
-                prefs.addPinnedApp(app)
-            } else {
-                prefs.removePinnedApp(app)
-            }
+        if (shouldPin) {
+            callback.onPinApp(app)
+        } else {
+            callback.onUnpinApp(app)
         }
     }
 }

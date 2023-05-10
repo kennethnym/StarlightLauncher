@@ -13,7 +13,6 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,25 +26,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
-import kenneth.app.starlightlauncher.api.view.OptionMenu
+import kenneth.app.starlightlauncher.api.view.AppOptionMenu
 import kenneth.app.starlightlauncher.appsearchmodule.AppSearchModuleSettingsProvider
-import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppOptionMenuBinding
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.databinding.AppListSectionGridItemBinding
 import kenneth.app.starlightlauncher.databinding.FragmentAppDrawerScreenBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import javax.inject.Inject
-
-private const val MAX_APP_SHORTCUTS_SHOWN = 5
 
 @AndroidEntryPoint
 internal class AppDrawerScreenFragment @Inject constructor(
@@ -82,6 +76,41 @@ internal class AppDrawerScreenFragment @Inject constructor(
 
         override fun onItemLongClicked(app: LauncherActivityInfo) {
             showAppOptionMenu(app)
+        }
+    }
+
+    private val appOptionMenuCallback = object : AppOptionMenu.ActionCallback {
+        override fun onUninstallApp(app: LauncherActivityInfo) {
+            uninstallApp(app)
+        }
+
+        override fun onPinApp(app: LauncherActivityInfo) {
+            val context = context ?: return
+            val prefs =
+                (extensionManager.lookupExtension("kenneth.app.starlightlauncher.appsearchmodule")!!.settingsProvider as AppSearchModuleSettingsProvider).preferences(
+                    context.dataStore
+                )
+
+            lifecycleScope.launch {
+                prefs.addPinnedApp(app)
+            }
+        }
+
+        override fun onUnpinApp(app: LauncherActivityInfo) {
+            val context = context ?: return
+            val prefs =
+                (extensionManager.lookupExtension("kenneth.app.starlightlauncher.appsearchmodule")!!.settingsProvider as AppSearchModuleSettingsProvider).preferences(
+                    context.dataStore
+                )
+
+            lifecycleScope.launch {
+                prefs.removePinnedApp(app)
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.N_MR1)
+        override fun onOpenShortcut(shortcut: ShortcutInfo, sourceBound: Rect) {
+            openShortcut(shortcut, sourceBound)
         }
     }
 
@@ -295,89 +324,14 @@ internal class AppDrawerScreenFragment @Inject constructor(
             )
 
         launcher.showOptionMenu { menu ->
-            AppOptionMenuBinding.inflate(LayoutInflater.from(context), menu, true).apply {
-                val appIcon = viewModel.iconPack.value?.getIconOf(app)
-                    ?: context.packageManager.getUserBadgedIcon(
-                        app.getIcon(0),
-                        Process.myUserHandle(),
-                    )
-
-                appOptionMenuAppLabel.text = app.label
-                appOptionMenuAppIcon.contentDescription =
-                    getString(R.string.app_icon_content_description, app.label)
-                Glide.with(context).load(appIcon).into(appOptionMenuAppIcon)
-
-                pinAppItem.setOnClickListener {
-                    lifecycleScope.launch {
-                        if (isAppPinned == true) {
-                            prefs.removePinnedApp(app)
-                        } else {
-                            prefs.addPinnedApp(app)
-                        }
-                    }
-                }
-
-                uninstallItem.setOnClickListener {
-                    uninstallApp(app)
-                    menu.hide()
-                }
-
-                lifecycleScope.launch {
-                    prefs.isAppPinned(app).collectLatest {
-                        isAppPinned = it
-                    }
-                }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                loadShortcutListIntoMenu(app, menu)
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private fun loadShortcutListIntoMenu(app: LauncherActivityInfo, menu: OptionMenu) {
-        val context = context ?: return
-        try {
-            launcherApps.getShortcuts(
-                LauncherApps.ShortcutQuery().apply {
-                    setActivity(app.componentName)
-                    setQueryFlags(
-                        LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or
-                                LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST
-                    )
-                },
-                Process.myUserHandle()
+            AppOptionMenu(
+                context,
+                app,
+                iconPack = runBlocking { launcher.iconPack.first() },
+                isAppPinned = runBlocking { prefs.isAppPinned(app).first() },
+                menu,
+                appOptionMenuCallback
             )
-                ?.sortedWith { shortcut1, shortcut2 ->
-                    when {
-                        shortcut1.isDeclaredInManifest && shortcut2.isDynamic -> -1
-                        shortcut1.isDynamic && shortcut2.isDeclaredInManifest -> 1
-                        else -> shortcut1.rank - shortcut2.rank
-                    }
-                }
-                ?.take(MAX_APP_SHORTCUTS_SHOWN)
-                ?.forEach { shortcutInfo ->
-                    val shortcutIcon = launcherApps.getShortcutIconDrawable(
-                        shortcutInfo,
-                        context.resources.displayMetrics.densityDpi
-                    )
-
-                    menu.addItem(
-                        shortcutIcon,
-                        shortcutInfo.longLabel?.toString() ?: shortcutInfo.shortLabel.toString(),
-                        applyIconTint = false,
-                    ) {
-                        val sourceBounds = Rect().run {
-                            it.iconView.getGlobalVisibleRect(this)
-                            this
-                        }
-                        openShortcut(shortcutInfo, sourceBounds)
-                    }
-                }
-        } catch (ex: SecurityException) {
-            // Starlight launcher has to be the default launcher app in order to query
-            // app shortcuts. Otherwise, SecurityException is thrown.
         }
     }
 

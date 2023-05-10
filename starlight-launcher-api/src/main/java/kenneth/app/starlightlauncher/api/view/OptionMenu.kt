@@ -3,7 +3,11 @@ package kenneth.app.starlightlauncher.api.view
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -134,6 +138,34 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     }
 
     /**
+     * Creates a new [OptionMenuItem], but will not add it to this [OptionMenu].
+     */
+    fun createItem(
+        icon: Drawable?,
+        label: String,
+        applyIconTint: Boolean = true,
+        onClick: OptionMenuItemOnClickListener
+    ): OptionMenuItem = OptionMenuItem(context).apply {
+        layoutParams = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.WRAP_CONTENT,
+        ).apply {
+            setMargins(
+                0,
+                0,
+                0,
+                resources.getDimensionPixelSize(R.dimen.option_menu_item_spacing)
+            )
+        }
+
+        itemIcon = icon
+        itemLabel = label
+        applyColorTint = applyIconTint
+
+        setOnClickListener { onClick(this) }
+    }
+
+    /**
      * Adds an [OptionMenuItem] to this [OptionMenu].
      * Should be used in the builder of [OptionMenu.show].
      *
@@ -148,29 +180,8 @@ class OptionMenu(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         label: String,
         applyIconTint: Boolean = true,
         onClick: OptionMenuItemOnClickListener
-    ): OptionMenuItem {
-        val item = OptionMenuItem(context).apply {
-            layoutParams = LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT,
-            ).apply {
-                setMargins(
-                    0,
-                    0,
-                    0,
-                    resources.getDimensionPixelSize(R.dimen.option_menu_item_spacing)
-                )
-            }
-
-            itemIcon = icon
-            itemLabel = label
-            applyColorTint = applyIconTint
-
-            setOnClickListener { onClick(this) }
-        }
-        addView(item)
-
-        return item
+    ): OptionMenuItem = createItem(icon, label, applyIconTint, onClick).also {
+        addView(it)
     }
 
     /**
