@@ -170,7 +170,7 @@ internal class MainScreenViewModel @Inject constructor(
 
         with(_shouldMediaControlBeVisible) {
             addSource(isMediaControlEnabled) {
-                _shouldMediaControlBeVisible.postValue(it)
+                _shouldMediaControlBeVisible.postValue(it && _activeMediaSession.value != null && isNotificationListenerEnabled.value == true)
             }
             addSource(isNotificationListenerEnabled) {
                 _shouldMediaControlBeVisible.postValue(

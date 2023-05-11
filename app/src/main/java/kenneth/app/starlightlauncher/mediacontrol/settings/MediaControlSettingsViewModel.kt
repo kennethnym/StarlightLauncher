@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,6 +16,14 @@ class MediaControlSettingsViewModel @Inject constructor(
 ) : ViewModel() {
     var isMediaControlEnabled by mutableStateOf(true)
         private set
+
+    init {
+        viewModelScope.launch {
+            mediaControlPreferenceManager.isMediaControlEnabled.collectLatest {
+                isMediaControlEnabled = it
+            }
+        }
+    }
 
     fun enableMediaControl() {
         viewModelScope.launch {

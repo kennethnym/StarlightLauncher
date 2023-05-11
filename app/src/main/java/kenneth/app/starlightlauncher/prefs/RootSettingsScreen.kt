@@ -57,6 +57,7 @@ internal fun RootSettingsScreen(
             }
 
             SettingsListItem(
+                icon = painterResource(R.drawable.ic_play_circle),
                 title = stringResource(R.string.media_control_title),
                 summary = stringResource(R.string.media_control_summary),
                 onTap = { navController.navigate(SETTINGS_ROUTE_MEDIA_CONTROL) }
