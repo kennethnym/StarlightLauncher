@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kenneth.app.starlightlauncher.R
@@ -56,6 +57,40 @@ internal class AppListAdapter(
     private val sectionsInList = mutableSetOf<String>()
 
     private var selectedSection: String? = null
+
+    private val listUpdateCallback = object : ListUpdateCallback {
+        override fun onInserted(position: Int, count: Int) {
+            val nextItemPosition = position + count
+            if (nextItemPosition < appList.size) {
+                notifyItemChanged(nextItemPosition)
+            }
+            notifyItemRangeInserted(position, count)
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+            val nextItemPosition = position + count
+            if (nextItemPosition < appList.size) {
+                notifyItemChanged(nextItemPosition)
+            }
+            notifyItemRangeRemoved(position, count)
+        }
+
+        override fun onMoved(fromPosition: Int, toPosition: Int) {
+            val nextItemPosition = fromPosition + 1
+            if (nextItemPosition < appList.size) {
+                notifyItemChanged(nextItemPosition)
+            }
+            notifyItemMoved(fromPosition, toPosition)
+        }
+
+        override fun onChanged(position: Int, count: Int, payload: Any?) {
+            val nextItemPosition = position + count
+            if (nextItemPosition < appList.size) {
+                notifyItemChanged(nextItemPosition)
+            }
+            notifyItemRangeChanged(position, count, payload)
+        }
+    }
 
     init {
         indexSections()
@@ -124,7 +159,11 @@ internal class AppListAdapter(
     }
 
     fun update(appList: List<LauncherActivityInfo>) {
-        this.appList = appList.sortedBy { it.label.toString() }.toList()
+        this.appList = appList
+            .asSequence()
+            .filter { it.applicationInfo.packageName != "kenneth.app.starlightlauncher" }
+            .sortedBy { it.label.toString().lowercase() }
+            .toList()
         allItemTypes.clear()
         indexSections()
         refreshList()
@@ -159,7 +198,7 @@ internal class AppListAdapter(
         val newList = calculateVisibleApps()
         val diffResult = DiffUtil.calculateDiff(AppListDiffCallback(visibleApps, newList))
         this.visibleApps = newList
-        diffResult.dispatchUpdatesTo(this)
+        diffResult.dispatchUpdatesTo(listUpdateCallback)
     }
 
     private fun calculateVisibleApps(): List<LauncherActivityInfo> =
