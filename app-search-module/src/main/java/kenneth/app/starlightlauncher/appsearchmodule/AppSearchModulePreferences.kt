@@ -5,6 +5,7 @@ import android.content.pm.LauncherActivityInfo
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -44,6 +45,7 @@ private constructor(private val dataStore: DataStore<Preferences>) {
         .map {
             it[PREF_KEY_SHOW_APP_NAMES] ?: DEFAULT_SHOW_APP_NAMES
         }
+        .distinctUntilChanged()
 
     /**
      * Whether app labels should be visible.
@@ -54,6 +56,7 @@ private constructor(private val dataStore: DataStore<Preferences>) {
         .map {
             it[PREF_KEY_SHOW_PINNED_APP_NAMES] ?: DEFAULT_SHOW_PINNED_APP_NAMES
         }
+        .distinctUntilChanged()
 
     fun isAppPinned(app: LauncherActivityInfo) =
         pinnedApps.map { apps -> apps.find { it == app.componentName } != null }

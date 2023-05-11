@@ -61,7 +61,6 @@ internal class AppGridAdapter(
     private val inputMethodManager = context.getSystemService<InputMethodManager>()
     private val prefs = AppSearchModulePreferences.getInstance(launcher.dataStore)
 
-    private lateinit var selectedApp: LauncherActivityInfo
     private var recyclerView: RecyclerView? = null
     private var gridSpanCount = 0
 
@@ -155,14 +154,12 @@ internal class AppGridAdapter(
             with(root) {
                 if (enableLongPressMenu) {
                     setOnLongClickListener {
-                        selectedApp = app
-                        showAppOptionMenu()
+                        showAppOptionMenu(app)
                     }
                 }
 
                 setOnClickListener {
-                    selectedApp = app
-                    openSelectedApp(holder.binding.appIcon)
+                    openSelectedApp(app, holder.binding.appIcon)
                 }
             }
         }
@@ -174,21 +171,20 @@ internal class AppGridAdapter(
         notifyItemRangeChanged(0, visibleApps.size)
     }
 
-    fun update(apps: AppList) {
+    fun update(newApps: AppList) {
         val diffResult = DiffUtil.calculateDiff(
-            AppListDiffCallback(this.apps, apps)
+            AppListDiffCallback(apps, newApps)
         )
 
-        this.apps.apply {
+        apps.apply {
             clear()
-            addAll(apps)
+            addAll(newApps)
         }
-
         visibleApps.apply {
             clear()
             addAll(
-                if (showAllApps) apps
-                else apps.subList(0, min(apps.size, gridSpanCount))
+                if (showAllApps) newApps
+                else newApps.subList(0, min(newApps.size, gridSpanCount))
             )
         }
 
@@ -251,8 +247,7 @@ internal class AppGridAdapter(
      */
     fun showAppOptionMenuAtPosition(position: Int) {
         recyclerView?.findViewHolderForAdapterPosition(position)?.let {
-            selectedApp = apps[position]
-            showAppOptionMenu()
+            showAppOptionMenu(apps[position])
         }
     }
 
@@ -293,16 +288,16 @@ internal class AppGridAdapter(
         }
     }
 
-    private fun showAppOptionMenu(): Boolean {
+    private fun showAppOptionMenu(app: LauncherActivityInfo): Boolean {
         recyclerView?.let {
             inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
         }
         launcher.showOptionMenu { menu ->
             AppOptionMenu(
                 context,
-                selectedApp,
+                app,
                 iconPack = runBlocking { launcher.iconPack.first() },
-                isAppPinned = runBlocking { prefs.isAppPinned(selectedApp).first() },
+                isAppPinned = runBlocking { prefs.isAppPinned(app).first() },
                 menu,
                 appOptionMenuCallback,
             )
@@ -310,14 +305,14 @@ internal class AppGridAdapter(
         return true
     }
 
-    private fun openSelectedApp(sourceIconView: View) {
+    private fun openSelectedApp(app: LauncherActivityInfo, sourceIconView: View) {
         if (!isDraggingAndDropping) {
             context.getSystemService<InputMethodManager>()
                 ?.hideSoftInputFromWindow(sourceIconView.windowToken, 0)
 
             context.startActivity(
                 Intent(Intent.ACTION_MAIN).apply {
-                    component = selectedApp.componentName
+                    component = app.componentName
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                             Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 }

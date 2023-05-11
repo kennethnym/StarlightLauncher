@@ -11,7 +11,6 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.SearchResultAdapter
 import kenneth.app.starlightlauncher.appsearchmodule.databinding.AppSearchResultCardBinding
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -36,18 +35,13 @@ class AppSearchResultAdapter(
             launch { launcher.addLauncherEventListener(::onLauncherEvent) }
             // listen to show app names visibility changes
             launch {
-                launcher.dataStore.data
-                    .map { preferences ->
-                        preferences[PREF_KEY_SHOW_APP_NAMES]
-                            ?: context.resources.getBoolean(R.bool.def_pref_show_app_names)
+                prefs.shouldShowAppNames.collect { shouldShowAppNames ->
+                    if (shouldShowAppNames) {
+                        appGridAdapter?.showAppLabels()
+                    } else {
+                        appGridAdapter?.hideAppLabels()
                     }
-                    .collect { shouldShowAppNames ->
-                        if (shouldShowAppNames) {
-                            appGridAdapter?.showAppLabels()
-                        } else {
-                            appGridAdapter?.hideAppLabels()
-                        }
-                    }
+                }
             }
             launch { listenToIconPack() }
         }

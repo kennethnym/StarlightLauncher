@@ -65,12 +65,9 @@ internal class PinnedAppsWidget(
             viewHolder: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder
         ): Boolean {
-            val from = viewHolder.adapterPosition
-            val to = target.adapterPosition
             launcher.coroutineScope.launch {
                 prefs.swapPinnedApps(viewHolder.adapterPosition, target.adapterPosition)
             }
-            recyclerView.adapter?.notifyItemMoved(from, to)
             return true
         }
 
@@ -117,9 +114,11 @@ internal class PinnedAppsWidget(
                     pinnedApps.isEmpty() -> {
                         hideWidget()
                     }
+
                     !rootView.isVisible -> {
                         showWidget(pinnedApps)
                     }
+
                     else -> {
                         appGridAdapter?.update(pinnedApps)
                     }
