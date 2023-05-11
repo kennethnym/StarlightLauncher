@@ -3,7 +3,6 @@ package kenneth.app.starlightlauncher.filesearchmodule
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -58,7 +57,6 @@ internal class FileListAdapter(
 
     private fun openFile(documentFile: DocumentFile) {
         try {
-            Log.d("FileListAdapter", "uri: ${documentFile.uri}")
             context.startActivity(Intent(Intent.ACTION_VIEW).apply {
                 data = documentFile.uri
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION

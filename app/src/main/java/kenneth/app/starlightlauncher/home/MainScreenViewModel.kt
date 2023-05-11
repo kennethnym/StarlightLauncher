@@ -12,7 +12,6 @@ import android.location.LocationManager
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.provider.Settings
-import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -171,20 +170,14 @@ internal class MainScreenViewModel @Inject constructor(
 
         with(_shouldMediaControlBeVisible) {
             addSource(isMediaControlEnabled) {
-                Log.d("MainScreenViewModel", "isMediaControlEnabled $isMediaControlEnabled")
                 _shouldMediaControlBeVisible.postValue(it)
             }
             addSource(isNotificationListenerEnabled) {
-                Log.d(
-                    "MainScreenViewModel",
-                    "isNotificationListenerEnabled $isNotificationListenerEnabled"
-                )
                 _shouldMediaControlBeVisible.postValue(
                     it && _activeMediaSession.value != null && isMediaControlEnabled.value == true
                 )
             }
             addSource(activeMediaSession) {
-                Log.d("MainScreenViewModel", "activeMediaSession $activeMediaSession")
                 _shouldMediaControlBeVisible.postValue(
                     it != null && isNotificationListenerEnabled.value == true && isMediaControlEnabled.value == true
                 )
@@ -340,7 +333,6 @@ internal class MainScreenViewModel @Inject constructor(
         with(weatherScope) {
             launch {
                 dateTimePreferenceManager.weatherLocation.collectLatest {
-                    Log.d("MainScreenViewModel", "weather location $it")
                     if (it != null) {
                         loadWeather(location = it)
                     }
@@ -396,7 +388,6 @@ internal class MainScreenViewModel @Inject constructor(
 
             launch {
                 dateTimePreferenceManager.weatherUnit.collectLatest { weatherUnit ->
-                    Log.d("MainScreenViewModel", "weather unit $weatherUnit")
                     bestWeatherLocation()?.let {
                         loadWeather(
                             location = it,
@@ -462,7 +453,6 @@ internal class MainScreenViewModel @Inject constructor(
             }
             .getOrNull()
             ?.let {
-                Log.d("MainScreenViewModel", "location $location, response $it")
                 _weatherInfo.postValue(
                     Pair(openWeatherApi.unit, it)
                 )

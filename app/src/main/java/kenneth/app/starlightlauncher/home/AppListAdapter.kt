@@ -2,7 +2,6 @@ package kenneth.app.starlightlauncher.home
 
 import android.content.pm.LauncherActivityInfo
 import android.graphics.Rect
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.bumptech.glide.Glide
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.IconPack
 import kenneth.app.starlightlauncher.databinding.AppListItemBinding
-import java.util.*
+import java.util.Locale
 
 internal class AppListAdapter(
     apps: List<LauncherActivityInfo>,
@@ -99,7 +98,6 @@ internal class AppListAdapter(
 
             with(root) {
                 setOnClickListener {
-                    Log.d("AppListAdapter", "on click")
                     val sourceBounds = Rect().run {
                         appIcon.getGlobalVisibleRect(this)
                         this
@@ -108,7 +106,6 @@ internal class AppListAdapter(
                 }
 
                 setOnLongClickListener {
-                    Log.d("AppListAdapter", "on long click")
                     callback.onItemLongClicked(app)
                     true
                 }

@@ -9,7 +9,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,9 +23,7 @@ import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.FragmentAndroidWidgetListBinding
 import kenneth.app.starlightlauncher.databinding.FragmentAvailableWidgetsBinding
 import kenneth.app.starlightlauncher.widgets.WidgetPreferenceManager
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -169,7 +166,6 @@ internal class AndroidWidgetsFragment @Inject constructor(
         )
 
         if (bindAllowed) {
-            Log.d("starlight", "bind allowed")
             // permission is granted, configure widget for display
             configureAndroidWidget(appWidgetId, appWidgetInfo)
         } else {
@@ -203,12 +199,6 @@ internal class AndroidWidgetsFragment @Inject constructor(
                 launcher.closeOverlay()
             }
         }
-    }
-
-    private suspend fun listenToIconPack() {
-        launcher.iconPack
-            .onEach { listAdapter?.changeIconPack(it) }
-            .collect()
     }
 
     private fun loadInstalledWidgets() {

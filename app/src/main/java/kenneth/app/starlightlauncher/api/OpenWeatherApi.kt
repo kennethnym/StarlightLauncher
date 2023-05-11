@@ -1,6 +1,5 @@
 package kenneth.app.starlightlauncher.api
 
-import android.util.Log
 import kenneth.app.starlightlauncher.BuildConfig
 import kenneth.app.starlightlauncher.IO_DISPATCHER
 import kenneth.app.starlightlauncher.MAIN_DISPATCHER
@@ -60,7 +59,6 @@ class OpenWeatherApi @Inject constructor(
      */
     suspend fun getCurrentWeather() = withContext(mainDispatcher) {
         val (lat, long) = latLong
-        Log.d("OpenWeatherApi", "lat long $latLong")
         val url = "$API_URL/weather".toHttpUrlOrNull()!!
             .newBuilder()
             .addQueryParameter("units", unit.code)
@@ -75,7 +73,6 @@ class OpenWeatherApi @Inject constructor(
             withContext(ioDispatcher) {
                 httpClient.newCall(req).execute().body?.string()
                     ?.let {
-                        Log.d("OpenWeatherApi", "response $it")
                         json.decodeFromString<Response>(it)
                     }
             }

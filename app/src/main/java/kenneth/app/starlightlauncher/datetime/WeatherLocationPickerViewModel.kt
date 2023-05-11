@@ -1,6 +1,5 @@
 package kenneth.app.starlightlauncher.datetime
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,7 +28,6 @@ class WeatherLocationPickerViewModel @Inject constructor(
         isSearching = true
         viewModelScope.launch {
             val result = nominatimApi.searchForLocations(searchTerm)
-            Log.d("starlight", "result $result")
             when {
                 result.isSuccess -> locations = result.getOrNull()
                 result.isFailure -> error = result.exceptionOrNull()
