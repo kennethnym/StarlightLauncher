@@ -246,9 +246,7 @@ internal class AppGridAdapter(
      * Shows an option menu for the app at the given [position].
      */
     fun showAppOptionMenuAtPosition(position: Int) {
-        recyclerView?.findViewHolderForAdapterPosition(position)?.let {
-            showAppOptionMenu(apps[position])
-        }
+        showAppOptionMenu(apps[position])
     }
 
     fun changeIconPack(iconPack: IconPack) {
