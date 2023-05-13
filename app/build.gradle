@@ -15,8 +15,8 @@ android {
         applicationId "kenneth.app.starlightlauncher"
         minSdk 23
         targetSdk 33
-        versionCode 10029
-        versionName "1.0.0-internal.9"
+        versionCode 10030
+        versionName "1.0.0-internal.10"
 
         renderscriptTargetApi 30
         renderscriptSupportModeEnabled true
