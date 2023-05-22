@@ -19,7 +19,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", "4f67cb17264d2fb8585e74b345ec4636")
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", '"4f67cb17264d2fb8585e74b345ec4636"')
     }
 
     signingConfigs {
