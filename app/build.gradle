@@ -4,10 +4,6 @@ apply plugin: "kotlin-kapt"
 apply plugin: "kotlinx-serialization"
 apply plugin: "dagger.hilt.android.plugin"
 
-def apiKeyFile = rootProject.file("apikey.properties")
-def apiKeys = new Properties()
-apiKeys.load(new FileInputStream(apiKeyFile))
-
 android {
     compileSdk 33
 
@@ -23,8 +19,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // api keys from apikey.properties
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", apiKeys["OPEN_WEATHER_API_KEY"])
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "4f67cb17264d2fb8585e74b345ec4636")
     }
 
     signingConfigs {
