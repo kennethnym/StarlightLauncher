@@ -12,3 +12,12 @@
     There are 5 sizes to choose from: giga small, small, normal (default), big, giga big.
 - Search results:
   - Search results can now be dismissed by pressing the back button
+
+# Version 1.0.0-beta.7
+
+This version contains significant under-the-hood changes that should hopefully make the code more in line with best practices.
+
+- A brand-new redesigned settings
+- A new vertical app drawer that is accessible with through new button to the left of the search box. (Can be disabled)
+- You can now supply your own OpenWeatherMap API key to access OpenWeatherMap API.
+- Many bug fixes
