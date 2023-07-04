@@ -1,5 +1,3 @@
-# Version 1.0.0-beta.7
-
 This version contains significant under-the-hood changes that should hopefully make the code more in line with best practices.
 
 - A brand-new redesigned settings
