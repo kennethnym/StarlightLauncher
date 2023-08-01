@@ -9,13 +9,6 @@ definitions:
         - other
       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
       node: latest
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: beta
-          include: true
-          source: true
     scripts:
       - name: Set up local properties
         script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
@@ -53,6 +46,13 @@ workflows:
     name: Beta build
     max_build_duration: 60
     <<: *build_env
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: beta
+          include: true
+          source: true
     publishing:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
