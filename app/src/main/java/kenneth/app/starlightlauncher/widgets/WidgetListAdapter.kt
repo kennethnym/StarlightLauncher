@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -68,6 +69,7 @@ internal class WidgetListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        Log.d("WidgetListAdapter", "onBindViewHolder $position")
         val widget = widgets[position]
         when {
             widget is AddedWidget.AndroidWidget && holder is AndroidWidgetListAdapterItem -> {
@@ -81,6 +83,8 @@ internal class WidgetListAdapter(
     }
 
     override fun getItemCount(): Int = widgets.size
+
+    override fun getItemId(position: Int): Long = widgets[position].id.toLong()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)

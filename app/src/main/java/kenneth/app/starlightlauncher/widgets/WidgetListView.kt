@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.views.ReorderableList
 import javax.inject.Inject
 import kotlin.math.abs
@@ -24,13 +25,15 @@ private const val SCROLL_THRESHOLD = 10
  */
 @AndroidEntryPoint
 internal class WidgetListView(context: Context, attrs: AttributeSet) :
-    ReorderableList(context, attrs), WidgetListAdapter.WidgetListEventListener {
+    ReorderableList(context, attrs),
+    WidgetListAdapter.WidgetListEventListener,
+    ReorderableList.Listener {
     interface OnChangedListener {
         fun onRequestRemoveWidget(removedWidget: AddedWidget)
 
         fun onWidgetResized(widget: AddedWidget, newHeight: Int)
 
-        fun onWidgetSwapped(oldPosition: Int, newPosition: Int)
+        fun onWidgetReordered(newList: List<AddedWidget>)
     }
 
     @Inject
@@ -58,12 +61,15 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
      */
     private var widgetViewHolderInEditMode: WidgetListAdapterItem? = null
 
-    var widgets: List<AddedWidget> = emptyList()
+    private var _widgets = mutableListOf<AddedWidget>()
+
+    var widgets: List<AddedWidget>
+        get() = _widgets
         set(value) {
             widgetListAdapter.widgets = value
-            DiffUtil.calculateDiff(DiffCallback(field, value))
+            DiffUtil.calculateDiff(DiffCallback(_widgets, value))
                 .dispatchUpdatesTo(widgetListAdapter)
-            field = value
+            _widgets = value.toMutableList()
         }
 
     var onWidgetListChangedListener: OnChangedListener? = null
@@ -81,10 +87,8 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
         adapter =
             WidgetListAdapter(context, widgets, appWidgetHost, this).also { widgetListAdapter = it }
 
-        addOnOrderChangedListener { fromPosition, toPosition ->
-            onWidgetListChangedListener?.onWidgetSwapped(fromPosition, toPosition)
-        }
-        addOnSelectionChangedListener(::onWidgetLongPressed)
+        listener = this
+
         setOnApplyWindowInsetsListener { _, insets ->
             updatePadding(
                 bottom =
@@ -113,6 +117,20 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
 
     fun exitEditMode() {
         widgetViewHolderInEditMode?.isEditing = false
+    }
+
+    override fun onItemDragStart(viewHolder: ViewHolder) {
+        onWidgetLongPressed(viewHolder)
+    }
+
+    override fun onItemDragEnd(viewHolder: ViewHolder) {
+        widgetListAdapter.widgets = _widgets
+        onWidgetListChangedListener?.onWidgetReordered(_widgets)
+    }
+
+    override fun onOrderChange(fromPosition: Int, toPosition: Int) {
+        _widgets.swap(fromPosition, toPosition)
+        widgetListAdapter.widgets = _widgets
     }
 
     override fun onWidgetRemoved(removedWidget: AddedWidget) {

@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kenneth.app.starlightlauncher.InternalLauncherEvent
 import kenneth.app.starlightlauncher.LauncherEventChannel
-import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.dataStore
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kenneth.app.starlightlauncher.prefs.PREF_ADDED_WIDGETS
@@ -94,11 +93,8 @@ internal class WidgetPreferenceManager @Inject constructor(
         saveAddedWidgets()
     }
 
-    suspend fun changeWidgetOrder(fromPosition: Int, toPosition: Int) {
-        _addedWidgets.value.toMutableList().run {
-            swap(fromPosition, toPosition)
-            _addedWidgets.emit(this)
-        }
+    suspend fun updateWidgetList(newList: List<AddedWidget>) {
+        _addedWidgets.emit(newList)
         saveAddedWidgets()
     }
 

@@ -271,9 +271,9 @@ internal class MainScreenViewModel @Inject constructor(
         }
     }
 
-    fun swapWidget(fromPosition: Int, toPosition: Int) {
+    fun updateWidgetList(newList: List<AddedWidget>) {
         viewModelScope.launch {
-            widgetPreferenceManager.changeWidgetOrder(fromPosition, toPosition)
+            widgetPreferenceManager.updateWidgetList(newList)
         }
     }
 

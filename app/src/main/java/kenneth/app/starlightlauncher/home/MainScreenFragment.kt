@@ -33,7 +33,8 @@ import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -73,8 +74,8 @@ internal class MainScreenFragment @Inject constructor(
             viewModel.resizeWidget(widget, newHeight)
         }
 
-        override fun onWidgetSwapped(oldPosition: Int, newPosition: Int) {
-            viewModel.swapWidget(oldPosition, newPosition)
+        override fun onWidgetReordered(newList: List<AddedWidget>) {
+            viewModel.updateWidgetList(newList)
         }
     }
 

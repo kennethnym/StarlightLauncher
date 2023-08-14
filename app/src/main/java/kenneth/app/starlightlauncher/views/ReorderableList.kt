@@ -1,48 +1,25 @@
 package kenneth.app.starlightlauncher.views
 
+import android.animation.Animator
 import android.content.Context
 import android.util.AttributeSet
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
-
-typealias ListOrderChangedListener = (fromPosition: Int, toPosition: Int) -> Unit
-typealias SelectionChangedListener = (viewHolder: RecyclerView.ViewHolder?) -> Unit
 
 /**
  * A [RecyclerView] that allows reordering of items through drag-and-drop.
  */
 internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
     RecyclerView(context, attrs) {
-    private val orderObservable = object : Observable() {
-        fun notifyOrderChanged(from: Int, to: Int) {
-            setChanged()
-            notifyObservers(intArrayOf(from, to))
-        }
+    interface Listener {
+        fun onItemDragStart(viewHolder: ViewHolder)
 
-        fun addOrderObserver(observer: ListOrderChangedListener) {
-            addObserver { _, arg ->
-                if (arg is IntArray) {
-                    observer(arg[0], arg[1])
-                }
-            }
-        }
+        fun onItemDragEnd(viewHolder: ViewHolder)
+
+        fun onOrderChange(fromPosition: Int, toPosition: Int)
     }
 
-    private val selectionObservable = object : Observable() {
-        fun notifySelectionChanged(viewHolder: ViewHolder?) {
-            setChanged()
-            notifyObservers(viewHolder)
-        }
-
-        fun addSelectionObserver(observer: SelectionChangedListener) {
-            addObserver { o, arg ->
-                if (arg is ViewHolder?) {
-                    observer(arg)
-                }
-            }
-        }
-    }
+    var listener: Listener? = null
 
     private val dndTouchHelper =
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -51,13 +28,13 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
         ) {
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    viewHolder?.itemView
-                        ?.animate()
-                        ?.scaleX(1.1f)
-                        ?.scaleY(1.1f)
-                        ?.alpha(0.5f)?.duration = 200
-                    selectionObservable.notifySelectionChanged(viewHolder)
+                if (viewHolder != null && actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    viewHolder.itemView
+                        .animate()
+                        .scaleX(1.1f)
+                        .scaleY(1.1f)
+                        .alpha(0.5f).duration = 200
+                    listener?.onItemDragStart(viewHolder)
                 }
             }
 
@@ -67,7 +44,19 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
                     .animate()
                     .scaleX(1f)
                     .scaleY(1f)
-                    .alpha(1f).duration = 200
+                    .alpha(1f)
+                    .setDuration(200)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator) {}
+
+                        override fun onAnimationEnd(animation: Animator) {
+                            listener?.onItemDragEnd(viewHolder)
+                        }
+
+                        override fun onAnimationCancel(animation: Animator) {}
+
+                        override fun onAnimationRepeat(animation: Animator) {}
+                    })
             }
 
             override fun onMove(
@@ -77,8 +66,8 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
             ): Boolean {
                 val from = viewHolder.adapterPosition
                 val to = target.adapterPosition
+                listener?.onOrderChange(from, to)
                 recyclerView.adapter?.notifyItemMoved(from, to)
-                orderObservable.notifyOrderChanged(from, to)
                 return true
             }
 
@@ -87,20 +76,6 @@ internal open class ReorderableList(context: Context, attrs: AttributeSet?) :
 
     init {
         enableDragAndDrop()
-    }
-
-    /**
-     * Registers [listener] so that it will be called when the order of items of this list is changed.
-     */
-    fun addOnOrderChangedListener(listener: ListOrderChangedListener) {
-        orderObservable.addOrderObserver(listener)
-    }
-
-    /**
-     * Registers [listener] so that it will be called when an item is selected (long pressed).
-     */
-    fun addOnSelectionChangedListener(listener: SelectionChangedListener) {
-        selectionObservable.addSelectionObserver(listener)
     }
 
     /**
