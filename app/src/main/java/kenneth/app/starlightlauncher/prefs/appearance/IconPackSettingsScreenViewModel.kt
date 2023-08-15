@@ -46,6 +46,12 @@ internal class IconPackSettingsScreenViewModel @Inject constructor(
         }
     }
 
+    fun useDefaultIconPack() {
+        viewModelScope.launch {
+            appearancePreferenceManager.useDefaultIconPack()
+        }
+    }
+
     private fun querySelectedIconPack() {
         viewModelScope.launch {
             appearancePreferenceManager.iconPack.collect {

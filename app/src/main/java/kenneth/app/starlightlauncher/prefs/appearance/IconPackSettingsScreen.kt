@@ -30,16 +30,20 @@ internal fun IconPackSettingsScreen(viewModel: IconPackSettingsScreenViewModel =
             InstalledIconPacksSection(
                 iconPacks = viewModel.installedIconPacks,
                 currentIconPack = viewModel.selectedIconPack,
-            ) {
-                viewModel.changeIconPack(it)
-            }
+                onChangeIconPack = {
+                    viewModel.changeIconPack(it)
+                }
+            )
 
             Divider()
 
             SettingsListItem(
                 icon = painterResource(R.drawable.ic_history_alt),
                 title = stringResource(R.string.appearance_revert_icon_pack_title),
-                summary = stringResource(id = R.string.appearance_revert_icon_pack_summary)
+                summary = stringResource(id = R.string.appearance_revert_icon_pack_summary),
+                onTap = {
+                    viewModel.useDefaultIconPack()
+                }
             )
         }
     }
