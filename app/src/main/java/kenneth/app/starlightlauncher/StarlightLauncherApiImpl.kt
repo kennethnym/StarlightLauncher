@@ -24,6 +24,7 @@ import javax.inject.Inject
 @InstallIn(ActivityComponent::class)
 internal abstract class StarlightLauncherApiModule {
     @Binds
+    @ActivityScoped
     abstract fun bindStarlightLauncherApi(
         impl: StarlightLauncherApiImpl
     ): StarlightLauncherApi
@@ -38,7 +39,6 @@ internal class StarlightLauncherApiImpl @Inject constructor(
     @ActivityContext private val activityContext: Context,
     appearancePreferenceManager: AppearancePreferenceManager,
     private val launcherEventChannel: LauncherEventChannel,
-    private val bindingRegister: BindingRegister,
     private val appManager: AppManager,
     override val coroutineScope: CoroutineScope,
     override val blurHandler: BlurHandler,

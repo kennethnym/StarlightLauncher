@@ -23,7 +23,6 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/starlight_launcher_name"
-        android:launchMode="singleTop"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:stateNotNeeded="true"
         android:supportsRtl="true"
@@ -42,9 +41,19 @@
         </service>
 
         <activity
-            android:name=".LoadingActivity"
+            android:name="kenneth.app.starlightlauncher.MainActivity"
+            android:configChanges="uiMode"
+            android:excludeFromRecents="true"
             android:exported="true"
-            android:theme="@style/DarkLauncherTheme">
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:windowSoftInputMode="stateVisible">
+
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,22 +78,6 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/Theme.StarlightLauncher.SettingsTheme" />
 
-        <activity
-            android:name="kenneth.app.starlightlauncher.MainActivity"
-            android:configChanges="uiMode"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:screenOrientation="nosensor"
-            android:windowSoftInputMode="stateVisible">
-
-            <intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                <action android:name="android.net.wifi.STATE_CHANGE" />
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-
-        </activity>
     </application>
 
     <queries>

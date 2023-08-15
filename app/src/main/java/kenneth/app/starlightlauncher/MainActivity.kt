@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -14,6 +15,7 @@ import android.os.Bundle
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
@@ -42,6 +44,8 @@ import kenneth.app.starlightlauncher.prefs.PREF_KEY_TUTORIAL_FINISHED
 import kenneth.app.starlightlauncher.prefs.appearance.AppearancePreferenceManager
 import kenneth.app.starlightlauncher.prefs.appearance.InstalledIconPack
 import kenneth.app.starlightlauncher.searching.Searcher
+import kenneth.app.starlightlauncher.setup.PREF_SETUP_FINISHED
+import kenneth.app.starlightlauncher.setup.SetupActivity
 import kenneth.app.starlightlauncher.util.calculateDominantColor
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -117,6 +121,8 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     private var isDarkModeActive = false
 
+    private var isSetupTriggered = false
+
     /**
      * The current back pressed callback that will be called
      * when overlay is visible and the back button is pressed.
@@ -165,6 +171,16 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             .launcherFragmentFactory()
 
         super.onCreate(savedInstanceState)
+
+        val setupFinished = runBlocking {
+            dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
+        }
+        if (!setupFinished) {
+            isSetupTriggered = true
+            startActivity(Intent(this, SetupActivity::class.java))
+            finish()
+            return
+        }
 
         getCurrentWallpaper()
         updateAdaptiveColors()
@@ -220,6 +236,8 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
                 }
             }
         }
+
+        onBackPressedDispatcher.addCallback { }
     }
 
     override fun onGlobalLayout() {
@@ -240,7 +258,9 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     override fun onDestroy() {
-        cleanup()
+        if (!isSetupTriggered) {
+            cleanup()
+        }
         super.onDestroy()
     }
 
