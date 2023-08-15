@@ -184,7 +184,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
 
     private fun createPaddingAnimation(showTopPadding: Boolean): ValueAnimator =
         ValueAnimator.ofInt(
-            paddingTop,
+            binding.searchBoxContainer.paddingTop,
             if (showTopPadding) appState.statusBarHeight else 0,
         ).apply {
             interpolator = searchBoxAnimationInterpolator
