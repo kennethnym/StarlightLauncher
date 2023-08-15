@@ -7,6 +7,7 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.extension.ExtensionManager
 import kotlinx.coroutines.*
 import java.util.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -67,7 +68,7 @@ internal class Searcher @Inject constructor(
     }
 
     private fun performSearch(keyword: String) {
-        val searchRegex = Regex("[$keyword]", RegexOption.IGNORE_CASE)
+        val searchRegex = Regex("[${Pattern.quote(keyword)}]", RegexOption.IGNORE_CASE)
 
         extensionManager.installedSearchModules.forEach { module ->
             lateinit var job: Job
