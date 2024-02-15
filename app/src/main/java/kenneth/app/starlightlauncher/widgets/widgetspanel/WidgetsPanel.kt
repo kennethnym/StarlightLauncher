@@ -2,15 +2,29 @@ package kenneth.app.starlightlauncher.widgets.widgetspanel
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.*
+import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.*
+import kenneth.app.starlightlauncher.AppState
+import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
+import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.NOT_HANDLED
+import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
@@ -145,6 +159,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     fun expand() {
+        Log.d("WidgetsPanel", "expand")
+
         isExpanded = true
 
         WidgetPanelAnimation(0f)
@@ -239,6 +255,11 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         else super.onTouchEvent(ev)
     }
 
+    override fun performClick(): Boolean {
+        Log.d("WidgetsPanel", "perform click")
+        return super.performClick()
+    }
+
     private fun handleWidgetPanelGesture(ev: MotionEvent): Boolean =
         when (ev.actionMasked) {
             MotionEvent.ACTION_BUTTON_PRESS -> performClick()
@@ -306,10 +327,13 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
         val gestureDistance = gestureMover.gestureDelta
 
+        Log.d("WidgetsPanel", "gesture distance $gestureDistance")
+
         when {
             gestureDistance < -GESTURE_ACTION_THRESHOLD -> {
                 expand()
             }
+
             gestureDistance > GESTURE_ACTION_THRESHOLD -> {
                 retract()
             }
