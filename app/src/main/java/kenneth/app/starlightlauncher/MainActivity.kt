@@ -1,6 +1,7 @@
 package kenneth.app.starlightlauncher
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetHost
 import android.content.Context
@@ -16,6 +17,7 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.annotation.DeprecatedSinceApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
@@ -182,7 +184,9 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             return
         }
 
-        getCurrentWallpaper()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            getCurrentWallpaper()
+        }
         updateAdaptiveColors()
 
         extensionManager.run {
@@ -254,7 +258,9 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     override fun onResume() {
         super.onResume()
-        checkWallpaper()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            checkWallpaper()
+        }
     }
 
     override fun onDestroy() {
@@ -354,15 +360,22 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     /**
      * Checks if the wallpaper is updated. If it is, recreate activity to update adaptive theme.
+     *
+     * Due to this ongoing issue: https://issuetracker.google.com/issues/237124750?pli=1,
+     * it is next to impossible to obtain the current wallpaper above API32,
+     * because MANAGE_EXTERNAL_STORAGE is required just to do so,
+     * and usually the Play Store rejects apps that require such permission.
      */
+    @SuppressLint("MissingPermission")
+    @DeprecatedSinceApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkWallpaper() {
         val currentWallpaper = this.currentWallpaper ?: return
         lifecycleScope.launch {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 val isWallpaperChanged = withContext(ioDispatcher) {
-                    val wallpaper =
-                        WallpaperManager.getInstance(this@MainActivity).fastDrawable.toBitmap()
-                    !wallpaper.sameAs(currentWallpaper)
+                    WallpaperManager.getInstance(this@MainActivity).fastDrawable
+                        ?.toBitmap()?.sameAs(currentWallpaper)
+                        ?: false
                 }
                 if (isWallpaperChanged) {
                     recreate()
@@ -374,11 +387,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     /**
      * Fetches the current wallpaper if the launcher has permission to do so.
      */
+    @SuppressLint("MissingPermission")
+    @DeprecatedSinceApi(Build.VERSION_CODES.TIRAMISU)
     private fun getCurrentWallpaper() {
         if (
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            currentWallpaper = WallpaperManager.getInstance(this).fastDrawable.toBitmap()
+            currentWallpaper = WallpaperManager.getInstance(this).fastDrawable?.toBitmap()
         }
     }
 

@@ -6,12 +6,12 @@ apply plugin: "dagger.hilt.android.plugin"
 
 android {
     namespace 'kenneth.app.starlightlauncher'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "kenneth.app.starlightlauncher"
         minSdk 23
-        targetSdk 33
+        targetSdk 34
         versionCode 10036
         versionName "1.0.0-internal.14"
 
