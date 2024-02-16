@@ -119,6 +119,14 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
         widgetViewHolderInEditMode?.isEditing = false
     }
 
+    fun redrawAndroidWidgets() {
+        widgets.forEachIndexed { i, widget ->
+            if (widget is AddedWidget.AndroidWidget) {
+                widgetListAdapter.notifyItemChanged(i)
+            }
+        }
+    }
+
     override fun onItemDragStart(viewHolder: ViewHolder) {
         onWidgetLongPressed(viewHolder)
     }

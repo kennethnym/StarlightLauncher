@@ -117,7 +117,12 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     @Inject
     lateinit var launcherFragmentFactory: LauncherFragmentFactory
 
+    @Inject
+    lateinit var launcherEventChannel: LauncherEventChannel
+
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var currentConfig: Configuration
 
     private var currentWallpaper: Bitmap? = null
 
@@ -173,6 +178,8 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             .launcherFragmentFactory()
 
         super.onCreate(savedInstanceState)
+
+        currentConfig = Configuration(resources.configuration)
 
         val setupFinished = runBlocking {
             dataStore.data.first()[PREF_SETUP_FINISHED] ?: false
@@ -270,6 +277,26 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         super.onDestroy()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        val isNightModeChanged = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            currentConfig.isNightModeActive != newConfig.isNightModeActive
+        } else {
+            val wasNightModeActive =
+                currentConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            val isNightModeActive =
+                newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+            newConfig.diff(currentConfig) != 0 && wasNightModeActive != isNightModeActive
+        }
+
+        currentConfig = Configuration(newConfig)
+
+        if (isNightModeChanged) {
+            onNightModeChanged()
+        }
+    }
+
     fun showOverlay(fragment: Fragment) {
         binding.overlay.show()
 
@@ -304,6 +331,19 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     private fun cleanup() {
         extensionManager.cleanUpExtensions()
         appWidgetHost.stopListening()
+    }
+
+    private fun onNightModeChanged() {
+        lifecycleScope.launch {
+            launcherEventChannel.add(
+                NightModeChanged(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2)
+                        currentConfig.isNightModeActive
+                    else
+                        currentConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+                )
+            )
+        }
     }
 
     private fun attachListeners() {

@@ -7,3 +7,5 @@ import kenneth.app.starlightlauncher.api.LauncherEvent
  * that are not intended to be consumed by plugins.
  */
 internal abstract class InternalLauncherEvent : LauncherEvent()
+
+internal class NightModeChanged(val isNightModeActive: Boolean) : InternalLauncherEvent()

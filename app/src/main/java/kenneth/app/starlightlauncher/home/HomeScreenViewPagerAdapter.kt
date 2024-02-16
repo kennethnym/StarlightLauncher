@@ -19,7 +19,7 @@ internal class HomeScreenViewPagerAdapter(
     @EntryPoint
     @InstallIn(ActivityComponent::class)
     internal interface HomeScreenViewPagerAdapterEntryPoint {
-        fun mainScreenFragment(): MainScreenFragment
+        fun homeScreenFragment(): HomeScreenFragment
 
         fun appDrawerScreenFragment(): AppDrawerScreenFragment
     }
@@ -35,7 +35,7 @@ internal class HomeScreenViewPagerAdapter(
 
     override fun createFragment(position: Int): Fragment =
         when (position) {
-            POSITION_HOME_SCREEN_VIEW_PAGER_HOME -> entryPoint.mainScreenFragment().apply {
+            POSITION_HOME_SCREEN_VIEW_PAGER_HOME -> entryPoint.homeScreenFragment().apply {
                 homeScreenViewPager = viewPager
             }
             POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER -> entryPoint.appDrawerScreenFragment()

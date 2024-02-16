@@ -10,13 +10,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.multibindings.IntoMap
 import kenneth.app.starlightlauncher.home.AppDrawerScreenFragment
-import kenneth.app.starlightlauncher.home.MainScreenFragment
+import kenneth.app.starlightlauncher.home.HomeScreenFragment
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.reflect.KClass
 
 // credit to this medium article
 // https://medium.com/supercharges-mobile-product-guide/fragmentfactory-with-dagger-and-hilt-31ee17babf73
+
+typealias FragmentMap = Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>>
 
 @MapKey
 @Retention(AnnotationRetention.RUNTIME)
@@ -33,8 +35,8 @@ internal interface LauncherFragmentFactoryEntryPoint {
 internal abstract class LauncherFragmentFactoryModule {
     @Binds
     @IntoMap
-    @FragmentKey(MainScreenFragment::class)
-    abstract fun bindMainScreenFragment(impl: MainScreenFragment): Fragment
+    @FragmentKey(HomeScreenFragment::class)
+    abstract fun bindMainScreenFragment(impl: HomeScreenFragment): Fragment
 
     @Binds
     @IntoMap
@@ -43,7 +45,7 @@ internal abstract class LauncherFragmentFactoryModule {
 }
 
 internal class LauncherFragmentFactory @Inject constructor(
-    private val providerMap: Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>>
+    private val providerMap: FragmentMap
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         val fragmentClass = loadFragmentClass(classLoader, className)

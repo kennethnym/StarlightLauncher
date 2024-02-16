@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.NightModeChanged
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
@@ -38,7 +39,7 @@ import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class MainScreenFragment @Inject constructor(
+internal class HomeScreenFragment @Inject constructor(
     private val bindingRegister: BindingRegister,
     private val searcher: Searcher,
     private val launcher: StarlightLauncherApi,
@@ -49,7 +50,7 @@ internal class MainScreenFragment @Inject constructor(
     lateinit var homeScreenViewPager: ViewPager2
 
     private var binding: FragmentMainScreenBinding? = null
-    private val viewModel: MainScreenViewModel by viewModels()
+    private val viewModel: HomeScreenViewModel by viewModels()
 
     /**
      * A BroadcastReceiver that receives broadcast of Intent.ACTION_TIME_TICK.
@@ -210,6 +211,10 @@ internal class MainScreenFragment @Inject constructor(
                     event.fromIndex,
                     event.toIndex
                 )
+            }
+
+            is NightModeChanged -> {
+                binding?.widgetsPanel?.redrawAndroidWidgets()
             }
         }
     }

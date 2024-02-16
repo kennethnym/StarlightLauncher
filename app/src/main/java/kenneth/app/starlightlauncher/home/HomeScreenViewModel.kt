@@ -47,7 +47,7 @@ private val weatherLocationCriteria = Criteria().apply {
 // https://stackoverflow.com/questions/68371219/this-field-leaks-a-context-object-warning-hilt-injection
 // https://stackoverflow.com/questions/66216839/inject-context-with-hilt-this-field-leaks-a-context-object
 @SuppressLint("StaticFieldLeak")
-internal class MainScreenViewModel @Inject constructor(
+internal class HomeScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val appearancePreferenceManager: AppearancePreferenceManager,
     private val dateTimePreferenceManager: DateTimePreferenceManager,
@@ -346,7 +346,7 @@ internal class MainScreenViewModel @Inject constructor(
                     } else {
                         currentDeviceLocation = null
                         weatherScope.coroutineContext.cancelChildren()
-                        locationManager.removeUpdates(this@MainScreenViewModel)
+                        locationManager.removeUpdates(this@HomeScreenViewModel)
                     }
                 }
             }

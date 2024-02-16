@@ -220,6 +220,10 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
     }
 
+    fun redrawAndroidWidgets() {
+        binding.widgetListView.redrawAndroidWidgets()
+    }
+
     override fun onApplyWindowInsets(v: View, insets: WindowInsetsCompat): WindowInsetsCompat {
         val focusedView = this.focusedView ?: return insets
         if (focusedView.id == R.id.search_box_edit_text) return insets
