@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <kenneth.app.starlightlauncher.views.DateTimeViewContainer
+        <LinearLayout
             android:id="@+id/date_time_view_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -30,7 +30,7 @@
                 android:layout_marginBottom="32dp"
                 android:visibility="gone" />
 
-        </kenneth.app.starlightlauncher.views.DateTimeViewContainer>
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"

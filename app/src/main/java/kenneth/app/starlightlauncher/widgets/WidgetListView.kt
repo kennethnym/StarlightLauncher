@@ -10,11 +10,12 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.swap
 import kenneth.app.starlightlauncher.views.ReorderableList
+import kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -35,9 +36,6 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
 
         fun onWidgetReordered(newList: List<AddedWidget>)
     }
-
-    @Inject
-    lateinit var bindingRegister: BindingRegister
 
     @Inject
     lateinit var appWidgetHost: AppWidgetHost
@@ -73,6 +71,8 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
         }
 
     var onWidgetListChangedListener: OnChangedListener? = null
+
+    var widgetsPanel: WidgetsPanel? = null
 
     init {
         layoutParams = LayoutParams(
@@ -155,7 +155,7 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
     }
 
     override fun onTouchEvent(e: MotionEvent?): Boolean {
-        val widgetsPanel = bindingRegister.mainScreenBinding.widgetsPanel
+        val widgetsPanel = this.widgetsPanel ?: return NOT_HANDLED
         val scrollY = widgetsPanel.scrollY
 
         return if (scrollY == 0 && !widgetsPanel.isEditModeEnabled)
@@ -177,7 +177,7 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
                         abs(e.y - initialY!!) > SCROLL_THRESHOLD &&
                                 ((widgetsPanel.isExpanded && e.y - initialY!! > 0) || !widgetsPanel.isExpanded) -> {
                             isClick = false
-                            bindingRegister.mainScreenBinding.widgetsPanel.onTouchEvent(e)
+                            widgetsPanel.onTouchEvent(e)
                         }
 
                         !widgetsPanel.isExpanded -> false
@@ -193,7 +193,7 @@ internal class WidgetListView(context: Context, attrs: AttributeSet) :
                         super.onTouchEvent(e)
                     } else {
                         initialY = null
-                        bindingRegister.mainScreenBinding.widgetsPanel.onTouchEvent(e)
+                        widgetsPanel.onTouchEvent(e)
                     }
                 }
 

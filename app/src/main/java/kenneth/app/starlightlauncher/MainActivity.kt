@@ -86,7 +86,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     lateinit var blurHandler: BlurHandler
 
     @Inject
-    lateinit var appState: AppState
+    lateinit var launcherState: LauncherState
 
     @Inject
     lateinit var appearancePreferenceManager: AppearancePreferenceManager
@@ -110,9 +110,6 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     @Inject
     lateinit var tutorialOverlay: TutorialOverlay
-
-    @Inject
-    lateinit var bindingRegister: BindingRegister
 
     @Inject
     lateinit var launcherFragmentFactory: LauncherFragmentFactory
@@ -204,7 +201,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         // enable edge-to-edge app experience
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        appState.apply {
+        launcherState.apply {
             screenWidth = resources.displayMetrics.widthPixels
             screenHeight = resources.displayMetrics.heightPixels
         }
@@ -349,11 +346,11 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     private fun attachListeners() {
         with(binding.root) {
             setOnApplyWindowInsetsListener { _, insets ->
-                appState.statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(insets)
+                launcherState.statusBarHeight = WindowInsetsCompat.toWindowInsetsCompat(insets)
                     .getInsets(WindowInsetsCompat.Type.systemBars()).top
 
                 binding.statusBarShade.layoutParams = binding.statusBarShade.layoutParams.apply {
-                    height = appState.statusBarHeight * 2
+                    height = launcherState.statusBarHeight * 2
                 }
 
                 insets
@@ -382,7 +379,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
             currentWallpaper != null &&
             checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
         ) {
-            appState.apply {
+            launcherState.apply {
                 val adaptiveBackgroundColor = currentWallpaper.calculateDominantColor()
                 val white = getColor(android.R.color.white)
 

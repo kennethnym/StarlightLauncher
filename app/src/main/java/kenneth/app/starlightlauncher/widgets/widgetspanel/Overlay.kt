@@ -10,9 +10,13 @@ import android.view.ViewTreeObserver
 import android.view.animation.PathInterpolator
 import androidx.annotation.IdRes
 import androidx.core.animation.addListener
-import androidx.core.view.*
+import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.AppState
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.Plate
@@ -39,7 +43,7 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
     val contentContainerId = R.id.overlay_container_view
 
     @Inject
-    lateinit var appState: AppState
+    lateinit var launcherState: LauncherState
 
     @Inject
     lateinit var blurHandler: BlurHandler
@@ -65,12 +69,12 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
 
     fun show() {
         isVisible = true
-        translationY = appState.screenHeight.toFloat()
+        translationY = launcherState.screenHeight.toFloat()
 
         blurWith(blurHandler)
 
         val yAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, appState.screenHeight.toFloat(), 0f)
+            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, launcherState.screenHeight.toFloat(), 0f)
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
@@ -84,7 +88,7 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         isClosing = true
 
         val yAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, appState.screenHeight.toFloat())
+            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, launcherState.screenHeight.toFloat())
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
@@ -114,7 +118,7 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
             .getInsets(WindowInsetsCompat.Type.ime())
             .bottom
         // y coordinate of the top of ime
-        val imeY = appState.screenHeight - imeHeight
+        val imeY = launcherState.screenHeight - imeHeight
 
         if (imeHeight > 0) {
             originalTranslationY = translationY

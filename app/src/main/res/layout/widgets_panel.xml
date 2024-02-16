@@ -30,6 +30,7 @@
                 android:visibility="@{isInEditMode ? View.GONE : View.VISIBLE}" />
 
             <kenneth.app.starlightlauncher.widgets.widgetspanel.EditModeHeader
+                android:id="@+id/edit_mode_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="@{isInEditMode ? View.VISIBLE : View.GONE}" />

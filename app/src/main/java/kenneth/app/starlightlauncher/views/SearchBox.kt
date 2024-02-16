@@ -15,7 +15,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.AppState
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.databinding.SearchBoxBinding
@@ -45,7 +45,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
     lateinit var blurHandler: BlurHandler
 
     @Inject
-    lateinit var appState: AppState
+    lateinit var launcherState: LauncherState
 
     private val binding = SearchBoxBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -185,7 +185,7 @@ internal class SearchBox(context: Context, attrs: AttributeSet) : LinearLayout(c
     private fun createPaddingAnimation(showTopPadding: Boolean): ValueAnimator =
         ValueAnimator.ofInt(
             binding.searchBoxContainer.paddingTop,
-            if (showTopPadding) appState.statusBarHeight else 0,
+            if (showTopPadding) launcherState.statusBarHeight else 0,
         ).apply {
             interpolator = searchBoxAnimationInterpolator
             duration = 500

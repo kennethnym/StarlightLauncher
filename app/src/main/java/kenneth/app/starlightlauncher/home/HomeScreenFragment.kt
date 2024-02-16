@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
+import android.view.Choreographer
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -17,9 +18,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.ANIMATION_FRAME_DELAY
 import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.NightModeChanged
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
@@ -27,30 +29,35 @@ import kenneth.app.starlightlauncher.api.SearchResult
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.databinding.FragmentMainScreenBinding
 import kenneth.app.starlightlauncher.extension.ExtensionManager
+import kenneth.app.starlightlauncher.prefs.StarlightLauncherSettingsActivity
 import kenneth.app.starlightlauncher.prefs.searching.SearchPreferenceChanged
 import kenneth.app.starlightlauncher.searching.Searcher
 import kenneth.app.starlightlauncher.views.LauncherOptionMenu
 import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
+import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsFragment
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.max
 
 @AndroidEntryPoint
 internal class HomeScreenFragment @Inject constructor(
-    private val bindingRegister: BindingRegister,
     private val searcher: Searcher,
     private val launcher: StarlightLauncherApi,
     private val launcherEventChannel: LauncherEventChannel,
     private val extensionManager: ExtensionManager,
     private val appWidgetHost: AppWidgetHost,
+    private val launcherState: LauncherState,
 ) : Fragment() {
     lateinit var homeScreenViewPager: ViewPager2
 
     private var binding: FragmentMainScreenBinding? = null
     private val viewModel: HomeScreenViewModel by viewModels()
+
+    private var isDateTimeScaleEffectEnabled = false
 
     /**
      * A BroadcastReceiver that receives broadcast of Intent.ACTION_TIME_TICK.
@@ -100,6 +107,22 @@ internal class HomeScreenFragment @Inject constructor(
         }
     }
 
+    private val launcherOptionMenuDelegate = object : LauncherOptionMenu.Delegate {
+        override fun openSettings() {
+            startActivity(
+                Intent(context, StarlightLauncherSettingsActivity::class.java)
+            )
+        }
+
+        override fun openWidgetSelectorOverlay() {
+            launcher.showOverlay(AvailableWidgetsFragment())
+        }
+
+        override fun enableWidgetEditMode() {
+            binding?.widgetsPanel?.enterEditMode()
+        }
+    }
+
     override fun onAttach(context: Context) {
         context.registerReceiver(timeTickBroadcastReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
         super.onAttach(context)
@@ -117,7 +140,6 @@ internal class HomeScreenFragment @Inject constructor(
     ): View? = context?.let {
         FragmentMainScreenBinding.inflate(inflater).run {
             binding = this
-            bindingRegister.mainScreenBinding = this
 
             mediaControlCard.setLifecycleScope(lifecycleScope)
 
@@ -144,12 +166,7 @@ internal class HomeScreenFragment @Inject constructor(
 
             dateTimeViewContainer.setOnLongClickListener {
                 launcher.showOptionMenu {
-                    LauncherOptionMenu(
-                        it.context,
-                        launcher,
-                        bindingRegister,
-                        it
-                    )
+                    LauncherOptionMenu(it, launcherOptionMenuDelegate)
                 }
                 HANDLED
             }
@@ -188,6 +205,8 @@ internal class HomeScreenFragment @Inject constructor(
         binding?.widgetsPanel?.widgetListView?.onWidgetListChangedListener =
             widgetListChangedListener
 
+        enableDateTimeViewScaleEffect()
+
         searcher.addSearchResultListener { result, searchModule ->
             onSearchResultAvailable(result, searchModule)
         }
@@ -197,6 +216,16 @@ internal class HomeScreenFragment @Inject constructor(
                 onLauncherEvent(it)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        disableDateTimeViewScaleEffect()
+        super.onDestroyView()
+    }
+
+    override fun onPause() {
+        disableDateTimeViewScaleEffect()
+        super.onPause()
     }
 
     override fun onResume() {
@@ -283,5 +312,34 @@ internal class HomeScreenFragment @Inject constructor(
 
     private fun updateDateTime(date: Date) {
         binding?.dateTimeView?.dateTime = date
+    }
+
+    private fun enableDateTimeViewScaleEffect() {
+        if (!isDateTimeScaleEffectEnabled) {
+            isDateTimeScaleEffectEnabled = true
+            Choreographer.getInstance()
+                .postFrameCallbackDelayed(::updateDateTimeViewScale, ANIMATION_FRAME_DELAY)
+        }
+    }
+
+    private fun disableDateTimeViewScaleEffect() {
+        Choreographer.getInstance().removeFrameCallback(::updateDateTimeViewScale)
+        isDateTimeScaleEffectEnabled = false
+    }
+
+    private fun updateDateTimeViewScale(delay: Long) {
+        val binding = this.binding ?: return
+        val newScale = max(
+            0f,
+            (binding.dateTimeView.y - binding.widgetsPanel.y) / (binding.dateTimeView.y - launcherState.halfScreenHeight)
+        )
+
+        binding.dateTimeView.apply {
+            scaleX = newScale
+            scaleY = newScale
+        }
+
+        Choreographer.getInstance()
+            .postFrameCallbackDelayed(::updateDateTimeViewScale, ANIMATION_FRAME_DELAY)
     }
 }

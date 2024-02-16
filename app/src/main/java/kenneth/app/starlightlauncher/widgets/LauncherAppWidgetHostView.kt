@@ -5,14 +5,14 @@ import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.LauncherState
 
 /**
  * Subclasses [AppWidgetHostView] to avoid scrolling conflict with the widget list.
  */
 internal class LauncherAppWidgetHostView(
     context: Context,
-    private val bindingRegister: BindingRegister
+    private val launcherState: LauncherState,
 ) : AppWidgetHostView(context) {
     /**
      * The parent scrollable [View] that contains this host view.
@@ -21,13 +21,13 @@ internal class LauncherAppWidgetHostView(
      */
     var scrollingParent: ViewGroup? = null
 
+    var isInWidgetEditMode = false
+
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean =
-        if (bindingRegister.mainScreenBinding.widgetsPanel.isEditModeEnabled)
+        if (launcherState.isInWidgetEditMode)
             true
         else {
-            scrollingParent?.let {
-                it.requestDisallowInterceptTouchEvent(true)
-            }
+            scrollingParent?.requestDisallowInterceptTouchEvent(true)
             false
         }
 }

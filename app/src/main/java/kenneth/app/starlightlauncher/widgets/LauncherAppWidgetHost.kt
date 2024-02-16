@@ -10,7 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kenneth.app.starlightlauncher.BindingRegister
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.R
 import javax.inject.Inject
 
@@ -24,12 +24,12 @@ internal abstract class LauncherAppWidgetHostProvider {
 
 internal class LauncherAppWidgetHost @Inject constructor(
     @ApplicationContext context: Context,
-    private val bindingRegister: BindingRegister,
+    private val launcherState: LauncherState,
 ) :
     AppWidgetHost(context, R.id.app_widget_host_id) {
     override fun onCreateView(
         context: Context,
         appWidgetId: Int,
         appWidget: AppWidgetProviderInfo?
-    ): AppWidgetHostView = LauncherAppWidgetHostView(context, bindingRegister)
+    ): AppWidgetHostView = LauncherAppWidgetHostView(context, launcherState)
 }

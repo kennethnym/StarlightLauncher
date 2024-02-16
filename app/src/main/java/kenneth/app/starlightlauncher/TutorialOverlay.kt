@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.TypedValue
 import android.view.LayoutInflater
-import androidx.core.content.edit
 import com.takusemba.spotlight.Spotlight
 import com.takusemba.spotlight.Target
 import com.takusemba.spotlight.shape.RoundedRectangle
@@ -20,7 +19,7 @@ import javax.inject.Inject
 internal class TutorialOverlay @Inject constructor(
     @ActivityContext private val context: Context,
     private val sharedPreferences: SharedPreferences,
-    private val appState: AppState,
+    private val launcherState: LauncherState,
 ) {
     private lateinit var spotlight: Spotlight
 
@@ -28,11 +27,11 @@ internal class TutorialOverlay @Inject constructor(
         listOf(
             // widgets panel target instructing user to swipe up to expand the panel
             Target.Builder()
-                .setAnchor(appState.screenWidth / 2f, appState.screenHeight * 0.75f - 100)
+                .setAnchor(launcherState.screenWidth / 2f, launcherState.screenHeight * 0.75f - 100)
                 .setShape(
                     RoundedRectangle(
-                        appState.halfScreenHeight.toFloat() + 100,
-                        appState.screenWidth.toFloat(),
+                        launcherState.halfScreenHeight.toFloat() + 100,
+                        launcherState.screenWidth.toFloat(),
                         0f
                     )
                 )
@@ -49,11 +48,11 @@ internal class TutorialOverlay @Inject constructor(
             // target instructing user to long press anywhere above the search box
             // to open the launcher menu
             Target.Builder()
-                .setAnchor(appState.screenWidth / 2f, appState.screenHeight * 0.25f)
+                .setAnchor(launcherState.screenWidth / 2f, launcherState.screenHeight * 0.25f)
                 .setShape(
                     RoundedRectangle(
-                        appState.halfScreenHeight.toFloat(),
-                        appState.screenWidth.toFloat(),
+                        launcherState.halfScreenHeight.toFloat(),
+                        launcherState.screenWidth.toFloat(),
                         0f
                     )
                 )

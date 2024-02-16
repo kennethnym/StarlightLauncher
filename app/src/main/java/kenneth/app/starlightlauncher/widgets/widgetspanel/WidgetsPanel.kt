@@ -19,10 +19,9 @@ import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import dagger.hilt.android.AndroidEntryPoint
-import kenneth.app.starlightlauncher.AppState
-import kenneth.app.starlightlauncher.BindingRegister
 import kenneth.app.starlightlauncher.GESTURE_ACTION_THRESHOLD
 import kenneth.app.starlightlauncher.HANDLED
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.GestureMover
@@ -60,10 +59,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         private set
 
     @Inject
-    lateinit var appState: AppState
-
-    @Inject
-    lateinit var bindingRegister: BindingRegister
+    lateinit var launcherState: LauncherState
 
     private var velocityTracker: VelocityTracker? = null
 
@@ -99,14 +95,18 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     val searchResultView: SearchResultView
 
     init {
-        translationY = appState.halfScreenHeight.toFloat()
+        translationY = launcherState.halfScreenHeight.toFloat()
 
         binding = WidgetsPanelBinding.inflate(LayoutInflater.from(context), this, true).also {
             widgetListView = it.widgetListView
             searchBox = it.searchBox
             searchResultView = it.searchResultView
         }.apply {
+            widgetListView.widgetsPanel = this@WidgetsPanel
             searchBox.isWidgetsPanelExpanded = isExpanded
+            editModeHeader.onRequestExitEditMode = {
+                exitEditMode()
+            }
         }
 
         onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -199,12 +199,13 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     /**
      * Enables widget editing. Users can reorder and remove widgets.
      */
-    fun editWidgets() {
+    fun enterEditMode() {
         canBeSwiped = false
         isEditModeEnabled = true
         expand()
         binding.isInEditMode = true
         binding.widgetListView.enableDragAndDrop()
+        launcherState.isInWidgetEditMode = true
     }
 
     /**
@@ -218,6 +219,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             exitEditMode()
             disableDragAndDrop()
         }
+        launcherState.isInWidgetEditMode = false
     }
 
     fun redrawAndroidWidgets() {
@@ -236,7 +238,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             .getInsets(WindowInsetsCompat.Type.ime())
             .bottom
         // y coordinate of the top of ime
-        val imeY = appState.screenHeight - imeHeight
+        val imeY = launcherState.screenHeight - imeHeight
 
         if (imeHeight > 0) {
             originalTranslationY = translationY
