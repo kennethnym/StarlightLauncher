@@ -173,9 +173,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         gestureMover.reset()
-        activity?.let {
-            it.onBackPressedDispatcher.addCallback(it, onBackPressedCallback)
-        }
+        activity?.onBackPressedDispatcher?.addCallback(onBackPressedCallback)
     }
 
     fun retract() {

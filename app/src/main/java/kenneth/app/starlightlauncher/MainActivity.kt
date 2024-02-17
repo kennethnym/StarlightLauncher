@@ -453,7 +453,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     private inner class OverlayOnBackPressedCallback(enabled: Boolean) :
         OnBackPressedCallback(enabled) {
         override fun handleOnBackPressed() {
-            binding.overlay.close()
+            closeOverlay()
         }
     }
 
