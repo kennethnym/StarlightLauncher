@@ -29,7 +29,10 @@ class MathSearchModule(context: Context) : SearchModule(context) {
     override fun cleanup() {}
 
     override suspend fun search(keyword: String, keywordRegex: Regex): SearchResult =
-        try {
+        if (keyword.toBigDecimalOrNull() != null) {
+            // return nothing if the search keyboard is only a number
+            SearchResult.None(keyword, EXTENSION_NAME)
+        } else try {
             Result(
                 query = keyword,
                 value = Expressions().eval(keyword),
