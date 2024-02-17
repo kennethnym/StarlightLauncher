@@ -16,7 +16,7 @@ import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.R
 import kenneth.app.starlightlauncher.noteswidget.databinding.AllNotesBinding
 
-internal class AllNotesFragment constructor(val launcher: StarlightLauncherApi) :
+internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
     Fragment(),
     NoteListChangedCallback {
     private var binding: AllNotesBinding? = null

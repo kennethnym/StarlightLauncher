@@ -1,6 +1,11 @@
 package kenneth.app.starlightlauncher.noteswidget.view
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
@@ -9,7 +14,7 @@ import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class AllNotesPageViewModel constructor(launcher: StarlightLauncherApi) : ViewModel() {
+class AllNotesPageViewModel(launcher: StarlightLauncherApi) : ViewModel() {
     private val prefs = NotesWidgetPreferences.getInstance(launcher.dataStore)
 
     private val _notes by lazy {

@@ -2,6 +2,7 @@ package kenneth.app.starlightlauncher.noteswidget.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.QuickNoteListItemBinding
@@ -14,7 +15,7 @@ internal class QuickNoteListAdapter(
     private val callback: QuickNoteListAdapterCallback
 ) :
     RecyclerView.Adapter<QuickNoteListItem>() {
-    var notes = listOf<Note>()
+    private var notes = listOf<Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuickNoteListItem {
         val binding =
@@ -33,6 +34,13 @@ internal class QuickNoteListAdapter(
     }
 
     override fun getItemCount(): Int = notes.size
+
+    fun update(newNotes: List<Note>) {
+        val oldNotes = notes
+        notes = newNotes
+        DiffUtil.calculateDiff(NoteListDiffCallback(oldNotes, newNotes))
+            .dispatchUpdatesTo(this)
+    }
 }
 
 internal class QuickNoteListItem(
