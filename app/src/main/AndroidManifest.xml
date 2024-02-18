@@ -27,6 +27,7 @@
         android:stateNotNeeded="true"
         android:supportsRtl="true"
         android:theme="@style/LightLauncherTheme"
+        android:enableOnBackInvokedCallback="true"
         tools:replace="android:name,android:allowBackup">
 
         <!-- This notification listener service is required in order to obtain info

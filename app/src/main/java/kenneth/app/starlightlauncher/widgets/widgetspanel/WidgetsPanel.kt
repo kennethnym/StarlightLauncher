@@ -24,6 +24,7 @@ import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
+import kenneth.app.starlightlauncher.animation.TranslationYPredictiveOnBackPressedCallback
 import kenneth.app.starlightlauncher.api.util.GestureMover
 import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
@@ -109,7 +110,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             }
         }
 
-        onBackPressedCallback = object : OnBackPressedCallback(true) {
+        onBackPressedCallback = object : TranslationYPredictiveOnBackPressedCallback(this, true) {
             override fun handleOnBackPressed() {
                 if (isExpanded && !isEditModeEnabled) {
                     if (binding.searchBox.hasQueryText) {
