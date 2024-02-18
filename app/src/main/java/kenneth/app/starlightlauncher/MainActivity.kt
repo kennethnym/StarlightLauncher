@@ -13,11 +13,14 @@ import android.graphics.Bitmap
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.DeprecatedSinceApi
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
@@ -138,9 +141,18 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     private lateinit var optionMenuBackPressedCallback: TranslationYPredictiveOnBackPressedCallback
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        // this records this position that onPageSelected is last called with
+        // sometimes onPageSelected is called multiple times,
+        // triggering startTransition/reverseTransition multiple times, which will mess up the transition
+        // this is to ensure that the transition is only triggered
+        // when the position is actually different from which is passed when onPageSelected was last called
+        private var prevPosition = 0
+
         override fun onPageSelected(position: Int) {
             binding.homeScreenViewPager.background.run {
-                if (this !is TransitionDrawable) return
+                Log.d("MainActivity", "prev $prevPosition position $position")
+
+                if (this !is TransitionDrawable || prevPosition == position) return
 
                 if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
                     startTransition(BACKGROUND_TRANSITION_DURATION_MS)
@@ -148,6 +160,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
                     reverseTransition(BACKGROUND_TRANSITION_DURATION_MS)
                 }
             }
+            prevPosition = position
         }
 
         override fun onPageScrolled(
@@ -157,9 +170,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
             if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
-                onBackPressedDispatcher.addCallback(
-                    AllAppsScreenBackPressedCallback(true)
-                )
+                onBackPressedDispatcher.addCallback(AllAppsScreenBackPressedCallback())
             }
         }
     }
@@ -469,11 +480,36 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         }
     }
 
-    private inner class AllAppsScreenBackPressedCallback(enabled: Boolean) :
-        OnBackPressedCallback(enabled) {
+    private inner class AllAppsScreenBackPressedCallback :
+        OnBackPressedCallback(true) {
+        private var draggedBy = 0f
+
         override fun handleOnBackPressed() {
-            binding.homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_HOME
+            binding.homeScreenViewPager.apply {
+                endFakeDrag()
+                currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_HOME
+            }
             remove()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackStarted(backEvent: BackEventCompat) {
+            binding.homeScreenViewPager.beginFakeDrag()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+            val newDraggedBy = 400 * backEvent.progress
+            binding.homeScreenViewPager.fakeDragBy(newDraggedBy - draggedBy)
+            draggedBy = newDraggedBy
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackCancelled() {
+            binding.homeScreenViewPager.apply {
+                endFakeDrag()
+                currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER
+            }
         }
     }
 }
