@@ -34,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import kenneth.app.starlightlauncher.animation.TranslationYPredictiveOnBackPressedCallback
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
@@ -134,6 +135,8 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      */
     private var overlayBackPressedCallback: OverlayOnBackPressedCallback? = null
 
+    private lateinit var optionMenuBackPressedCallback: TranslationYPredictiveOnBackPressedCallback
+
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             binding.homeScreenViewPager.background.run {
@@ -207,6 +210,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        optionMenuBackPressedCallback =
+            object : TranslationYPredictiveOnBackPressedCallback(binding.optionMenu, true) {
+                override fun handleOnBackPressed() {
+                    closeOptionMenu()
+                }
+            }
 
         binding.homeScreenViewPager.apply {
             offscreenPageLimit = 1
@@ -319,10 +329,12 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     fun showOptionMenu(builder: OptionMenuBuilder) {
         binding.optionMenu.show(builder)
+        onBackPressedDispatcher.addCallback(optionMenuBackPressedCallback)
     }
 
     fun closeOptionMenu() {
         binding.optionMenu.hide()
+        optionMenuBackPressedCallback.remove()
     }
 
     private fun cleanup() {
