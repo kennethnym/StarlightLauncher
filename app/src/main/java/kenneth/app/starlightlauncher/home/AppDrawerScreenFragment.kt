@@ -16,17 +16,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.view.AppOptionMenu
@@ -44,6 +47,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 internal class AppDrawerScreenFragment @Inject constructor(
     private val launcher: StarlightLauncherApi,
+    private val launcherState: LauncherState,
     private val launcherApps: LauncherApps,
     private val extensionManager: ExtensionManager,
 ) : Fragment() {
@@ -125,9 +129,44 @@ internal class AppDrawerScreenFragment @Inject constructor(
      * Called when the back button is pressed when the app list is showing only one section.
      */
     private val filteredAppListBackPressedCallback = object : OnBackPressedCallback(true) {
+        var isAdded = false
+
+        private var initialTranslationX = 0f
+
         override fun handleOnBackPressed() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val binding = this@AppDrawerScreenFragment.binding ?: return
+                binding.shouldShowGoBackIndicator = false
+                binding.goBackIndicatorLabel.apply {
+                    alpha = 0f
+                    translationX = initialTranslationX
+                }
+            }
             appListAdapter.showAllApps()
             remove()
+            isAdded = false
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackStarted(backEvent: BackEventCompat) {
+            val binding = this@AppDrawerScreenFragment.binding ?: return
+            initialTranslationX = binding.goBackIndicatorLabel.translationX
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+            binding?.goBackIndicatorLabel?.apply {
+                alpha = backEvent.progress
+                translationX = initialTranslationX + (120 * backEvent.progress)
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackCancelled() {
+            binding?.goBackIndicatorLabel?.apply {
+                alpha = 0f
+                translationX = initialTranslationX
+            }
         }
     }
 
@@ -138,6 +177,10 @@ internal class AppDrawerScreenFragment @Inject constructor(
     ): View? = context?.let { context ->
         FragmentAppDrawerScreenBinding.inflate(inflater).run {
             binding = this
+
+            goBackIndicatorLabel.updatePadding(
+                top = goBackIndicatorLabel.paddingTop + launcherState.statusBarHeight
+            )
 
             with(appList) {
                 layoutManager = LinearLayoutManager(context).apply {
@@ -210,7 +253,7 @@ internal class AppDrawerScreenFragment @Inject constructor(
                     label.text = sectionLabel
 
                     label.setOnClickListener {
-                        onlyShowSectionInAppList(sectionLabel)
+                        showFilteredAppList(sectionLabel)
                     }
                 }.also { sectionGridItemBindings += it }
             }
@@ -305,14 +348,20 @@ internal class AppDrawerScreenFragment @Inject constructor(
         }
     }
 
-    private fun onlyShowSectionInAppList(section: String) {
+    private fun showFilteredAppList(section: String) {
         if (availableSections.contains(section)) {
             sectionGridBackPressedCallback.remove()
 
             appListAdapter.onlyShowSection(section)
             hideAppListSectionGrid()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                binding?.shouldShowGoBackIndicator = true
+            }
 
-            activity?.onBackPressedDispatcher?.addCallback(filteredAppListBackPressedCallback)
+            if (!filteredAppListBackPressedCallback.isAdded) {
+                activity?.onBackPressedDispatcher?.addCallback(filteredAppListBackPressedCallback)
+                filteredAppListBackPressedCallback.isAdded = true
+            }
         }
     }
 

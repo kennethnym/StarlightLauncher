@@ -9,11 +9,28 @@
         <variable
             name="isLoading"
             type="Boolean" />
+
+        <variable
+            name="shouldShowGoBackIndicator"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/go_back_indicator_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:paddingHorizontal="@dimen/app_drawer_padding_horizontal"
+            android:paddingTop="16dp"
+            android:text="@string/app_drawer_back_to_all_apps"
+            android:textStyle="bold"
+            android:translationX="-100px"
+            android:visibility="@{shouldShowGoBackIndicator ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/app_list"
