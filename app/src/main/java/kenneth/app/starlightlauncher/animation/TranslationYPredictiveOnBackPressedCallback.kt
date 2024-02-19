@@ -19,7 +19,7 @@ abstract class TranslationYPredictiveOnBackPressedCallback(
     }
 
     override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-        targetView.translationY = beginningTranslationY + 500 * backEvent.progress
+        targetView.translationY = beginningTranslationY + 600 * backEvent.progress
     }
 
     override fun handleOnBackCancelled() {

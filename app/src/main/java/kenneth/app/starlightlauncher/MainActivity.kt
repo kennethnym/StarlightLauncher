@@ -146,7 +146,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         // triggering startTransition/reverseTransition multiple times, which will mess up the transition
         // this is to ensure that the transition is only triggered
         // when the position is actually different from which is passed when onPageSelected was last called
-        private var prevPosition = 0
+        private var prevPosition = -1
 
         override fun onPageSelected(position: Int) {
             binding.homeScreenViewPager.background.run {
@@ -474,7 +474,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      * Called when overlay is visible and the back button is pressed.
      */
     private inner class OverlayOnBackPressedCallback(enabled: Boolean) :
-        OnBackPressedCallback(enabled) {
+        TranslationYPredictiveOnBackPressedCallback(binding.overlay, enabled) {
         override fun handleOnBackPressed() {
             closeOverlay()
         }
@@ -499,7 +499,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
         override fun handleOnBackProgressed(backEvent: BackEventCompat) {
-            val newDraggedBy = 400 * backEvent.progress
+            val newDraggedBy = 800 * backEvent.progress
             binding.homeScreenViewPager.fakeDragBy(newDraggedBy - draggedBy)
             draggedBy = newDraggedBy
         }
