@@ -119,9 +119,56 @@ internal class AppDrawerScreenFragment @Inject constructor(
     }
 
     private val sectionGridBackPressedCallback = object : OnBackPressedCallback(true) {
+        private var sectionGridInitialTranslationX = 0f
+
         override fun handleOnBackPressed() {
             hideAppListSectionGrid()
             remove()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackStarted(backEvent: BackEventCompat) {
+            val binding = this@AppDrawerScreenFragment.binding ?: return
+            sectionGridInitialTranslationX = binding.appListSectionGrid.translationX
+            binding.appList.apply {
+                alpha = 0f
+                scaleX = 0.8f
+                scaleY = 0.8f
+                translationX = -300f
+                isVisible = true
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+            val binding = this@AppDrawerScreenFragment.binding ?: return
+            binding.appListSectionGrid.apply {
+                val scale = 1f - (0.2f * backEvent.progress)
+                translationX =
+                    sectionGridInitialTranslationX + (300 * backEvent.progress)
+                scaleX = scale
+                scaleY = scale
+                alpha = 1f - (0.9f * backEvent.progress)
+            }
+            binding.appList.apply {
+                val scale = 0.8f + (0.1f * backEvent.progress)
+                translationX = -300f * (1 - backEvent.progress)
+                scaleX = scale
+                scaleY = scale
+                alpha = 0.9f * backEvent.progress
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackCancelled() {
+            val binding = this@AppDrawerScreenFragment.binding ?: return
+            binding.appListSectionGrid.apply {
+                scaleX = 1f
+                scaleY = 1f
+            }
+            binding.appList.apply {
+                isVisible = false
+            }
         }
     }
 
@@ -337,10 +384,19 @@ internal class AppDrawerScreenFragment @Inject constructor(
                 ObjectAnimator.ofFloat(binding.appListSectionGrid, "scaleY", 0.9f),
                 ObjectAnimator.ofFloat(binding.appListSectionGrid, "alpha", 0f),
             )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                playTogether(
+                    ObjectAnimator.ofFloat(binding.appListSectionGrid, "translationX", -300f),
+                    ObjectAnimator.ofFloat(binding.appList, "translationX", 0f)
+                )
+            }
 
             addListener(
                 onEnd = {
-                    binding.appListSectionGrid.isVisible = false
+                    binding.appListSectionGrid.apply {
+                        translationX = 0f
+                        isVisible = false
+                    }
                 }
             )
 
