@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -28,8 +29,8 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
         override fun onGlobalLayout() {
             binding?.let { binding ->
                 with(binding.noteCardListScrollView) {
-                    updatePadding(bottom = binding.addNoteButton.height + 24.dp)
-                    smoothScrollTo(0, 0)
+                    updatePadding(bottom = paddingBottom + binding.addNoteButton.height + 24.dp)
+                    scrollTo(0, 0)
                 }
                 binding.root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
             }
@@ -42,6 +43,8 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
         savedInstanceState: Bundle?
     ): View? = context?.let { context ->
         AllNotesBinding.inflate(LayoutInflater.from(context)).run {
+            binding = this
+
             val topPadding = resources.getDimensionPixelOffset(R.dimen.overlay_padding_top)
 
             addNoteButton.setOnClickListener { addNote() }
@@ -58,6 +61,15 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
                     listAdapter = it
                 }
                 layoutManager = LinearLayoutManager(context)
+            }
+
+            root.setOnApplyWindowInsetsListener { _, windowInsets ->
+                noteCardListScrollView.updatePadding(
+                    bottom = noteCardListScrollView.paddingBottom +
+                            WindowInsetsCompat.toWindowInsetsCompat(windowInsets)
+                                .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                )
+                windowInsets
             }
 
             root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
