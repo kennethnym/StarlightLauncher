@@ -184,7 +184,7 @@ class BlurHandlerImpl @Inject constructor(
             val destWidthFloat = dest.width.toFloat()
 
             dest.imageMatrix = Matrix().apply {
-                // if dest's top part is partially blocked, move the cutout down to the bottom
+                // if dest's top part is partiallxy blocked, move the cutout down to the bottom
                 setTranslate(0f, if (viewY < 0) -viewY.toFloat() else 0f)
                 preScale(
                     destWidthFloat / bgWidth,

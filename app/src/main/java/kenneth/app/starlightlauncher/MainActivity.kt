@@ -15,9 +15,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.DeprecatedSinceApi
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
@@ -34,6 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ActivityContext
+import kenneth.app.starlightlauncher.animation.TranslationYPredictiveOnBackPressedCallback
 import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.api.util.BlurHandler
 import kenneth.app.starlightlauncher.api.view.OptionMenuBuilder
@@ -134,10 +137,19 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      */
     private var overlayBackPressedCallback: OverlayOnBackPressedCallback? = null
 
+    private lateinit var optionMenuBackPressedCallback: TranslationYPredictiveOnBackPressedCallback
+
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        // this records this position that onPageSelected is last called with
+        // sometimes onPageSelected is called multiple times,
+        // triggering startTransition/reverseTransition multiple times, which will mess up the transition
+        // this is to ensure that the transition is only triggered
+        // when the position is actually different from which is passed when onPageSelected was last called
+        private var prevPosition = -1
+
         override fun onPageSelected(position: Int) {
             binding.homeScreenViewPager.background.run {
-                if (this !is TransitionDrawable) return
+                if (this !is TransitionDrawable || prevPosition == position) return
 
                 if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
                     startTransition(BACKGROUND_TRANSITION_DURATION_MS)
@@ -145,6 +157,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
                     reverseTransition(BACKGROUND_TRANSITION_DURATION_MS)
                 }
             }
+            prevPosition = position
         }
 
         override fun onPageScrolled(
@@ -154,9 +167,7 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
             if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
-                onBackPressedDispatcher.addCallback(
-                    AllAppsScreenBackPressedCallback(true)
-                )
+                onBackPressedDispatcher.addCallback(AllAppsScreenBackPressedCallback())
             }
         }
     }
@@ -207,6 +218,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        optionMenuBackPressedCallback =
+            object : TranslationYPredictiveOnBackPressedCallback(binding.optionMenu, true) {
+                override fun handleOnBackPressed() {
+                    closeOptionMenu()
+                }
+            }
 
         binding.homeScreenViewPager.apply {
             offscreenPageLimit = 1
@@ -319,10 +337,12 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
     fun showOptionMenu(builder: OptionMenuBuilder) {
         binding.optionMenu.show(builder)
+        onBackPressedDispatcher.addCallback(optionMenuBackPressedCallback)
     }
 
     fun closeOptionMenu() {
         binding.optionMenu.hide()
+        optionMenuBackPressedCallback.remove()
     }
 
     private fun cleanup() {
@@ -451,17 +471,42 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
      * Called when overlay is visible and the back button is pressed.
      */
     private inner class OverlayOnBackPressedCallback(enabled: Boolean) :
-        OnBackPressedCallback(enabled) {
+        TranslationYPredictiveOnBackPressedCallback(binding.overlay, enabled) {
         override fun handleOnBackPressed() {
             closeOverlay()
         }
     }
 
-    private inner class AllAppsScreenBackPressedCallback(enabled: Boolean) :
-        OnBackPressedCallback(enabled) {
+    private inner class AllAppsScreenBackPressedCallback :
+        OnBackPressedCallback(true) {
+        private var draggedBy = 0f
+
         override fun handleOnBackPressed() {
-            binding.homeScreenViewPager.currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_HOME
+            binding.homeScreenViewPager.apply {
+                endFakeDrag()
+                currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_HOME
+            }
             remove()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackStarted(backEvent: BackEventCompat) {
+            binding.homeScreenViewPager.beginFakeDrag()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+            val newDraggedBy = 800 * backEvent.progress
+            binding.homeScreenViewPager.fakeDragBy(newDraggedBy - draggedBy)
+            draggedBy = newDraggedBy
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        override fun handleOnBackCancelled() {
+            binding.homeScreenViewPager.apply {
+                endFakeDrag()
+                currentItem = POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER
+            }
         }
     }
 }

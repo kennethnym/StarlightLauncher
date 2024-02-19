@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat
@@ -25,7 +24,6 @@ import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.NOT_HANDLED
 import kenneth.app.starlightlauncher.R
 import kenneth.app.starlightlauncher.api.util.GestureMover
-import kenneth.app.starlightlauncher.api.util.activity
 import kenneth.app.starlightlauncher.databinding.WidgetsPanelBinding
 import kenneth.app.starlightlauncher.searching.views.SearchResultView
 import kenneth.app.starlightlauncher.views.SearchBox
@@ -41,6 +39,12 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     NestedScrollView(context, attrs),
     OnApplyWindowInsetsListener,
     ViewTreeObserver.OnGlobalFocusChangeListener {
+    interface Listener {
+        fun onExpanded()
+
+        fun onRetracted()
+    }
+
     /**
      * Determines whether [WidgetsPanel] can be expanded/retracted with swipes.
      */
@@ -57,6 +61,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
      */
     var isEditModeEnabled = false
         private set
+
+    var listener: Listener? = null
 
     @Inject
     lateinit var launcherState: LauncherState
@@ -83,8 +89,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
 
     private val binding: WidgetsPanelBinding
 
-    private val onBackPressedCallback: OnBackPressedCallback
-
     private val keyboardAnimation = KeyboardAnimation()
 
     var isSearchResultsVisible: Boolean = false
@@ -106,18 +110,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
             searchBox.isWidgetsPanelExpanded = isExpanded
             editModeHeader.onRequestExitEditMode = {
                 exitEditMode()
-            }
-        }
-
-        onBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (isExpanded && !isEditModeEnabled) {
-                    if (binding.searchBox.hasQueryText) {
-                        binding.searchBox.clear()
-                    } else {
-                        retract()
-                    }
-                }
             }
         }
 
@@ -159,8 +151,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     fun expand() {
-        Log.d("WidgetsPanel", "expand")
-
         isExpanded = true
 
         WidgetPanelAnimation(0f)
@@ -173,7 +163,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         gestureMover.reset()
-        activity?.onBackPressedDispatcher?.addCallback(onBackPressedCallback)
+        listener?.onExpanded()
     }
 
     fun retract() {
@@ -191,7 +181,7 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         }
 
         gestureMover.reset()
-        onBackPressedCallback.remove()
+        listener?.onRetracted()
     }
 
     /**
@@ -260,7 +250,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     override fun performClick(): Boolean {
-        Log.d("WidgetsPanel", "perform click")
         return super.performClick()
     }
 

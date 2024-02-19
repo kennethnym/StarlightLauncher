@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.view.Choreographer
@@ -12,6 +13,9 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.BackEventCompat
+import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +27,7 @@ import kenneth.app.starlightlauncher.HANDLED
 import kenneth.app.starlightlauncher.LauncherEventChannel
 import kenneth.app.starlightlauncher.LauncherState
 import kenneth.app.starlightlauncher.NightModeChanged
+import kenneth.app.starlightlauncher.animation.TranslationYPredictiveOnBackPressedCallback
 import kenneth.app.starlightlauncher.api.LauncherEvent
 import kenneth.app.starlightlauncher.api.SearchModule
 import kenneth.app.starlightlauncher.api.SearchResult
@@ -37,6 +42,7 @@ import kenneth.app.starlightlauncher.views.SearchBoxActionDelegate
 import kenneth.app.starlightlauncher.widgets.AddedWidget
 import kenneth.app.starlightlauncher.widgets.WidgetListView
 import kenneth.app.starlightlauncher.widgets.availablewidgetspage.AvailableWidgetsFragment
+import kenneth.app.starlightlauncher.widgets.widgetspanel.WidgetsPanel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
@@ -123,6 +129,79 @@ internal class HomeScreenFragment @Inject constructor(
         }
     }
 
+    private val widgetsPaneListener = object : WidgetsPanel.Listener {
+        override fun onExpanded() {
+            if (!widgetsPanelExpandedBackCallback.isAdded) {
+                activity?.onBackPressedDispatcher?.addCallback(widgetsPanelExpandedBackCallback)
+                widgetsPanelExpandedBackCallback.isAdded = true
+            }
+        }
+
+        override fun onRetracted() {
+            widgetsPanelExpandedBackCallback.apply {
+                remove()
+                isAdded = false
+            }
+        }
+    }
+
+    /**
+     * An on back pressed callback that retracts the widget panel when the back button is pressed
+     */
+    private val widgetsPanelExpandedBackCallback by lazy {
+        object : TranslationYPredictiveOnBackPressedCallback(binding!!.widgetsPanel, true) {
+            var isAdded = false
+
+            override fun handleOnBackPressed() {
+                binding?.widgetsPanel?.retract()
+            }
+        }
+    }
+
+    /**
+     * An on back pressed callback that clears the search results when the back button is triggered
+     */
+    private val searchResultsBackCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            var isAdded = false
+
+            private var beginningAlpha = 0f
+            private var beginningTranslationX = 0f
+
+            override fun handleOnBackPressed() {
+                val binding = this@HomeScreenFragment.binding ?: return
+                binding.widgetsPanel.searchBox.clear()
+                binding.widgetsPanel.searchResultView.apply {
+                    alpha = beginningAlpha
+                    translationX = beginningTranslationX
+                }
+            }
+
+            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            override fun handleOnBackStarted(backEvent: BackEventCompat) {
+                val binding = this@HomeScreenFragment.binding ?: return
+                beginningAlpha = binding.widgetsPanel.searchResultView.alpha
+                beginningTranslationX = binding.widgetsPanel.searchResultView.translationX
+            }
+
+            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+                binding?.widgetsPanel?.searchResultView?.apply {
+                    alpha = beginningAlpha * (1 - backEvent.progress)
+                    translationX = beginningTranslationX + (500 * backEvent.progress)
+                }
+            }
+
+            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            override fun handleOnBackCancelled() {
+                binding?.widgetsPanel?.searchResultView?.apply {
+                    alpha = beginningAlpha
+                    translationX = beginningTranslationX
+                }
+            }
+        }
+    }
+
     override fun onAttach(context: Context) {
         context.registerReceiver(timeTickBroadcastReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
         super.onAttach(context)
@@ -170,6 +249,8 @@ internal class HomeScreenFragment @Inject constructor(
                 }
                 HANDLED
             }
+
+            widgetsPanel.listener = widgetsPaneListener
 
             root
         }
@@ -278,10 +359,18 @@ internal class HomeScreenFragment @Inject constructor(
     }
 
     private fun handleSearchQuery(query: Editable?) {
-        if (query == null || query.isBlank()) {
+        if (query.isNullOrBlank()) {
+            searchResultsBackCallback.apply {
+                remove()
+                isAdded = false
+            }
             viewModel.cancelPendingSearch()
             binding?.widgetsPanel?.clearSearchResults()
         } else {
+            if (!searchResultsBackCallback.isAdded) {
+                searchResultsBackCallback.isAdded = true
+                activity?.onBackPressedDispatcher?.addCallback(searchResultsBackCallback)
+            }
             binding?.widgetsPanel?.searchBox?.showClearSearchBoxButton()
             viewModel.requestSearch(query.toString())
         }

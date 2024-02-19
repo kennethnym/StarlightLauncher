@@ -33,6 +33,9 @@
     <string name="search_box_label">Search anywhere…</string>
     <string name="search_result_section_apps">Apps</string>
 
+    <!-- App drawer -->
+    <string name="app_drawer_back_to_all_apps">Back to all apps</string>
+
     <!-- Tutorial -->
     <string name="spotlight_overlay_description_go_next">Tap anywhere here to continue…</string>
     <string name="spotlight_overlay_description_title_widgets_panel">Widgets Panel</string>
