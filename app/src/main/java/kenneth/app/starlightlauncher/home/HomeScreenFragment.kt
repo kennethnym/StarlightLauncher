@@ -423,7 +423,7 @@ internal class HomeScreenFragment @Inject constructor(
             (binding.dateTimeView.y - binding.widgetsPanel.y) / (binding.dateTimeView.y - launcherState.halfScreenHeight)
         )
 
-        binding.dateTimeView.apply {
+        binding.dateTimeViewContainer.apply {
             scaleX = newScale
             scaleY = newScale
         }
