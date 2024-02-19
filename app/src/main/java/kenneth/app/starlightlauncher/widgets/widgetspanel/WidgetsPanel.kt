@@ -151,8 +151,6 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
     }
 
     fun expand() {
-        Log.d("WidgetsPanel", "expand")
-
         isExpanded = true
 
         WidgetPanelAnimation(0f)

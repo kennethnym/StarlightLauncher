@@ -13,7 +13,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.BackEventCompat
@@ -150,8 +149,6 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
 
         override fun onPageSelected(position: Int) {
             binding.homeScreenViewPager.background.run {
-                Log.d("MainActivity", "prev $prevPosition position $position")
-
                 if (this !is TransitionDrawable || prevPosition == position) return
 
                 if (position == POSITION_HOME_SCREEN_VIEW_PAGER_APP_DRAWER) {
