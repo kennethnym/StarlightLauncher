@@ -170,6 +170,8 @@ internal class WidgetsPanel(context: Context, attrs: AttributeSet) :
         val screenHeight = context.resources.displayMetrics.heightPixels
         isExpanded = false
 
+        smoothScrollTo(0, 0)
+
         WidgetPanelAnimation(screenHeight / 2f)
             .also { ongoingAnimation = it }
             .start()
