@@ -67,19 +67,25 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         viewTreeObserver.addOnGlobalFocusChangeListener(this)
     }
 
-    fun show() {
+    fun show(onShown: () -> Unit) {
         isVisible = true
         translationY = launcherState.screenHeight.toFloat()
 
         blurWith(blurHandler)
 
         val yAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, launcherState.screenHeight.toFloat(), 0f)
+            ObjectAnimator.ofFloat(
+                this,
+                View.TRANSLATION_Y,
+                launcherState.screenHeight.toFloat(),
+                0f
+            )
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION
             interpolator = SHOW_OVERLAY_ANIMATION_PATH_INTERPOLATOR
             play(yAnimator)
+            addListener(onEnd = { onShown() })
             start()
         }
     }
@@ -88,7 +94,12 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
         isClosing = true
 
         val yAnimator =
-            ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0f, launcherState.screenHeight.toFloat())
+            ObjectAnimator.ofFloat(
+                this,
+                View.TRANSLATION_Y,
+                0f,
+                launcherState.screenHeight.toFloat()
+            )
 
         AnimatorSet().run {
             duration = SHOW_OVERLAY_ANIMATION_DURATION

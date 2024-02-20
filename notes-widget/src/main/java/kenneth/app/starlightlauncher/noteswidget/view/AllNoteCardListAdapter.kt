@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.RecyclerView
-import kenneth.app.starlightlauncher.api.StarlightLauncherApi
 import kenneth.app.starlightlauncher.noteswidget.Note
 import kenneth.app.starlightlauncher.noteswidget.databinding.NoteCardBinding
-import kenneth.app.starlightlauncher.noteswidget.pref.NotesWidgetPreferences
 
 interface NoteListChangedCallback {
     /**
@@ -23,12 +21,12 @@ interface NoteListChangedCallback {
 }
 
 internal class AllNoteCardListAdapter(
-    launcher: StarlightLauncherApi,
+    context: Context,
     private val callback: NoteListChangedCallback
 ) :
     RecyclerView.Adapter<NoteCard>() {
     private val inputMethodManager =
-        launcher.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
     private var newNoteCreated = false
 

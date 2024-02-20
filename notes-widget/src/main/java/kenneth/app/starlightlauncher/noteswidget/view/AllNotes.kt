@@ -1,6 +1,8 @@
 package kenneth.app.starlightlauncher.noteswidget.view
 
 import android.os.Bundle
+import android.transition.Fade
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,13 +29,23 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
 
     private val globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
-            binding?.let { binding ->
-                with(binding.noteCardListScrollView) {
-                    updatePadding(bottom = paddingBottom + binding.addNoteButton.height + 24.dp)
+            val binding = this@AllNotesFragment.binding ?: return
+            with(binding.noteCardListScrollView) {
+                updatePadding(
+                    bottom = paddingBottom + binding.addNoteButton.height + 24.dp
+                )
+
+                // fix for note list scrolls to bottom by itself on first render
+                post {
                     scrollTo(0, 0)
+                    TransitionManager.beginDelayedTransition(this, Fade().apply {
+                        duration = 200
+                        addTarget(binding.noteCardListScrollView)
+                    })
+                    visibility = View.VISIBLE
                 }
-                binding.root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
             }
+            binding.root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
         }
     }
 
@@ -51,12 +63,19 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
 
             noteCardListScrollView.apply {
                 setPadding(0, topPadding, 0, addNoteButton.height)
+                // initially, for some unknown reason, the note list will be scrolled
+                // to the bottom on first render
+                // the fix is to call scrollTo(0, 0) on the scroll view after global layout
+                // but it will look janky to the user, so we wait until
+                // the scroll view is scrolled to 0, 0 before making it visible to avoid the visual jank
+                visibility = View.INVISIBLE
                 clipToPadding = false
             }
 
             noteCardList.apply {
                 adapter = AllNoteCardListAdapter(
-                    launcher, this@AllNotesFragment
+                    launcher.context,
+                    this@AllNotesFragment
                 ).also {
                     listAdapter = it
                 }

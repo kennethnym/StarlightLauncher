@@ -313,13 +313,13 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
     }
 
     fun showOverlay(fragment: Fragment) {
-        binding.overlay.show()
-
-        val currentFragment =
-            supportFragmentManager.findFragmentById(binding.overlay.contentContainerId)
-        supportFragmentManager.commit {
-            if (currentFragment != null) remove(currentFragment)
-            add(binding.overlay.contentContainerId, fragment)
+        binding.overlay.show {
+            val currentFragment =
+                supportFragmentManager.findFragmentById(binding.overlay.contentContainerId)
+            supportFragmentManager.commit {
+                if (currentFragment != null) remove(currentFragment)
+                add(binding.overlay.contentContainerId, fragment)
+            }
         }
 
         onBackPressedDispatcher.addCallback(
@@ -333,6 +333,11 @@ internal class MainActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayo
         overlayBackPressedCallback?.remove()
         overlayBackPressedCallback = null
         binding.overlay.close()
+        supportFragmentManager.findFragmentById(binding.overlay.contentContainerId)?.let {
+            supportFragmentManager.commit {
+                remove(it)
+            }
+        }
     }
 
     fun showOptionMenu(builder: OptionMenuBuilder) {
