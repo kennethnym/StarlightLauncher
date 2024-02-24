@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -49,6 +48,8 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
         }
     }
 
+    private var newNoteJustAdded = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,15 +83,6 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
                 layoutManager = LinearLayoutManager(context)
             }
 
-            root.setOnApplyWindowInsetsListener { _, windowInsets ->
-                noteCardListScrollView.updatePadding(
-                    bottom = noteCardListScrollView.paddingBottom +
-                            WindowInsetsCompat.toWindowInsetsCompat(windowInsets)
-                                .getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-                )
-                windowInsets
-            }
-
             root.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
             root
@@ -104,6 +96,12 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
                 listAdapter.notes = it
                 DiffUtil.calculateDiff(NoteListDiffCallback(oldNotes, it))
                     .dispatchUpdatesTo(listAdapter)
+                if (newNoteJustAdded) {
+                    newNoteJustAdded = false
+                    binding?.noteCardListScrollView?.post {
+                        binding?.noteCardListScrollView?.fullScroll(View.FOCUS_DOWN)
+                    }
+                }
             }
         }
     }
@@ -119,11 +117,6 @@ internal class AllNotesFragment(val launcher: StarlightLauncherApi) :
     private fun addNote() {
         listAdapter?.addNote()
         viewModel.addNote()
-        binding?.noteCardListScrollView?.run {
-            val lastView = getChildAt(childCount - 1)
-            val lastViewBottom = lastView.bottom + paddingBottom
-            val amountToScroll = lastViewBottom - height - scrollY
-            smoothScrollBy(0, amountToScroll)
-        }
+        newNoteJustAdded = true
     }
 }
