@@ -97,7 +97,7 @@ internal class Overlay(context: Context, attrs: AttributeSet) :
             ObjectAnimator.ofFloat(
                 this,
                 View.TRANSLATION_Y,
-                0f,
+                translationY,
                 launcherState.screenHeight.toFloat()
             )
 
